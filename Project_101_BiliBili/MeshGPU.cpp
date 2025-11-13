@@ -1,0 +1,35 @@
+#include "MeshGPU.h"
+
+//コンストラクタ
+MeshGPU::MeshGPU(ID3D12Device* pDevice, MeshData::Mesh& src)
+{
+	//頂点バッファの生成
+	const size_t vbsize = sizeof(Vertex) * src.vertexCount;	//頂点バッファサイズ
+	const size_t vstride = sizeof(Vertex);					//頂点バッファの1頂点あたりのサイズ
+	m_pVertexBuffer = new VertexBuffer(	//頂点バッファの生成
+		pDevice,				//デバイス
+		vbsize,					//頂点バッファサイズ
+		vstride,				//頂点バッファの1頂点あたりのサイズ
+		src.vertices.data()		//頂点データ
+	);
+
+	//インデックスバッファの生成
+	const size_t ibsize = sizeof(uint32_t) * src.indexCount;	//インデックスバッファサイズ
+	m_pIndexBuffer = new IndexBuffer(	//インデックスバッファの生成
+		pDevice,				//デバイス
+		ibsize,					//インデックスバッファサイズ
+		src.indices.data()		//インデックスデータ
+	);
+
+	//インデックス数の設定
+	m_IndexCount = static_cast<UINT>(src.indexCount);
+	//プリミティブトポロジの設定
+	m_Topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+}
+
+//デストラクタ
+MeshGPU::~MeshGPU()
+{
+	delete m_pVertexBuffer;
+	delete m_pIndexBuffer;
+}

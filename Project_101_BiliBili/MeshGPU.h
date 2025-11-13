@@ -1,0 +1,30 @@
+#pragma once
+#include <d3d12.h>
+#include "d3dx12.h"
+#include"VertexBuffer.h"
+#include"IndexBuffer.h"
+#include "SharedStruct.h"
+
+//メッシュ情報をGPU上に保持するクラス
+class MeshGPU
+{
+public:
+	MeshGPU(	//コンストラクタ
+		ID3D12Device* pDevice,	//デバイス
+		MeshData::Mesh& src		//メッシュデータ
+	);
+	~MeshGPU();	//デストラクタ
+
+	//ゲッター
+	VertexBuffer* GetVertexBuffer() const { return m_pVertexBuffer; }	//頂点バッファを返す
+	IndexBuffer* GetIndexBuffer() const { return m_pIndexBuffer; }		//インデックスバッファを返す
+	UINT GetIndexCount() const { return m_IndexCount; }					//インデックス数を返す
+	D3D12_PRIMITIVE_TOPOLOGY GetTopology() const { return m_Topology; }	//プリミティブトポロジを返す
+
+private:
+	VertexBuffer* m_pVertexBuffer = nullptr;	//頂点バッファ
+	IndexBuffer* m_pIndexBuffer = nullptr;		//インデックスバッファ
+	UINT m_IndexCount = 0;						//インデックス数
+	D3D12_PRIMITIVE_TOPOLOGY m_Topology = 
+		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;	//プリミティブトポロジ
+};

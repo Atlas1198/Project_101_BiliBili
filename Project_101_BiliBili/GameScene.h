@@ -1,0 +1,33 @@
+#pragma once
+#include "SceneBase.h"
+#include "Camera.h"
+#include "PlayerManager.h"
+#include "SharedStruct.h"
+
+//前方宣言
+class Renderer;
+class InputManager;
+class TextureManager;
+class MeshManager;
+
+//ゲームシーンクラス
+class GameScene : public SceneBase
+{
+public:	//公開関数
+	GameScene(float window_width, float window_height);	//コンストラクタ
+	~GameScene();										//デストラクタ
+
+	//メイン処理関数
+	void InitializeOverride(									//初期化
+		InputManager* pInputManager,		//入力マネージャーのポインタ
+		TextureManager& pTextureManager,	//テクスチャ管理クラスの参照
+		MeshManager& pMeshManager			//メッシュ管理クラスの参照
+	) override;
+	void UpdateOverride() override;						//更新
+	void ResolveCollisions() override;					//衝突後処理
+	void DrawOverride(Renderer& pRenderer) override;	//描画
+	void Finalize() override;							//終了
+
+private:
+	PlayerManager* m_pPlayerManager = nullptr;	//プレイヤー管理クラス
+};
