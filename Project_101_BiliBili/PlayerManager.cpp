@@ -40,7 +40,7 @@ void PlayerManager::Initialize(
 			XMFLOAT3(2.0f, 2.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
-			ColliderType::CAPSULE,		//コライダータイプ
+			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(2.0f, 2.0f, 2.0f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		);
