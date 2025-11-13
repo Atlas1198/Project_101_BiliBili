@@ -15,8 +15,8 @@
 class App
 {
 public:
-	static constexpr int WINDOW_WIDTH = 1280;	//ウィンドウの幅
-	static constexpr int WINDOW_HEIGHT = 720;	//ウィンドウの高さ
+	static constexpr int WINDOW_WIDTH = 1920;	//ウィンドウの幅
+	static constexpr int WINDOW_HEIGHT = 1080;	//ウィンドウの高さ
 private:
 	HINSTANCE hInstance = nullptr;	//インスタンスハンドル
 	HWND hwnd = nullptr;			//ウィンドウハンドル
