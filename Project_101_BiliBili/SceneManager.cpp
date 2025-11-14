@@ -97,3 +97,13 @@ CameraInfo* SceneManager::GetCameraInfo()
 {
 	return m_pCurrentScene->GetCameraInfo();
 }
+
+void SceneManager::AddPlayer(uint32_t id)
+{
+	m_pGameScene->AddPlayer(id, m_pInputManager);
+}
+
+void SceneManager::RemovePlayer(uint32_t id)
+{
+	m_pGameScene->RemovePlayer(id);
+}

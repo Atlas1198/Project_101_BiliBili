@@ -39,6 +39,9 @@ public:
 
 	void ChangeScene(SCENE newScene);	//シーン変更
 
+	void AddPlayer(uint32_t id);
+	void RemovePlayer(uint32_t id);
+
 	CameraInfo* GetCameraInfo();	//カメラ情報取得
 
 private:	//メンバ変数

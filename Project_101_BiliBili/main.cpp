@@ -30,5 +30,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//COMƒ‰ƒCƒuƒ‰ƒŠ‚ÌI—¹
 	CoUninitialize();
 
+	std::cout << "Press Enter to exit...";
+	std::cin.get();
+
 	return 0;
 }

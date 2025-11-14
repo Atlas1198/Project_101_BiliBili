@@ -13,20 +13,14 @@ public:
 
 	std::unordered_map<uint32_t, PlayerDescription> m_mapPlayerRoster;
 	std::vector<uint32_t> m_vGarbageIDs;
-	std::vector<int> availableInGameIDs = { 3, 2, 1, 0 };
-	uint32_t gameDesignerID = 0;
+	int nextInGameID = 0;
+	//std::vector<int> availableInGameIDs = { 3, 2, 1, 0 };
+	//uint32_t gameDesignerID = 0;
 
 protected:
 	bool OnClientConnect(std::shared_ptr<olc::net::connection<GameMsg>> client) override
 	{
-		if (availableInGameIDs.size() > 0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return true;
 	}
 
 	void OnClientValidated(std::shared_ptr<olc::net::connection<GameMsg>> client) override
@@ -36,8 +30,7 @@ protected:
 		olc::net::message<GameMsg> msg;
 		msg.header.id = GameMsg::Client_Accepted;
 
-		msg << availableInGameIDs.back();
-		availableInGameIDs.pop_back();
+		msg << nextInGameID++;
 
 		client->Send(msg);
 	}
@@ -54,8 +47,6 @@ protected:
 			else
 			{
 				auto &pd = m_mapPlayerRoster[client->GetID()];
-				int freedInGameID = pd.ingameID;
-				availableInGameIDs.push_back(freedInGameID);
 				std::cout << "[UNGRACEFUL REMOVAL]:" + std::to_string(pd.uniqueID) + "\n";
 				m_mapPlayerRoster.erase(client->GetID());
 				m_vGarbageIDs.push_back(client->GetID());
@@ -78,6 +69,7 @@ protected:
 				m.header.id = GameMsg::Game_RemovePlayer;
 				m << (int)m_mapPlayerRoster.size() << pid;
 				std::cout << "Removing " << pid << "\n";
+				std::cout << (int)m_mapPlayerRoster.size() << " Players in\n";
 				MessageAllClients(m);
 			}
 			m_vGarbageIDs.clear();
@@ -99,12 +91,6 @@ protected:
 			msgSendID << desc.uniqueID;
 			MessageClient(client, msgSendID);
 
-			olc::net::message<GameMsg> msgPlayerJoined;
-			msgPlayerJoined.header.id = GameMsg::Lobby_PlayerJoined;
-			msgPlayerJoined << (int)m_mapPlayerRoster.size() << desc;
-			MessageAllClients(msgPlayerJoined);
-
-			
 			for (const auto &player : m_mapPlayerRoster)
 			{
 				olc::net::message<GameMsg> msgAddOtherPlayers;
@@ -112,20 +98,13 @@ protected:
 				msgAddOtherPlayers << (int)m_mapPlayerRoster.size() << player.second;
 				MessageClient(client, msgAddOtherPlayers);
 			}
-			
 
+			olc::net::message<GameMsg> msgAddNewPlayer;
+			msgAddNewPlayer.header.id = GameMsg::Game_AddPlayer;
+			msgAddNewPlayer << (int)m_mapPlayerRoster.size() << desc;
+			MessageAllClients(msgAddNewPlayer, client);
 			
 			std::cout << (int)m_mapPlayerRoster.size() << " Players in\n";
-
-			if ((int)m_mapPlayerRoster.size() == 4)
-			{
-				olc::net::message<GameMsg> msg;
-				msg.header.id = GameMsg::Lobby_StartGame;
-				MessageAllClients(msg);
-
-				std::cout << "Starting game\n";
-			}
-			
 
 			break;
 		}
@@ -142,6 +121,7 @@ protected:
 			break;
 		}
 
+		/*
 		case GameMsg::Client_RequestDesigner:
 		{
 			olc::net::message<GameMsg> respondMsg;
@@ -165,7 +145,9 @@ protected:
 			msg.header.id = GameMsg::Server_ChangeParameter;
 			MessageAllClients(msg);
 			break;
+			*/
 		}
+		
 
 	}
 

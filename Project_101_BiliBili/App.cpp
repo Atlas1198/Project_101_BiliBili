@@ -1,7 +1,6 @@
-#include <windows.h>
+#include "App.h"
 #include <algorithm>
 #include <mmsystem.h>
-#include "App.h"
 #include <tchar.h>
 #include "Keyboard.h"
 
@@ -84,6 +83,9 @@ void App::Run()
 	dwExecLastTime = dwFPSLastTime = timeGetTime();	//現在のタイマー値
 	dwCurrentTime = dwFrameCount = 0;				//初期化
 
+	players.clear();
+	if (!Login()) return;
+
 	do 
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -117,8 +119,10 @@ void App::Run()
 				);
 				SetWindowText(hwnd, debugStr);	//ウィンドウタイトルの設定
 #endif
+				ReadMessages();
 				//更新処理
 				Update();	//更新
+				WriteMessages();
 
 				//描画処理
 				Draw();		//描画
@@ -247,6 +251,7 @@ void App::InitInstance()
 //更新
 void App::Update()
 {
+	if (waitingForConnection) return;
 	//現在のバックバッファインデックスを取得
 	const UINT backIdx = m_pEngine->GetCurrentBufferIndex();
 
@@ -278,4 +283,148 @@ void App::Draw()
 
 	//描画終了
 	m_pEngine->RenderEnd();
+}
+
+bool App::Login()
+{
+	if (Connect("127.0.0.1", 60000))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void App::ReadMessages()
+{
+	// Check for incoming network messages
+	if (IsConnected())
+	{
+		while (!Incoming().empty())
+		{
+			auto msg = Incoming().pop_front().msg;
+
+			switch (msg.header.id)
+			{
+			case(GameMsg::Client_Accepted):
+			{
+				std::cout << "Server accepted client - you're in!\n";
+
+				int gameID = 0;
+				msg >> gameID;
+
+				olc::net::message<GameMsg> msg;
+				msg.header.id = GameMsg::Client_RegisterWithServer;
+
+				descPlayer.ingameID = gameID;
+				descPlayer.pos = spawnPos;
+				//descPlayer.radius = 0.1f;
+
+				msg << descPlayer;
+				Send(msg);
+				break;
+			}
+
+			case(GameMsg::Client_AssignID):
+			{
+				// Server is assigning us OUR id
+				msg >> descPlayer.uniqueID;
+				std::cout << "Assigned Client ID = " << descPlayer.uniqueID << "\n";
+				break;
+			}
+
+			case(GameMsg::Game_AddPlayer):
+			{
+				PlayerDescription newDesc;
+
+				msg >> newDesc >> playerCount;
+
+				players.insert_or_assign(newDesc.uniqueID, newDesc);
+
+				std::cout << "Assigned Client ID = " << descPlayer.uniqueID << "\n";
+
+				if (newDesc.uniqueID == descPlayer.uniqueID)
+				{
+					// Now we exist in game world
+					waitingForConnection = false;
+				}
+
+				m_pSceneManager->AddPlayer(newDesc.uniqueID);
+
+				break;
+			}
+
+			case(GameMsg::Game_RemovePlayer):
+			{
+				uint32_t nRemovalID = 0;
+				msg >> nRemovalID >> playerCount;
+				players.erase(nRemovalID);
+				m_pSceneManager->RemovePlayer(nRemovalID);
+				break;
+			}
+
+			case(GameMsg::Game_UpdatePlayer):
+			{
+				PlayerDescription desc;
+				msg >> desc;
+				players.insert_or_assign(desc.uniqueID, desc);
+				break;
+			}
+
+			/*
+			case(GameMsg::Server_RespondDesignerRequest):
+			{
+				bool result;
+				msg >> result;
+
+				if (result)
+				{
+					isDesigner = true;
+				}
+				else
+				{
+					waitingToOpenTool = false;
+				}
+				break;
+			}
+
+			case(GameMsg::Server_ChangeParameter):
+			{
+				msg >> moveSpeed;
+			}
+			*/
+			}
+		}
+	}
+}
+
+void App::WriteMessages()
+{
+	// Send player description
+	if (!waitingForConnection)
+	{
+		olc::net::message<GameMsg> msg;
+		msg.header.id = GameMsg::Game_UpdatePlayer;
+		msg << players[descPlayer.uniqueID];
+		Send(msg);
+
+		/*
+		if (requestingDesignerRights)
+		{
+			olc::net::message<GameMsg> msg;
+			msg.header.id = GameMsg::Client_RequestDesigner;
+			Send(msg);
+			requestingDesignerRights = false;
+		}
+
+		if (wnd.submit)
+		{
+			olc::net::message<GameMsg> msg;
+			msg.header.id = GameMsg::Client_RequestChangeParameter;
+			msg << wnd.speedField;
+			Send(msg);
+			wnd.submit = false;
+		}
+		*/
+	}
 }
