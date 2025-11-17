@@ -60,20 +60,20 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo)
 }
 
 //更新
-void Renderer::Update(UINT currentBackBufferIndex)
+void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 {
 	//カメラ行列の更新
 	m_view = DirectX::XMMatrixLookAtLH(
-		DirectX::XMVectorSet(m_cameraInfo->position.x, m_cameraInfo->position.y, m_cameraInfo->position.z, 0.0f),	//カメラの位置
-		DirectX::XMVectorSet(m_cameraInfo->target.x, m_cameraInfo->target.y, m_cameraInfo->target.z, 0.0f),			//カメラの注視点
-		DirectX::XMVectorSet(m_cameraInfo->up.x, m_cameraInfo->up.y, m_cameraInfo->up.z, 0.0f));					//カメラの上方向ベクトル
+		DirectX::XMVectorSet(info.position.x, info.position.y, info.position.z, 0.0f),	//カメラの位置
+		DirectX::XMVectorSet(info.target.x, info.target.y, info.target.z, 0.0f),			//カメラの注視点
+		DirectX::XMVectorSet(info.up.x, info.up.y, info.up.z, 0.0f));					//カメラの上方向ベクトル
 
 	//プロジェクション行列の更新
 	m_proj = XMMatrixPerspectiveFovLH(
-		m_cameraInfo->fov,			//垂直視野角
-		m_cameraInfo->aspectRatio,	//アスペクト比
-		m_cameraInfo->nearZ,		//ニアクリップ距離
-		m_cameraInfo->farZ			//ファークリップ距離
+		info.fov,			//垂直視野角
+		info.aspectRatio,	//アスペクト比
+		info.nearZ,		//ニアクリップ距離
+		info.farZ			//ファークリップ距離
 	);
 }
 

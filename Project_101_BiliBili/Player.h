@@ -1,9 +1,9 @@
 #pragma once
-#include "GameObject.h"
+#include "ObjectBase.h"
 #include "InputManager.h"
 
 //プレイヤークラス
-class Player : public GameObject
+class Player : public ObjectBase
 {
 public:	//公開定数
 	static constexpr float MOVE_SPEED = 0.2f;	//移動速度
@@ -14,6 +14,7 @@ private:	//非公開メンバ変数
 
 public:	//公開関数
 	Player(	//コンストラクタ
+		MeshData::MESH_TYPE meshType,			//メッシュタイプ
 		DirectX::XMFLOAT3 position,				//座標
 		DirectX::XMFLOAT3 rotation,				//回転
 		DirectX::XMFLOAT3 scale,				//スケール
@@ -25,7 +26,8 @@ public:	//公開関数
 			DirectX::XMFLOAT3(1.0f, 1.0f,1.0f),
 		bool collisionIsTrigger = false			//コライダーのトリガーフラグ
 	)
-		: GameObject(
+		: ObjectBase(
+			meshType,
 			position, 
 			rotation, 
 			scale, 

@@ -1,9 +1,10 @@
 #pragma once
 #include <d3d12.h>
 #include <DirectXMath.h>
+#include "SharedStruct.h"
 
 //前方宣言
-class GameObject;
+class ObjectBase;
 
 //コライダータイプ列挙型
 enum class ColliderType
@@ -18,8 +19,8 @@ enum class ColliderType
 struct BoxCollider
 {
 	DirectX::XMFLOAT3 center;		//中心点
-	DirectX::XMFLOAT3 size;			//サイズ（幅、高さ、奥行き）
-	DirectX::XMFLOAT3 defaultSize;	//初期サイズ
+	DirectX::XMFLOAT3 scale;		//サイズ（幅、高さ、奥行き）
+	DirectX::XMFLOAT3 defaultScale;	//初期サイズ
 };
 
 //球コライダー構造体
@@ -35,7 +36,7 @@ struct CapsuleCollider
 {
 	DirectX::XMFLOAT3 pointA;	//端点A(底面中心)
 	DirectX::XMFLOAT3 pointB;	//端点B(頂点中心)
-	float height;				//端点間の高さ
+	float cylHeight;				//端点間の高さ
 	float defaultHeight;		//初期高さ
 	float radius;				//半径
 	float defaultRadius;		//初期半径
@@ -52,32 +53,42 @@ struct AABB
 class Collider
 {
 public:
-	Collider(
-		GameObject* owner,
-		ColliderType type,
-		DirectX::XMFLOAT3 boxSize = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool isTrigger = false
+	Collider(		//コンストラクタ
+		ObjectBase* owner,						//所有者オブジェクト
+		ColliderType type,						//コライダータイプ
+		DirectX::XMFLOAT3 boxSize =
+		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),	//ボックスサイズ
+		bool isTrigger = false					//トリガーフラグ
 	);
 	~Collider();	//デストラクタ
 
-	void Update();
-	void UpdateCollider();
-	void UpdateAABB();
+	void Update();			//コライダー更新
+	void UpdateCollider();	//各種コライダー更新
+	void UpdateAABB();		//AABB更新
+
+	void AddCollisionInfo(const CollisionInfo& info);	//衝突情報追加
+	void ClearInfos();									//衝突情報配列クリア
 
 	//ゲッター
-	GameObject* GetOwner() const;					//所有者オブジェクト取得
-	ColliderType GetType() const;					//コライダータイプ取得
-	const bool IsTrigger() const;					//トリガーフラグ取得
-	const AABB GetAABB();							//軸平行境界ボックス取得
-	const BoxCollider GetBoxCollider();				//ボックスコライダー取得
-	const DirectX::XMMATRIX GetWorldMatrix() const;	//ワールド行列の取得
-	const bool isDetected() const;					//衝突検知フラグ取得
+	ObjectBase* GetOwner() const;									//所有者オブジェクト取得
+	ColliderType GetType() const;									//コライダータイプ取得
+	const bool IsTrigger() const;									//トリガーフラグ取得
+	const AABB GetAABB();											//軸平行境界ボックス取得
+	const BoxCollider GetBoxCollider();								//ボックスコライダー取得
+	const SphereCollider GetSphereCollider();						//球コライダー取得
+	const CapsuleCollider GetCapsuleCollider();						//カプセルコライダー取得
+	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
+	const std::vector<CollisionInfo>& GetCollisionInfos() const;	//衝突情報配列取得
+	const bool isDetected() const;									//衝突検知フラグ取得
+	DirectX::XMFLOAT3 GetCenter() const;							//中心座標取得
+	DirectX::XMFLOAT3 GetScale() const;								//サイズ取得
+	DirectX::XMFLOAT3 GetRotation() const;							//回転取得
 
 	//セッター
 	void setDetected(bool flag);	//衝突検知フラグ設定
 
 private:
-	GameObject* m_pOwner = nullptr;	//所有者オブジェクト
+	ObjectBase* m_pOwner = nullptr;	//所有者オブジェクト
 	ColliderType m_type;			//コライダータイプ
 	bool m_isTrigger = false;		//トリガーフラグ(物理衝突を無視するかどうか)
 
@@ -88,19 +99,30 @@ private:
 	SphereCollider m_sphereCollider;	//球コライダー
 	CapsuleCollider m_capsuleCollider;	//カプセルコライダー
 
-	DirectX::XMFLOAT3 m_center;	//中心座標
-	DirectX::XMFLOAT3 m_size;	//サイズ
+	//ワールド情報
+	DirectX::XMFLOAT3 m_center;		//中心座標
+	DirectX::XMFLOAT3 m_scale;		//サイズ
+	DirectX::XMFLOAT3 m_rotation;	//回転
+	DirectX::XMFLOAT3 m_scaleOffset;	//オブジェクトとのサイズ差
+
+	std::vector<CollisionInfo> m_collisionInfos; //衝突情報配列(所有者オブジェクト用)
 
 	bool m_isDetected = false; //衝突検知フラグ（描画用）
 
 private:
 	//コライダー生成関数
-	void CreateBoxCollider(DirectX::XMFLOAT3 boxSize);		//ボックスコライダー生成
-	void CreateSphereCollider(float radius);				//球コライダー生成
-	void CreateCapsuleCollider(float radius, float height);	//カプセルコライダー生成
+	void CreateCollider(DirectX::XMFLOAT3 scale);			//コライダー生成
+	void CreateBoxCollider(DirectX::XMFLOAT3 scale);		//ボックスコライダー生成
+	void CreateSphereCollider(DirectX::XMFLOAT3 scale);		//球コライダー生成
+	void CreateCapsuleCollider(DirectX::XMFLOAT3 scale);	//カプセルコライダー生成
 
 	//コライダー更新関数
 	void UpdateBoxCollider();		//ボックスコライダー更新
 	void UpdateSphereCollider();	//球コライダー更新
 	void UpdateCapsuleCollider();	//カプセルコライダー更新
+
+	//AABB更新関数
+	void UpdateAABBBox();			//AABB更新(ボックスコライダー用)
+	void UpdateAABBSphere();		//AABB更新(球コライダー用)
+	void UpdateAABBCapsule();		//AABB更新(カプセルコライダー用)
 };

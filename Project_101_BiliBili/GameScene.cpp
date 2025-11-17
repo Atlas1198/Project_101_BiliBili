@@ -39,6 +39,18 @@ void GameScene::InitializeOverride(
 void GameScene::UpdateOverride()
 {
 	m_pPlayerManager->Update();	//プレイヤー管理クラス更新
+
+	if (m_pInputManager->GetInputInfo()->enter.trigger)
+	{
+		if (m_pCamera->GetCameraInfo()->position.y == 0.0f)
+		{
+			m_pCamera->SetPosition({ 0.0f, 10.0f, -1.0f });
+		}
+		else
+		{
+			m_pCamera->SetPosition({ 0.0f, 0.0f, -10.0f });
+		}
+	}
 }
 
 //衝突後処理
@@ -54,6 +66,6 @@ void GameScene::DrawOverride(Renderer& pRenderer)
 }
 
 //終了
-void GameScene::Finalize()
+void GameScene::FinalizeOverride()
 {
 }

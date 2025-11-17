@@ -21,6 +21,7 @@ struct InputInfo
 	KeyInputState left;
 	KeyInputState right;
 	KeyInputState space;
+	KeyInputState enter;
 };
 
 //“ü—ÍŠÇ—ƒNƒ‰ƒX

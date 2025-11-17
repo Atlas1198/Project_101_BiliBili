@@ -64,6 +64,14 @@ void SceneBase::Draw(Renderer& pRenderer)
 #endif // _DEBUG
 }
 
+//終了
+void SceneBase::Finalize()
+{
+	//シーン固有の終了呼び出し
+	FinalizeOverride();
+	m_pCollisionManager->ClearColliders();
+}
+
 //カメラ情報取得
 CameraInfo* SceneBase::GetCameraInfo() const
 {

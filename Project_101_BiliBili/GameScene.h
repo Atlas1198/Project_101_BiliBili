@@ -26,7 +26,7 @@ public:	//公開関数
 	void UpdateOverride() override;						//更新
 	void ResolveCollisions() override;					//衝突後処理
 	void DrawOverride(Renderer& pRenderer) override;	//描画
-	void Finalize() override;							//終了
+	void FinalizeOverride() override;							//終了
 
 private:
 	PlayerManager* m_pPlayerManager = nullptr;	//プレイヤー管理クラス

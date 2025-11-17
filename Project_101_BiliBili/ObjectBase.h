@@ -7,10 +7,11 @@
 
 //ゲームオブジェクトクラス
 //全ゲームオブジェクトの基底クラス
-class GameObject
+class ObjectBase
 {
 public:	//公開関数
-	GameObject(	//コンストラクタ
+	ObjectBase(	//コンストラクタ
+		MeshData::MESH_TYPE meshType,		//メッシュタイプ
 		DirectX::XMFLOAT3 position,				//座標
 		DirectX::XMFLOAT3 rotation,				//回転
 		DirectX::XMFLOAT3 scale,				//スケール
@@ -22,7 +23,7 @@ public:	//公開関数
 			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
 		bool collisionIsTrigger = false			//コライダーのトリガーフラグ
 	);
-	~GameObject();	//デストラクタ
+	~ObjectBase();	//デストラクタ
 
 	void Update();
 	virtual void UpdateOverride() = 0;
@@ -42,7 +43,7 @@ public:	//公開関数
 	const bool IsActive() const;									//アクティブかどうかを取得
 	const bool IsDrawn() const;										//描画フラグの取得
 	Collider* GetCollider() const;									//コライダーの取得
-	const std::vector<CollisionInfo>* GetCollisionInfos() const;	//衝突情報配列の取得
+	MeshData::MESH_TYPE GetMeshType() const;						//メッシュタイプの取得
 
 	//セッター
 	void SetPosition(DirectX::XMFLOAT3 position);	//位置の設定
@@ -56,12 +57,11 @@ protected:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_rotation{};						//回転
 	DirectX::XMFLOAT3 m_scale{ 1.0f,1.0f,1.0f };		//スケール
 	DirectX::XMFLOAT4 m_color{ 1.0f,1.0f,1.0f,1.0f };	//色RGBA
-
-	DirectX::XMFLOAT3 m_velocity{};	//移動速度
+	DirectX::XMFLOAT3 m_velocity{};						//移動速度
 	bool m_isActive = false;		//アクティブフラグ
+
+	MeshData::MESH_TYPE m_meshType;	//メッシュタイプ
 	bool m_isDrawn = true;			//描画フラグ
 
-	//コライダー関連
 	Collider* m_pCollider = nullptr;				//コライダー
-	std::vector<CollisionInfo> m_collisionInfos;	//衝突情報の配列
 };
