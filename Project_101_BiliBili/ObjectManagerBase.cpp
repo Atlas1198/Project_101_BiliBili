@@ -27,8 +27,8 @@ void ObjectManagerBase::SubmitDraws(Renderer& renderer)
 
 //描画情報をシーンに提出
 void ObjectManagerBase::SubmitRenderInfo(
-	Renderer& renderer,					//シーンの参照
-	const ObjectBase& object,			//ゲームオブジェクト配列の参照
+	Renderer& renderer,				//シーンの参照
+	const ObjectBase& object,		//ゲームオブジェクト配列の参照
 	std::vector<RenderInfo>& info	//描画情報構造体
 )
 {
@@ -67,6 +67,13 @@ void ObjectManagerBase::SubmitRenderInfo(
 				i.world = object.GetWorldMatrix();
 				i.color = object.GetColor();
 			}
+		}
+
+		//位置とブレンドモードを設定
+		for (int i = 0; i < submitInfos.size(); i++)
+		{
+			submitInfos[i].positionW = object.GetPosition();
+			submitInfos[i].blendMode = info[i].blendMode;
 		}
 
 		//描画要求をシーンに提出

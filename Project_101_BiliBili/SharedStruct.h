@@ -50,6 +50,15 @@ struct CameraInfo
 	float farZ;					//ファークリップ距離
 };
 
+//ブレンドモード列挙体
+enum BLEND_MODE
+{
+	BLEND_OPAQUE,		//不透明
+	BLEND_MASKED,		//マスク
+	BLEND_TRANSPARENT,	//透明
+	BLEND_MAX			//最大数
+};
+
 //描画情報用名前空間
 //MeshData内で使用するため分離
 
@@ -68,6 +77,8 @@ namespace RenderData
 		INT  baseVertex = 0;					//ベース頂点
 		uint32_t srvIndex = UINT32_MAX;			//SRVインデックス
 		DirectX::XMFLOAT4 color = { 1,1,1,1 };	//オブジェクトの色RGBA(デフォルトは白)
+		BLEND_MODE blendMode = BLEND_OPAQUE;	//ブレンドモード
+		DirectX::XMFLOAT3 positionW{};			//ワールド座標系の位置
 	};
 }
 
@@ -244,6 +255,7 @@ namespace RenderData
 		MeshManager& meshManager,		//メッシュマネージャへの参照
 		std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 		MeshData::MESH_TYPE type,		//メッシュタイプ
+		BLEND_MODE mode,				//ブレンドモード
 		const wchar_t* path,			//モデルデータ又はテクスチャファイルのパス
 		bool inverseU = false,			//Uを反転するかどうか(モデルデータの場合のみ有効)
 		bool inverseV = false			//Vを反転するかどうか(モデルデータの場合のみ有効)
@@ -254,6 +266,7 @@ namespace RenderData
 		TextureManager& textureManager,	//テクスチャマネージャへの参照
 		MeshManager& meshManager,		//メッシュマネージャへの参照
 		std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+		BLEND_MODE mode,				//ブレンドモード
 		const wchar_t* path,			//モデルファイルのパス
 		bool inverseU = false,			//Uを反転するかどうか
 		bool inverseV = false			//Vを反転するかどうか
@@ -265,6 +278,7 @@ namespace RenderData
 		MeshManager& meshManager,			//メッシュマネージャへの参照
 		std::vector<RenderInfo>* pInfo,		//描画情報構造体配列へのポインタ
 		MeshData::MESH_TYPE type,			//メッシュタイプ
+		BLEND_MODE mode,					//ブレンドモード
 		const wchar_t* path					//テクスチャのファイル名
 	);
 
@@ -272,7 +286,8 @@ namespace RenderData
 	RenderInfo CreateRenderInfoFromMeshData(
 		TextureManager& textureManager,	//テクスチャマネージャへの参照
 		MeshManager& meshManager,		//メッシュマネージャへの参照
-		MeshData::Mesh& mesh			//メッシュデータ構造体への参照
+		MeshData::Mesh& mesh,			//メッシュデータ構造体への参照
+		BLEND_MODE mode					//ブレンドモード
 	);
 }
 

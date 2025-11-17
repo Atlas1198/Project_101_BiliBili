@@ -33,6 +33,7 @@ void RenderData::CreteRenderInfo(
 	MeshManager& meshManager,		//メッシュマネージャへの参照
 	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MeshData::MESH_TYPE type,		//メッシュタイプ
+	BLEND_MODE mode,				//ブレンドモード
 	const wchar_t* path,			//モデルデータ又はテクスチャファイルのパス
 	bool inverseU,					//Uを反転するかどうか(モデルデータの場合のみ有効)
 	bool inverseV					//Vを反転するかどうか(モデルデータの場合のみ有効
@@ -45,6 +46,7 @@ void RenderData::CreteRenderInfo(
 			textureManager,	//テクスチャマネージャへの参照
 			meshManager,	//メッシュマネージャへの参照
 			pInfo,			//描画情報構造体配列へのポインタ
+			mode,			//ブレンドモード
 			path,			//モデルファイルのパス
 			inverseU,		//Uを反転するかどうか
 			inverseV		//Vを反転するかどうか
@@ -57,6 +59,7 @@ void RenderData::CreteRenderInfo(
 			meshManager,	//メッシュマネージャへの参照
 			pInfo,			//描画情報構造体配列へのポインタ
 			type,			//メッシュタイプ
+			mode,			//ブレンドモード
 			path			//テクスチャのファイル名
 		);
 	}
@@ -65,8 +68,9 @@ void RenderData::CreteRenderInfo(
 //FBXファイルから描画情報を作成する関数
 void RenderData::CreateRenderInfoFromFBX(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
-	MeshManager& meshManager,			//メッシュマネージャへの参照
+	MeshManager& meshManager,		//メッシュマネージャへの参照
 	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+	BLEND_MODE mode,				//ブレンドモード
 	const wchar_t* path,			//モデルファイルのパス
 	bool inverseU,					//Uを反転するかどうか
 	bool inverseV					//Vを反転するかどうか
@@ -96,7 +100,8 @@ void RenderData::CreateRenderInfoFromFBX(
 		RenderInfo info = CreateRenderInfoFromMeshData(	//描画情報構造体の生成
 			textureManager,	//テクスチャマネージャへの参照
 			meshManager,	//メッシュマネージャへの参照
-			mesh			//メッシュデータ
+			mesh,			//メッシュデータ
+			mode			//ブレンドモード
 		);
 		pInfo->push_back(info);	//配列に格納
 	}
@@ -108,6 +113,7 @@ void RenderData::CreateRenderInfoFromDefaultMesh(
 	MeshManager& meshManager,		//メッシュマネージャへの参照
 	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MeshData::MESH_TYPE type,		//メッシュタイプ
+	BLEND_MODE mode,				//ブレンドモード
 	const wchar_t* path				//テクスチャのファイル名
 )
 {
@@ -117,11 +123,12 @@ void RenderData::CreateRenderInfoFromDefaultMesh(
 	//メッシュタイプに応じたメッシュデータを取得して描画情報を作成
 	for (auto& mesh : model.meshes)
 	{
-		mesh.texPath = path;							//テクスチャのファイル名を設定
-		RenderInfo info = CreateRenderInfoFromMeshData(				//描画情報構造体の生成
+		mesh.texPath = path;	//テクスチャのファイル名を設定
+		RenderInfo info = CreateRenderInfoFromMeshData(	//描画情報構造体の生成
 			textureManager,		//テクスチャマネージャへの参照
 			meshManager,		//メッシュマネージャへの参照
-			mesh				//メッシュデータ
+			mesh,				//メッシュデータ
+			mode			//ブレンドモード
 		);
 		pInfo->push_back(info);	//配列に格納
 	}
@@ -131,7 +138,8 @@ void RenderData::CreateRenderInfoFromDefaultMesh(
 RenderData::RenderInfo RenderData::CreateRenderInfoFromMeshData(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
 	MeshManager& meshManager,		//メッシュマネージャへの参照
-	MeshData::Mesh& mesh			//メッシュデータ
+	MeshData::Mesh& mesh,			//メッシュデータ
+	BLEND_MODE mode				//ブレンドモード
 )
 {
 	RenderInfo info{};	//描画情報構造体
@@ -145,6 +153,7 @@ RenderData::RenderInfo RenderData::CreateRenderInfoFromMeshData(
 	info.baseVertex = 0;							//ベース頂点
 	info.world = XMMatrixIdentity();				//ワールド行列を単位行列に設定
 	info.color = XMFLOAT4(1, 1, 1, 1);				//オブジェクトの色を白に設定
+	info.blendMode = mode;							//ブレンドモードを設定
 
 	//テクスチャのSRVインデックスを取得
 	if (!mesh.texPath.empty() && &textureManager)

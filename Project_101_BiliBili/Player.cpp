@@ -65,12 +65,12 @@ void Player::Rotate()
 	if(m_pInputInfo->left.down)
 	{
 		//¶‰ñ“]
-		m_rotation.z -= ROTATE_SPEED;
+		m_rotation.y -= ROTATE_SPEED;
 	}
 	if(m_pInputInfo->right.down)
 	{
 		//‰E‰ñ“]
-		m_rotation.z += ROTATE_SPEED;
+		m_rotation.y += ROTATE_SPEED;
 	}
 }
 
