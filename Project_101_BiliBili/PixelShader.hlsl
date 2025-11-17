@@ -23,3 +23,15 @@ float4 BasicPS(
 
     return texColor * input.color * objColor; //頂点カラーをそのまま返す
 }
+
+float4 BasicPSMasked(
+    VSOutPut input
+) : SV_TARGET
+{
+    float4 texColor = gTexture.Sample(gSampler, input.uv);
+    
+    //アルファテスト
+    clip(texColor.a - 0.5f);
+    return texColor * input.color;
+
+}

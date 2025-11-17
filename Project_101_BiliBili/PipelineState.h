@@ -26,7 +26,14 @@ public:
 	void SetRootSignature(ID3D12RootSignature* pRootSignature);			//ルートシグネチャを設定
 	void SetVertexShader(const std::wstring& filename);					//頂点シェーダーを設定
 	void SetPixelShader(const std::wstring& filename);					//ピクセルシェーダーを設定
+	void SetPixelShader(												//ピクセルシェーダーを設定（エントリーポイント指定版）
+		const std::wstring& filename,	//シェーダーファイル名
+		const std::string& entryPoint	//エントリーポイント名
+	); 
 	void Create();														//パイプラインステートオブジェクトを作成
+
+	void EnableAlphaBlend(bool enable);	//アルファブレンドを有効化
+	void EnableDepthWrite(bool enable);	//深度ステンシルを有効化
 
 	ID3D12PipelineState* GetPipelineState() const; //パイプラインステートオブジェクトを取得
 	bool IsValid() const; //パイプラインステート生成に成功したかを取得

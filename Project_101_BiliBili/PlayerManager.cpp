@@ -37,11 +37,11 @@ void PlayerManager::InitializeOverride(
 			MESH_TYPE::QUAD,			//メッシュタイプ
 			XMFLOAT3(i* 5.0f - 5.0f, 0.0f, 0.0f),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(1.0f, 2.0f, 1.0f),	//スケール
+			XMFLOAT3(2.0f, 2.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
-			ColliderType::CAPSULE,		//コライダータイプ
-			XMFLOAT3(1.5, 1.5f, 1.5f),	//コライダーボックスサイズ
+			ColliderType::SPHERE,		//コライダータイプ
+			XMFLOAT3(2.0f, 2.0f, 2.0f),	//コライダーのボックスサイズ
 			false						//コライダーのトリガーフラグ
 		);
 
@@ -106,6 +106,7 @@ void PlayerManager::PrepareRenderInfo(
 		meshManager,					//メッシュマネージャへの参照
 		&m_playerInfo,					//描画情報構造体配列へのポインタ
 		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
 }

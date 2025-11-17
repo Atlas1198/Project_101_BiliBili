@@ -15,7 +15,7 @@ class PlayerManager : public ObjectManagerBase
 public:	//公開定数
 	static constexpr int PLAYER_NUM = 2; // プレイヤーの数
 	const wchar_t* modelFile = L"asset/fbx/Kirby_fbx.fbx";
-	const wchar_t* texPath = L"asset/texture/white.png";
+	const wchar_t* texPath = L"asset/texture/change_item.png";
 
 public:	//公開関数
 	PlayerManager(){};			//コンストラクタ

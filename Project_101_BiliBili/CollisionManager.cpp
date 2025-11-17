@@ -124,6 +124,13 @@ void CollisionManager::SubmitDraw(
 		}
 	}
 
+	//位置とブレンドモードを設定
+	for (int i = 0; i < submitInfos.size(); i++)
+	{
+		submitInfos[i].positionW = object.GetPosition();
+		submitInfos[i].blendMode = BLEND_TRANSPARENT;
+	}
+
 	//描画要求をシーンに提出
 	for (auto& i : submitInfos)
 	{
@@ -247,6 +254,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		meshManager,				//メッシュ管理クラスの参照
 		&m_colliderRenderInfoBox,	//描画情報構造体配列へのポインタ
 		MeshData::MESH_TYPE::CUBE,	//メッシュタイプ
+		BLEND_TRANSPARENT,			//ブレンドモード
 		texPath						//テクスチャのファイル名
 	);
 
@@ -257,6 +265,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoSphere,	//描画情報構造体配列へのポインタ
 		MeshData::MESH_TYPE::SPHERE,	//メッシュタイプ
+		BLEND_TRANSPARENT,				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
 
@@ -267,6 +276,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoCapsule,	//描画情報構造体配列へのポインタ
 		MeshData::MESH_TYPE::CAPSULE,	//メッシュタイプ
+		BLEND_TRANSPARENT,				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
 }
