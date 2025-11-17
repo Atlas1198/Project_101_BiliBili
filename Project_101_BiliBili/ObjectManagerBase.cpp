@@ -1,0 +1,85 @@
+#include "ObjectManagerBase.h"
+#include "Renderer.h"
+#include "TextureManager.h"
+#include "CollisionManager.h"
+#include "Collider.h"
+
+using namespace DirectX;
+using namespace RenderData;
+using namespace MeshData;
+
+//初期化
+void ObjectManagerBase::Initialize(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
+{
+	//派生クラスでオーバーライドされた初期化関数を呼び出し
+	InitializeOverride(pInputManager, textureManager, meshManager, collisionManager);
+
+	//オブジェクト描画情報生成
+	PrepareRenderInfo(textureManager, meshManager);
+}
+
+//描画要求をシーンに提出
+void ObjectManagerBase::SubmitDraws(Renderer& renderer)
+{
+	//派生クラスでオーバーライドされた描画要求提出関数を呼び出し
+	SubmitDraws(renderer);
+}
+
+//描画情報をシーンに提出
+void ObjectManagerBase::SubmitRenderInfo(
+	Renderer& renderer,					//シーンの参照
+	const ObjectBase& object,			//ゲームオブジェクト配列の参照
+	std::vector<RenderInfo>& info	//描画情報構造体
+)
+{
+	//アクティブなオブジェクトの描画要求をシーンに提出
+	if (object.IsActive() && object.IsDrawn())
+	{//アクティブかつ描画フラグが立っている場合
+
+		std::vector<RenderInfo> submitInfos;	//Rendererへの提出用描画情報構造体配列
+		submitInfos.reserve(info.size());		//容量確保
+
+		if(object.GetMeshType() == MESH_TYPE::CAPSULE)
+		{//カプセルメッシュの場合(複数メッシュに分かれているため個別に処理)
+			CapsuleVisualDesc desc{};	//カプセルメッシュの記述データ
+			//カプセルメッシュの記述データ設定
+			AppendCapsuleRenderInfos(
+				desc,					//カプセル描画情報記述子
+				object.GetPosition(),	//位置
+				object.GetScale(),		//スケール
+				object.GetRotation(),	//回転Euler角
+				object.GetColor(),		//色
+				info,					//入力元描画情報配列
+				submitInfos				//出力先描画情報配列
+			);
+		}
+		else
+		{//それ以外のメッシュの場合
+			//描画情報構造体配列をそのまま提出用配列にコピー
+			for (auto& i : info)
+			{
+				submitInfos.push_back(i);
+			}
+
+			//ワールド行列と色を設定
+			for(auto& i : submitInfos)
+			{
+				i.world = object.GetWorldMatrix();
+				i.color = object.GetColor();
+			}
+		}
+
+		//描画要求をシーンに提出
+		for (auto& i : submitInfos)
+		{
+			renderer.Submit(i);
+		}
+
+	}
+}
+
+//コライダー描画要求をシーンに提出
+void ObjectManagerBase::SubmitColliders(CollisionManager& collisionManager, Collider* pCollider)
+{
+	collisionManager.RegisterCollider(pCollider);
+}

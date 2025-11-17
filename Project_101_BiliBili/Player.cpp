@@ -65,12 +65,12 @@ void Player::Rotate()
 	if(m_pInputInfo->left.down)
 	{
 		//ç∂âÒì]
-		m_rotation.y -= ROTATE_SPEED;
+		m_rotation.z -= ROTATE_SPEED;
 	}
 	if(m_pInputInfo->right.down)
 	{
 		//âEâÒì]
-		m_rotation.y += ROTATE_SPEED;
+		m_rotation.z += ROTATE_SPEED;
 	}
 }
 
@@ -80,15 +80,15 @@ void Player::Scale()
 	if (m_pInputInfo->up.down)
 	{
 		//ägëÂ
-		m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
+		//m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
 		m_scale.y = (std::min)(m_scale.y + 0.008f, 5.0f);
-		m_scale.z = (std::min)(m_scale.z + 0.008f, 5.0f);
+		//m_scale.z = (std::min)(m_scale.z + 0.008f, 5.0f);
 	}
 	if (m_pInputInfo->down.down)
 	{
 		//èkè¨
-		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
+		//m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
 		m_scale.y = (std::max)(m_scale.y - 0.008f, 0.005f);
-		m_scale.z = (std::max)(m_scale.z - 0.008f, 0.005f);
+		//m_scale.z = (std::max)(m_scale.z - 0.008f, 0.005f);
 	}
 }

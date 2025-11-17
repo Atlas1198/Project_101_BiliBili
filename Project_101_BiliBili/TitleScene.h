@@ -1,7 +1,7 @@
 #pragma once
 #include "SceneBase.h"
-#include "GameObject.h"
-#include "GameObjectManager.h"
+#include "ObjectBase.h"
+#include "ObjectManagerBase.h"
 
 //前方宣言
 class Renderer;
@@ -24,8 +24,8 @@ public:	//公開関数
 	) override;
 	void UpdateOverride() override;						//更新
 	void ResolveCollisions() override {};				//衝突後処理
-	void DrawOverride(Renderer& pRenderer) override;		//描画
-	void Finalize() override;							//終了
+	void DrawOverride(Renderer& pRenderer) override;	//描画
+	void FinalizeOverride() override;					//終了
 
 	//ゲッター
 	CameraInfo* GetCameraInfo() const;			//カメラ情報取得
