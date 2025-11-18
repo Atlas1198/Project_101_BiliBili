@@ -3,16 +3,241 @@
 #include <mmsystem.h>
 #include <tchar.h>
 #include "Keyboard.h"
+#include "resource.h"
+#include <commctrl.h>
+#include <commdlg.h>
 
 #pragma comment(lib, "winmm.lib")
 
-// RAY TRACING
+int SetSliderRange(HWND hwndTrack, int iMin, int iMax, int iPos);
+BOOL SaveTextFile(std::string text, LPCTSTR pszFileName);
+std::string CreateParameterString(const ToolbarControl &toolbar);
+
+struct ParamUI
+{
+	std::string name;
+	ToolParameter *param;
+	HWND hLabel;
+	HWND hSlider;
+	HWND hValue;
+	int min;
+	int max;
+};
+
+LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+	App *app = App::GetInstance();
+
+	switch (Message)
+	{
+	case WM_INITDIALOG:
+	{
+		// Allocate vector of ParamUI and store on dialog window data
+		auto params = new std::vector<ParamUI>();
+
+		// Layout configuration
+		const int marginX = 8;
+		const int marginY = 8;
+		const int labelW = 120;
+		//const int sliderW = 240;
+		const int sliderW = 360;
+		const int valueW = 80;
+		//const int controlH = 22;
+		const int controlH = 40;
+		const int spacingY = 8;
+
+		// Prepare the parameters to display.
+		// Add entries here for each parameter you want to expose in the dialog.
+		// Example entry: Move Speed
+		params->push_back(
+			ParamUI{
+				"移動スピード",
+				&app->toolbar.speed,
+				NULL,
+				NULL,
+				NULL,
+				app->toolbar.speed.min,
+				app->toolbar.speed.max
+			}
+		);
+
+		// More parameters can be appended in future:
+		// params->push_back(ParamUI{ "Another Param", &app->toolbar.other, NULL, NULL, NULL, other.min, other.max });
+
+		// Create actual controls
+		HINSTANCE hInst = GetModuleHandle(NULL);
+
+		for (size_t i = 0; i < params->size(); ++i)
+		{
+			int y = marginY + static_cast<int>(i) * (controlH + spacingY);
+
+			// Label
+			params->at(i).hLabel = CreateWindowEx(
+				0, "STATIC", params->at(i).name.c_str(),
+				WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE,
+				marginX, y, labelW, controlH,
+				hwnd, (HMENU)(INT_PTR)(1000 + (int)i * 3 + 0), hInst, NULL);
+
+			// Slider (trackbar)
+			params->at(i).hSlider = CreateWindowEx(
+				0, TRACKBAR_CLASS, NULL,
+				WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS | TBS_ENABLESELRANGE,
+				marginX + labelW + 8, y, sliderW, controlH,
+				hwnd, (HMENU)(INT_PTR)(1000 + (int)i * 3 + 1), hInst, NULL);
+
+			// Value static
+			char buf[64];
+			snprintf(buf, sizeof(buf), "%f", params->at(i).param->GetValue());
+			params->at(i).hValue = CreateWindowEx(
+				0, "STATIC", buf,
+				WS_CHILD | WS_VISIBLE | SS_RIGHT | SS_CENTERIMAGE,
+				marginX + labelW + 8 + sliderW + 8, y, valueW, controlH,
+				hwnd, (HMENU)(INT_PTR)(1000 + (int)i * 3 + 2), hInst, NULL);
+
+			// Configure slider range and initial position
+			SetSliderRange(
+				params->at(i).hSlider,
+				params->at(i).min,
+				params->at(i).max,
+				params->at(i).param->GetIntValue()
+			);
+		}
+
+		// Save params vector pointer on window for later use
+		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)params);
+
+		return TRUE;
+	}
+	case WM_HSCROLL:
+	{
+		HWND hwndScrollBar = (HWND)lParam;
+		// If lParam is NULL the message may come from keyboard; try to handle only real slider messages
+		if (hwndScrollBar == NULL)
+			break;
+
+		auto params = reinterpret_cast<std::vector<ParamUI>*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		if (params)
+		{
+			for (auto &p : *params)
+			{
+				if (p.hSlider == hwndScrollBar)
+				{
+					int iPos = (int)SendMessage(hwndScrollBar, TBM_GETPOS, 0, 0);
+					// Update parameter
+					p.param->SetValue(iPos);
+
+					// Update value text
+					std::string s = std::to_string(p.param->GetValue());
+					SetWindowText(p.hValue, s.c_str());
+
+					// If the slider that came from the resource (IDC_SLIDER1) was used elsewhere in code,
+					// keep compatibility by updating the original control text as well:
+					// (optional - uncomment if needed)
+					// if (GetDlgItem(app->toolbar.hToolbar, IDC_SLIDER1) == hwndScrollBar) {
+					//     SetDlgItemText(app->toolbar.hToolbar, IDC_STATIC1, std::to_string(app->toolbar.speed.GetValue()).c_str());
+					// }
+
+					if (LOWORD(wParam) == SB_THUMBPOSITION) {
+						// Thumb released -- apply immediate effects here if needed
+					}
+					break;
+				}
+			}
+		}
+		break;
+	}
+	case WM_COMMAND:
+	{
+		if (LOWORD(wParam) == IDC_BUTTON1)
+		{
+			OPENFILENAME ofn;
+			char szFileName[MAX_PATH] = "パラメーター";
+
+			ZeroMemory(&ofn, sizeof(ofn));
+
+			ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
+			ofn.hwndOwner = hwnd;
+			ofn.lpstrFilter = "Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+			ofn.lpstrFile = szFileName;
+			ofn.nMaxFile = MAX_PATH;
+			ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY;
+			ofn.lpstrDefExt = "txt";
+
+			if (GetOpenFileName(&ofn))
+			{
+				SaveTextFile(CreateParameterString(app->toolbar), szFileName);
+			}
+		}
+		break;
+	}
+	case WM_LBUTTONDOWN: {
+		app->toolbar.mousedown = true;
+		GetCursorPos(&app->toolbar.lastLocation);
+		RECT rect;
+		GetWindowRect(hwnd, &rect);
+		app->toolbar.lastLocation.x = app->toolbar.lastLocation.x - rect.left;
+		app->toolbar.lastLocation.y = app->toolbar.lastLocation.y - rect.top;
+		break;
+	}
+	case WM_LBUTTONUP: {
+		app->toolbar.mousedown = false;
+		break;
+	}
+	case WM_MOUSEMOVE: {
+		if (app->toolbar.mousedown) {
+			POINT currentpos;
+			GetCursorPos(&currentpos);
+			RECT rect;
+			GetWindowRect(hwnd, &rect);
+			int x = currentpos.x - app->toolbar.lastLocation.x;
+			int y = currentpos.y - app->toolbar.lastLocation.y;
+			MoveWindow(hwnd, x, y, rect.right - rect.left, rect.bottom - rect.top, false);
+		}
+		break;
+	}
+	case WM_DESTROY:
+	{
+		// Clean up allocated params vector
+		auto params = reinterpret_cast<std::vector<ParamUI>*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		if (params)
+		{
+			delete params;
+			SetWindowLongPtr(hwnd, GWLP_USERDATA, 0);
+		}
+		return FALSE;
+	}
+	default:
+		return FALSE;
+	}
+	return TRUE;
+}
 
 //ウィンドウプロシージャ
 LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
+	case WM_CREATE:
+		App::GetInstance()->toolbar.hToolbar = CreateDialog(
+			GetModuleHandle(NULL),
+			MAKEINTRESOURCE(IDD_DIALOG1),
+			hwnd,               // owner = main window
+			ToolDlgProc);
+
+		// Ensure the dialog is not "always on top" of all windows.
+		if (App::GetInstance()->toolbar.hToolbar)
+		{
+			// Make sure it's owned by main window (redundant if hwnd passed above, but harmless)
+			SetWindowLongPtr(App::GetInstance()->toolbar.hToolbar, GWLP_HWNDPARENT, (LONG_PTR)hwnd);
+
+			// Remove TOPMOST if it was set by resource or elsewhere
+			SetWindowPos(
+				App::GetInstance()->toolbar.hToolbar,
+				HWND_NOTOPMOST,
+				0, 0, 0, 0,
+				SWP_NOMOVE | SWP_NOSIZE);
+		}
+		break;
 	case WM_ACTIVATEAPP:	//アクティブウィンドウが切り替わった
 	case WM_SYSKEYDOWN:		//システムキーが押された
 	case WM_KEYUP:			//キーが離された
@@ -92,6 +317,9 @@ void App::Run()
 		MB_ICONQUESTION | MB_YESNO
 	);
 
+
+	UpdateParameters();
+
 	if (msgboxID == IDYES)
 	{
 		isOnline = true;
@@ -110,6 +338,11 @@ void App::Run()
 			players.emplace(newDesc.uniqueID, newDesc);
 
 			m_pSceneManager->AddPlayer(newDesc.uniqueID);
+		}
+
+		if (toolbar.hToolbar != NULL)
+		{
+			ShowWindow(toolbar.hToolbar, SW_SHOW);
 		}
 	}
 
@@ -146,6 +379,8 @@ void App::Run()
 				);
 				SetWindowText(hwnd, debugStr);	//ウィンドウタイトルの設定
 #endif
+				UpdateParameters();
+
 				ReadMessages();
 				//更新処理
 				Update();	//更新
@@ -456,4 +691,59 @@ void App::WriteMessages()
 		}
 		*/
 	}
+}
+
+void App::UpdateParameters()
+{
+	Player::MOVE_SPEED = toolbar.speed.GetValue();
+}
+
+int SetSliderRange(HWND hwndTrack, int iMin, int iMax, int iPos) {
+	SendMessage(hwndTrack, TBM_SETRANGE,
+		(WPARAM)TRUE, // redraw flag
+		(LPARAM)MAKELONG(iMin, iMax)); // min. & max. positions
+	SendMessage(hwndTrack, TBM_SETSEL,
+		(WPARAM)FALSE, // redraw flag
+		(LPARAM)MAKELONG(iMin, iMax));
+	SendMessage(hwndTrack, TBM_SETPAGESIZE,
+		0, (LPARAM)(iMax - iMin) / 10); // new page size
+		SendMessage(hwndTrack, TBM_SETPOS,
+			(WPARAM)TRUE, // redraw flag
+			(LPARAM)iPos);
+
+	SetFocus(hwndTrack);
+	return 1;
+}
+
+BOOL SaveTextFile(std::string text, LPCTSTR pszFileName)
+{
+	HANDLE hFile;
+	BOOL bSuccess = FALSE;
+
+	hFile = CreateFile(pszFileName, GENERIC_WRITE, 0, NULL,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		DWORD dwWritten;
+
+		if (WriteFile(hFile, text.c_str(), text.size(), &dwWritten, NULL))
+			bSuccess = TRUE;
+		CloseHandle(hFile);
+	}
+	return bSuccess;
+}
+
+std::string CreateParameterString(const ToolbarControl& toolbar)
+{
+	std::string paramStr = "";
+
+	auto params = reinterpret_cast<std::vector<ParamUI>*>(GetWindowLongPtr(toolbar.hToolbar, GWLP_USERDATA));
+	if (params)
+	{
+		for (auto &p : *params)
+		{
+			paramStr += p.name + ": " + std::to_string(p.param->GetValue()) + "\n";
+		}
+	}
+	return paramStr;
 }

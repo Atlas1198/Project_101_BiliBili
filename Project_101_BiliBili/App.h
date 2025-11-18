@@ -3,7 +3,7 @@
 #include <sdkddkver.h>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#define STRICT
+//#define STRICT
 #include <windows.h>
 #include "Engine.h"
 #include "Renderer.h"
@@ -13,6 +13,7 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "netcommon.h"
+#include "ToolbarControl.h"
 
 //アプリケーションクラス
 class App : public olc::net::client_interface<GameMsg>
@@ -55,6 +56,7 @@ private:
 	void InitInstance();	//インスタンス初期化
 	void ReadMessages();
 	void WriteMessages();
+	void UpdateParameters();
 	void Update();			//更新
 	void Draw();			//描画
 
@@ -66,14 +68,10 @@ public:
 	bool isOnline = false;
 
 private:
-	/*
-	bool isDesigner = false;
-	bool waitingToOpenTool = false;
-	bool requestingDesignerRights = false;
-	*/
-
 	int playerCount = 0;
-
 	bool inLobby = true;
 	bool waitingForConnection = true;
+
+public:
+	ToolbarControl toolbar;
 };
