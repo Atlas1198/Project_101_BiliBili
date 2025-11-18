@@ -16,6 +16,14 @@ struct InputInfo
 	KeyInputState a;
 	KeyInputState s;
 	KeyInputState d;
+	KeyInputState t;
+	KeyInputState f;
+	KeyInputState g;
+	KeyInputState h;
+	KeyInputState i;
+	KeyInputState j;
+	KeyInputState k;
+	KeyInputState l;
 	KeyInputState up;
 	KeyInputState down;
 	KeyInputState left;
