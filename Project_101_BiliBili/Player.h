@@ -6,7 +6,7 @@
 class Player : public ObjectBase
 {
 public:	//公開定数
-	static constexpr float MOVE_SPEED = 0.2f;	//移動速度
+	inline static float MOVE_SPEED;	//移動速度
 	static constexpr float ROTATE_SPEED = 3.0f;	//回転速度
 	uint32_t id;								//ID
 
