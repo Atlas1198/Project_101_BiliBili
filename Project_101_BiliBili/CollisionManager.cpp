@@ -737,7 +737,113 @@ void CollisionManager::CollisionBoxToSphere(
 {
 	OBB obb = CreateOBB(box);	//ボックスコライダーからOBB作成
 
+	//OBB情報
+	XMFLOAT3 boxCenter;		//OBBの中心点
+	XMFLOAT3 boxHalfSizes;	//OBBの各軸方向の半分のサイズ
+	XMVECTOR boxAxis[3];	//OBBの各軸の方向ベクトル
 
+	//球情報
+	XMFLOAT3 sphereCenter;	//球の中心点
+	float sphereRadius;		//球の半径
+
+	//OBB情報の取得
+	XMStoreFloat3(&boxCenter, obb.center);	//OBBの中心点取得
+	boxHalfSizes = obb.halfSizes;			//OBBの各軸方向の半分のサイズ取得
+	for (int i = 0; i < 3; ++i)				//OBBの各軸の方向ベクトル取得
+	{
+		boxAxis[i] = obb.axis[i];
+	}
+
+	//球情報の取得
+	sphereCenter = sphere->GetSphereCollider().center;	//球の中心点取得
+	sphereRadius = sphere->GetSphereCollider().radius;	//球の半径取得
+
+	//球の中心点をOBBのローカル座標系で表現
+	XMVECTOR boxCenterV = XMLoadFloat3(&boxCenter);			//OBBの中心点ベクトル
+	XMVECTOR sphereCenterV = XMLoadFloat3(&sphereCenter);	//球の中心点ベクトル
+
+	XMVECTOR d = XMVectorSubtract(sphereCenterV, boxCenterV); //OBBの中心点から球の中心点へのベクトル
+
+	float localX = XMVectorGetX(XMVector3Dot(d, boxAxis[0])); //OBBのローカルX座標
+	float localY = XMVectorGetX(XMVector3Dot(d, boxAxis[1])); //OBBのローカルY座標
+	float localZ = XMVectorGetX(XMVector3Dot(d, boxAxis[2])); //OBBのローカルZ座標
+
+	//最も近い点をOBBのローカル座標系で計算
+	float closestX = (std::max)(-boxHalfSizes.x, (std::min)(boxHalfSizes.x, localX));
+	float closestY = (std::max)(-boxHalfSizes.y, (std::min)(boxHalfSizes.y, localY));
+	float closestZ = (std::max)(-boxHalfSizes.z, (std::min)(boxHalfSizes.z, localZ));
+
+	//最も近い点と球の中心点の差ベクトルを計算
+	float diffX = closestX - localX; //最も近い点と球の中心点のX成分の差
+	float diffY = closestY - localY; //最も近い点と球の中心点のY成分の差
+	float diffZ = closestZ - localZ; //最も近い点と球の中心点のZ成分の差
+
+	//最短距離の二乗を計算
+	float distSq = diffX * diffX + diffY * diffY + diffZ * diffZ;
+	float radiusSq = sphereRadius * sphereRadius; //球の半径の二乗
+
+	//衝突検知
+	if (distSq > radiusSq) return; //衝突なし
+
+	//最も近い点をワールド座標系で計算
+	XMVECTOR closestWorld; //最も近い点のワールド座標系での位置ベクトル
+	closestWorld = XMVectorAdd(
+		boxCenterV,
+		XMVectorAdd(
+			XMVectorScale(boxAxis[0], closestX),
+			XMVectorAdd(
+				XMVectorScale(boxAxis[1], closestY),
+				XMVectorScale(boxAxis[2], closestZ)
+			)
+		)
+	);
+
+	//法線ベクトルの計算
+	const float epsilon = 0.0001f;						//微小値
+	float dist = sqrtf((std::max)(distSq, epsilon));	//最短距離
+
+	XMVECTOR normal; //法線ベクトル
+
+	if (dist > epsilon)
+	{//法線ベクトル計算
+		normal = XMVectorScale(
+			XMVectorSubtract(sphereCenterV, closestWorld),
+			1.0f / dist
+		);
+	}
+	else
+	{//最短距離が極端に小さい場合
+		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //適当な法線ベクトル
+	}
+
+	XMFLOAT3 normalF;						//法線ベクトル格納用
+	XMFLOAT3 contactP;						//衝突点格納用
+	XMStoreFloat3(&normalF, normal);		//法線ベクトルを格納
+	XMStoreFloat3(&contactP, closestWorld); //衝突点を格納
+
+	//衝突検知フラグON
+	box->SetDetected(true);
+	sphere->SetDetected(true);
+
+	//衝突情報の作成
+	CollisionInfo infoBox;								//衝突情報
+	infoBox.opponent = sphere;							//衝突相手のコライダー
+	infoBox.contactPoint = contactP;					//衝突点(簡易的に両者の中心点の中間とする)
+	infoBox.contactNormal = normalF;					//法線は省略(必要に応じて計算を追加する)
+	infoBox.penetrationDepth = { 0.0f, 0.0f, 0.0f };	//貫入深さは省略(必要に応じて計算を追加する)
+	box->AddCollisionInfo(infoBox);	//衝突情報を追加
+
+	CollisionInfo infoSphere;						//衝突情報
+	infoSphere.opponent = box;						//衝突相手のコライダー
+	infoSphere.contactPoint = contactP;				//衝突点(簡易的に両者の中心点の中間とする)
+	infoSphere.contactNormal =						//法線反転
+	{
+		-normalF.x,
+		-normalF.y,
+		-normalF.z
+	};
+	infoSphere.penetrationDepth = { 0.0f, 0.0f, 0.0f };	//貫入深さは省略
+	sphere->AddCollisionInfo(infoSphere);	//衝突情報を追加
 }
 
 //ボックスとカプセルの衝突判定
