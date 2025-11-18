@@ -81,12 +81,14 @@ public:
 	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
 	const std::vector<CollisionInfo>& GetCollisionInfos() const;	//衝突情報配列取得
 	const bool isDetected() const;									//衝突検知フラグ取得
+	const bool deleteFlag() const;									//デリートフラグ
 	DirectX::XMFLOAT3 GetCenter() const;							//中心座標取得
 	DirectX::XMFLOAT3 GetScale() const;								//サイズ取得
 	DirectX::XMFLOAT3 GetRotation() const;							//回転取得
 
 	//セッター
-	void setDetected(bool flag);	//衝突検知フラグ設定
+	void SetDetected(bool flag);	//衝突検知フラグ
+	void SetDeleteFlag(bool flag);	//デリートフラグ
 
 private:
 	ObjectBase* m_pOwner = nullptr;	//所有者オブジェクト
@@ -109,6 +111,8 @@ private:
 	std::vector<CollisionInfo> m_collisionInfos; //衝突情報配列(所有者オブジェクト用)
 
 	bool m_isDetected = false; //衝突検知フラグ（描画用）
+
+	bool m_deleteFlag = false;	//デリートフラグ
 
 private:
 	//コライダー生成関数

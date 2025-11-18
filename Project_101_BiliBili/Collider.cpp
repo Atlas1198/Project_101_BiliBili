@@ -128,6 +128,12 @@ const bool Collider::isDetected() const
 	return m_isDetected;
 }
 
+//デリートフラグ
+const bool Collider::deleteFlag() const
+{
+	return m_deleteFlag;
+}
+
 //中心座標取得
 DirectX::XMFLOAT3 Collider::GetCenter() const
 {
@@ -147,9 +153,15 @@ DirectX::XMFLOAT3 Collider::GetRotation() const
 }
 
 //衝突検知フラグ設定
-void Collider::setDetected(bool flag)
+void Collider::SetDetected(bool flag)
 {
 	m_isDetected = flag;
+}
+
+//デリートフラグ設定
+void Collider::SetDeleteFlag(bool flag)
+{
+	m_deleteFlag = flag;
 }
 
 //コライダー生成関数

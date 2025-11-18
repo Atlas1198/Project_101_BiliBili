@@ -68,12 +68,19 @@ void CollisionManager::Draw(Renderer& renderer)
 //nullptrになっているコライダーをリストから削除
 void CollisionManager::CheckColliders()
 {
-	//nullptrになっているコライダーをリストから削除
-	std::remove_if(
-		m_pCollidersList.begin(),
-		m_pCollidersList.end(),
-		[](Collider* collider) { return collider == nullptr; }
-	);
+	for (auto it = m_pCollidersList.begin(); it != m_pCollidersList.end();)
+	{
+		Collider* c = *it;
+		if (c->deleteFlag())
+		{
+			it = m_pCollidersList.erase(it);
+			delete c;
+		}
+		else
+		{
+			it++;
+		}
+	}
 }
 
 //描画要求をシーンに提出
@@ -157,7 +164,7 @@ void CollisionManager::CheckCollisions()
 		//各コライダーの衝突情報クリア
 		collider->GetOwner()->ClearCollisionInfos();
 		//衝突検知フラグOFF
-		collider->setDetected(false);
+		collider->SetDetected(false);
 	}
 
 	//ブロードフェーズ
@@ -550,8 +557,8 @@ void CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider* collider
 
 	//ここまで来たら衝突検知
 	//衝突検知フラグON
-	colliderA->setDetected(true);
-	colliderB->setDetected(true);
+	colliderA->SetDetected(true);
+	colliderB->SetDetected(true);
 
 	//衝突情報の作成
 	CollisionInfo infoA;							//衝突情報
@@ -604,8 +611,8 @@ void CollisionManager::CollisionSphereToSphere(
 	if (!(dist <= radiusSum)) return;
 
 	//衝突検知フラグON
-	colliderA->setDetected(true);
-	colliderB->setDetected(true);
+	colliderA->SetDetected(true);
+	colliderB->SetDetected(true);
 
 	//衝突情報の作成
 	CollisionInfo infoA;							//衝突情報
@@ -700,8 +707,8 @@ void CollisionManager::CollisionCapsuleToCapsule(
 	XMStoreFloat3(&normalF, normal);	//法線ベクトル
 
 	//衝突検知フラグON
-	colliderA->setDetected(true);
-	colliderB->setDetected(true);
+	colliderA->SetDetected(true);
+	colliderB->SetDetected(true);
 
 	//衝突情報の作成
 	CollisionInfo infoA;				//衝突情報

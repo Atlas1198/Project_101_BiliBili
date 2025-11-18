@@ -10,13 +10,14 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 	m_pGameScene = new GameScene(windowWidth, windowHeight);	//ゲームシーンクラスの生成
 	m_pTitleScene = new TitleScene(windowWidth, windowHeight);	//タイトルシーンクラスの生成
 
-	m_pCurrentScene = m_pTitleScene;	//最初のシーンをゲームシーンに設定
+	m_pCurrentScene = m_pTitleScene;	//最初のシーンをタイトルシーンに設定
 }
 
 //デストラクタ
 SceneManager::~SceneManager()
 {
 	delete m_pGameScene;
+	delete m_pTitleScene;
 }
 
 //初期化

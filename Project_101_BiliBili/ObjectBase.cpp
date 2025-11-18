@@ -37,9 +37,9 @@ ObjectBase::ObjectBase(
 ObjectBase::~ObjectBase()
 {
 	//コライダーの破棄
-	if (m_pCollider != nullptr)
+	if (m_pCollider)
 	{
-		delete m_pCollider;
+		m_pCollider->SetDeleteFlag(true);
 		m_pCollider = nullptr;
 	}
 }
