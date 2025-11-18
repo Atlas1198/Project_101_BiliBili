@@ -50,10 +50,6 @@ public:
 	//ゲッター
 	Player* GetPlayer() const; // プレイヤーオブジェクトを取得
 
-private:	//非公開メンバ変数
-	std::vector<Player*> m_pPlayer = std::vector<Player*>(PLAYER_NUM);	//プレイヤーオブジェクト配列
-	std::vector<RenderData::RenderInfo> m_playerInfo;					//プレイヤー描画情報
-
 private:	//非公開関数
 	void PrepareRenderInfo(	//プレイヤー描画情報生成
 		TextureManager& textureManager,
