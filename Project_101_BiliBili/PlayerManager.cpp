@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "TextureManager.h"
 #include "Collider.h"
+#include "App.h"
 
 using namespace DirectX;
 using namespace RenderData;
@@ -28,41 +29,66 @@ void PlayerManager::InitializeOverride(
 	CollisionManager& collisionManager	//衝突管理クラスの参照
 )
 {
-	//プレイヤーオブジェクトの生成と初期化
-	for (int i = 0; i < PLAYER_NUM; i++)
-	{
-		//プレイヤーオブジェクトの生成
-		m_pPlayer[i] = new Player
+	//プレイヤー描画情報生成
+	PrepareRenderInfo(textureManager, meshManager);
+}
+
+void PlayerManager::AddPlayer(
+	uint32_t id,						//ID
+	InputManager *pInputManager,		//入力マネージャーのポインタ
+	CollisionManager &collisionManager	//衝突管理クラスの参照
+)
+{
+	Vec3 spawnPos = App::GetInstance()->spawnPos;
+
+	//プレイヤーオブジェクトの生成
+	m_pPlayer.push_back(
+		new Player
 		(
-			MESH_TYPE::QUAD,			//メッシュタイプ
-			XMFLOAT3(i* 5.0f - 5.0f, 0.0f, 0.0f),	//位置
+			XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(2.0f, 2.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+			id,						//自分ですか
 			true,						//アクティブフラグ
-			ColliderType::SPHERE,		//コライダータイプ
-			XMFLOAT3(2.0f, 2.0f, 2.0f),	//コライダーのボックスサイズ
+			ColliderType::BOX,		//コライダータイプ
+			XMFLOAT3(2.0f, 2.0f, 2.0f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
-		);
+		)
+	);
 
-		//プレイヤーオブジェクトの初期化
-		m_pPlayer[i]->Initialize(pInputManager);	//入力情報構造体の取得
+	uint32_t selfID = App::GetInstance()->descPlayer.uniqueID;
 
-		//コライダー情報をシーンに提出
-		SubmitColliders(collisionManager, m_pPlayer[i]->GetCollider());
+	//プレイヤーオブジェクトの初期化
+	if (id == selfID)
+	{
+		m_pPlayer.back()->Initialize(pInputManager); //入力情報構造体の取得
+	}
+
+	//コライダー情報をシーンに提出
+	SubmitColliders(collisionManager, m_pPlayer.back()->GetCollider());
+}
+
+void PlayerManager::RemovePlayer(uint32_t id)
+{
+	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
+	{
+		if ((*it)->id == id)
+		{
+			delete *it;
+			m_pPlayer.erase(it);
+			break;
+		}
 	}
 }
 
 //更新
 void PlayerManager::Update()
 {
-	////プレイヤーオブジェクトの更新
-	//for (int i = 0; i < PLAYER_NUM; i++)
-	//{
-	//	m_pPlayer[i]->Update();
-	//}
-
-	m_pPlayer[0]->Update();
+	for (auto player : m_pPlayer)
+	{
+		player->Update();
+	}
 }
 
 //衝突後処理

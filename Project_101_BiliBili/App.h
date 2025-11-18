@@ -1,7 +1,9 @@
 #pragma once
-#ifndef NOMINMAX
+#define _WIN32_WINNT 0x0A00
+#include <sdkddkver.h>
+#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#endif
+#define STRICT
 #include <windows.h>
 #include "Engine.h"
 #include "Renderer.h"
@@ -10,9 +12,10 @@
 #include "InputManager.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
+#include "netcommon.h"
 
 //アプリケーションクラス
-class App
+class App : public olc::net::client_interface<GameMsg>
 {
 public:
 	static constexpr int WINDOW_WIDTH = 1920;	//ウィンドウの幅
@@ -43,12 +46,33 @@ public:
 	bool Initialize();	//初期化
 	void Run();			//実行
 	void Terminate();	//終了
+	bool Login();
 
 private:
 	void CreateMainWindow(HWND& hwnd, WNDCLASSEX& wc);	//メインウィンドウの生成
 	void PrepareInstance();								//インスタンス準備
 
 	void InitInstance();	//インスタンス初期化
+	void ReadMessages();
+	void WriteMessages();
 	void Update();			//更新
 	void Draw();			//描画
+
+public:
+	float moveSpeed = 0.2f;
+	PlayerDescription descPlayer;
+	std::unordered_map<uint32_t, PlayerDescription> players;
+	Vec3 spawnPos = { 0.0f, 0.0f, 0.0f };
+
+private:
+	/*
+	bool isDesigner = false;
+	bool waitingToOpenTool = false;
+	bool requestingDesignerRights = false;
+	*/
+
+	int playerCount = 0;
+
+	bool inLobby = true;
+	bool waitingForConnection = true;
 };

@@ -8,6 +8,8 @@ class Player : public ObjectBase
 public:	//公開定数
 	static constexpr float MOVE_SPEED = 0.2f;	//移動速度
 	static constexpr float ROTATE_SPEED = 3.0f;	//回転速度
+	uint32_t id;								//ID
+
 
 private:	//非公開メンバ変数
 	InputInfo* m_pInputInfo{};	//入力情報構造体
@@ -19,6 +21,9 @@ public:	//公開関数
 		DirectX::XMFLOAT3 rotation,				//回転
 		DirectX::XMFLOAT3 scale,				//スケール
 		DirectX::XMFLOAT3 velocity,				//移動速度
+
+		uint32_t id,							//ID
+
 		bool isActive = true,					//アクティブフラグ
 		ColliderType colliderType =				//コライダータイプ
 			ColliderType::BOX,
@@ -35,7 +40,8 @@ public:	//公開関数
 			isActive, 
 			colliderType, 
 			collisionBoxSize, 
-			collisionIsTrigger){}
+			collisionIsTrigger), 
+		id(id) {}
 	~Player() {}	//デストラクタ
 
 	//メイン処理関数

@@ -35,6 +35,16 @@ void GameScene::InitializeOverride(
 	);
 }
 
+void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
+{
+	m_pPlayerManager->AddPlayer(id, pInputManager, *m_pCollisionManager);
+}
+
+void GameScene::RemovePlayer(uint32_t id)
+{
+	m_pPlayerManager->RemovePlayer(id);
+}
+
 //XV
 void GameScene::UpdateOverride()
 {

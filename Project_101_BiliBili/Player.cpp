@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <DirectXMath.h>
+#include "App.h"
 
 using namespace DirectX;
 
@@ -12,9 +13,28 @@ void Player::Initialize(InputManager* pInputManager)
 //更新
 void Player::UpdateOverride()
 {
-	Move();		//移動
-	Rotate();	//回転
-	Scale();	//スケール
+	if (id == App::GetInstance()->descPlayer.uniqueID)
+	{
+		Move();		//移動
+		//Rotate();	//回転
+		//Scale();	//スケール
+
+		App::GetInstance()->descPlayer.pos = {m_position.x, m_position.y, m_position.z};
+		App::GetInstance()->players[id].pos = {m_position.x, m_position.y, m_position.z};
+	}
+	else
+	{
+		for (const auto &desc : App::GetInstance()->players)
+		{
+			if (desc.first == id)
+			{
+				m_position.x = desc.second.pos.x;
+				m_position.y = desc.second.pos.y;
+				m_position.z = desc.second.pos.z;
+			}
+		}
+	}
+	
 }
 
 //衝突解決
