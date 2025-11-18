@@ -45,11 +45,14 @@ void SceneBase::Update()
 	//カメラ更新
 	m_pCamera->Update();
 
+	//コライダー登録確認
+	m_pCollisionManager->CheckColliders();
+
 	//衝突管理クラス更新
-	//m_pCollisionManager->CheckCollisions();
+	m_pCollisionManager->CheckCollisions();
 
 	//衝突後処理
-	//ResolveCollisions();
+	ResolveCollisions();
 }
 
 //描画

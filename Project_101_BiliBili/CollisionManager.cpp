@@ -65,6 +65,17 @@ void CollisionManager::Draw(Renderer& renderer)
 	}
 }
 
+//nullptrになっているコライダーをリストから削除
+void CollisionManager::CheckColliders()
+{
+	//nullptrになっているコライダーをリストから削除
+	std::remove_if(
+		m_pCollidersList.begin(),
+		m_pCollidersList.end(),
+		[](Collider* collider) { return collider == nullptr; }
+	);
+}
+
 //描画要求をシーンに提出
 void CollisionManager::SubmitDraw(
 	Renderer& renderer,							//シーンの参照

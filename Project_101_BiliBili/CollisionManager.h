@@ -54,6 +54,7 @@ public:
 		MeshManager& meshManager		//メッシュ管理クラスの参照
 	);
 	void Draw(Renderer& renderer);		//描画
+	void CheckColliders();
 	void SubmitDraw(
 		Renderer& renderer,							//シーンの参照
 		Collider& collider,					//コライダー配列
