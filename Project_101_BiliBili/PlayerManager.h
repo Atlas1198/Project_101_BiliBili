@@ -15,7 +15,7 @@ class PlayerManager : public ObjectManagerBase
 public:
 	//static constexpr int PLAYER_NUM = 2; // プレイヤーの数
 	const wchar_t* modelFile = L"asset/fbx/Dragon 2.5_fbx.fbx";
-	const wchar_t* texPath = L"asset/texture/white.png";
+	const wchar_t* texPath = L"asset/texture/change_item.png";
 
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
