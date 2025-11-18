@@ -84,7 +84,34 @@ void App::Run()
 	dwCurrentTime = dwFrameCount = 0;				//初期化
 
 	players.clear();
-	if (!Login()) return;
+
+	int msgboxID = MessageBox(
+		NULL,
+		"オンラインモードに入りますか？",
+		"モード選択",
+		MB_ICONQUESTION | MB_YESNO
+	);
+
+	if (msgboxID == IDYES)
+	{
+		isOnline = true;
+		if (!Login()) return;
+	}
+	else
+	{
+		isOnline = false;
+
+		for (int i = 0; i < 4; i++)
+		{
+			PlayerDescription newDesc;
+			newDesc.uniqueID = static_cast<uint32_t>(i);
+			newDesc.ingameID = static_cast<uint32_t>(i);
+			newDesc.pos = spawnPos;
+			players.emplace(newDesc.uniqueID, newDesc);
+
+			m_pSceneManager->AddPlayer(newDesc.uniqueID);
+		}
+	}
 
 	do 
 	{
@@ -251,7 +278,7 @@ void App::InitInstance()
 //更新
 void App::Update()
 {
-	if (waitingForConnection) return;
+	if (isOnline && waitingForConnection) return;
 	//現在のバックバッファインデックスを取得
 	const UINT backIdx = m_pEngine->GetCurrentBufferIndex();
 
@@ -297,6 +324,7 @@ bool App::Login()
 
 void App::ReadMessages()
 {
+	if (!isOnline) return;
 	// Check for incoming network messages
 	if (IsConnected())
 	{
@@ -400,6 +428,7 @@ void App::ReadMessages()
 
 void App::WriteMessages()
 {
+	if (!isOnline) return;
 	// Send player description
 	if (!waitingForConnection)
 	{

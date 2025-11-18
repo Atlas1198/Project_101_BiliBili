@@ -58,11 +58,20 @@ void PlayerManager::AddPlayer(
 		)
 	);
 
-	uint32_t selfID = App::GetInstance()->descPlayer.uniqueID;
 
-	//プレイヤーオブジェクトの初期化
-	if (id == selfID)
+	if (App::GetInstance()->isOnline)
 	{
+		uint32_t selfID = App::GetInstance()->descPlayer.uniqueID;
+
+		//プレイヤーオブジェクトの初期化
+		if (id == selfID)
+		{
+			m_pPlayer.back()->Initialize(pInputManager); //入力情報構造体の取得
+		}
+	}
+	else
+	{
+		//プレイヤーオブジェクトの初期化
 		m_pPlayer.back()->Initialize(pInputManager); //入力情報構造体の取得
 	}
 
