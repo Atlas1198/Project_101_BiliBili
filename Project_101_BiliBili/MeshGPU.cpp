@@ -25,6 +25,17 @@ MeshGPU::MeshGPU(ID3D12Device* pDevice, MeshData::Mesh& src)
 	m_IndexCount = static_cast<UINT>(src.indexCount);
 	//プリミティブトポロジの設定
 	m_Topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+	//ソート用の半径を計算
+	float maxDistSq = 0.0f; //原点から頂点までの最大距離の二乗
+	for (size_t i = 0; i < src.vertexCount; i++)
+	{
+		//原点から最も遠い距離を保存
+		const auto& p = src.vertices[i].position;
+		float len2 = p.x * p.x + p.y * p.y + p.z * p.z;
+		maxDistSq = max(maxDistSq, len2);
+	}
+	m_sortRadius = sqrt(maxDistSq);
 }
 
 //デストラクタ

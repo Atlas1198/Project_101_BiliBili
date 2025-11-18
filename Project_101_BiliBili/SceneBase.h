@@ -34,7 +34,8 @@ public:	//公開関数
 	virtual void UpdateOverride() = 0;					//シーン固有の更新
 	void Draw(Renderer& pRenderer);						//描画
 	virtual void DrawOverride(Renderer& pRenderer) = 0;	//シーン固有の描画
-	virtual void Finalize() = 0;						//終了	
+	void Finalize();									//終了	
+	virtual void FinalizeOverride() {};					//シーン固有の終了
 	virtual void ResolveCollisions() = 0;				//衝突後処理
 
 	//ゲッター

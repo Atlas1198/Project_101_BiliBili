@@ -259,7 +259,7 @@ void App::Update()
 	m_pRenderer->BeginFrame(backIdx);	//フレーム開始（内部キューをクリア）
 	m_pInputManager->Update();			//入力管理クラスの更新
 	m_pSceneManager->Update();			//ゲームの更新
-	m_pRenderer->Update(backIdx);		//レンダラーの更新
+	m_pRenderer->Update(backIdx, *m_pSceneManager->GetCameraInfo());		//レンダラーの更新
 }
 
 //描画

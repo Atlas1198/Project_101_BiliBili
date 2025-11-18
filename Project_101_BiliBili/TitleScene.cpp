@@ -36,7 +36,7 @@ void TitleScene::DrawOverride(Renderer& pRenderer)
 }
 
 //èIóπ
-void TitleScene::Finalize()
+void TitleScene::FinalizeOverride()
 {
 	
 }

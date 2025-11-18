@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObjectManager.h"
+#include "ObjectManagerBase.h"
 #include "Player.h"
 #include "SharedStruct.h"
 
@@ -10,7 +10,7 @@ class TextureManager;
 class MeshManager;
 
 //プレイヤー管理クラス
-class PlayerManager : public GameObjectManager
+class PlayerManager : public ObjectManagerBase
 {
 public:
 	//static constexpr int PLAYER_NUM = 2; // プレイヤーの数
@@ -27,7 +27,7 @@ public:
 	~PlayerManager();	//デストラクタ
 
 	//メイン処理関数
-	void Initialize(	//初期化
+	void InitializeOverride(	//初期化
 		InputManager* pInputManager,		//入力マネージャーのポインタ
 		TextureManager& pTextureManager,	//テクスチャ管理クラスのポインタ
 		MeshManager& pMeshManager,			//メッシュ管理クラスのポインタ
@@ -45,12 +45,16 @@ public:
 	void ResolveCollisions() override;	//衝突後処理
 
 	//描画
-	void SubmitDraws(Renderer& renderer);	//描画要求をシーンに提出
+	void SubmitDraws(Renderer& renderer) override;	//描画要求をシーンに提出
 
 	//ゲッター
 	Player* GetPlayer() const; // プレイヤーオブジェクトを取得
 
-private:
+private:	//非公開メンバ変数
+	std::vector<Player*> m_pPlayer = std::vector<Player*>(PLAYER_NUM);	//プレイヤーオブジェクト配列
+	std::vector<RenderData::RenderInfo> m_playerInfo;					//プレイヤー描画情報
+
+private:	//非公開関数
 	void PrepareRenderInfo(	//プレイヤー描画情報生成
 		TextureManager& textureManager,
 		MeshManager& meshManager

@@ -20,6 +20,7 @@ public:
 	IndexBuffer* GetIndexBuffer() const { return m_pIndexBuffer; }		//インデックスバッファを返す
 	UINT GetIndexCount() const { return m_IndexCount; }					//インデックス数を返す
 	D3D12_PRIMITIVE_TOPOLOGY GetTopology() const { return m_Topology; }	//プリミティブトポロジを返す
+	float GetSortRadius() const { return m_sortRadius; }				//ソート用の半径を返す
 
 private:
 	VertexBuffer* m_pVertexBuffer = nullptr;	//頂点バッファ
@@ -27,4 +28,6 @@ private:
 	UINT m_IndexCount = 0;						//インデックス数
 	D3D12_PRIMITIVE_TOPOLOGY m_Topology = 
 		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;	//プリミティブトポロジ
+
+	float m_sortRadius = 0.0f;	//ソート用の半径
 };

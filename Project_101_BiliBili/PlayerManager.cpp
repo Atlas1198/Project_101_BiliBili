@@ -13,18 +13,20 @@ using namespace MeshData;
 PlayerManager::~PlayerManager()
 {
 	//プレイヤーオブジェクトの解放
-	for (Player* player : m_pPlayer)
+	for (auto& player : m_pPlayer)
 	{
 		delete player;
+		player = nullptr;
 	}
+	m_pPlayer.clear();
 }
 
 //初期化
-void PlayerManager::Initialize(
-	InputManager *pInputManager,		//入力マネージャーのポインタ
+void PlayerManager::InitializeOverride(
+	InputManager* pInputManager,		//入力マネージャーのポインタ
 	TextureManager& textureManager,		//テクスチャ管理クラスの参照
 	MeshManager& meshManager,			//メッシュ管理クラスの参照
-	CollisionManager &collisionManager	//衝突管理クラスの参照
+	CollisionManager& collisionManager	//衝突管理クラスの参照
 )
 {
 	//プレイヤー描画情報生成
@@ -110,7 +112,7 @@ void PlayerManager::SubmitDraws(Renderer& renderer)
 	for (auto& player : m_pPlayer)
 	{
 		//描画要求をシーンに提出
-		GameObjectManager::SubmitDraws(
+		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
 			*player,		//ゲームオブジェクト配列の参照
 			m_playerInfo	//プレイヤー描画情報
@@ -118,19 +120,19 @@ void PlayerManager::SubmitDraws(Renderer& renderer)
 	}
 }
 
-
 //プレイヤー描画情報生成
 void PlayerManager::PrepareRenderInfo(
 	TextureManager& textureManager,	//テクスチャ管理クラスの参照
 	MeshManager& meshManager		//メッシュ管理クラスの参照
 	)
 {
-	//デフォルトメッシュから描画情報を作成
-	CreateRenderInfoFromDefaultMesh(
-		textureManager,				//テクスチャ管理クラスの参照
-		meshManager,				//メッシュ管理クラスの参照
-		&m_playerInfo,				//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::CUBE,	//メッシュタイプ
-		texPath						//テクスチャのファイル名
+	//描画情報生成関数を呼び出し、描画情報を作成
+	CreteRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_playerInfo,					//描画情報構造体配列へのポインタ
+		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		texPath							//テクスチャのファイル名
 	);
 }

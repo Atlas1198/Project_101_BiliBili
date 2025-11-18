@@ -54,6 +54,38 @@ struct CameraInfo
 	float farZ;					//ファークリップ距離
 };
 
+//ブレンドモード列挙体
+enum BLEND_MODE
+{
+	BLEND_OPAQUE,		//不透明
+	BLEND_MASKED,		//マスク
+	BLEND_TRANSPARENT,	//透明
+	BLEND_MAX			//最大数
+};
+
+//描画情報用名前空間
+//MeshData内で使用するため分離
+
+//前方宣言
+class TextureManager;
+class MeshManager;
+class MeshGPU;
+
+namespace RenderData
+{
+	struct RenderInfo
+	{
+		MeshGPU* pMeshGPU = nullptr;			//メッシュGPUデータへのポインタ
+		DirectX::XMMATRIX world = {};			//ワールド行列
+		UINT startIndex = 0;					//開始インデックス
+		INT  baseVertex = 0;					//ベース頂点
+		uint32_t srvIndex = UINT32_MAX;			//SRVインデックス
+		DirectX::XMFLOAT4 color = { 1,1,1,1 };	//オブジェクトの色RGBA(デフォルトは白)
+		BLEND_MODE blendMode = BLEND_OPAQUE;	//ブレンドモード
+		DirectX::XMFLOAT3 positionW{};			//ワールド座標系の位置
+	};
+}
+
 //メッシュデータ用名前空間
 namespace MeshData
 {
@@ -67,16 +99,21 @@ namespace MeshData
 		std::wstring texPath;			//テクスチャのファイル名
 	};
 
+	//モデルデータ構造体
+	struct Model
+	{
+		std::vector<Mesh> meshes;	//メッシュデータ配列
+	};
+
 	//メッシュタイプ列挙体
 	enum MESH_TYPE
 	{
-		QUAD,				//四角平面
-		CUBE,				//立方体
-		SPHERE,				//球体
-		CAPSULE,			//カプセル
-		CYLINDER,			//円柱
-		HALF_SPHERE_TOP,	//半球
-		HALF_SPHERE_BOTTOM	//下半球
+		IMPORT,		//インポートモデル
+		QUAD,		//四角平面
+		CUBE,		//立方体
+		SPHERE,		//球体
+		CAPSULE,	//カプセル
+		CYLINDER,	//円柱
 	};
 
 	//=======================
@@ -99,31 +136,7 @@ namespace MeshData
 	};
 
 	//四角平面のメッシュデータ作成関数
-	inline Mesh MakeQuadMesh()
-	{
-		Mesh m;	//メッシュデータ構造体
-
-		//頂点データの設定
-		m.vertices.assign(
-			std::begin(QuadVertices),	//頂点データ配列の先頭アドレス
-			std::end(QuadVertices)		//頂点データ配列の終端アドレス
-		);
-
-		//インデックスデータの設定
-		m.indices.assign(
-			std::begin(QuadIndices),	//インデックスデータ配列の先頭アドレス
-			std::end(QuadIndices)		//インデックスデータ配列の終端アドレス
-		);
-
-		//頂点数の設定
-		m.vertexCount = m.vertices.size();
-
-		//インデックス数の設定
-		m.indexCount = m.indices.size();
-
-		return m;	//メッシュデータ構造体を返す
-	}
-
+	Model MakeQuadModel();
 
 	//=======================
 	//立方体
@@ -184,103 +197,80 @@ namespace MeshData
 	};
 
 	//立方体のメッシュデータ作成関数
-	inline Mesh MakeCubeMesh()
-	{
-		Mesh m;	//メッシュデータ構造体
-
-		//頂点データの設定
-		m.vertices.assign(
-			std::begin(CubeVertices),	//頂点データ配列の先頭アドレス
-			std::end(CubeVertices)		//頂点データ配列の終端アドレス
-		);
-
-		//インデックスデータの設定
-		m.indices.assign(
-			std::begin(CubeIndices),	//インデックスデータ配列の先頭アドレス
-			std::end(CubeIndices)		//インデックスデータ配列の終端アドレス
-		);
-
-		//頂点数の設定
-		m.vertexCount = m.vertices.size();
-
-		//インデックス数の設定
-		m.indexCount = m.indices.size();
-
-		return m;	//メッシュデータ構造体を返す
-	}	
+	Model MakeCubeModel();
 
 	//=======================
 	//球体
 	//=======================
 	//球体のメッシュデータ作成関数
-	Mesh MakeSphereMesh(int slice = 32, int stacks = 16);
+	Model MakeSphereModel(int slice = 32, int stacks = 16);
 
 	//=======================
 	//カプセル
 	//=======================
 	//カプセルのメッシュデータ作成関数
-	Mesh MakeCapsuleMesh(int slice = 32, int stacks = 16);
+	Model MakeCapsuleModel(int slice = 32, int stacks = 16);
+
+	//カプセルのビジュアル記述構造体
+	struct CapsuleVisualDesc
+	{
+		float baseRadius = 0.5f;		//底面半径
+		float basehalfHeight = 0.5f;	//半分の高さ
+	};
+
+	//カプセルの描画情報追加関数
+	void AppendCapsuleRenderInfos(
+		const CapsuleVisualDesc& desc,				//カプセル描画情報記述子
+		const DirectX::XMFLOAT3& position,			//位置
+		const DirectX::XMFLOAT3& scale,				//スケール
+		const DirectX::XMFLOAT3& rotEuler,			//回転Euler角
+		const DirectX::XMFLOAT4& color,				//色
+		std::vector<RenderData::RenderInfo>& infos,	//入力元描画情報配列
+		std::vector<RenderData::RenderInfo>& out	//出力先描画情報配列
+		);
 
 	//=======================
 	//円柱
 	//=======================
 	//円柱のメッシュデータ作成関数
-	Mesh MakeCylinderMesh(int slice = 32, int stacks = 16);
-
-	//=======================
-	//半球
-	//=======================
-	//半球のメッシュデータ作成関数
-	Mesh MakeHalfSphereMesh(bool top, int slice = 32, int stacks = 16);
+	Model MakeCylinderModel(int slice = 32, int stacks = 16);
 
 	//メッシュデータ取得関数
-	inline Mesh GetMesh(MESH_TYPE type)
+	inline Model GetModel(MESH_TYPE type)
 	{
 		//メッシュタイプに応じたメッシュデータを返す
 		switch (type) 
 		{
-		case QUAD: return MakeQuadMesh();		//四角平面
-		case CUBE: return MakeCubeMesh();		//立方体
-		case SPHERE: return MakeSphereMesh();	//球体
-		case CAPSULE: return MakeCapsuleMesh();	//カプセル
-		case CYLINDER: return {};				//円柱(未実装)
-		case HALF_SPHERE_TOP: return {};		//半球(未実装)
-		case HALF_SPHERE_BOTTOM: return {};		//下半球(未実装)
-		default:   return {};					//その他
+		case QUAD: return MakeQuadModel();			//四角平面
+		case CUBE: return MakeCubeModel();			//立方体
+		case SPHERE: return MakeSphereModel();		//球体
+		case CAPSULE: return MakeCapsuleModel();	//カプセル
+		case CYLINDER: return MakeCylinderModel();	//円柱
+		default:   return {};						//その他
 		}
 	}
 }
 
-//前方宣言
-class TextureManager;
-class MeshManager;
-class MeshGPU;
-
 namespace RenderData
 {
-	//描画情報構造体
-	struct RenderInfo
-	{
-		MeshGPU* pMeshGPU = nullptr;			//メッシュGPUデータへのポインタ
-		DirectX::XMMATRIX world = {};			//ワールド行列
-		UINT startIndex = 0;					//開始インデックス
-		INT  baseVertex = 0;					//ベース頂点
-		uint32_t srvIndex = UINT32_MAX;			//SRVインデックス
-		DirectX::XMFLOAT4 color = { 1,1,1,1 };	//オブジェクトの色RGBA(デフォルトは白)
-	};
-
-	//メッシュデータから描画情報を構築する関数
-	RenderInfo CreateRenderInfo(
-		TextureManager& textureManager,
-		MeshManager& meshManager,
-		MeshData::Mesh& mesh
+	//モデルデータ又はテクスチャファイルから描画情報を作成する関数
+	void CreteRenderInfo(
+		TextureManager& textureManager,	//テクスチャマネージャへの参照
+		MeshManager& meshManager,		//メッシュマネージャへの参照
+		std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+		MeshData::MESH_TYPE type,		//メッシュタイプ
+		BLEND_MODE mode,				//ブレンドモード
+		const wchar_t* path,			//モデルデータ又はテクスチャファイルのパス
+		bool inverseU = false,			//Uを反転するかどうか(モデルデータの場合のみ有効)
+		bool inverseV = false			//Vを反転するかどうか(モデルデータの場合のみ有効)
 	);
 
 	//FBXファイルから描画情報を作成する関数
 	void CreateRenderInfoFromFBX(
 		TextureManager& textureManager,	//テクスチャマネージャへの参照
-		MeshManager& meshManager,			//メッシュマネージャへの参照
+		MeshManager& meshManager,		//メッシュマネージャへの参照
 		std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+		BLEND_MODE mode,				//ブレンドモード
 		const wchar_t* path,			//モデルファイルのパス
 		bool inverseU = false,			//Uを反転するかどうか
 		bool inverseV = false			//Vを反転するかどうか
@@ -292,7 +282,16 @@ namespace RenderData
 		MeshManager& meshManager,			//メッシュマネージャへの参照
 		std::vector<RenderInfo>* pInfo,		//描画情報構造体配列へのポインタ
 		MeshData::MESH_TYPE type,			//メッシュタイプ
-		const wchar_t* path = L""			//テクスチャのファイル名
+		BLEND_MODE mode,					//ブレンドモード
+		const wchar_t* path					//テクスチャのファイル名
+	);
+
+	//メッシュデータから描画情報を構築する関数
+	RenderInfo CreateRenderInfoFromMeshData(
+		TextureManager& textureManager,	//テクスチャマネージャへの参照
+		MeshManager& meshManager,		//メッシュマネージャへの参照
+		MeshData::Mesh& mesh,			//メッシュデータ構造体への参照
+		BLEND_MODE mode					//ブレンドモード
 	);
 }
 

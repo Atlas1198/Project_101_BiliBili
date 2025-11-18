@@ -18,6 +18,22 @@ struct CollisionPair
 	Collider* colliderB; // コライダーB
 };
 
+//OBB構造体
+struct OBB
+{
+	DirectX::XMVECTOR center;		//中心点
+	DirectX::XMVECTOR axis[3];		//各軸の方向ベクトル(正規化済みワールド軸)
+	DirectX::XMFLOAT3 halfSizes;	//各軸方向の半分のサイズ
+};
+
+//カプセルセグメント構造体
+struct CapsuleSegment
+{
+	DirectX::XMVECTOR pointA;	//端点A
+	DirectX::XMVECTOR pointB;	//端点B
+	float radius;				//半径
+};
+
 // 衝突管理クラス
 class CollisionManager
 {
@@ -39,22 +55,18 @@ public:
 	);
 	void Draw(Renderer& renderer);		//描画
 	void SubmitDraw(
-		Renderer& renderer,									//シーンの参照
-		const Collider& collider,							//コライダー配列
-		const std::vector <RenderData::RenderInfo>& info	//描画情報構造体
+		Renderer& renderer,							//シーンの参照
+		Collider& collider,					//コライダー配列
+		std::vector <RenderData::RenderInfo>& info	//描画情報構造体
 	);
 
 	//衝突判定処理
 	void CheckCollisions(); //衝突判定
-	void BroadPhase();    //ブロードフェーズ
-	void NarrowPhase();  //ナローフェーズ
 
 	//コライダー配列の操作
 	void RegisterCollider(Collider* collider);	//コライダー登録
-	void RemoveCollider(Collider* collider);		//コライダー削除
-	void ClearColliders();								//コライダークリア
-
-	void CreateCollisionInfo();	//衝突情報作成
+	void RemoveCollider(Collider* collider);	//コライダー削除
+	void ClearColliders();						//コライダークリア
 
 	void CreateColliderRenderInfo(	//コライダー描画情報作成
 		TextureManager& textureManager,	//テクスチャ管理クラスの参照
@@ -69,4 +81,59 @@ private:
 	std::vector<RenderData::RenderInfo> m_colliderRenderInfoBox;		//ボックスコライダー描画情報
 	std::vector<RenderData::RenderInfo> m_colliderRenderInfoSphere;		//球コライダー描画情報
 	std::vector<RenderData::RenderInfo> m_colliderRenderInfoCapsule;	//カプセルコライダー描画情報
+
+private:
+	//ChackCollisions()の補助関数
+	void BroadPhase();    //ブロードフェーズ
+	void NarrowPhase();  //ナローフェーズ
+
+	//各種衝突判定関数
+	bool CollisionAABB(	//ボックス対ボックスの衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+	void CollisionBoxToBox(	//ボックス対ボックスの衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+	void CollisionSphereToSphere(	//球対球の衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+	void CollisionCapsuleToCapsule(	//カプセル対カプセルの衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+	void CollisionBoxToSphere(	//ボックス対球の衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+	void CollisionBoxToCapsule(	//ボックス対カプセルの衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+	void CollisionSphereToCapsule(	//球対カプセルの衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+
+	void SendNarrowPhase( //ナローフェーズ用配列に衝突ペアを追加
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+
+	OBB CreateOBB(							//コライダーからOBBを作成
+		Collider* collider	//コライダー
+	);
+	CapsuleSegment CreateCapsuleSegment(	//コライダーからカプセルセグメントを作成
+		Collider* collider	//コライダー
+	);
+	static float GetMinDistanceSquaredPointToSegment(	//点とセグメント間の最小距離の二乗を取得
+		const DirectX::FXMVECTOR& p0,
+		const DirectX::FXMVECTOR& p1,
+		const DirectX::FXMVECTOR& q0,
+		const DirectX::FXMVECTOR& q1,
+		DirectX::XMVECTOR& outP,
+		DirectX::XMVECTOR& outQ
+	);
 };
