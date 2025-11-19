@@ -160,10 +160,16 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 					//     SetDlgItemText(app->toolbar.hToolbar, IDC_STATIC1, std::to_string(app->toolbar.speed.GetValue()).c_str());
 					// }
 
-					if (LOWORD(wParam) == SB_THUMBPOSITION) {
-						// Thumb released -- apply immediate effects here if needed
+					switch (LOWORD(wParam))
+					{
+					case SB_PAGEDOWN:
+					case SB_PAGEUP:
+					case SB_THUMBPOSITION:
+						SetFocus(App::GetInstance()->hwnd);
+						break;
+					default:
+						break;
 					}
-					break;
 				}
 			}
 		}
@@ -203,6 +209,7 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 	}
 	case WM_LBUTTONDOWN: {
 		app->toolbar.mousedown = true;
+		SetCapture(hwnd);
 		GetCursorPos(&app->toolbar.lastLocation);
 		RECT rect;
 		GetWindowRect(hwnd, &rect);
@@ -212,6 +219,8 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 	}
 	case WM_LBUTTONUP: {
 		app->toolbar.mousedown = false;
+		ReleaseCapture();
+		SetFocus(App::GetInstance()->hwnd);
 		break;
 	}
 	case WM_MOUSEMOVE: {
