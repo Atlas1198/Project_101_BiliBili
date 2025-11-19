@@ -21,6 +21,7 @@ class App : public olc::net::client_interface<GameMsg>
 public:
 	static constexpr int WINDOW_WIDTH = 1920;	//ウィンドウの幅
 	static constexpr int WINDOW_HEIGHT = 1080;	//ウィンドウの高さ
+	inline static float DPIScale = 1.0f;	//DPIスケーリング
 private:
 	HINSTANCE hInstance = nullptr;	//インスタンスハンドル
 	HWND hwnd = nullptr;			//ウィンドウハンドル

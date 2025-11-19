@@ -12,6 +12,7 @@
 int SetSliderRange(HWND hwndTrack, int iMin, int iMax, int iPos);
 BOOL SaveTextFile(std::string text, LPCTSTR pszFileName);
 std::string CreateParameterString(const ToolbarControl &toolbar);
+void InitializeDPIScale(HWND hwnd);
 
 struct ParamUI
 {
@@ -218,6 +219,14 @@ LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_CREATE:
+
+		InitializeDPIScale(hwnd);
+
+		SetWindowPos(hwnd, NULL, 0, 0, 
+			App::WINDOW_WIDTH * App::DPIScale, 
+			App::WINDOW_HEIGHT * App::DPIScale,
+			SWP_NOZORDER);
+
 		App::GetInstance()->toolbar.hToolbar = CreateDialog(
 			GetModuleHandle(NULL),
 			MAKEINTRESOURCE(IDD_DIALOG1),
@@ -746,4 +755,10 @@ std::string CreateParameterString(const ToolbarControl& toolbar)
 		}
 	}
 	return paramStr;
+}
+
+void InitializeDPIScale(HWND hwnd)
+{
+	float dpi = GetDpiForWindow(hwnd);
+	App::DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
 }
