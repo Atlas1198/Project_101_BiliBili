@@ -45,15 +45,15 @@ void PlayerManager::AddPlayer(
 	m_pPlayer.push_back(
 		new Player
 		(
-			MeshData::MESH_TYPE::QUAD,
+			MeshData::MESH_TYPE::CUBE,
 			XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
-			XMFLOAT3(-90.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 2.0f, 2.0f),	//スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			id,						//ID
+			id,							//ID
 			true,						//アクティブフラグ
-			ColliderType::BOX,		//コライダータイプg
-			XMFLOAT3(2.0f, 2.0f, 2.0f),	//コライダーボックスサイズ
+			ColliderType::CAPSULE	,	//コライダータイプ	
+			XMFLOAT3(1.0f, 2.0f, 1.0f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);

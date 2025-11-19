@@ -45,4 +45,6 @@ protected:
 	Camera* m_pCamera = nullptr;						//カメラ
 	InputManager* m_pInputManager = nullptr;			//入力管理クラス
 	CollisionManager* m_pCollisionManager = nullptr;	//衝突管理クラス
+
+	bool m_drawColliders = false; // コライダー描画フラグ
 };

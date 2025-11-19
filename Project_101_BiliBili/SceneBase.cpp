@@ -39,6 +39,11 @@ void SceneBase::Initialize(
 //更新
 void SceneBase::Update()
 {
+	if(m_pInputManager->GetInputInfo()->p.trigger)
+	{
+		m_drawColliders = !m_drawColliders;
+	}
+
 	//シーン固有の更新呼び出し
 	UpdateOverride();
 
@@ -62,8 +67,11 @@ void SceneBase::Draw(Renderer& pRenderer)
 	DrawOverride(pRenderer);
 
 #ifdef _DEBUG
-	//衝突管理クラス描画
-	m_pCollisionManager->Draw(pRenderer);
+	if (m_drawColliders)
+	{
+		//衝突管理クラス描画
+		m_pCollisionManager->Draw(pRenderer);
+	}
 #endif // _DEBUG
 }
 

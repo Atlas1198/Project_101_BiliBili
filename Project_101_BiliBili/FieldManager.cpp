@@ -3,8 +3,10 @@
 #include "InputManager.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
+#include "SharedStruct.h"
 
 using namespace DirectX;
+using namespace RenderData;
 
 //コンストラクタ
 FieldManager::FieldManager()
@@ -35,6 +37,49 @@ FieldManager::~FieldManager()
 //初期化
 void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
+	m_pWalls.push_back(
+		new Wall(
+			MeshData::MESH_TYPE::CUBE,
+			XMFLOAT3(10.0f, 0.0f, 0.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+			true,						//アクティブフラグ
+			ColliderType::BOX,		//コライダータイプ
+			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			false						//コライダーのトリガーフラグ
+		)
+	);
+
+	for(int i = 0 ; i < 50; i++)
+	{
+		for (int j = 0; j < 50; j++)
+		{
+			m_pGrounds.push_back(
+				new Ground(
+					MeshData::MESH_TYPE::QUAD,
+					XMFLOAT3(i * 4.0f - 100.0f, -5.0f, j * 4.0f - 100.0f),	//位置
+					XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(4.0f, 4.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
+					true,							//アクティブフラグ
+					ColliderType::BOX,				//コライダータイプ
+					XMFLOAT3(100.0f, 100.0f, 1.0f),	//コライダーボックスサイズ
+					false							//コライダーのトリガーフラグ
+				)
+			);
+		}
+	}
+
+	for (auto& wall : m_pWalls)
+	{
+		SubmitColliders(collisionManager, wall->GetCollider());
+	}
+
+	for(auto& ground : m_pGrounds)
+	{
+		//SubmitColliders(collisionManager, ground->GetCollider());
+	}
 }
 
 //更新
@@ -45,6 +90,25 @@ void FieldManager::Update()
 //描画要求をシーンに提出
 void FieldManager::SubmitDraws(Renderer& renderer)
 {
+	//壁描画情報をシーンに提出
+	for (auto& wall : m_pWalls)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*wall,			//ゲームオブジェクト配列の参照
+			m_wallInfo		//壁描画情報
+		);
+	}
+
+	//地面描画情報をシーンに提出
+	for (auto& ground : m_pGrounds)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*ground,		//ゲームオブジェクト配列の参照
+			m_groundInfo	//地面描画情報
+		);
+	}
 }
 
 //衝突後処理
@@ -55,4 +119,23 @@ void FieldManager::ResolveCollisions()
 //オブジェクトの描画情報生成
 void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
+	//描画情報生成関数を呼び出し、描画情報を作成
+	CreteRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_wallInfo,					//描画情報構造体配列へのポインタ
+		m_pWalls[0]->GetMeshType(),	//メッシュタイプ
+		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
+		wallTexPath							//テクスチャのファイル名
+	);
+
+	CreteRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_groundInfo,					//描画情報構造体配列へのポインタ
+		m_pGrounds[0]->GetMeshType(),	//メッシュタイプ
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		groundTexPath					//テクスチャのファイル名
+	);
+
 }

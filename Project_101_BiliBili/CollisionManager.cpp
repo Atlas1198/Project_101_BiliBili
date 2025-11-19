@@ -227,21 +227,42 @@ void CollisionManager::NarrowPhase()
 		{//カプセル対カプセル
 			CollisionCapsuleToCapsule(colliderA, colliderB);
 		}
-		//else if((typeA == ColliderType::BOX && typeB == ColliderType::SPHERE) ||
-		//		(typeA == ColliderType::SPHERE && typeB == ColliderType::BOX))
-		//{//ボックス対球
-		//	CollisionBoxToSphere(colliderA, colliderB);
-		//}
-		//else if((typeA == ColliderType::BOX && typeB == ColliderType::CAPSULE) ||
-		//		(typeA == ColliderType::CAPSULE && typeB == ColliderType::BOX))
-		//{//ボックス対カプセル
-		//	CollisionBoxToCapsule(colliderA, colliderB);
-		//}
-		//else if((typeA == ColliderType::SPHERE && typeB == ColliderType::CAPSULE) ||
-		//		(typeA == ColliderType::CAPSULE && typeB == ColliderType::SPHERE))
-		//{//球対カプセル
-		//	CollisionSphereToCapsule(colliderA, colliderB);
-		//}
+		else if((typeA == ColliderType::BOX && typeB == ColliderType::SPHERE) ||
+				(typeA == ColliderType::SPHERE && typeB == ColliderType::BOX))
+		{//ボックス対球
+			if(typeA == ColliderType::BOX)
+			{
+				CollisionBoxToSphere(colliderA, colliderB);
+			}
+			else
+			{
+				CollisionBoxToSphere(colliderB, colliderA);
+			}
+		}
+		else if((typeA == ColliderType::BOX && typeB == ColliderType::CAPSULE) ||
+				(typeA == ColliderType::CAPSULE && typeB == ColliderType::BOX))
+		{//ボックス対カプセル
+			if(typeA == ColliderType::BOX)
+			{
+				CollisionBoxToCapsule(colliderA, colliderB);
+			}
+			else
+			{
+				CollisionBoxToCapsule(colliderB, colliderA);
+			}
+		}
+		else if((typeA == ColliderType::SPHERE && typeB == ColliderType::CAPSULE) ||
+				(typeA == ColliderType::CAPSULE && typeB == ColliderType::SPHERE))
+		{//球対カプセル
+			if(typeA == ColliderType::SPHERE)
+			{
+				CollisionSphereToCapsule(colliderA, colliderB);
+			}
+			else
+			{
+				CollisionSphereToCapsule(colliderB, colliderA);
+			}
+		}
 	}
 }
 
@@ -378,8 +399,8 @@ CapsuleSegment CollisionManager::CreateCapsuleSegment(Collider* collider)
 	return seg;
 }
 
-//点とセグメント間の最小距離の二乗を取得
-float CollisionManager::GetMinDistanceSquaredPointToSegment(
+//セグメント間の最小距離の二乗を取得
+float CollisionManager::GetMinDistanceSquaredSegmentToSegment(
 	const DirectX::FXMVECTOR& p0, const DirectX::FXMVECTOR& p1,	//セグメントPの端点
 	const DirectX::FXMVECTOR& q0, const DirectX::FXMVECTOR& q1,	//セグメントQの端点
 	DirectX::XMVECTOR& outP,									//セグメントP上の最短点
@@ -425,6 +446,74 @@ float CollisionManager::GetMinDistanceSquaredPointToSegment(
 	//最短距離の二乗の計算
 	XMVECTOR diff = XMVectorSubtract(outP, outQ); //最短点同士の差ベクトル
 	return XMVectorGetX(XMVector3Dot(diff, diff)); //最短距離の二乗を返す
+}
+
+//点とセグメント間の最小距離の二乗を取得
+float CollisionManager::GetMinDistanceSquaredPointToSegment(const DirectX::FXMVECTOR& point, const DirectX::FXMVECTOR& segA, const DirectX::FXMVECTOR& segB, DirectX::XMVECTOR& outClosest)
+{
+	XMVECTOR segDir = XMVectorSubtract(segB, segA);		//セグメントの方向ベクトル
+	XMVECTOR toPoint = XMVectorSubtract(point, segA);	//セグメントの端点Aから点へのベクトル
+
+	float segLengthSquared = XMVectorGetX(XMVector3Dot(segDir, segDir)); //セグメントの長さの二乗
+
+	//セグメントの長さが極端に短い場合の処理
+	const float epsilon = 0.0001f; //ゼロ除算防止用の微小値
+	if (segLengthSquared < epsilon)
+	{//セグメントの長さがほぼゼロの場合、端点Aを最短点とする
+		outClosest = segA;
+		XMVECTOR diff = XMVectorSubtract(point, segA);	//最短点と点の差ベクトル
+		return XMVectorGetX(XMVector3Dot(diff, diff));	//最短距離の二乗を返す
+	}
+
+	float t = XMVectorGetX(XMVector3Dot(toPoint, segDir)) / segLengthSquared; //パラメータtの計算
+
+	//パラメータtをセグメントの範囲内にクランプ
+	t = (std::max)(0.0f, (std::min)(1.0f, t));
+
+	//最短点の計算
+	outClosest = XMVectorAdd(segA, XMVectorScale(segDir, t)); //セグメント上の最短点
+
+	//最短距離の二乗の計算
+	XMVECTOR diff = XMVectorSubtract(point, outClosest);	//最短点と点の差ベクトル
+	return XMVectorGetX(XMVector3Dot(diff, diff));			//最短距離の二乗を返す
+}
+
+//点とOBB間の最小距離の二乗を取得
+float CollisionManager::GetMinDistanceSquaredPointToOBB(const DirectX::FXMVECTOR& point, const OBB& obb, DirectX::XMVECTOR& outClosest)
+{
+	XMVECTOR d = XMVectorSubtract(point, obb.center); //点からOBBの中心へのベクトル
+
+	const XMFLOAT3& halfSizes = obb.halfSizes; //OBBの各軸方向の半分のサイズ
+
+	//点のOBBのローカル座標系での位置を計算
+	float local[3]; //OBBのローカル座標系での点の位置
+	//各軸について内積計算
+	for (int i = 0; i < 3; ++i)
+	{
+		local[i] = XMVectorGetX(XMVector3Dot(d, obb.axis[i]));
+	}
+
+	//クランプ処理
+	float clamped[3]; //各軸方向にクランプした値
+	clamped[0] = (std::max)(-halfSizes.x, (std::min)(halfSizes.x, local[0]));
+	clamped[1] = (std::max)(-halfSizes.y, (std::min)(halfSizes.y, local[1]));
+	clamped[2] = (std::max)(-halfSizes.z, (std::min)(halfSizes.z, local[2]));
+
+	//最短点の計算
+	outClosest = XMVectorAdd(
+		obb.center,
+		XMVectorAdd(
+			XMVectorScale(obb.axis[0], clamped[0]),
+			XMVectorAdd(
+				XMVectorScale(obb.axis[1], clamped[1]),
+				XMVectorScale(obb.axis[2], clamped[2])
+			)
+		)
+	);	
+
+	//最短距離の二乗の計算
+	XMVECTOR diff = XMVectorSubtract(point, outClosest);	//最短点と点の差ベクトル
+	return XMVectorGetX(XMVector3Dot(diff, diff));			//最短距離の二乗を返す
 }
 
 //ボックス対球の衝突判定
@@ -669,7 +758,7 @@ void CollisionManager::CollisionCapsuleToCapsule(
 
 	//最短距離の二乗を取得
 	XMVECTOR closestA, closestB;	//コライダーA・B上の最短点
-	float distSq = CollisionManager::GetMinDistanceSquaredPointToSegment(
+	float distSq = CollisionManager::GetMinDistanceSquaredSegmentToSegment(
 		segA.pointA, segA.pointB,	//セグメントAの端点
 		segB.pointA, segB.pointB,	//セグメントBの端点
 		closestA,					//セグメントA上の最短点
@@ -848,16 +937,169 @@ void CollisionManager::CollisionBoxToSphere(
 
 //ボックスとカプセルの衝突判定
 void CollisionManager::CollisionBoxToCapsule(
-	Collider* colliderA,	//コライダーA
-	Collider* colliderB		//コライダーB
+	Collider* box,	//コライダーA
+	Collider* capsule		//コライダーB
 )
 {
+	OBB obb = CreateOBB(box);									//ボックスコライダーからOBB作成
+	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);		//カプセルコライダーからカプセルセグメント作成
+
+	const float radius = cupSeg.radius; //カプセルの半径
+
+	constexpr int SAMPLE_COUNT = 8; //サンプリング数
+	bool isCollided = false;		//衝突検知フラグ
+
+	XMVECTOR collisionPoints = XMVectorZero();	//衝突点の合計ベクトル
+	XMVECTOR collisionNormals = XMVectorZero();	//法線ベクトルの合計ベクトル
+
+	XMVECTOR A = cupSeg.pointA;				//カプセルセグメントの端点A
+	XMVECTOR B = cupSeg.pointB;				//カプセルセグメントの端点B
+	XMVECTOR AB = XMVectorSubtract(B, A);	//カプセルセグメントの方向ベクトル
+
+	for (int i = 0; i < SAMPLE_COUNT; ++i)
+	{
+		float t = 0.0f;	//パラメータt
+		if (SAMPLE_COUNT > 1)
+		{//パラメータtを計算
+			t = static_cast<float>(i) / static_cast<float>(SAMPLE_COUNT - 1); //パラメータt
+		}
+
+		//カプセルセグメント上のサンプリング点を計算
+		XMVECTOR sampleCenter = XMVectorAdd(
+			A,
+			XMVectorScale(AB, t)
+		);
+
+		//最短距離の二乗を取得
+		XMVECTOR closestPoint; //OBB上の最短点
+		float distSq = GetMinDistanceSquaredPointToOBB(
+			sampleCenter,	//点(サンプリング点)
+			obb,			//OBB
+			closestPoint	//OBB上の最短点
+		);
+
+		if(distSq <= radius * radius)
+		{//衝突検知
+			isCollided = true;	//衝突検知フラグON
+			collisionPoints = closestPoint;	
+
+			//法線ベクトルの計算
+			XMVECTOR diff = XMVectorSubtract(sampleCenter, closestPoint); //最短点とサンプリング点の差ベクトル
+			const float epsilon = 0.0001f;						//微小値
+			float dist = XMVectorGetX(XMVector3Length(diff));	//最短距離
+
+			if (dist > epsilon)
+			{//法線ベクトル計算
+				collisionNormals = XMVectorScale(
+					diff,
+					1.0f / dist
+				);
+			}
+			else
+			{
+				collisionNormals = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //適当な法線ベクトル
+			}
+
+			break;	//最初に衝突した点で処理を抜ける
+		}
+	}
+
+	if(isCollided)
+	{
+		XMFLOAT3 contactP, normalF;
+		XMStoreFloat3(&contactP, collisionPoints);	//衝突点
+		XMStoreFloat3(&normalF, collisionNormals);	//法線ベクトル
+
+		//衝突検知フラグON
+		box->SetDetected(true);
+		capsule->SetDetected(true);
+
+		//衝突情報の作成
+		CollisionInfo infoBox;					//衝突情報
+		infoBox.opponent = capsule;				//衝突相手のコライダー
+		infoBox.contactPoint = contactP;		//衝突点
+		infoBox.contactNormal = normalF;		//法線
+		box->AddCollisionInfo(infoBox);			//衝突情報を追加
+
+		CollisionInfo infoCapsule;				//衝突情報
+		infoCapsule.opponent = box;				//衝突相手のコライダー
+		infoCapsule.contactPoint = contactP;	//衝突点
+		infoCapsule.contactNormal =				//反転法線
+		{
+			-normalF.x,
+			-normalF.y,
+			-normalF.z
+		};
+		capsule->AddCollisionInfo(infoCapsule);	//衝突情報を追加
+	}
 }
 
 //球とカプセルの衝突判定
 void CollisionManager::CollisionSphereToCapsule(
-	Collider* colliderA,	//コライダーA
-	Collider* colliderB		//コライダーB
+	Collider* sphere,	//球コライダー
+	Collider* capsule	//カプセルコライダー
 )
 {
+	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);		//カプセルコライダーからカプセルセグメント作成
+	SphereCollider sphereCol = sphere->GetSphereCollider();		//球コライダー情報取得
+	XMVECTOR sphereCenter = XMLoadFloat3(&sphereCol.center);	//球の中心点ベクトル
+	float radius = sphereCol.radius;							//球の半径
+
+	//最短距離の二乗を取得
+	XMVECTOR closestPoint; //カプセルセグメント上の最短点
+	float distSq = CollisionManager::GetMinDistanceSquaredPointToSegment(
+		sphereCenter,				//点(球の中心点)
+		cupSeg.pointA,				//カプセルセグメントの端点A
+		cupSeg.pointB,				//カプセルセグメントの端点B
+		closestPoint				//カプセルセグメント上の最短点
+	);
+
+	float radiusSum = radius + cupSeg.radius;		//半径の和
+	if (!(distSq <= radiusSum * radiusSum)) return; //衝突なし
+
+	//衝突検知フラグON
+	sphere->SetDetected(true);
+	capsule->SetDetected(true);
+
+	//法線ベクトルの計算
+	const float epsilon = 0.0001f;						//微小値
+	float dist = sqrtf((std::max)(distSq, epsilon));	//最短距離
+	XMVECTOR normal;									//法線ベクトル
+	if (dist > epsilon)
+	{
+		normal = XMVectorScale(
+			XMVectorSubtract(sphereCenter, closestPoint),
+			1.0f / dist
+		);
+	}
+	else
+	{
+		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //適当な法線ベクトル
+	}
+	//衝突点の計算
+	XMVECTOR contact = XMVectorScale(
+		XMVectorAdd(sphereCenter, closestPoint),
+		0.5f
+	);
+	XMFLOAT3 contactP, normalF;
+	XMStoreFloat3(&contactP, contact);	//衝突点
+	XMStoreFloat3(&normalF, normal);	//法線ベクトル
+
+	//衝突情報の作成
+	CollisionInfo infoSphere;				//衝突情報
+	infoSphere.opponent = capsule;			//衝突相手のコライダー
+	infoSphere.contactPoint = contactP;		//衝突点
+	infoSphere.contactNormal = normalF;		//法線
+	sphere->AddCollisionInfo(infoSphere);	//衝突情報を追加
+
+	CollisionInfo infoCapsule;				//衝突情報
+	infoCapsule.opponent = sphere;			//衝突相手のコライダー
+	infoCapsule.contactPoint = contactP;	//衝突点
+	infoCapsule.contactNormal =				//反転法線
+	{
+		-normalF.x,
+		-normalF.y,
+		-normalF.z
+	};
+	capsule->AddCollisionInfo(infoCapsule);	//衝突情報を追加
 }
