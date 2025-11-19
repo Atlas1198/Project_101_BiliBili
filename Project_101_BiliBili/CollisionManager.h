@@ -129,12 +129,24 @@ private:
 	CapsuleSegment CreateCapsuleSegment(	//コライダーからカプセルセグメントを作成
 		Collider* collider	//コライダー
 	);
-	static float GetMinDistanceSquaredPointToSegment(	//点とセグメント間の最小距離の二乗を取得
+
+	static float GetMinDistanceSquaredSegmentToSegment(	//セグメント間の最小距離の二乗を取得
 		const DirectX::FXMVECTOR& p0,
 		const DirectX::FXMVECTOR& p1,
 		const DirectX::FXMVECTOR& q0,
 		const DirectX::FXMVECTOR& q1,
 		DirectX::XMVECTOR& outP,
 		DirectX::XMVECTOR& outQ
+	);
+	static float GetMinDistanceSquaredPointToSegment(	//点とセグメント間の最小距離の二乗を取得
+		const DirectX::FXMVECTOR& point,	//点
+		const DirectX::FXMVECTOR& segA,		//セグメントの端点A
+		const DirectX::FXMVECTOR& segB,		//セグメントの端点B
+		DirectX::XMVECTOR& outClosest		//セグメント上の最短点
+	);
+	static float GetMinDistanceSquaredPointToOBB(	//点とOBB間の最小距離の二乗を取得
+		const DirectX::FXMVECTOR& point,	//点
+		const OBB& obb,					//OBB
+		DirectX::XMVECTOR& outClosest	//OBB上の最短点
 	);
 };

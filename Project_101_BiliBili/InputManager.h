@@ -30,6 +30,7 @@ struct InputInfo
 	KeyInputState right;
 	KeyInputState space;
 	KeyInputState enter;
+	KeyInputState p;
 };
 
 //“ü—ÍŠÇ—ƒNƒ‰ƒX

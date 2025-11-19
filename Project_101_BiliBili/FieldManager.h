@@ -15,6 +15,8 @@ class MeshManager;
 //フィールド管理クラス
 class FieldManager : public ObjectManagerBase
 {
+	const wchar_t* wallTexPath = L"asset/texture/white.png";
+	const wchar_t* groundTexPath = L"asset/texture/tile.PNG";
 public:
 	FieldManager();		//コンストラクタ
 	~FieldManager();	//デストラクタ

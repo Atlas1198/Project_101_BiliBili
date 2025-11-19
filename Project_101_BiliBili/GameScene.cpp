@@ -12,12 +12,22 @@ GameScene::GameScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
 {
 	m_pPlayerManager = new PlayerManager();	//プレイヤー管理クラスの生成
+	m_pFieldManager = new FieldManager();	//フィールド管理クラスの生成
 }
 
 //デストラクタ
 GameScene::~GameScene()
 {
-	delete m_pPlayerManager;	//プレイヤー管理クラスの削除
+	if (m_pPlayerManager)
+	{
+		delete m_pPlayerManager;	//プレイヤー管理クラスの削除
+		m_pPlayerManager = nullptr;
+	}
+	if (m_pFieldManager)
+	{
+		delete m_pFieldManager;
+		m_pFieldManager = nullptr;
+	}
 }
 
 //初期化
@@ -33,6 +43,14 @@ void GameScene::InitializeOverride(
 		pMeshManager,
 		*m_pCollisionManager
 	);
+
+	m_pFieldManager->Initialize(
+		pInputManager,
+		pTextureManager,
+		pMeshManager,
+		*m_pCollisionManager
+	);
+
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
@@ -49,6 +67,7 @@ void GameScene::RemovePlayer(uint32_t id)
 void GameScene::UpdateOverride()
 {
 	m_pPlayerManager->Update();	//プレイヤー管理クラス更新
+	m_pFieldManager->Update();
 
 	if (m_pInputManager->GetInputInfo()->enter.trigger)
 	{
@@ -67,12 +86,14 @@ void GameScene::UpdateOverride()
 void GameScene::ResolveCollisions()
 {
 	m_pPlayerManager->ResolveCollisions();	//プレイヤー管理クラス衝突後処理
+	m_pFieldManager->ResolveCollisions();
 }
 
 //描画
 void GameScene::DrawOverride(Renderer& pRenderer)
 {
 	m_pPlayerManager->SubmitDraws(pRenderer);
+	m_pFieldManager->SubmitDraws(pRenderer);
 }
 
 //終了
