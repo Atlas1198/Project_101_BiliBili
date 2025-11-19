@@ -6,6 +6,10 @@
 #include "resource.h"
 #include <commctrl.h>
 #include <commdlg.h>
+#include "json.hpp"
+#include <fstream>
+
+using json = nlohmann::json;
 
 #pragma comment(lib, "winmm.lib")
 
@@ -13,6 +17,7 @@ int SetSliderRange(HWND hwndTrack, int iMin, int iMax, int iPos);
 BOOL SaveTextFile(std::string text, LPCTSTR pszFileName);
 std::string CreateParameterString(const ToolbarControl &toolbar);
 void InitializeDPIScale(HWND hwnd);
+void LoadParameters();
 
 struct ParamUI
 {
@@ -53,12 +58,12 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 		params->push_back(
 			ParamUI{
 				"移動スピード",
-				&app->toolbar.speed,
+				&app->toolbar.parameters[0],
 				NULL,
 				NULL,
 				NULL,
-				app->toolbar.speed.min,
-				app->toolbar.speed.max
+				app->toolbar.parameters[0].min,
+				app->toolbar.parameters[0].max
 			}
 		);
 
@@ -152,21 +157,29 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 		if (LOWORD(wParam) == IDC_BUTTON1)
 		{
 			OPENFILENAME ofn;
-			char szFileName[MAX_PATH] = "パラメーター";
+			char szFileName[MAX_PATH] = "defaults";
 
 			ZeroMemory(&ofn, sizeof(ofn));
 
 			ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
 			ofn.hwndOwner = hwnd;
-			ofn.lpstrFilter = "Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+			//ofn.lpstrFilter = "Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+			ofn.lpstrFilter = "JSON Files (*.json)\0";
 			ofn.lpstrFile = szFileName;
 			ofn.nMaxFile = MAX_PATH;
 			ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY;
-			ofn.lpstrDefExt = "txt";
+			ofn.lpstrDefExt = "json";
 
 			if (GetOpenFileName(&ofn))
 			{
-				SaveTextFile(CreateParameterString(app->toolbar), szFileName);
+				nlohmann::json j;
+
+				for (ToolParameter &param : app->toolbar.parameters)
+				{
+					j[param.name] = param.GetValue();
+				}
+
+				SaveTextFile(j.dump(4), szFileName);
 			}
 		}
 		break;
@@ -283,6 +296,8 @@ App* App::GetInstance()
 //初期化
 bool App::Initialize()
 {
+	LoadParameters();
+
 	CreateMainWindow(hwnd, wc);	//メインウィンドウの生成
 
 	PrepareInstance(); // インスタンス準備
@@ -704,7 +719,7 @@ void App::WriteMessages()
 
 void App::UpdateParameters()
 {
-	Player::MOVE_SPEED = toolbar.speed.GetValue();
+	Player::MOVE_SPEED = toolbar.parameters[0].GetValue();
 }
 
 int SetSliderRange(HWND hwndTrack, int iMin, int iMax, int iPos) {
@@ -761,4 +776,20 @@ void InitializeDPIScale(HWND hwnd)
 {
 	float dpi = GetDpiForWindow(hwnd);
 	App::DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
+}
+
+void LoadParameters()
+{
+	std::ifstream f("asset/defaults.json");
+	json data = json::parse(f);
+
+	auto &toolbar = App::GetInstance()->toolbar;
+
+	for (auto &param : toolbar.parameters)
+	{
+		if (data.contains(param.name))
+		{
+			param.SetValue(data[param.name].get<float>() * param.divisionBy);
+		}
+	}
 }

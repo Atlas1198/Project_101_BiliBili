@@ -156,6 +156,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="Ground.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="ToolbarControl.h" />
     <ClInclude Include="ObjectBase.h" />
     <ClInclude Include="ObjectManagerBase.h" />

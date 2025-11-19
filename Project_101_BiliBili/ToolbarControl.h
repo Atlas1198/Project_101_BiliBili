@@ -4,15 +4,19 @@
 #define NOMINMAX
 #endif
 #include <Windows.h>
+#include <vector>
+#include <string>
 
 struct ToolParameter
 {
 	private:
 		int current = 2;
-		float divisionBy = 10;
 	public:
+		float divisionBy = 10;
 		int min = 0;
 		int max = 10;
+		std::string name;
+
 		void SetValue(int val) 
 		{ 
 			if (val < min) current = min;
@@ -21,6 +25,14 @@ struct ToolParameter
 		}
 		float GetValue() const { return static_cast<float>(current) / divisionBy; }
 		int GetIntValue() const { return current; }
+
+		ToolParameter(std::string paramName, int minVal, int maxVal, int currentVal, float divBy)
+			: name(paramName), divisionBy(divBy)
+		{
+			min = minVal;
+			max = maxVal;
+			current = currentVal;
+		}
 };
 
 struct ToolbarControl
@@ -29,5 +41,8 @@ struct ToolbarControl
 	bool mousedown = false;
 	POINT lastLocation;
 
-	ToolParameter speed;
+	std::vector<ToolParameter> parameters =
+	{
+		{ "move-speed", 0, 10, 2, 10.0f },
+	};
 };
