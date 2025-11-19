@@ -161,7 +161,7 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 					// }
 
 					if (LOWORD(wParam) == SB_THUMBPOSITION) {
-						// Thumb released -- apply immediate effects here if needed
+						SetFocus(App::GetInstance()->hwnd);
 					}
 					break;
 				}
@@ -203,6 +203,7 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 	}
 	case WM_LBUTTONDOWN: {
 		app->toolbar.mousedown = true;
+		SetCapture(hwnd);
 		GetCursorPos(&app->toolbar.lastLocation);
 		RECT rect;
 		GetWindowRect(hwnd, &rect);
@@ -212,6 +213,7 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 	}
 	case WM_LBUTTONUP: {
 		app->toolbar.mousedown = false;
+		ReleaseCapture();
 		break;
 	}
 	case WM_MOUSEMOVE: {
