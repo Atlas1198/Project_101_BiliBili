@@ -42,7 +42,7 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 		auto params = new std::vector<ParamUI>();
 
 		// Layout configuration
-		const int marginX = 8;
+		const int marginX = 16;
 		const int marginY = 8;
 		const int labelW = 120;
 		//const int sliderW = 240;
@@ -51,6 +51,8 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 		//const int controlH = 22;
 		const int controlH = 40;
 		const int spacingY = 8;
+		const int gapV = 100;
+		int safeSpaceRight = 50;
 
 		// Prepare the parameters to display.
 		// Add entries here for each parameter you want to expose in the dialog.
@@ -67,8 +69,13 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 			}
 		);
 
-		// More parameters can be appended in future:
-		// params->push_back(ParamUI{ "Another Param", &app->toolbar.other, NULL, NULL, NULL, other.min, other.max });
+		int buttonWidth = 200;
+		int buttonHeight = 50;
+
+		SetWindowPos(hwnd, NULL, 0, 0,
+			(marginX*2 + labelW + sliderW + valueW + safeSpaceRight),
+			(marginY*2 + (controlH + spacingY) * params->size() + gapV + buttonHeight),
+			SWP_NOZORDER);
 
 		// Create actual controls
 		HINSTANCE hInst = GetModuleHandle(NULL);
@@ -109,8 +116,18 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 			);
 		}
 
+		CreateWindowEx(0, "BUTTON", "ƒtƒ@ƒCƒ‹•Û‘¶",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			marginX + labelW + sliderW + valueW + safeSpaceRight - buttonWidth, marginY + static_cast<int>(params->size()) * (controlH + spacingY) + gapV, buttonWidth, buttonHeight,
+			hwnd, (HMENU)IDC_BUTTON1, hInst, NULL);
+
 		// Save params vector pointer on window for later use
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)params);
+
+		SetWindowPos(hwnd, NULL, 0, 0,
+			(marginX * 2 + labelW + sliderW + valueW + safeSpaceRight),
+			(marginY * 2 + (controlH + spacingY) * params->size() + gapV + buttonHeight),
+			SWP_NOZORDER);
 
 		return TRUE;
 	}
