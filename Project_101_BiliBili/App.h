@@ -14,6 +14,7 @@
 #include "MeshManager.h"
 #include "netcommon.h"
 #include "ToolbarControl.h"
+#include "DatabaseManager.h"
 
 //アプリケーションクラス
 class App : public olc::net::client_interface<GameMsg>
