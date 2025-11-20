@@ -9,6 +9,7 @@
 using namespace DirectX;
 using namespace RenderData;
 using namespace MeshData;
+using namespace CollisionData;
 
 //コンストラクタ
 ObjectBase::ObjectBase(
@@ -18,11 +19,12 @@ ObjectBase::ObjectBase(
 	XMFLOAT3 scale,
 	XMFLOAT3 velocity,
 	bool isActive, 
+	OBJECT_TAG tag,
 	ColliderType colliderType, 
 	XMFLOAT3 collisionBoxSize, 
 	bool collisionIsTrigger
 )
-	: m_meshType(meshType), m_position(position), m_rotation(rotation), m_scale(scale), m_velocity(velocity), m_isActive(isActive)
+	: m_meshType(meshType), m_position(position), m_rotation(rotation), m_scale(scale), m_velocity(velocity), m_isActive(isActive), m_tag(tag)
 {
 	//コライダーの生成
 	m_pCollider = new Collider(

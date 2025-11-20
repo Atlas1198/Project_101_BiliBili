@@ -18,11 +18,32 @@ void ObjectManagerBase::Initialize(InputManager* pInputManager, TextureManager& 
 	PrepareRenderInfo(textureManager, meshManager);
 }
 
+//更新
+void ObjectManagerBase::Update()
+{
+	//派生クラスでオーバーライドされた更新関数を呼び出し
+	UpdateOverride();
+}
+
 //描画要求をシーンに提出
 void ObjectManagerBase::SubmitDraws(Renderer& renderer)
 {
 	//派生クラスでオーバーライドされた描画要求提出関数を呼び出し
-	SubmitDraws(renderer);
+	SubmitDrawsOverride(renderer);
+}
+
+//衝突後処理
+void ObjectManagerBase::ResolveCollisions()
+{
+	//派生クラスでオーバーライドされた衝突後処理関数を呼び出し
+	ResolveCollisionsOverride();
+}
+
+//終了
+void ObjectManagerBase::Finalize()
+{
+	//派生クラスでオーバーライドされた終了関数を呼び出し
+	FinalizeOverride();
 }
 
 //描画情報をシーンに提出

@@ -2,6 +2,7 @@
 #include "ObjectBase.h"
 
 using namespace DirectX;
+using namespace CollisionData;
 
 //コンストラクタ
 Collider::Collider(ObjectBase* owner, ColliderType type, XMFLOAT3 scale, bool isTrigger)

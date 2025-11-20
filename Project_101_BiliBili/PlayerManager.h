@@ -20,7 +20,7 @@ public:
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
 	std::vector<RenderData::RenderInfo> m_playerInfo;					//プレイヤー描画情報
-	InputManager *m_pInputManager;
+	InputManager *m_pInputManager = nullptr;
 
 public:
 	PlayerManager(){};			//コンストラクタ
@@ -41,11 +41,12 @@ public:
 	);
 	void RemovePlayer(uint32_t id);
 
-	void Update() override;		//更新
-	void ResolveCollisions() override;	//衝突後処理
+	void UpdateOverride() override;		//更新
+	void ResolveCollisionsOverride() override;	//衝突後処理
+	void FinalizeOverride() override;	//終了
 
 	//描画
-	void SubmitDraws(Renderer& renderer) override;	//描画要求をシーンに提出
+	void SubmitDrawsOverride(Renderer& renderer) override;	//描画要求をシーンに提出
 
 	//ゲッター
 	Player* GetPlayer() const; // プレイヤーオブジェクトを取得

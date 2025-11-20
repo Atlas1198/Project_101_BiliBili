@@ -12,12 +12,13 @@ class ObjectBase
 {
 public:	//公開関数
 	ObjectBase(	//コンストラクタ
-		MeshData::MESH_TYPE meshType,		//メッシュタイプ
+		MeshData::MESH_TYPE meshType,			//メッシュタイプ
 		DirectX::XMFLOAT3 position,				//座標
 		DirectX::XMFLOAT3 rotation,				//回転
 		DirectX::XMFLOAT3 scale,				//スケール
 		DirectX::XMFLOAT3 velocity,				//移動速度
 		bool isActive = true,					//アクティブフラグ
+		OBJECT_TAG tag = OBJECT_TAG::NONE,		//オブジェクトタグ
 		ColliderType colliderType =				//コライダータイプ
 			ColliderType::BOX,	
 		DirectX::XMFLOAT3 collisionBoxSize =	//コライダーのボックスサイズ
@@ -27,13 +28,11 @@ public:	//公開関数
 	~ObjectBase();	//デストラクタ
 
 	void Update();
-	virtual void UpdateOverride() = 0;
 
 	//衝突判定関連
-	void ResolveCollisions();							//衝突解決
-	virtual void ResolveCollisionsOverride() = 0;		//衝突解決(固有処理用、派生クラスでオーバーライド)
-	void AddCollisionInfo(const CollisionInfo& info);	//衝突情報の追加
-	void ClearCollisionInfos();							//衝突情報のクリア
+	void ResolveCollisions();											//衝突解決
+	void AddCollisionInfo(const CollisionData::CollisionInfo& info);	//衝突情報の追加
+	void ClearCollisionInfos();											//衝突情報のクリア
 
 	//ゲッター
 	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
@@ -61,8 +60,13 @@ protected:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_velocity{};						//移動速度
 	bool m_isActive = false;		//アクティブフラグ
 
-	MeshData::MESH_TYPE m_meshType;	//メッシュタイプ
+	MeshData::MESH_TYPE m_meshType = MeshData::MESH_TYPE::QUAD;	//メッシュタイプ
 	bool m_isDrawn = true;			//描画フラグ
 
-	Collider* m_pCollider = nullptr;				//コライダー
+	Collider* m_pCollider = nullptr;	//コライダー
+	OBJECT_TAG m_tag = OBJECT_TAG::NONE; //オブジェクトタグ
+
+protected:	//非公開メンバ変数
+	virtual void UpdateOverride() = 0;				//シーン固有の更新
+	virtual void ResolveCollisionsOverride() = 0;	//シーン固有の衝突解決
 };

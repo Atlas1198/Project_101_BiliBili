@@ -8,6 +8,7 @@
 using namespace DirectX;
 using namespace RenderData;
 using namespace MeshData;
+using namespace CollisionData;
 
 //コンストラクタ
 CollisionManager::CollisionManager()
