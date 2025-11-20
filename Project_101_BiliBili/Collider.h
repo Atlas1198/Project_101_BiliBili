@@ -67,24 +67,24 @@ public:
 	void UpdateCollider();	//各種コライダー更新
 	void UpdateAABB();		//AABB更新
 
-	void AddCollisionInfo(const CollisionInfo& info);	//衝突情報追加
+	void AddCollisionInfo(const CollisionData::CollisionInfo& info);	//衝突情報追加
 	void ClearInfos();									//衝突情報配列クリア
 
 	//ゲッター
-	ObjectBase* GetOwner() const;									//所有者オブジェクト取得
-	ColliderType GetType() const;									//コライダータイプ取得
-	const bool IsTrigger() const;									//トリガーフラグ取得
-	const AABB GetAABB();											//軸平行境界ボックス取得
-	const BoxCollider GetBoxCollider();								//ボックスコライダー取得
-	const SphereCollider GetSphereCollider();						//球コライダー取得
-	const CapsuleCollider GetCapsuleCollider();						//カプセルコライダー取得
-	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
-	const std::vector<CollisionInfo>& GetCollisionInfos() const;	//衝突情報配列取得
-	const bool isDetected() const;									//衝突検知フラグ取得
-	const bool deleteFlag() const;									//デリートフラグ
-	DirectX::XMFLOAT3 GetCenter() const;							//中心座標取得
-	DirectX::XMFLOAT3 GetScale() const;								//サイズ取得
-	DirectX::XMFLOAT3 GetRotation() const;							//回転取得
+	ObjectBase* GetOwner() const;												//所有者オブジェクト取得
+	ColliderType GetType() const;												//コライダータイプ取得
+	const bool IsTrigger() const;												//トリガーフラグ取得
+	const AABB GetAABB();														//軸平行境界ボックス取得
+	const BoxCollider GetBoxCollider();											//ボックスコライダー取得
+	const SphereCollider GetSphereCollider();									//球コライダー取得
+	const CapsuleCollider GetCapsuleCollider();									//カプセルコライダー取得
+	const DirectX::XMMATRIX GetWorldMatrix() const;								//ワールド行列の取得
+	const std::vector<CollisionData::CollisionInfo>& GetCollisionInfos() const;	//衝突情報配列取得
+	const bool isDetected() const;												//衝突検知フラグ取得
+	const bool deleteFlag() const;												//デリートフラグ
+	DirectX::XMFLOAT3 GetCenter() const;										//中心座標取得
+	DirectX::XMFLOAT3 GetScale() const;											//サイズ取得
+	DirectX::XMFLOAT3 GetRotation() const;										//回転取得
 
 	//セッター
 	void SetDetected(bool flag);	//衝突検知フラグ
@@ -108,7 +108,7 @@ private:
 	DirectX::XMFLOAT3 m_rotation;	//回転
 	DirectX::XMFLOAT3 m_scaleOffset;	//オブジェクトとのサイズ差
 
-	std::vector<CollisionInfo> m_collisionInfos; //衝突情報配列(所有者オブジェクト用)
+	std::vector<CollisionData::CollisionInfo> m_collisionInfos; //衝突情報配列(所有者オブジェクト用)
 
 	bool m_isDetected = false; //衝突検知フラグ（描画用）
 

@@ -20,6 +20,8 @@ class FieldManager : public ObjectManagerBase
 public:
 	FieldManager();		//コンストラクタ
 	~FieldManager();	//デストラクタ
+
+private:	//非公開メンバ変数
 	//メイン処理関数
 	void InitializeOverride(	//初期化
 		InputManager* pInputManager,		//入力マネージャーのポインタ
@@ -27,11 +29,11 @@ public:
 		MeshManager& meshManager,			//メッシュ管理クラスの参照
 		CollisionManager& collisionManager	//衝突管理クラスの参照
 	) override;
-	void Update() override;							//更新
-	void SubmitDraws(Renderer& renderer) override;	//描画要求をシーンに提出
-	void ResolveCollisions() override;				//衝突後処理
+	void UpdateOverride() override;							//更新
+	void SubmitDrawsOverride(Renderer& renderer) override;	//描画要求をシーンに提出
+	void ResolveCollisionsOverride() override;				//衝突後処理
+	void FinalizeOverride() override;						//終了
 
-private:	//非公開メンバ変数
 	void PrepareRenderInfo(	//オブジェクトの描画情報生成
 		TextureManager& textureManager,	//テクスチャ管理クラスの参照
 		MeshManager& meshManager		//メッシュ管理クラスの参照

@@ -93,7 +93,7 @@ void PlayerManager::RemovePlayer(uint32_t id)
 }
 
 //更新
-void PlayerManager::Update()
+void PlayerManager::UpdateOverride()
 {
 	for (auto player : m_pPlayer)
 	{
@@ -102,12 +102,17 @@ void PlayerManager::Update()
 }
 
 //衝突後処理
-void PlayerManager::ResolveCollisions()
+void PlayerManager::ResolveCollisionsOverride()
 {
 	for(auto& player : m_pPlayer)
 	{
 		player->ResolveCollisions();
 	}
+}
+
+//終了
+void PlayerManager::FinalizeOverride()
+{
 }
 
 //プレイヤーオブジェクトを取得
@@ -117,7 +122,7 @@ Player* PlayerManager::GetPlayer() const
 }
 
 //描画要求をシーンに提出
-void PlayerManager::SubmitDraws(Renderer& renderer)
+void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 {
 	for (auto& player : m_pPlayer)
 	{

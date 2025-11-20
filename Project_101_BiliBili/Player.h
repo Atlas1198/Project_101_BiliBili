@@ -38,6 +38,7 @@ public:	//ŒöŠJŠÖ”
 			scale, 
 			velocity, 
 			isActive, 
+			OBJECT_TAG::PLAYER,
 			colliderType, 
 			collisionBoxSize, 
 			collisionIsTrigger), 

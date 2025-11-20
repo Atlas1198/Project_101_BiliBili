@@ -34,11 +34,9 @@ public:	//公開関数
 	void Submit(const struct RenderData::RenderInfo& item);
 
 private:	//非公開メンバ変数
-	VertexBuffer* m_pVertexBuffer = nullptr;							//頂点バッファ
 	ConstantBuffer* m_pConstantBuffer[Engine::FRAME_BUFFER_COUNT]{};	//定数バッファ
 	RootSignature* m_pRootSignature = nullptr;							//ルートシグネチャ
 	PipelineState* m_pPipelineState[BLEND_MAX]{};						//パイプラインステートオブジェクト(不透明)
-	IndexBuffer* m_pIndexBuffer = nullptr;								//インデックスバッファ
 
 	ID3D12Device* m_pDevice = nullptr;	//デバイス
 	CameraInfo* m_cameraInfo = nullptr;	//カメラ情報構造体

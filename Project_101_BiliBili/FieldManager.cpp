@@ -78,17 +78,17 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 	for(auto& ground : m_pGrounds)
 	{
-		//SubmitColliders(collisionManager, ground->GetCollider());
+		SubmitColliders(collisionManager, ground->GetCollider());
 	}
 }
 
 //更新
-void FieldManager::Update()
+void FieldManager::UpdateOverride()
 {
 }
 
 //描画要求をシーンに提出
-void FieldManager::SubmitDraws(Renderer& renderer)
+void FieldManager::SubmitDrawsOverride(Renderer& renderer)
 {
 	//壁描画情報をシーンに提出
 	for (auto& wall : m_pWalls)
@@ -112,7 +112,12 @@ void FieldManager::SubmitDraws(Renderer& renderer)
 }
 
 //衝突後処理
-void FieldManager::ResolveCollisions()
+void FieldManager::ResolveCollisionsOverride()
+{
+}
+
+//終了
+void FieldManager::FinalizeOverride()
 {
 }
 
