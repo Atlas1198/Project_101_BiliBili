@@ -5,8 +5,8 @@ using namespace DirectX;
 using namespace CollisionData;
 
 //コンストラクタ
-Collider::Collider(ObjectBase* owner, ColliderType type, XMFLOAT3 scale, bool isTrigger)
-	: m_pOwner(owner), m_isTrigger(isTrigger), m_type(type)
+Collider::Collider(ObjectBase* owner, ColliderType type, COLLISION_LAYER layer, XMFLOAT3 scale, bool isTrigger)
+	: m_pOwner(owner), m_isTrigger(isTrigger), m_type(type), m_layer(layer)
 {
 	CreateCollider(scale);
 	UpdateCollider();	//コライダー初期化
@@ -73,6 +73,18 @@ ObjectBase* Collider::GetOwner() const
 ColliderType Collider::GetType() const
 {
 	return m_type;
+}
+
+//衝突レイヤー取得
+CollisionData::COLLISION_LAYER Collider::GetLayer() const
+{
+	return m_layer;
+}
+
+//衝突レイヤーマスク取得
+CollisionData::LayerMask Collider::GetLayerMask() const
+{
+	return m_layerMask;
 }
 
 //トリガーフラグ取得
@@ -182,6 +194,8 @@ void Collider::CreateCollider(DirectX::XMFLOAT3 scale)
 	default:
 		break;
 	}
+
+	m_layerMask = CollisionData::GetLayerMask(m_layer); //衝突レイヤーマスク取得
 }
 
 //コライダー生成関数

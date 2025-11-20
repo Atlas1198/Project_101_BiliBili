@@ -45,7 +45,7 @@ void PlayerManager::AddPlayer(
 	m_pPlayer.push_back(
 		new Player
 		(
-			MeshData::MESH_TYPE::CUBE,
+			MeshData::MESH_TYPE::QUAD,
 			XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール

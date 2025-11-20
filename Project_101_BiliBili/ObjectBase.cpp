@@ -21,6 +21,7 @@ ObjectBase::ObjectBase(
 	bool isActive, 
 	OBJECT_TAG tag,
 	ColliderType colliderType, 
+	COLLISION_LAYER layer,
 	XMFLOAT3 collisionBoxSize, 
 	bool collisionIsTrigger
 )
@@ -30,6 +31,7 @@ ObjectBase::ObjectBase(
 	m_pCollider = new Collider(
 		this,				//所有者オブジェクト
 		colliderType,		//コライダータイプ
+		layer,				//衝突レイヤー
 		collisionBoxSize,	//コライダーのボックスサイズ
 		collisionIsTrigger	//トリガーフラグ
 	);

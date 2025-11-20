@@ -85,8 +85,12 @@ private:
 
 private:
 	//ChackCollisions()の補助関数
-	void BroadPhase();    //ブロードフェーズ
-	void NarrowPhase();  //ナローフェーズ
+	void BroadPhase();	//ブロードフェーズ
+	void NarrowPhase();	//ナローフェーズ
+	bool CheckLayer(	//衝突レイヤーのチェック
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
 
 	//各種衝突判定関数
 	bool CollisionAABB(	//ボックス対ボックスの衝突判定

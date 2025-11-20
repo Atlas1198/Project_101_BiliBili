@@ -66,11 +66,12 @@ enum BLEND_MODE
 //タグ列挙体
 enum class OBJECT_TAG
 {
-	NONE = 0,
-	PLAYER,
-	WALL,
-	GROUND,
-	BULLET,
+	NONE = 0,	//なし
+	PLAYER,		//プレイヤー
+	WALL,		//壁
+	GROUND,		//地面
+	BULLET,		//弾
+	MAX			//最大数
 };
 
 //描画情報用名前空間
@@ -326,4 +327,27 @@ namespace CollisionData
 		COLLISION_STAY,			//衝突継続
 		COLLISION_END,			//衝突終了
 	};
+
+	//コリジョンレイヤー列挙体
+	enum class COLLISION_LAYER
+	{
+		DEFAULT = 0,	//デフォルト
+		PLAYER,			//プレイヤー
+		WALL,			//壁
+		GROUND,			//地面
+		BULLET,			//弾
+		MAX_LAYER		//最大数
+	};
+
+	//レイヤーマスク型
+	using LayerMask = uint32_t;
+
+	//レイヤーをビットに変換する関数
+	LayerMask LayerToBit(COLLISION_LAYER layer);
+
+	//レイヤーマスク取得関数
+	LayerMask GetLayerMask(COLLISION_LAYER layer);
+
+	//複数のレイヤーからレイヤーマスクを作成する関数
+	LayerMask MakeMask(std::initializer_list<COLLISION_LAYER> layers);
 }

@@ -51,25 +51,19 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		)
 	);
 
-	for(int i = 0 ; i < 50; i++)
-	{
-		for (int j = 0; j < 50; j++)
-		{
-			m_pGrounds.push_back(
-				new Ground(
-					MeshData::MESH_TYPE::QUAD,
-					XMFLOAT3(i * 4.0f - 100.0f, -5.0f, j * 4.0f - 100.0f),	//位置
-					XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
-					XMFLOAT3(4.0f, 4.0f, 1.0f),	//スケール
-					XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-					true,							//アクティブフラグ
-					ColliderType::BOX,				//コライダータイプ
-					XMFLOAT3(100.0f, 100.0f, 1.0f),	//コライダーボックスサイズ
-					false							//コライダーのトリガーフラグ
-				)
-			);
-		}
-	}
+	m_pGrounds.push_back(
+		new Ground(
+			MeshData::MESH_TYPE::QUAD,
+			XMFLOAT3(0.0f, -3.0f, 0.0f),	//位置
+			XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(50.0f, 50.0f, 1.0f),	//スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
+			true,							//アクティブフラグ
+			ColliderType::BOX,				//コライダータイプ
+			XMFLOAT3(50.0f, 50.0f, 1.0f),		//コライダーボックスサイズ
+			false							//コライダーのトリガーフラグ
+		)
+	);
 
 	for (auto& wall : m_pWalls)
 	{

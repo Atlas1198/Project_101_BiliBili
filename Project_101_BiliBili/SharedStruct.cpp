@@ -662,3 +662,61 @@ void MeshData::AppendCapsuleRenderInfos(
 	out[2].world = botW;
 	out[2].color = color;
 }
+
+//コリジョンレイヤーをビットマスクに変換する関数
+CollisionData::LayerMask CollisionData::LayerToBit(COLLISION_LAYER layer)
+{
+	return static_cast<LayerMask>(1 << static_cast<uint32_t>(layer));
+}
+
+//コリジョンレイヤーからレイヤーマスクを取得する関数
+CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
+{
+	switch (layer)
+	{//コリジョンレイヤーごとに当たり判定を行うレイヤーマスクを設定
+	case CollisionData::COLLISION_LAYER::DEFAULT:
+		break;
+	case CollisionData::COLLISION_LAYER::PLAYER:
+		return MakeMask({
+			COLLISION_LAYER::WALL,		//壁レイヤー
+			COLLISION_LAYER::GROUND,	//地面レイヤー
+			COLLISION_LAYER::BULLET		//弾レイヤー
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::WALL:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
+			COLLISION_LAYER::BULLET		//弾レイヤー
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::GROUND:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
+			COLLISION_LAYER::BULLET		//弾レイヤー
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::BULLET:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
+			COLLISION_LAYER::WALL,		//壁レイヤー
+			COLLISION_LAYER::GROUND		//地面レイヤー
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::MAX_LAYER:
+		return 0;
+		break;
+	default:
+		break;
+	}
+}
+
+//複数のコリジョンレイヤーからレイヤーマスクを作成する関数
+CollisionData::LayerMask CollisionData::MakeMask(std::initializer_list<COLLISION_LAYER> layers)
+{
+	LayerMask mask = 0;	//レイヤーマスク
+	for (auto layer : layers)
+	{
+		mask |= LayerToBit(layer);	//ビットマスクを合成
+	}
+	return mask;	//レイヤーマスクを返す
+}

@@ -12,18 +12,20 @@ class ObjectBase
 {
 public:	//公開関数
 	ObjectBase(	//コンストラクタ
-		MeshData::MESH_TYPE meshType,			//メッシュタイプ
-		DirectX::XMFLOAT3 position,				//座標
-		DirectX::XMFLOAT3 rotation,				//回転
-		DirectX::XMFLOAT3 scale,				//スケール
-		DirectX::XMFLOAT3 velocity,				//移動速度
-		bool isActive = true,					//アクティブフラグ
-		OBJECT_TAG tag = OBJECT_TAG::NONE,		//オブジェクトタグ
-		ColliderType colliderType =				//コライダータイプ
+		MeshData::MESH_TYPE meshType,					//メッシュタイプ
+		DirectX::XMFLOAT3 position,						//座標
+		DirectX::XMFLOAT3 rotation,						//回転
+		DirectX::XMFLOAT3 scale,						//スケール
+		DirectX::XMFLOAT3 velocity,						//移動速度
+		bool isActive = true,							//アクティブフラグ
+		OBJECT_TAG tag = OBJECT_TAG::NONE,				//オブジェクトタグ
+		ColliderType colliderType =						//コライダータイプ
 			ColliderType::BOX,	
-		DirectX::XMFLOAT3 collisionBoxSize =	//コライダーのボックスサイズ
+		CollisionData::COLLISION_LAYER layer =
+			CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
+		DirectX::XMFLOAT3 collisionBoxSize =			//コライダーのボックスサイズ
 			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool collisionIsTrigger = false			//コライダーのトリガーフラグ
+		bool collisionIsTrigger = false					//コライダーのトリガーフラグ
 	);
 	~ObjectBase();	//デストラクタ
 
