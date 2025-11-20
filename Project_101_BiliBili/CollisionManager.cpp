@@ -186,13 +186,27 @@ void CollisionManager::BroadPhase()
 	{
 		for(int j = i + 1; j < m_pCollidersList.size(); j++)
 		{
-			bool isCollided = CollisionAABB(	//AABB同士の当たり判定
+			Collider* colliderA = m_pCollidersList[i];	//コライダーA
+			Collider* colliderB = m_pCollidersList[j];	//コライダーB
+
+			//レイヤーチェック
+			if(!CheckLayer(
+				m_pCollidersList[i],	//コライダーA
+				m_pCollidersList[j]		//コライダーB
+			))
+			{
+				continue;	//衝突しない場合はスキップ
+			}
+
+			//AABB同士の当たり判定
+			bool isCollided = CollisionAABB(
 				m_pCollidersList[i],	//コライダーA
 				m_pCollidersList[j]		//コライダーB
 			);
 
+			//衝突の可能性あり
 			if(isCollided)
-			{//衝突の可能性あり
+			{
 				SendNarrowPhase(	//ナローフェーズ用配列に衝突ペアを追加
 					m_pCollidersList[i],	//コライダーA
 					m_pCollidersList[j]		//コライダーB
@@ -265,6 +279,21 @@ void CollisionManager::NarrowPhase()
 			}
 		}
 	}
+}
+
+//レイヤーチェック
+bool CollisionManager::CheckLayer(Collider* colliderA, Collider* colliderB)
+{
+	LayerMask bitA = LayerToBit(colliderA->GetLayer());	//コライダーAのレイヤーマスク
+	LayerMask bitB = LayerToBit(colliderB->GetLayer());	//コライダーBのレイヤーマスク
+
+	LayerMask maskA = colliderA->GetLayerMask();	//コライダーAのレイヤーマスク
+	LayerMask maskB = colliderB->GetLayerMask();	//コライダーBのレイヤーマスク
+
+	bool aWantsB = (maskA & bitB) != 0;	//コライダーAがコライダーBと衝突したいかどうか
+	bool bWantsA = (maskB & bitA) != 0;	//コライダーBがコライダーAと衝突したいかどうか
+
+	return aWantsB && bWantsA;	//いずれかが衝突したい場合はtrueを返す
 }
 
 //コライダーの登録

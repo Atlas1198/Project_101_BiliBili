@@ -40,6 +40,7 @@ public:	//åˆäJä÷êî
 			isActive, 
 			OBJECT_TAG::PLAYER,
 			colliderType, 
+			CollisionData::COLLISION_LAYER::PLAYER,
 			collisionBoxSize, 
 			collisionIsTrigger), 
 		id(id) {}

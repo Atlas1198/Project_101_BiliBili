@@ -55,24 +55,30 @@ class Collider
 {
 public:
 	Collider(		//コンストラクタ
-		ObjectBase* owner,						//所有者オブジェクト
-		ColliderType type,						//コライダータイプ
+		ObjectBase* owner,								//所有者オブジェクト
+		ColliderType type,								//コライダータイプ
+		CollisionData::COLLISION_LAYER layer = 
+			CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
 		DirectX::XMFLOAT3 boxSize =
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),	//ボックスサイズ
-		bool isTrigger = false					//トリガーフラグ
-	);
+		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),			//ボックスサイズ
+		bool isTrigger = false							//トリガーフラグ
+	);	
 	~Collider();	//デストラクタ
 
+	//コライダー更新関数
 	void Update();			//コライダー更新
 	void UpdateCollider();	//各種コライダー更新
 	void UpdateAABB();		//AABB更新
 
+	//衝突情報操作関数
 	void AddCollisionInfo(const CollisionData::CollisionInfo& info);	//衝突情報追加
-	void ClearInfos();									//衝突情報配列クリア
+	void ClearInfos();													//衝突情報配列クリア
 
 	//ゲッター
 	ObjectBase* GetOwner() const;												//所有者オブジェクト取得
 	ColliderType GetType() const;												//コライダータイプ取得
+	CollisionData::COLLISION_LAYER GetLayer() const;							//衝突レイヤー取得
+	CollisionData::LayerMask GetLayerMask() const;								//衝突レイヤーマスク取得
 	const bool IsTrigger() const;												//トリガーフラグ取得
 	const AABB GetAABB();														//軸平行境界ボックス取得
 	const BoxCollider GetBoxCollider();											//ボックスコライダー取得
@@ -91,9 +97,11 @@ public:
 	void SetDeleteFlag(bool flag);	//デリートフラグ
 
 private:
-	ObjectBase* m_pOwner = nullptr;	//所有者オブジェクト
-	ColliderType m_type;			//コライダータイプ
-	bool m_isTrigger = false;		//トリガーフラグ(物理衝突を無視するかどうか)
+	ObjectBase* m_pOwner = nullptr;			//所有者オブジェクト
+	ColliderType m_type;					//コライダータイプ
+	CollisionData::COLLISION_LAYER m_layer;	//衝突レイヤー
+	CollisionData::LayerMask m_layerMask;	//衝突レイヤーマスク
+	bool m_isTrigger = false;				//トリガーフラグ(物理衝突を無視するかどうか)
 
 	AABB m_aabb;	//軸平行境界ボックス(BroadPhase用)
 
@@ -103,15 +111,14 @@ private:
 	CapsuleCollider m_capsuleCollider;	//カプセルコライダー
 
 	//ワールド情報
-	DirectX::XMFLOAT3 m_center;		//中心座標
-	DirectX::XMFLOAT3 m_scale;		//サイズ
-	DirectX::XMFLOAT3 m_rotation;	//回転
+	DirectX::XMFLOAT3 m_center;			//中心座標
+	DirectX::XMFLOAT3 m_scale;			//サイズ
+	DirectX::XMFLOAT3 m_rotation;		//回転
 	DirectX::XMFLOAT3 m_scaleOffset;	//オブジェクトとのサイズ差
 
 	std::vector<CollisionData::CollisionInfo> m_collisionInfos; //衝突情報配列(所有者オブジェクト用)
 
-	bool m_isDetected = false; //衝突検知フラグ（描画用）
-
+	bool m_isDetected = false;	//衝突検知フラグ（描画用）
 	bool m_deleteFlag = false;	//デリートフラグ
 
 private:
