@@ -8,6 +8,12 @@
 #include <commdlg.h>
 #include "json.hpp"
 #include <fstream>
+#include <curl/curl.h>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <sstream>
+#include <condition_variable>
 
 using json = nlohmann::json;
 
@@ -19,9 +25,25 @@ std::string CreateParameterString(const ToolbarControl &toolbar);
 void InitializeDPIScale(HWND hwnd);
 void LoadParameters();
 
+// Custom app-level message for notifying main thread of new Firebase data
+static const UINT WM_FIREBASE_UPDATE = WM_APP + 101;
+
+// Thread/control state for Firebase streaming
+static std::thread g_firebaseThread;
+static std::atomic<bool> g_firebaseRunning{ false };
+static std::mutex g_firebaseMutex;
+static std::string g_firebaseLatestPayload; // JSON string protected by mutex
+
+// Forward declarations
+void StartFirebaseStream();
+void StopFirebaseStream();
+void ApplyFirebaseStreamData(); // runs on UI thread (main window)
+static size_t FirebaseStreamWriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
+
 struct ParamUI
 {
 	std::string name;
+	std::string id;
 	ToolParameter *param;
 	HWND hLabel;
 	HWND hSlider;
@@ -60,6 +82,7 @@ LRESULT CALLBACK ToolDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 		params->push_back(
 			ParamUI{
 				"移動スピード",
+				"move-speed",
 				&app->toolbar.parameters[0],
 				NULL,
 				NULL,
@@ -305,6 +328,10 @@ LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		Keyboard_ProcessMessage(msg, wParam, lParam);
 		break;
 
+	case WM_FIREBASE_UPDATE:
+		ApplyFirebaseStreamData();
+		break;
+
 	case WM_DESTROY:		//ウィンドウ破壊時
 		PostQuitMessage(0);	//OSに対する終了メッセージ
 		return 0;
@@ -323,6 +350,10 @@ App* App::GetInstance()
 bool App::Initialize()
 {
 	LoadParameters();
+
+	// Start background streaming thread (will PostMessage to main window on updates)
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+	StartFirebaseStream();
 
 	CreateMainWindow(hwnd, wc);	//メインウィンドウの生成
 
@@ -449,6 +480,10 @@ void App::Run()
 //終了
 void App::Terminate()
 {
+	// Stop the Firebase streaming thread before tearing down other systems
+	StopFirebaseStream();
+	curl_global_cleanup();
+
 	m_pEngine->Terminate(); //DirectX12エンジンの終了
 
 	//delete m_pCamera;		//カメラの解放
@@ -818,4 +853,250 @@ void LoadParameters()
 			param.SetValue(data[param.name].get<float>() * param.divisionBy);
 		}
 	}
+}
+
+// Start the streaming thread; safe to call multiple times (will guard)
+void StartFirebaseStream()
+{
+	if (g_firebaseRunning.load()) return; // already running
+
+	g_firebaseRunning.store(true);
+	g_firebaseThread = std::thread([]()
+		{
+			// thread-local buffer and CURL handle
+			CURL *curl = nullptr;
+			CURLcode res = CURLE_OK;
+
+			while (g_firebaseRunning.load())
+			{
+				curl = curl_easy_init();
+				if (!curl)
+				{
+					// Failed to init curl; back off a bit and retry
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+					continue;
+				}
+
+				// Set the REST streaming endpoint (Firebase Realtime DB)
+				// Keep the same endpoint you used before
+				const char *url = "https://bilibili-9e370-default-rtdb.asia-southeast1.firebasedatabase.app/parameters.json";
+
+				curl_easy_setopt(curl, CURLOPT_URL, url);
+				// Request server-sent events stream
+				struct curl_slist *headers = nullptr;
+
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+				// Windows: avoid signals in libcurl
+				curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+				headers = curl_slist_append(headers, "Accept: text/event-stream");
+				headers = curl_slist_append(headers, "Connection: keep-alive");
+				curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FirebaseStreamWriteCallback);
+				// userp not used; callback will use global/mutex & PostMessage
+				curl_easy_setopt(curl, CURLOPT_WRITEDATA, nullptr);
+
+				// Keepalive options (optional)
+				curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
+				curl_easy_setopt(curl, CURLOPT_TCP_KEEPIDLE, 60L);
+				curl_easy_setopt(curl, CURLOPT_TCP_KEEPINTVL, 30L);
+
+				// for debug
+				curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+				// Make the blocking streaming call. It will return on error or when server closes.
+				res = curl_easy_perform(curl);
+				if (res != CURLE_OK)
+				{
+					std::fprintf(stderr, "Firebase stream curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+				}
+
+				// Clean up this attempt
+				curl_slist_free_all(headers);
+				curl_easy_cleanup(curl);
+				curl = nullptr;
+
+				// If still running, wait and then reconnect (simple backoff)
+				if (g_firebaseRunning.load())
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				}
+			}
+		}); // end thread lambda
+}
+
+// Stop streaming and join the thread
+void StopFirebaseStream()
+{
+	if (!g_firebaseRunning.load()) return;
+
+	g_firebaseRunning.store(false);
+	// curl_easy_perform will eventually return (server close or error). Wait for thread to join.
+	if (g_firebaseThread.joinable())
+	{
+		// give it some time to exit gracefully, but then join
+		g_firebaseThread.join();
+	}
+}
+
+// libcurl write callback for SSE; runs in background thread
+static size_t FirebaseStreamWriteCallback(void *contents, size_t size, size_t nmemb, void * /*userp*/)
+{
+	size_t total = size * nmemb;
+	thread_local std::string buffer;
+	buffer.append(static_cast<char *>(contents), total);
+
+	// Normalize CRLF -> LF so we can reliably split on "\n\n"
+	size_t pos_replace = 0;
+	while ((pos_replace = buffer.find("\r\n", pos_replace)) != std::string::npos)
+	{
+		buffer.replace(pos_replace, 2, "\n");
+	}
+
+	// Process completed SSE events separated by blank line ("\n\n")
+	for (;;)
+	{
+		size_t sep = buffer.find("\n\n");
+		if (sep == std::string::npos) break;
+
+		std::string eventBlock = buffer.substr(0, sep);
+		buffer.erase(0, sep + 2);
+
+		std::istringstream iss(eventBlock);
+		std::string line;
+		std::string dataPayload;
+		while (std::getline(iss, line))
+		{
+			// Remove possible trailing CR (defensive)
+			if (!line.empty() && line.back() == '\r')
+				line.pop_back();
+
+			const std::string dataPrefix = "data:";
+			if (line.size() >= dataPrefix.size() && line.compare(0, dataPrefix.size(), dataPrefix) == 0)
+			{
+				std::string part = line.substr(dataPrefix.size());
+				// trim leading whitespace
+				while (!part.empty() && (part.front() == ' ' || part.front() == '\t'))
+					part.erase(part.begin());
+				dataPayload += part;
+			}
+		}
+
+		if (!dataPayload.empty())
+		{
+			{
+				std::lock_guard<std::mutex> lock(g_firebaseMutex);
+				g_firebaseLatestPayload = dataPayload;
+			}
+
+			App *app = App::GetInstance();
+			if (app && app->hwnd)
+			{
+				PostMessage(app->hwnd, WM_FIREBASE_UPDATE, 0, 0);
+			}
+		}
+	}
+
+	return total;
+}
+
+// Called on UI thread. Grabs latest payload under lock and applies parameter updates to UI controls.
+void ApplyFirebaseStreamData()
+{
+	std::string payload;
+	{
+		std::lock_guard<std::mutex> lock(g_firebaseMutex);
+		if (g_firebaseLatestPayload.empty()) return;
+		payload = g_firebaseLatestPayload;
+		// optional: clear so same payload not reapplied repeatedly
+		// g_firebaseLatestPayload.clear();
+	}
+
+	json data;
+	try
+	{
+		data = json::parse(payload);
+	}
+	catch (const std::exception &ex)
+	{
+		std::fprintf(stderr, "Failed to parse Firebase payload JSON: %s\n", ex.what());
+		return;
+	}
+
+	if (!data.contains("data"))
+	{
+		std::fprintf(stderr, "Firebase payload missing 'data' field\n");
+		return;
+	}
+
+	// Normalize into an object mapping param-name -> value
+	json root;
+	if (data["data"].is_object())
+	{
+		// initial full payload: data is object
+		root = data["data"];
+	}
+	else
+	{
+		// update payload: data is a primitive, use path to map key
+		if (!data.contains("path") || !data["path"].is_string())
+		{
+			std::fprintf(stderr, "Firebase payload primitive with no valid 'path'\n");
+			return;
+		}
+
+		std::string path = data["path"].get<std::string>();
+		// strip leading slashes
+		while (!path.empty() && path.front() == '/') path.erase(path.begin());
+		if (path.empty())
+		{
+			// primitive at root; skip
+			std::fprintf(stderr, "Firebase primitive at root path; ignoring\n");
+			return;
+		}
+
+		// use last segment as key
+		size_t pos = path.find_last_of('/');
+		std::string key = (pos == std::string::npos) ? path : path.substr(pos + 1);
+
+		root = json::object();
+		root[key] = data["data"];
+	}
+
+	auto &toolbar = App::GetInstance()->toolbar;
+	auto params = reinterpret_cast<std::vector<ParamUI>*>(GetWindowLongPtr(toolbar.hToolbar, GWLP_USERDATA));
+	if (!params) return;
+
+	// Update App parameters and UI sliders/texts on the main thread
+	for (size_t i = 0; i < toolbar.parameters.size() && i < params->size(); ++i)
+	{
+		auto &param = toolbar.parameters[i];
+		if (root.contains(param.name))
+		{
+			try
+			{
+				float newVal = root[param.name].get<float>() * param.divisionBy;
+				param.SetValue(newVal);
+
+				// Update slider position and value text
+				SetSliderRange(
+					params->at(i).hSlider,
+					params->at(i).min,
+					params->at(i).max,
+					params->at(i).param->GetIntValue()
+				);
+
+				std::string s = std::to_string(param.GetValue());
+				SetWindowText(params->at(i).hValue, s.c_str());
+			}
+			catch (const std::exception &ex)
+			{
+				std::fprintf(stderr, "Error applying parameter '%s': %s\n", param.name.c_str(), ex.what());
+			}
+		}
+	}
+
+	SetFocus(App::GetInstance()->hwnd);
+
 }
