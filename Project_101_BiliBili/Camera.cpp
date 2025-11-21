@@ -22,29 +22,6 @@ void Camera::Initialize(InputManager* pInputManager)
 //カメラ更新
 void Camera::Update()
 {
-	//カメラ移動処理などをここに追加可能
-	//if (m_pInputInfo->w.down)
-	//{
-	//	//前進
-	//	m_position.z += 0.1f;
-
-	//}
-	//if (m_pInputInfo->s.down)
-	//{
-	//	//後退
-	//	m_position.z -= 0.1f;
-	//}
-	//if (m_pInputInfo->a.down)
-	//{
-	//	//左移動
-	//	m_position.x -= 0.1f;
-	//}
-	//if (m_pInputInfo->d.down)
-	//{
-	//	//右移動
-	//	m_position.x += 0.1f;
-	//}
-
 	UpdateCameraInfo(); //カメラ情報構造体を更新
 }
 

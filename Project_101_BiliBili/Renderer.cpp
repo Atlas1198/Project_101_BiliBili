@@ -66,11 +66,11 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo)
 		//定数バッファにビュー行列をセット
 		ptr->viewMatrix = m_view;
 
-		//プロジェクション行列の計算
+		//プロジェクション行列の更新
 		m_proj = XMMatrixPerspectiveFovLH(
-			pInfo->fov,			//垂直視野角
+			pInfo->fov,			//視野角
 			pInfo->aspectRatio,	//アスペクト比
-			pInfo->nearZ,		//ニアクリップ距離
+			pInfo->nearZ,			//ニアクリップ距離
 			pInfo->farZ			//ファークリップ距離
 		);
 
@@ -118,9 +118,9 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 
 	//プロジェクション行列の更新
 	m_proj = XMMatrixPerspectiveFovLH(
-		info.fov,			//垂直視野角
+		info.fov,			//視野角
 		info.aspectRatio,	//アスペクト比
-		info.nearZ,		//ニアクリップ距離
+		info.nearZ,			//ニアクリップ距離
 		info.farZ			//ファークリップ距離
 	);
 }
