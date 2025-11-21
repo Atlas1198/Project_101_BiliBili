@@ -75,22 +75,22 @@ public:
 	void ClearInfos();													//衝突情報配列クリア
 
 	//ゲッター
-	ObjectBase* GetOwner() const;												//所有者オブジェクト取得
-	ColliderType GetType() const;												//コライダータイプ取得
-	CollisionData::COLLISION_LAYER GetLayer() const;							//衝突レイヤー取得
-	CollisionData::LayerMask GetLayerMask() const;								//衝突レイヤーマスク取得
-	const bool IsTrigger() const;												//トリガーフラグ取得
-	const AABB GetAABB();														//軸平行境界ボックス取得
-	const BoxCollider GetBoxCollider();											//ボックスコライダー取得
-	const SphereCollider GetSphereCollider();									//球コライダー取得
-	const CapsuleCollider GetCapsuleCollider();									//カプセルコライダー取得
-	const DirectX::XMMATRIX GetWorldMatrix() const;								//ワールド行列の取得
-	const std::vector<CollisionData::CollisionInfo>& GetCollisionInfos() const;	//衝突情報配列取得
-	const bool isDetected() const;												//衝突検知フラグ取得
-	const bool deleteFlag() const;												//デリートフラグ
-	DirectX::XMFLOAT3 GetCenter() const;										//中心座標取得
-	DirectX::XMFLOAT3 GetScale() const;											//サイズ取得
-	DirectX::XMFLOAT3 GetRotation() const;										//回転取得
+	ObjectBase* GetOwner() const;									//所有者オブジェクト取得
+	ColliderType GetType() const;									//コライダータイプ取得
+	CollisionData::COLLISION_LAYER GetLayer() const;				//衝突レイヤー取得
+	CollisionData::LayerMask GetLayerMask() const;					//衝突レイヤーマスク取得
+	const bool IsTrigger() const;									//トリガーフラグ取得
+	const AABB GetAABB();											//軸平行境界ボックス取得
+	const BoxCollider GetBoxCollider();								//ボックスコライダー取得
+	const SphereCollider GetSphereCollider();						//球コライダー取得
+	const CapsuleCollider GetCapsuleCollider();						//カプセルコライダー取得
+	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
+	std::vector<CollisionData::CollisionInfo>& GetCollisionInfos();	//衝突情報配列取得
+	const bool isDetected() const;									//衝突検知フラグ取得
+	const bool deleteFlag() const;									//デリートフラグ
+	DirectX::XMFLOAT3 GetCenter() const;							//中心座標取得
+	DirectX::XMFLOAT3 GetScale() const;								//サイズ取得
+	DirectX::XMFLOAT3 GetRotation() const;							//回転取得
 
 	//セッター
 	void SetDetected(bool flag);	//衝突検知フラグ
