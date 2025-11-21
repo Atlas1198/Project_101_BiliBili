@@ -113,6 +113,11 @@ void FieldManager::ResolveCollisionsOverride()
 //終了
 void FieldManager::FinalizeOverride()
 {
+	m_pWalls.clear();
+	m_pGrounds.clear();
+
+	m_wallInfo.clear();
+	m_groundInfo.clear();
 }
 
 //オブジェクトの描画情報生成

@@ -31,6 +31,12 @@ void PlayerManager::InitializeOverride(
 {
 	//プレイヤー描画情報生成
 	PrepareRenderInfo(textureManager, meshManager);
+
+	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
+	{
+		//コライダー情報をシーンに提出
+		SubmitColliders(collisionManager, (*it)->GetCollider());
+	}
 }
 
 void PlayerManager::AddPlayer(
@@ -74,9 +80,6 @@ void PlayerManager::AddPlayer(
 		//プレイヤーオブジェクトの初期化
 		m_pPlayer.back()->Initialize(pInputManager); //入力情報構造体の取得
 	}
-
-	//コライダー情報をシーンに提出
-	SubmitColliders(collisionManager, m_pPlayer.back()->GetCollider());
 }
 
 void PlayerManager::RemovePlayer(uint32_t id)

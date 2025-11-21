@@ -99,4 +99,6 @@ void GameScene::DrawOverride(Renderer& pRenderer)
 //終了
 void GameScene::FinalizeOverride()
 {
+	m_pPlayerManager->Finalize();	//プレイヤー管理クラス終了
+	m_pFieldManager->Finalize();	//フィールド管理クラス終了
 }
