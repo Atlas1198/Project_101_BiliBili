@@ -66,7 +66,6 @@ public:
 
 	//コライダー配列の操作
 	void RegisterCollider(Collider* collider);	//コライダー登録
-	void RemoveCollider(Collider* collider);	//コライダー削除
 	void ClearColliders();						//コライダークリア
 
 	void CreateColliderRenderInfo(	//コライダー描画情報作成
@@ -77,6 +76,7 @@ public:
 private:
 	std::vector<Collider*> m_pCollidersList;				//コライダー配列
 	std::vector<CollisionPair> m_pNarrowPhaseColliders;		//ナローフェーズ用コライダー配列
+	std::vector<CollisionPair> m_currentCollisionPairs;		//今回の衝突ペア配列
 	std::vector<CollisionPair> m_previousCollisionPairs;	//前回の衝突ペア配列
 
 	std::vector<RenderData::RenderInfo> m_colliderRenderInfoBox;		//ボックスコライダー描画情報
@@ -87,37 +87,50 @@ private:
 	//ChackCollisions()の補助関数
 	void BroadPhase();	//ブロードフェーズ
 	void NarrowPhase();	//ナローフェーズ
+
+	bool NarrowPhaseCollision(	//ナローフェーズの衝突判定
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+
 	bool CheckLayer(	//衝突レイヤーのチェック
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
+
+	void RegisterCollisionPair(	//衝突ペアを登録
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+
+	void UpdateCollisionState();	//前回の衝突ペアと比較して新規衝突か継続衝突かをチェック
 
 	//各種衝突判定関数
 	bool CollisionAABB(	//ボックス対ボックスの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	void CollisionBoxToBox(	//ボックス対ボックスの衝突判定
+	bool CollisionBoxToBox(	//ボックス対ボックスの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	void CollisionSphereToSphere(	//球対球の衝突判定
+	bool CollisionSphereToSphere(	//球対球の衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	void CollisionCapsuleToCapsule(	//カプセル対カプセルの衝突判定
+	bool CollisionCapsuleToCapsule(	//カプセル対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	void CollisionBoxToSphere(	//ボックス対球の衝突判定
+	bool CollisionBoxToSphere(	//ボックス対球の衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	void CollisionBoxToCapsule(	//ボックス対カプセルの衝突判定
+	bool CollisionBoxToCapsule(	//ボックス対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	void CollisionSphereToCapsule(	//球対カプセルの衝突判定
+	bool CollisionSphereToCapsule(	//球対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
@@ -152,5 +165,14 @@ private:
 		const DirectX::FXMVECTOR& point,	//点
 		const OBB& obb,					//OBB
 		DirectX::XMVECTOR& outClosest	//OBB上の最短点
+	);
+	static bool PairExistsinList(	//衝突ペアが保存されているかどうかチェック
+		const CollisionPair& pair,							//衝突ペア
+		const std::vector<CollisionPair>& collisionPairs	//衝突ペア配列
+	);
+	static void SetCollisionState(	//コライダーの衝突ステートを設定
+		Collider* self,							//自分自身のコライダー
+		Collider* opponent,						//衝突相手のコライダー
+		CollisionData::COLLISION_STATE state	//衝突状態
 	);
 };

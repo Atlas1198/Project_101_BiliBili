@@ -311,21 +311,12 @@ class Collider;
 
 namespace CollisionData
 {
-	//衝突情報構造体
-	struct CollisionInfo
-	{
-		Collider* opponent;					//衝突相手のコライダー
-		DirectX::XMFLOAT3 contactPoint;		//衝突点
-		DirectX::XMFLOAT3 contactNormal;	//衝突法線
-		DirectX::XMFLOAT3 penetrationDepth;	//貫入深さ
-	};
-
 	//衝突状態列挙体
 	enum COLLISION_STATE
 	{
-		COLLISION_START = 0,	//衝突開始
+		COLLISION_ENTER = 0,	//衝突開始
 		COLLISION_STAY,			//衝突継続
-		COLLISION_END,			//衝突終了
+		COLLISION_EXIT,			//衝突終了
 	};
 
 	//コリジョンレイヤー列挙体
@@ -337,6 +328,16 @@ namespace CollisionData
 		GROUND,			//地面
 		BULLET,			//弾
 		MAX_LAYER		//最大数
+	};
+
+	//衝突情報構造体
+	struct CollisionInfo
+	{
+		Collider* opponent;						//衝突相手のコライダー
+		DirectX::XMFLOAT3 contactPoint;			//衝突点
+		DirectX::XMFLOAT3 contactNormal;		//衝突法線
+		DirectX::XMFLOAT3 penetrationDepth;		//貫入深さ
+		CollisionData::COLLISION_STATE state;	//衝突状態
 	};
 
 	//レイヤーマスク型

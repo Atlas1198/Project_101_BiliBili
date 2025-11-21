@@ -130,9 +130,9 @@ const DirectX::XMMATRIX Collider::GetWorldMatrix() const
 }
 
 //衝突情報配列取得
-const std::vector<CollisionInfo>& Collider::GetCollisionInfos() const
+std::vector<CollisionInfo>& Collider::GetCollisionInfos() 
 {
-	return m_collisionInfos;
+    return m_collisionInfos;
 }
 
 //衝突検知フラグ取得
