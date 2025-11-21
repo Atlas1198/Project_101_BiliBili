@@ -3,6 +3,7 @@
 #include "App.h"
 
 using namespace DirectX;
+using namespace CollisionData;
 
 //初期化
 void Player::Initialize(InputManager* pInputManager)
@@ -46,6 +47,15 @@ void Player::UpdateOverride()
 //衝突解決
 void Player::ResolveCollisionsOverride()
 {
+	XMFLOAT3 pushVector{};	//押し出しベクトル
+	auto& infos = m_pCollider->GetCollisionInfos();
+
+	pushVector = GetPushOutVector(infos, {OBJECT_TAG::WALL, OBJECT_TAG::GROUND});
+
+	//最大押し出しベクトル分だけ移動
+	m_position.x += pushVector.x;
+	m_position.y += pushVector.y;
+	m_position.z += pushVector.z;
 }
 
 //移動
@@ -125,6 +135,16 @@ void Player::Move()
 		//右移動
 		m_position.x += direction.z * MOVE_SPEED;
 		m_position.z -= direction.x * MOVE_SPEED;
+	}
+
+
+
+
+	m_position.y -= 0.1f; //重力
+	if (m_pInputInfo->a.down && m_pInputInfo->d.down)
+	{
+		//ジャンプ
+		m_position.y += 0.7f;
 	}
 }
 

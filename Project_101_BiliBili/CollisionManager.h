@@ -34,6 +34,15 @@ struct CapsuleSegment
 	float radius;				//半径
 };
 
+//衝突時のパラメータ
+struct ContactResult
+{
+	bool isCollided = false;	//衝突しているかどうか
+	DirectX::XMVECTOR point{};	//接触点
+	DirectX::XMVECTOR normal{};	//接触法線
+	float depth = 0.0f;			//貫通深度
+};
+
 // 衝突管理クラス
 class CollisionManager
 {
@@ -88,7 +97,7 @@ private:
 	void BroadPhase();	//ブロードフェーズ
 	void NarrowPhase();	//ナローフェーズ
 
-	bool NarrowPhaseCollision(	//ナローフェーズの衝突判定
+	ContactResult NarrowPhaseCollision(	//ナローフェーズの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
@@ -110,27 +119,27 @@ private:
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionBoxToBox(	//ボックス対ボックスの衝突判定
+	ContactResult CollisionBoxToBox(	//ボックス対ボックスの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionSphereToSphere(	//球対球の衝突判定
+	ContactResult CollisionSphereToSphere(	//球対球の衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionCapsuleToCapsule(	//カプセル対カプセルの衝突判定
+	ContactResult CollisionCapsuleToCapsule(	//カプセル対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionBoxToSphere(	//ボックス対球の衝突判定
+	ContactResult CollisionBoxToSphere(	//ボックス対球の衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionBoxToCapsule(	//ボックス対カプセルの衝突判定
+	ContactResult CollisionBoxToCapsule(	//ボックス対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionSphereToCapsule(	//球対カプセルの衝突判定
+	ContactResult CollisionSphereToCapsule(	//球対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
@@ -174,5 +183,15 @@ private:
 		Collider* self,							//自分自身のコライダー
 		Collider* opponent,						//衝突相手のコライダー
 		CollisionData::COLLISION_STATE state	//衝突状態
+	);
+	static void PushCollisionInfo(	//コライダーに衝突情報を追加
+		Collider* colliderA,	//自分自身のコライダー
+		Collider* colliderB,	//衝突相手のコライダー
+		ContactResult& result	//衝突時のパラメータ
+	);
+	static void OrientNormalAToB(	//法線ベクトルをAからBの方向に向ける
+		Collider* colliderA,	//自分自身のコライダー
+		Collider* colliderB,	//衝突相手のコライダー
+		ContactResult& result	//衝突時のパラメータ
 	);
 };

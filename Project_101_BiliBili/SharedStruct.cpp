@@ -7,6 +7,7 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "Collider.h"
+#include "ObjectBase.h"
 
 using namespace DirectX;
 
@@ -719,4 +720,35 @@ CollisionData::LayerMask CollisionData::MakeMask(std::initializer_list<COLLISION
 		mask |= LayerToBit(layer);	//ビットマスクを合成
 	}
 	return mask;	//レイヤーマスクを返す
+}
+
+//貫入深さから押し出しベクトルを取得する関数
+DirectX::XMFLOAT3 CollisionData::GetPushOutVector(const std::vector<CollisionData::CollisionInfo>& infos, const std::initializer_list<OBJECT_TAG>& tagList)
+{
+	using namespace DirectX;
+
+	XMFLOAT3 pushOutVectorMax{};	//最大押し出しベクトル
+
+	for (auto& info : infos)
+	{
+		OBJECT_TAG opponentTag = info.opponent->GetOwner()->GetTag();	//衝突相手のタグ取得
+
+		//衝突相手のタグがリストに含まれているか確認
+		if (std::find(tagList.begin(), tagList.end(), opponentTag) != tagList.end())
+		{
+			XMFLOAT3 pushOut = 
+			{
+					-info.penetrationDepth.x,
+					 info.penetrationDepth.y,
+					-info.penetrationDepth.z
+			};
+
+			//各軸ごとに最大の押し出しベクトルを取得
+			pushOutVectorMax.x = (fabs(pushOut.x) > fabs(pushOutVectorMax.x)) ? pushOut.x : pushOutVectorMax.x;
+			pushOutVectorMax.y = (fabs(pushOut.y) > fabs(pushOutVectorMax.y)) ? pushOut.y : pushOutVectorMax.y;
+			pushOutVectorMax.z = (fabs(pushOut.z) > fabs(pushOutVectorMax.z)) ? pushOut.z : pushOutVectorMax.z;
+		}
+	}
+
+	return pushOutVectorMax;	//押し出しベクトルを返す
 }

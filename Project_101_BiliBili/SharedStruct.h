@@ -351,4 +351,10 @@ namespace CollisionData
 
 	//複数のレイヤーからレイヤーマスクを作成する関数
 	LayerMask MakeMask(std::initializer_list<COLLISION_LAYER> layers);
+
+	//貫入深さから押し出しベクトルを取得する関数
+	DirectX::XMFLOAT3 GetPushOutVector(
+		const std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
+		const std::initializer_list<OBJECT_TAG>& tagList		//対象タグリスト
+	);
 }

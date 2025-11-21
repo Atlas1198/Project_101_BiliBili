@@ -168,3 +168,9 @@ MeshData::MESH_TYPE ObjectBase::GetMeshType() const
 {
 	return m_meshType;
 }
+
+//オブジェクトタグの取得
+OBJECT_TAG ObjectBase::GetTag() const
+{
+	return m_tag;
+}
