@@ -43,19 +43,28 @@ void Player::UpdateOverride()
 		Move();		//移動
 	}
 }
-
+ 
 //衝突解決
 void Player::ResolveCollisionsOverride()
 {
 	XMFLOAT3 pushVector{};	//押し出しベクトル
 	auto& infos = m_pCollider->GetCollisionInfos();
 
-	pushVector = GetPushOutVector(infos, {OBJECT_TAG::WALL, OBJECT_TAG::GROUND});
+	pushVector = GetPushOutVector(infos, {OBJECT_TAG::PLAYER, OBJECT_TAG::WALL, OBJECT_TAG::GROUND});
 
 	//最大押し出しベクトル分だけ移動
 	m_position.x += pushVector.x;
 	m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
+
+	for (auto& info : infos)
+	{
+		if (info.opponent->GetOwner()->GetTag() == OBJECT_TAG::GROUND)
+		{
+			//地面に接触している場合はY座標を補正
+			m_velocity.y = 0.0f;
+		}
+	}
 }
 
 //移動
@@ -140,12 +149,14 @@ void Player::Move()
 
 
 
-	m_position.y -= 0.1f; //重力
+	m_velocity.y -= 0.1f; //重力
 	if (m_pInputInfo->a.down && m_pInputInfo->d.down)
 	{
 		//ジャンプ
-		m_position.y += 0.7f;
+		m_velocity.y += 0.2f;
 	}
+
+	m_position.y += m_velocity.y;
 }
 
 //回転

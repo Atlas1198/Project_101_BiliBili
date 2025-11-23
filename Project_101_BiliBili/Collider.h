@@ -66,9 +66,10 @@ public:
 	~Collider();	//デストラクタ
 
 	//コライダー更新関数
-	void Update();			//コライダー更新
-	void UpdateCollider();	//各種コライダー更新
-	void UpdateAABB();		//AABB更新
+	void Update();				//コライダー更新
+	void UpdateCollider();		//各種コライダー更新
+	void UpdateAABB();			//AABB更新
+	void SetPreviousState();	//前回状態の保存
 
 	//衝突情報操作関数
 	void AddCollisionInfo(const CollisionData::CollisionInfo& info);	//衝突情報追加
@@ -80,16 +81,21 @@ public:
 	CollisionData::COLLISION_LAYER GetLayer() const;				//衝突レイヤー取得
 	CollisionData::LayerMask GetLayerMask() const;					//衝突レイヤーマスク取得
 	const bool IsTrigger() const;									//トリガーフラグ取得
-	const AABB GetAABB();											//軸平行境界ボックス取得
-	const BoxCollider GetBoxCollider();								//ボックスコライダー取得
-	const SphereCollider GetSphereCollider();						//球コライダー取得
-	const CapsuleCollider GetCapsuleCollider();						//カプセルコライダー取得
+	const AABB GetSewptAABB();										//SWEPT軸平行境界ボックス取得
+	const BoxCollider GetCurrentBoxCollider();						//現在のボックスコライダー取得
+	const BoxCollider GetPreviousBoxCollider();						//前回のボックスコライダー取得
+	const SphereCollider GetCurrentSphereCollider();				//現在の球コライダー取得
+	const SphereCollider GetPreviousSphereCollider();				//前回の球コライダー取得
+	const CapsuleCollider GetCurrentCapsuleCollider();				//現在のカプセルコライダー取得
+	const CapsuleCollider GetPreviousCapsuleCollider();				//前回のカプセルコライダー取得
 	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
 	std::vector<CollisionData::CollisionInfo>& GetCollisionInfos();	//衝突情報配列取得
 	const bool isDetected() const;									//衝突検知フラグ取得
 	const bool deleteFlag() const;									//デリートフラグ
-	DirectX::XMFLOAT3 GetCenter() const;							//中心座標取得
-	DirectX::XMFLOAT3 GetScale() const;								//サイズ取得
+	DirectX::XMFLOAT3 GetCurrentCenter() const;						//現在の中心座標取得
+	DirectX::XMFLOAT3 GetPreviousCenter() const;					//前回の中心座標取得
+	DirectX::XMFLOAT3 GetCurrentScale() const;						//現在のサイズ取得
+	DirectX::XMFLOAT3 GetPreviousScale() const;						//前回のサイズ取得
 	DirectX::XMFLOAT3 GetRotation() const;							//回転取得
 
 	//セッター
@@ -103,16 +109,24 @@ private:
 	CollisionData::LayerMask m_layerMask;	//衝突レイヤーマスク
 	bool m_isTrigger = false;				//トリガーフラグ(物理衝突を無視するかどうか)
 
-	AABB m_aabb;	//軸平行境界ボックス(BroadPhase用)
+	//軸平行境界ボックス
+	AABB m_currentAABB;		//現在の軸平行境界ボックス(BroadPhase用)
+	AABB m_previousAABB;	//前回の軸平行境界ボックス(BroadPhase用)
+	AABB m_sweptAABB;		//SweptAABB(BroadPhase用)
 
 	//各種コライダー(テスト用に全て保持)
-	BoxCollider m_boxCollider;			//ボックスコライダー
-	SphereCollider m_sphereCollider;	//球コライダー
-	CapsuleCollider m_capsuleCollider;	//カプセルコライダー
+	BoxCollider m_currentBoxCollider;			//現在のボックスコライダー
+	BoxCollider m_previousBoxCollider;			//前回のボックスコライダー
+	SphereCollider m_currentSphereCollider;		//現在の球コライダー
+	SphereCollider m_previousSphereCollider;	//前回の球コライダー
+	CapsuleCollider m_currentCapsuleCollider;	//現在のカプセルコライダー
+	CapsuleCollider m_previousCapsuleCollider;	//前回のカプセルコライダー
 
 	//ワールド情報
-	DirectX::XMFLOAT3 m_center;			//中心座標
-	DirectX::XMFLOAT3 m_scale;			//サイズ
+	DirectX::XMFLOAT3 m_currentCenter;	//現在の中心座標
+	DirectX::XMFLOAT3 m_previousCenter;	//前回の中心座標
+	DirectX::XMFLOAT3 m_currentScale;	//現在のサイズ
+	DirectX::XMFLOAT3 m_previousScale;	//前回のサイズ
 	DirectX::XMFLOAT3 m_rotation;		//回転
 	DirectX::XMFLOAT3 m_scaleOffset;	//オブジェクトとのサイズ差
 
@@ -137,4 +151,5 @@ private:
 	void UpdateAABBBox();			//AABB更新(ボックスコライダー用)
 	void UpdateAABBSphere();		//AABB更新(球コライダー用)
 	void UpdateAABBCapsule();		//AABB更新(カプセルコライダー用)
+	void MakeSweptAABB();			//SweptAABB作成
 };

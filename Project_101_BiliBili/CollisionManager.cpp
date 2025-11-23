@@ -119,18 +119,18 @@ void CollisionManager::SubmitDraw(
 	if (collider.GetType() == ColliderType::CAPSULE)
 	{//カプセルメッシュの場合(複数メッシュに分かれているため個別に処理)
 		CapsuleVisualDesc desc{};	//カプセルメッシュの記述データ
-		float diamiter = (std::max)(collider.GetScale().x, collider.GetScale().z);
+		float diamiter = (std::max)(collider.GetCurrentScale().x, collider.GetCurrentScale().z);
 		XMFLOAT3 scale =
 		{
 			diamiter,
-			collider.GetScale().y,
+			collider.GetCurrentScale().y,
 			diamiter
 		};
 
 		//カプセルメッシュの記述データ設定
 		AppendCapsuleRenderInfos(
 			desc,					//カプセル描画情報記述子
-			collider.GetCenter(),	//位置
+			collider.GetCurrentCenter(),	//位置
 			scale,					//スケール
 			collider.GetRotation(),	//回転Euler角
 			color,					//色
@@ -185,11 +185,24 @@ void CollisionManager::CheckCollisions()
 	//ナローフェーズ
 	NarrowPhase();
 
+	//ナローフェーズ用配列クリア
+	m_pNarrowPhaseColliders.clear();
+
 	//衝突ステート更新
 	UpdateCollisionState();
 
-	//ナローフェーズ用配列クリア
-	m_pNarrowPhaseColliders.clear();
+	//各コライダーの前回状態を保存
+	for (auto collider : m_pCollidersList)
+	{
+		collider->SetPreviousState();
+	}
+}
+
+//衝突状態チェック
+void CollisionManager::CheckCollisionStates()
+{
+	//衝突ステート更新
+	UpdateCollisionState();
 }
 
 //ブロードフェーズ(衝突可能性のあるコライダーを絞り込む処理)
@@ -206,8 +219,8 @@ void CollisionManager::BroadPhase()
 
 			//レイヤーチェック
 			if(!CheckLayer(
-				m_pCollidersList[i],	//コライダーA
-				m_pCollidersList[j]		//コライダーB
+				colliderA,	//コライダーA
+				colliderB	//コライダーB
 			))
 			{
 				continue;	//衝突しない場合はスキップ
@@ -215,16 +228,16 @@ void CollisionManager::BroadPhase()
 
 			//AABB同士の当たり判定
 			bool isCollided = CollisionAABB(
-				m_pCollidersList[i],	//コライダーA
-				m_pCollidersList[j]		//コライダーB
+				colliderA,	//コライダーA
+				colliderB	//コライダーB
 			);
 
 			//衝突の可能性あり
 			if(isCollided)
 			{
 				SendNarrowPhase(	//ナローフェーズ用配列に衝突ペアを追加
-					m_pCollidersList[i],	//コライダーA
-					m_pCollidersList[j]		//コライダーB
+					colliderA,	//コライダーA
+					colliderB	//コライダーB
 				);
 			}
 		}
@@ -270,9 +283,30 @@ void CollisionManager::NarrowPhase()
 //ナローフェーズの衝突判定
 ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collider* colliderB)
 {
+	//CCDの必要性チェック
+	bool ccd = NeedsCCD(colliderA) || NeedsCCD(colliderB);
+
 	//コライダータイプの取得
 	ColliderType typeA = colliderA->GetType();
 	ColliderType typeB = colliderB->GetType();
+
+	//CCDが必要な場合
+	if (ccd)
+	{
+		//ボックス対カプセルのみCCD対応
+		if ((typeA == ColliderType::BOX && typeB == ColliderType::CAPSULE) ||
+			(typeA == ColliderType::CAPSULE && typeB == ColliderType::BOX))
+		{//ボックス対カプセル
+			if (typeA == ColliderType::BOX)
+			{
+				return CollisionBoxToCapsuleCCD(colliderA, colliderB);
+			}
+			else
+			{
+				return CollisionBoxToCapsuleCCD(colliderB, colliderA);
+			}
+		}
+	}
 
 	//コライダータイプに応じた衝突判定関数の呼び出し
 	if (typeA == ColliderType::BOX && typeB == ColliderType::BOX)
@@ -450,8 +484,8 @@ bool CollisionManager::CollisionAABB(
 )
 {
 	//AABB同士の当たり判定
-	AABB aabbA = colliderA->GetAABB();	//コライダーAのAABB取得
-	AABB aabbB = colliderB->GetAABB();	//コライダーBのAABB取得
+	AABB aabbA = colliderA->GetSewptAABB();	//コライダーAのAABB取得
+	AABB aabbB = colliderB->GetSewptAABB();	//コライダーBのAABB取得
 
 	//衝突検知
 	if (!(aabbA.min.x <= aabbB.max.x && aabbA.max.x >= aabbB.min.x)) return false;	//X軸方向
@@ -472,12 +506,14 @@ void CollisionManager::SendNarrowPhase(Collider* colliderA, Collider* colliderB)
 }
 
 //コライダーからOBBを作成
-OBB CollisionManager::CreateOBB(Collider* collider)
+OBB CollisionManager::CreateOBB(Collider* collider, float alpha)
 {
 	OBB obb{};	//OBB構造体
 
 	//中心
-	auto center = collider->GetCenter();
+	XMFLOAT3 currCenter = collider->GetCurrentCenter();		//今回の中心座標
+	XMFLOAT3 prevCenter = collider->GetPreviousCenter();	//前回の中心座標
+	XMFLOAT3 center = LerpXMF3(prevCenter, currCenter, alpha);	//LERP補間で中心座標を求める
 	obb.center = XMVectorSet(
 		center.x,
 		center.y,
@@ -486,7 +522,9 @@ OBB CollisionManager::CreateOBB(Collider* collider)
 		);
 
 	//半分のサイズ
-	auto scale = collider->GetScale();
+	XMFLOAT3 prevScale = collider->GetPreviousScale();	//前回のスケール
+	XMFLOAT3 currScale = collider->GetCurrentScale();	//今回のスケール
+	auto scale = LerpXMF3(prevScale, currScale, alpha);	//LERP補間でスケールを求める
 	obb.halfSizes = XMFLOAT3(
 		scale.x * 0.5f,
 		scale.y * 0.5f,
@@ -510,16 +548,91 @@ OBB CollisionManager::CreateOBB(Collider* collider)
 }
 
 //コライダーからカプセルセグメントを作成
-CapsuleSegment CollisionManager::CreateCapsuleSegment(Collider* collider)
+CapsuleSegment CollisionManager::CreateCapsuleSegment(Collider* collider, float alpha)
 {
 	CapsuleSegment seg{};	//カプセルセグメント構造体
-	const CapsuleCollider cap = collider->GetCapsuleCollider(); //カプセルコライダー取得
+	const CapsuleCollider currCap = collider->GetCurrentCapsuleCollider(); //現在のカプセルコライダー取得
+	const CapsuleCollider prevCap = collider->GetPreviousCapsuleCollider(); //前回のカプセルコライダー取得
 	
-	seg.radius = cap.radius;				//半径設定
-	seg.pointA = XMLoadFloat3(&cap.pointA);	//端点A設定
-	seg.pointB = XMLoadFloat3(&cap.pointB);	//端点B設定
+	seg.radius = prevCap.radius + (currCap.radius - prevCap.radius) * alpha;					//LERP補間で半径を求める
+	seg.pointA = LerpXMV(XMLoadFloat3(&prevCap.pointA), XMLoadFloat3(&currCap.pointA), alpha);	//端点A設定
+	seg.pointB = LerpXMV(XMLoadFloat3(&prevCap.pointB), XMLoadFloat3(&currCap.pointB), alpha);	//端点B設定
 
 	return seg;
+}
+
+//連続衝突検知が必要かどうかの判定
+bool CollisionManager::NeedsCCD(Collider* collider)
+{
+	const XMFLOAT3& prevCenter = collider->GetPreviousCenter();	//前回の中心座標
+	const XMFLOAT3& currCenter = collider->GetCurrentCenter();	//今回の中心座標
+	float distSq = LengthSqBetween(prevCenter, currCenter);			//移動距離の二乗
+
+	float thresh = 0.0f;	//閾値
+	ColliderType type = collider->GetType();	//コライダータイプ取得
+
+	float minExtent = 0.0f; //最小寸法
+
+	//コライダータイプに応じて閾値を設定
+	switch (type)
+	{
+	case ColliderType::BOX:		//ボックスコライダー
+		auto scale = collider->GetCurrentScale();
+		minExtent = (std::min)(scale.x, (std::min)(scale.y, scale.z));
+		thresh = minExtent * 0.25f;
+		break;
+	case ColliderType::SPHERE:	//球コライダー
+		thresh = collider->GetCurrentSphereCollider().radius * 0.5f;
+		break;
+	case ColliderType::CAPSULE:	//カプセルコライダー
+		thresh = collider->GetCurrentCapsuleCollider().radius * 0.5f;
+		break;
+	}
+
+	return distSq > thresh * thresh;	//閾値を超えている場合はtrueを返す
+}
+
+//サブステップ数の計算
+int CollisionManager::CalculateSubsteps(Collider* colliderA, Collider* colliderB)
+{
+	//移動距離を計算するラムダ式
+	auto disp = [&](Collider* collider) {
+		const XMFLOAT3& prevCenter = collider->GetPreviousCenter();	//前回の中心座標
+		const XMFLOAT3& currCenter = collider->GetCurrentCenter();	//今回の中心座標
+		return LengthBetween(prevCenter, currCenter);						//移動距離
+		};
+
+	//最大移動距離を計算
+	float maxDisp = (std::max)(disp(colliderA), disp(colliderB));
+
+	//ステップ長を計算するラムダ式
+	auto stepLen = [&](Collider* collider) {
+		ColliderType type = collider->GetType();	//コライダータイプ取得
+		switch (type)
+		{
+		case ColliderType::BOX:		//ボックスコライダー
+		{
+			auto scale = collider->GetCurrentScale();
+			float minExtent = (std::min)(scale.x, (std::min)(scale.y, scale.z));
+			return minExtent * 0.25f;
+		}
+		case ColliderType::SPHERE:	//球コライダー
+			return collider->GetCurrentSphereCollider().radius * 0.5f;
+		case ColliderType::CAPSULE:	//カプセルコライダー
+			return collider->GetCurrentCapsuleCollider().radius * 0.5f;
+		default:
+			return 0.1f;
+		}
+	};
+
+	//ステップ長の計算
+	float step = (std::min)(stepLen(colliderA), stepLen(colliderB));
+	step = (std::max)(step, 0.001f); //最小値でクランプ
+
+	//サブステップ数計算
+	int n = static_cast<int>(ceilf(maxDisp / step));	
+
+	return (std::min)((std::max)(n, 1), 512);	//1から256の範囲にクランプして返す
 }
 
 //ボックス同士の衝突判定
@@ -750,64 +863,17 @@ ContactResult CollisionManager::CollisionSphereToSphere(
 )
 {
 	ContactResult result{};	//衝突結果構造体
+	XMFLOAT3 centerA = colliderA->GetCurrentSphereCollider().center; //コライダーAの中心座標
+	XMFLOAT3 centerB = colliderB->GetCurrentSphereCollider().center; //コライダーBの中心座標
 
-	//中心点の取得
-	XMFLOAT3 centerA = colliderA->GetSphereCollider().center;
-	XMFLOAT3 centerB = colliderB->GetSphereCollider().center;
+	SphereSegment segA, segB;	//球セグメント構造体
+	segA.center = XMLoadFloat3(&centerA);						//コライダーAの中心座標
+	segA.radius = colliderA->GetCurrentSphereCollider().radius;	//コライダーAの半径
+	segB.center = XMLoadFloat3(&centerB);						//コライダーBの中心座標
+	segB.radius = colliderB->GetCurrentSphereCollider().radius;	//コライダーBの半径
 
-	//半径の取得
-	float radiusA = colliderA->GetSphereCollider().radius;
-	float radiusB = colliderB->GetSphereCollider().radius;
-	float radiusSum = radiusA + radiusB;
-
-	//中心点間の距離の計算
-	float dist = sqrtf(
-		(centerA.x - centerB.x) * (centerA.x - centerB.x) +
-		(centerA.y - centerB.y) * (centerA.y - centerB.y) +
-		(centerA.z - centerB.z) * (centerA.z - centerB.z)
-	);
-
-	//衝突検知
-	if (!(dist <= radiusSum)) return result;
-
-	//衝突時パラメータの計算
-	const float epsilon = 0.0001f;	//微小値
-	XMVECTOR point;					//衝突点
-	XMVECTOR normal;				//法線
-	float depth;					//貫入深さ
-
-	//衝突点の計算
-	point =
-	{
-		(centerA.x + centerB.x) / 2.0f,
-		(centerA.y + centerB.y) / 2.0f,
-		(centerA.z + centerB.z) / 2.0f
-	};
-
-	//法線ベクトル
-	if (dist < epsilon)
-	{//中心点がほぼ同じ位置にある場合の処理
-		//適当な法線ベクトルを設定
-		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	}
-	else
-	{
-		normal = XMVectorSet(
-			(centerB.x - centerA.x) / dist,
-			(centerB.y - centerA.y) / dist,
-			(centerB.z - centerA.z) / dist,
-			0.0f
-		);
-	}
-
-	//貫入深さ
-	depth = radiusSum - dist;
-
-	//衝突情報の作成
-	result.isCollided = true;	//衝突検知フラグON
-	result.point = point;		//衝突点
-	result.normal = normal;		//法線
-	result.depth = depth;		//貫入深さ
+	//球セグメント同士の衝突判定
+	result = CollisionSpheresSegments(segA, segB);
 
 	return result;
 }
@@ -832,12 +898,18 @@ ContactResult CollisionManager::CollisionCapsuleToCapsule(
 	float lenB = XMVectorGetX(XMVector3Dot(axisB, axisB)); //コライダーBの軸ベクトルの長さ
 
 	//軸ベクトルの長さが極端に短い場合の処理
-	if(lenA < epsilon || lenB < epsilon)
+	if (lenA < epsilon || lenB < epsilon)
 	{//長さが極端に短い場合は球体として扱う
-		return CollisionSphereToSphere(
-			colliderA,
-			colliderB
-		);
+		SphereSegment sphereA, sphereB;	//球セグメント構造体
+
+		sphereA.center = XMVectorScale(XMVectorAdd(segA.pointA, segA.pointB), 0.5f); //コライダーAの中心点
+		sphereA.radius = segA.radius;													//コライダーAの半径
+		sphereB.center = XMVectorScale(XMVectorAdd(segB.pointA, segB.pointB), 0.5f); //コライダーBの中心点
+		sphereB.radius = segB.radius;													//コライダーBの半径
+
+		//球セグメント同士の衝突判定
+		result = CollisionSpheresSegments(sphereA, sphereB);
+		return result;
 	}
 
 	//最短距離の二乗を取得
@@ -921,8 +993,8 @@ ContactResult CollisionManager::CollisionBoxToSphere(
 	}
 
 	//球情報の取得
-	sphereCenter = sphere->GetSphereCollider().center;	//球の中心点取得
-	sphereRadius = sphere->GetSphereCollider().radius;	//球の半径取得
+	sphereCenter = sphere->GetCurrentSphereCollider().center;	//球の中心点取得
+	sphereRadius = sphere->GetCurrentSphereCollider().radius;	//球の半径取得
 
 	//球の中心点をOBBのローカル座標系で表現
 	XMVECTOR boxCenterV = XMLoadFloat3(&boxCenter);			//OBBの中心点ベクトル
@@ -1065,155 +1137,10 @@ ContactResult CollisionManager::CollisionBoxToCapsule(
 {
 	ContactResult result{};	//衝突結果構造体
 
-	OBB obb = CreateOBB(box);									//ボックスコライダーからOBB作成
-	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);		//カプセルコライダーからカプセルセグメント作成
+	OBB obb = CreateOBB(box);								//ボックスコライダーからOBB作成
+	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);	//カプセルコライダーからカプセルセグメント作成
 
-	const float radius = cupSeg.radius; //カプセルの半径
-
-	constexpr int SAMPLE_COUNT = 128; //サンプリング数
-
-	XMVECTOR collisionPoints = XMVectorZero();	//衝突点の合計ベクトル
-	XMVECTOR collisionNormals = XMVectorZero();	//法線ベクトルの合計ベクトル
-
-	XMVECTOR A = cupSeg.pointA;				//カプセルセグメントの端点A
-	XMVECTOR B = cupSeg.pointB;				//カプセルセグメントの端点B
-	XMVECTOR AB = XMVectorSubtract(B, A);	//カプセルセグメントの方向ベクトル
-
-	float minDistSq = FLT_MAX;					//最短距離の二乗の最小値
-	XMVECTOR  minClosestPoint = XMVectorZero();	//最短距離の最小値のときのOBB上の最短点
-	XMVECTOR  minSamplePoint = XMVectorZero();	//最短距離の最小値のときのカプセルセグメント上のサンプリング点
-			
-	//カプセルセグメント上をサンプリングしてOBBとの最短距離を計算
-	for (int i = 0; i < SAMPLE_COUNT; ++i)
-	{
-		float t = 0.0f;	//パラメータt
-		if (SAMPLE_COUNT > 1)
-		{//パラメータtを計算
-			t = static_cast<float>(i) / static_cast<float>(SAMPLE_COUNT - 1); //パラメータt
-		}
-
-		//カプセルセグメント上のサンプリング点を計算
-		XMVECTOR sampleCenter = XMVectorAdd(
-			A,
-			XMVectorScale(AB, t)
-		);
-
-		//最短距離の二乗を取得
-		XMVECTOR closestPoint; //OBB上の最短点
-		float distSq = GetMinDistanceSquaredPointToOBB(
-			sampleCenter,	//点(サンプリング点)
-			obb,			//OBB
-			closestPoint	//OBB上の最短点
-		);
-
-		//最短距離の最小値を更新
-		if (distSq < minDistSq)
-		{
-			minDistSq = distSq;
-			minClosestPoint = closestPoint;
-			minSamplePoint = sampleCenter;
-		}
-
-		if(distSq <= radius * radius)
-		{//衝突検知
-			collisionPoints = closestPoint;	
-
-			//法線ベクトルの計算
-			XMVECTOR diff = XMVectorSubtract(sampleCenter, closestPoint); //最短点とサンプリング点の差ベクトル
-			const float epsilon = 0.0001f;						//微小値
-			float dist = XMVectorGetX(XMVector3Length(diff));	//最短距離
-
-			if (dist > epsilon)
-			{//法線ベクトル計算
-				collisionNormals = XMVectorScale(
-					diff,
-					1.0f / dist
-				);
-			}
-			else
-			{
-				collisionNormals = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //適当な法線ベクトル
-			}
-		}
-	}
-
-	if (minDistSq > radius * radius) return result; //衝突なし
-
-	//衝突時パラメータの計算
-	XMVECTOR point;		//衝突点
-	XMVECTOR normal;	//法線
-	float depth;		//貫入深さ
-
-	const float epsilon = 0.0001f;						//微小値
-	float dist = sqrtf((std::max)(minDistSq, epsilon));	//最短距離
-
-	XMVECTOR normalVec;	//法線ベクトル
-	if (dist < epsilon)
-	{//最短距離がほぼ0の場合の処理（カプセルセグメントのサンプリング点がOBB内部にある場合）
-		//minSamplePointをOBBのローカル空間へ投影
-		XMVECTOR dBox = XMVectorSubtract(minSamplePoint, obb.center);
-
-		float localX = XMVectorGetX(XMVector3Dot(dBox, obb.axis[0]));
-		float localY = XMVectorGetX(XMVector3Dot(dBox, obb.axis[1]));
-		float localZ = XMVectorGetX(XMVector3Dot(dBox, obb.axis[2]));
-
-		// 各面までの距離
-		float sx = obb.halfSizes.x - fabsf(localX);
-		float sy = obb.halfSizes.y - fabsf(localY);
-		float sz = obb.halfSizes.z - fabsf(localZ);
-
-		//一番近い面の法線を決定（Box-Sphere 内部処理と同じ）
-		if (sx <= sy && sx <= sz)
-		{
-			//±X面
-			normalVec = (localX >= 0.0f) ? obb.axis[0] : XMVectorNegate(obb.axis[0]);
-		}
-		else if (sy <= sz)
-		{
-			//±Y面
-			normalVec = (localY >= 0.0f) ? obb.axis[1] : XMVectorNegate(obb.axis[1]);
-		}
-		else
-		{
-			//±Z面
-			normalVec = (localZ >= 0.0f) ? obb.axis[2] : XMVectorNegate(obb.axis[2]);
-		}
-
-		//distは0に近いので、貫入深さ計算用には0をそのまま使ってOK
-	}
-	else
-	{
-		//通常ケース：最短点とサンプル点の差から法線を計算
-		XMVECTOR diff = XMVectorSubtract(minSamplePoint, minClosestPoint);
-		normalVec = XMVectorScale(diff, 1.0f / dist);
-	}
-
-	float dephtScalar = (std::max)(0.0f, radius - dist);	//貫入深さ計算
-
-	//カプセルの表面上の点
-	XMVECTOR capsuleSurfacePoint = XMVectorSubtract(
-		minSamplePoint,
-		XMVectorScale(normalVec, radius)
-	);
-
-	//衝突点の計算(最短点とカプセル表面上の点の中間)
-	XMVECTOR contactPoint = XMVectorScale(
-		XMVectorAdd(
-			minClosestPoint,
-			capsuleSurfacePoint
-		),
-		0.5f
-	);
-
-	point = contactPoint;	//衝突点設定
-	normal = normalVec;		//法線設定
-	depth = dephtScalar;	//貫入深さ設定
-
-	//衝突情報の作成
-	result.isCollided = true;	//衝突検知フラグON
-	result.point = point;		//衝突点
-	result.normal = normal;		//法線
-	result.depth = depth;		//貫入深さ
+	result = CollisonOBBtoCapsule(obb, cupSeg);	//OBB対カプセルの衝突判定
 
 	return result;
 }
@@ -1227,7 +1154,7 @@ ContactResult CollisionManager::CollisionSphereToCapsule(
 	ContactResult result{};	//衝突結果構造体
 
 	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);		//カプセルコライダーからカプセルセグメント作成
-	SphereCollider sphereCol = sphere->GetSphereCollider();		//球コライダー情報取得
+	SphereCollider sphereCol = sphere->GetCurrentSphereCollider();		//球コライダー情報取得
 	XMVECTOR sphereCenter = XMLoadFloat3(&sphereCol.center);	//球の中心点ベクトル
 	float radius = sphereCol.radius;							//球の半径
 
@@ -1289,6 +1216,339 @@ ContactResult CollisionManager::CollisionSphereToCapsule(
 		),
 		0.5f
 	);
+
+	//衝突情報の作成
+	result.isCollided = true;	//衝突検知フラグON
+	result.point = point;		//衝突点
+	result.normal = normal;		//法線
+	result.depth = depth;		//貫入深さ
+
+	return result;
+}
+
+//ボックスとカプセルのCCD衝突判定
+ContactResult CollisionManager::CollisionBoxToCapsuleCCD(Collider* box, Collider* capsule)
+{
+	int steps = CalculateSubsteps(box, capsule);	//サブステップ数計算
+	ContactResult hit{};
+	float alphaHit = -1.0f;
+	float alphaPrev = 0.0f;
+
+	//サブステップごとに衝突判定
+	for (int i = 1; i <= steps; i++)
+	{
+		float alpha = static_cast<float>(i) / static_cast<float>(steps);	//補間パラメータ
+
+		OBB obb = CreateOBB(box, alpha); ;							//補間後のOBB作成
+		CapsuleSegment seg = CreateCapsuleSegment(capsule, alpha);	//補間後のカプセルセグメント作成
+
+
+		ContactResult result = CollisonOBBtoCapsule(obb, seg);	//OBB対カプセルの衝突判定
+
+		if (result.isCollided)
+		{
+			alphaHit = alpha;
+			hit = result;
+			break;
+		}
+		alphaPrev = alpha;
+	}
+
+	if (alphaHit < 0.0f) return {};
+
+	// 2) ちょい精度上げたいなら二分探索でTOIを詰める（任意）
+	float lo = alphaPrev, hi = alphaHit;
+	for (int k = 0; k < 6; k++)
+	{
+		float mid = (lo + hi) * 0.5f;
+		ContactResult tmp = CollisonOBBtoCapsule(CreateOBB(box, mid),
+			CreateCapsuleSegment(capsule, mid));
+		if (tmp.isCollided) { hi = mid; hit = tmp; }
+		else lo = mid;
+	}
+	alphaHit = hi;
+
+	// 3) ヒット後に法線方向へ進んだ量を depth に反映
+	XMVECTOR n = hit.normal;
+	XMFLOAT3 ccPrev = capsule->GetPreviousCenter();
+	XMFLOAT3 ccCurr = capsule->GetCurrentCenter();
+	XMFLOAT3 bcPrev = box->GetPreviousCenter();
+	XMFLOAT3 bcCurr = box->GetCurrentCenter();
+
+	XMVECTOR cPrev = XMLoadFloat3(&ccPrev);
+	XMVECTOR cCurr = XMLoadFloat3(&ccCurr);
+	XMVECTOR bPrev = XMLoadFloat3(&bcPrev);
+	XMVECTOR bCurr = XMLoadFloat3(&bcCurr);
+
+	// 相対位置で見る（両方動く可能性を考慮）
+	XMVECTOR relPrev = XMVectorSubtract(cPrev, bPrev);
+	XMVECTOR relCurr = XMVectorSubtract(cCurr, bCurr);
+	XMVECTOR relHit = XMVectorLerp(relPrev, relCurr, alphaHit);
+
+	float remaining = XMVectorGetX(
+		XMVector3Dot(XMVectorSubtract(relCurr, relHit), n)
+	);
+
+	// 現在姿勢でもオーバーラップがあるならそれも見る
+	ContactResult curr = CollisonOBBtoCapsule(CreateOBB(box, 1.0f),
+		CreateCapsuleSegment(capsule, 1.0f));
+	float currDepth = curr.isCollided ? curr.depth : 0.0f;
+
+	hit.depth = (std::max)({ hit.depth, currDepth, remaining });
+
+	return hit;
+}
+
+//OBB対カプセルの衝突判定
+ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const CapsuleSegment& capSeg)
+{
+	ContactResult result{};	//衝突結果構造体
+
+	const float radius = capSeg.radius; //カプセルの半径
+
+	XMVECTOR collisionPoints = XMVectorZero();	//衝突点の合計ベクトル
+	XMVECTOR collisionNormals = XMVectorZero();	//法線ベクトルの合計ベクトル
+
+	XMVECTOR A = capSeg.pointA;				//カプセルセグメントの端点A
+	XMVECTOR B = capSeg.pointB;				//カプセルセグメントの端点B
+	XMVECTOR AB = XMVectorSubtract(B, A);	//カプセルセグメントの方向ベクトル
+
+	float segLen = XMVectorGetX(XMVector3Length(AB));			//カプセルセグメントの長さ
+	int sampleCount = (int)ceilf(segLen / (radius * 0.5f));		//サンプリング数の計算
+
+	float minDistSq = FLT_MAX;					//最短距離の二乗の最小値
+	XMVECTOR  minClosestPoint = XMVectorZero();	//最短距離の最小値のときのOBB上の最短点
+	XMVECTOR  minSamplePoint = XMVectorZero();	//最短距離の最小値のときのカプセルセグメント上のサンプリング点
+
+	//カプセルセグメント上をサンプリングしてOBBとの最短距離を計算
+	for (int i = 0; i < sampleCount; ++i)
+	{
+		float t = 0.0f;	//パラメータt
+		if (sampleCount > 1)
+		{//パラメータtを計算
+			t = static_cast<float>(i) / static_cast<float>(sampleCount - 1); //パラメータt
+		}
+
+		//カプセルセグメント上のサンプリング点を計算
+		XMVECTOR sampleCenter = XMVectorAdd(
+			A,
+			XMVectorScale(AB, t)
+		);
+
+		//最短距離の二乗を取得
+		XMVECTOR closestPoint; //OBB上の最短点
+		float distSq = GetMinDistanceSquaredPointToOBB(
+			sampleCenter,	//点(サンプリング点)
+			obb,			//OBB
+			closestPoint	//OBB上の最短点
+		);
+
+		//最短距離の最小値を更新
+		if (distSq < minDistSq)
+		{
+			minDistSq = distSq;
+			minClosestPoint = closestPoint;
+			minSamplePoint = sampleCenter;
+		}
+
+		if (distSq <= radius * radius)
+		{//衝突検知
+			collisionPoints = closestPoint;
+
+			//法線ベクトルの計算
+			XMVECTOR diff = XMVectorSubtract(sampleCenter, closestPoint); //最短点とサンプリング点の差ベクトル
+			const float epsilon = 0.0001f;						//微小値
+			float dist = XMVectorGetX(XMVector3Length(diff));	//最短距離
+
+			if (dist > epsilon)
+			{//法線ベクトル計算
+				collisionNormals = XMVectorScale(
+					diff,
+					1.0f / dist
+				);
+			}
+			else
+			{
+				collisionNormals = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //適当な法線ベクトル
+			}
+		}
+	}
+
+	if (minDistSq > radius * radius) return result; //衝突なし
+
+	//衝突時パラメータの計算
+	XMVECTOR point;		//衝突点
+	XMVECTOR normal;	//法線
+	float depth;		//貫入深さ
+
+	const float epsilon = 0.0001f;						//微小値
+	float dist = sqrtf((std::max)(minDistSq, epsilon));	//最短距離
+
+	// minSamplePoint を OBBローカルへ
+	XMVECTOR dBox = XMVectorSubtract(minSamplePoint, obb.center);
+	float localX = XMVectorGetX(XMVector3Dot(dBox, obb.axis[0]));
+	float localY = XMVectorGetX(XMVector3Dot(dBox, obb.axis[1]));
+	float localZ = XMVectorGetX(XMVector3Dot(dBox, obb.axis[2]));
+
+	// ★ inside 判定を明示
+	bool isInside =
+		fabsf(localX) <= obb.halfSizes.x &&
+		fabsf(localY) <= obb.halfSizes.y &&
+		fabsf(localZ) <= obb.halfSizes.z;
+
+	XMVECTOR normalVec;	//法線ベクトル
+	float depthScalar;		//貫入深さスカラー値
+
+	if (isInside)
+	{//最短距離がほぼ0の場合の処理（カプセルセグメントのサンプリング点がOBB内部にある場合）
+		//minSamplePointをOBBのローカル空間へ投影
+		XMVECTOR dBox = XMVectorSubtract(minSamplePoint, obb.center);
+
+		float localX = XMVectorGetX(XMVector3Dot(dBox, obb.axis[0]));
+		float localY = XMVectorGetX(XMVector3Dot(dBox, obb.axis[1]));
+		float localZ = XMVectorGetX(XMVector3Dot(dBox, obb.axis[2]));
+
+		// 各面までの距離
+		float sx = obb.halfSizes.x - fabsf(localX);
+		float sy = obb.halfSizes.y - fabsf(localY);
+		float sz = obb.halfSizes.z - fabsf(localZ);
+
+		float distToFace;	//中心→最近面までの距離
+		float cx = localX, cy = localY, cz = localZ;	//最近点のローカル座標
+
+		//一番近い面の法線を決定（Box-Sphere 内部処理と同じ）
+		if (sx <= sy && sx <= sz)
+		{
+			//±X面
+			normalVec = (localX >= 0.0f) ? obb.axis[0] : XMVectorNegate(obb.axis[0]);
+			cx = (localX >= 0.0f) ? obb.halfSizes.x : -obb.halfSizes.x;
+			distToFace = sx;
+			
+		}
+		else if (sy <= sz)
+		{
+			//±Y面
+			normalVec = (localY >= 0.0f) ? obb.axis[1] : XMVectorNegate(obb.axis[1]);
+			cy = (localY >= 0.0f) ? obb.halfSizes.y : -obb.halfSizes.y;
+			distToFace = sy;
+		}
+		else
+		{
+			//±Z面
+			normalVec = (localZ >= 0.0f) ? obb.axis[2] : XMVectorNegate(obb.axis[2]);
+			cz = (localZ >= 0.0f) ? obb.halfSizes.z : -obb.halfSizes.z;
+			distToFace = sz;
+		}
+
+		depthScalar = radius + distToFace;	//貫入深さ計算
+
+		minClosestPoint = XMVectorAdd(
+			obb.center,
+			XMVectorAdd(
+				XMVectorScale(obb.axis[0], cx),
+				XMVectorAdd(
+					XMVectorScale(obb.axis[1], cy),
+					XMVectorScale(obb.axis[2], cz)
+				)
+			)
+		);
+	}
+	else
+	{
+		//通常ケース：最短点とサンプル点の差から法線を計算
+		XMVECTOR diff = XMVectorSubtract(minSamplePoint, minClosestPoint);
+		normalVec = XMVectorScale(diff, 1.0f / dist);
+
+		depthScalar = radius - dist;	//貫入深さ計算
+	}
+
+	depthScalar = (std::max)(0.0f, depthScalar);	//貫入深さ計算
+
+	//カプセルの表面上の点
+	XMVECTOR capsuleSurfacePoint = XMVectorSubtract(
+		minSamplePoint,
+		XMVectorScale(normalVec, radius)
+	);
+
+	//衝突点の計算(最短点とカプセル表面上の点の中間)
+	XMVECTOR contactPoint = XMVectorScale(
+		XMVectorAdd(
+			minClosestPoint,
+			capsuleSurfacePoint
+		),
+		0.5f
+	);
+
+	point = contactPoint;	//衝突点設定
+	normal = normalVec;		//法線設定
+	depth = depthScalar;	//貫入深さ設定
+
+	//衝突情報の作成
+	result.isCollided = true;	//衝突検知フラグON
+	result.point = point;		//衝突点
+	result.normal = normal;		//法線
+	result.depth = depth;		//貫入深さ
+
+	return result;
+}
+
+//球セグメント間の衝突判定
+ContactResult CollisionManager::CollisionSpheresSegments(const SphereSegment& segA, const SphereSegment& segB)
+{
+	ContactResult result{};	//衝突結果構造体
+
+	//中心点の取得
+	XMFLOAT3 centerA, centerB;
+	XMStoreFloat3(&centerA, segA.center);
+	XMStoreFloat3(&centerB, segB.center);
+
+	//半径の取得
+	float radiusA = segA.radius;
+	float radiusB = segB.radius;
+	float radiusSum = radiusA + radiusB;
+
+	//中心点間の距離の計算
+	float dist = sqrtf(
+		(centerA.x - centerB.x) * (centerA.x - centerB.x) +
+		(centerA.y - centerB.y) * (centerA.y - centerB.y) +
+		(centerA.z - centerB.z) * (centerA.z - centerB.z)
+	);
+
+	//衝突検知
+	if (!(dist <= radiusSum)) return result;
+
+	//衝突時パラメータの計算
+	const float epsilon = 0.0001f;	//微小値
+	XMVECTOR point;					//衝突点
+	XMVECTOR normal;				//法線
+	float depth;					//貫入深さ
+
+	//衝突点の計算
+	point =
+	{
+		(centerA.x + centerB.x) / 2.0f,
+		(centerA.y + centerB.y) / 2.0f,
+		(centerA.z + centerB.z) / 2.0f
+	};
+
+	//法線ベクトル
+	if (dist < epsilon)
+	{//中心点がほぼ同じ位置にある場合の処理
+		//適当な法線ベクトルを設定
+		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	}
+	else
+	{
+		normal = XMVectorSet(
+			(centerB.x - centerA.x) / dist,
+			(centerB.y - centerA.y) / dist,
+			(centerB.z - centerA.z) / dist,
+			0.0f
+		);
+	}
+
+	//貫入深さ
+	depth = radiusSum - dist;
 
 	//衝突情報の作成
 	result.isCollided = true;	//衝突検知フラグON
@@ -1494,8 +1754,8 @@ void CollisionManager::OrientNormalAToB(Collider* colliderA, Collider* colliderB
 {
 	XMVECTOR normal = result.normal;	//法線ベクトル
 
-	XMFLOAT3 centerAF = colliderA->GetCenter();
-	XMFLOAT3 centerBF = colliderB->GetCenter();
+	XMFLOAT3 centerAF = colliderA->GetCurrentCenter();
+	XMFLOAT3 centerBF = colliderB->GetCurrentCenter();
 
 	//コライダーA・Bの中心点ベクトルを取得
 	XMVECTOR centerA = XMLoadFloat3(&centerAF);

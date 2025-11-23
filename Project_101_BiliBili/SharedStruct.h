@@ -308,7 +308,7 @@ namespace RenderData
 
 //前方宣言
 class Collider;
-
+//衝突データ用名前空間
 namespace CollisionData
 {
 	//衝突状態列挙体
@@ -354,7 +354,78 @@ namespace CollisionData
 
 	//貫入深さから押し出しベクトルを取得する関数
 	DirectX::XMFLOAT3 GetPushOutVector(
-		const std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
+		std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
 		const std::initializer_list<OBJECT_TAG>& tagList		//対象タグリスト
 	);
+}
+
+
+//=======================
+//ベクトル演算関数群
+//=======================
+//2点間の距離の二乗を計算する関数
+inline static float LengthSqBetween(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+	DirectX::XMFLOAT3 diff{
+		b.x - a.x,
+		b.y - a.y,
+		b.z - a.z
+	};
+	return diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
+}
+
+//2点間の距離を計算する関数
+inline static float LengthBetween(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+	return sqrtf(LengthSqBetween(a, b));
+}
+
+//ベクトルの長さを計算する関数(XMFLOAT3版)
+inline static float LengthXMF3(const DirectX::XMFLOAT3& v)
+{
+	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+//ベクトルの長さを計算する関数(XMVECTOR版)
+inline static float LengthXMV(const DirectX::XMVECTOR& v)
+{
+	DirectX::XMFLOAT3 temp;
+	DirectX::XMStoreFloat3(&temp, v);
+	return sqrtf(temp.x * temp.x + temp.y * temp.y + temp.z * temp.z);
+}
+
+//ベクトルの正規化を行う関数
+inline static DirectX::XMFLOAT3 Normalize(const DirectX::XMFLOAT3& v)
+{
+	float len = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	if (len > 0.0f)
+	{
+		return DirectX::XMFLOAT3{ v.x / len, v.y / len, v.z / len };
+	}
+	else
+	{
+		return DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f };
+	}
+}
+
+//内積を計算する関数
+inline static float Dot(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+//線形補間を行う関数(XMFLOAT3版)
+static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, float t)
+{
+	return DirectX::XMFLOAT3{
+		start.x + (end.x - start.x) * t,
+		start.y + (end.y - start.y) * t,
+		start.z + (end.z - start.z) * t
+	};
+}
+
+//線形補間を行う関数(XMVECTOR版)
+static DirectX::XMVECTOR LerpXMV(const DirectX::XMVECTOR& start, const DirectX::XMVECTOR& end, float t)
+{
+	return DirectX::XMVectorLerp(start, end, t);
 }
