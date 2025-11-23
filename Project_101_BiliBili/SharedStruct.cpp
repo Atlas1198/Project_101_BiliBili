@@ -7,6 +7,7 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "Collider.h"
+#include "ObjectBase.h"
 
 using namespace DirectX;
 
@@ -719,4 +720,76 @@ CollisionData::LayerMask CollisionData::MakeMask(std::initializer_list<COLLISION
 		mask |= LayerToBit(layer);	//ビットマスクを合成
 	}
 	return mask;	//レイヤーマスクを返す
+}
+
+//貫入深さから押し出しベクトルを取得する関数
+DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
+	std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
+	const std::initializer_list<OBJECT_TAG>& tagList	//押し出しベクトルを計算する対象のタグリスト
+)
+{
+	using namespace DirectX;
+
+	XMFLOAT3 total{ 0,0,0 };	//最大押し出しベクトル
+	float epsilon = 0.0001f;	//誤差許容値
+
+	std::vector<CollisionData::CollisionInfo*> cands;	//衝突情報配列をループ
+
+	for (auto& info : infos)
+	{
+		//衝突終了は無視
+		if (info.state == CollisionData::COLLISION_STATE::COLLISION_EXIT) continue;
+
+		OBJECT_TAG opponentTag = info.opponent->GetOwner()->GetTag();	//衝突相手のタグ取得
+
+		//衝突相手のタグがリストに含まれているか確認
+		if (std::find(tagList.begin(), tagList.end(), opponentTag) == tagList.end()) continue;
+
+		cands.push_back(&info);	//候補リストに追加
+	}
+
+	auto begin = cands.begin();
+	auto end = cands.end();
+
+	//貫入深さの大きい順にソート
+	std::sort(cands.begin(), cands.end(),
+		[](const CollisionData::CollisionInfo* a, const CollisionData::CollisionInfo* b)
+		{
+			return LengthXMF3(a->penetrationDepth) > LengthXMF3(b->penetrationDepth);
+		}
+	);
+
+	const int REPEAT_MAX = 5;	//最大繰り返し回数
+
+	for (int i = 0; i < REPEAT_MAX; i++)
+	{
+		bool any = false;	//押し出しが発生したかどうか
+
+		for (auto pInfo : cands)
+		{
+			XMFLOAT3 penetration = pInfo->penetrationDepth;	//貫入深さベクトル
+
+			XMFLOAT3 dir = { -penetration.x, -penetration.y, -penetration.z };	//押し出し方向ベクトル
+			float depth = LengthXMF3(dir);									//貫入深さ
+			if (depth < epsilon) continue;									//誤差許容値以下なら無視
+
+			//押し出しベクトルの正規化
+			dir = Normalize(dir);
+
+			float resolved = (std::max)(0.0f, Dot(total, dir));	//既に押し出された分
+			float remain = depth - resolved;					//残りの押し出し分
+			if (remain > epsilon)
+			{//押し出しが発生する場合
+				//押し出しベクトルの加算
+				total.x += dir.x * remain;
+				total.y += dir.y * remain;
+				total.z += dir.z * remain;
+				any = true;	//押し出しが発生したフラグを立てる
+			}
+		}
+
+		if (!any) break;	//押し出しが発生しなかったら終了
+	}
+
+	return total;	//押し出しベクトルを返す
 }

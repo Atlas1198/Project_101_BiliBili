@@ -26,12 +26,28 @@ struct OBB
 	DirectX::XMFLOAT3 halfSizes;	//各軸方向の半分のサイズ
 };
 
+//球セグメント構造体
+struct SphereSegment
+{
+	DirectX::XMVECTOR center;	//中心点
+	float radius;				//半径
+};
+
 //カプセルセグメント構造体
 struct CapsuleSegment
 {
 	DirectX::XMVECTOR pointA;	//端点A
 	DirectX::XMVECTOR pointB;	//端点B
 	float radius;				//半径
+};
+
+//衝突時のパラメータ
+struct ContactResult
+{
+	bool isCollided = false;	//衝突しているかどうか
+	DirectX::XMVECTOR point{};	//接触点
+	DirectX::XMVECTOR normal{};	//接触法線
+	float depth = 0.0f;			//貫通深度
 };
 
 // 衝突管理クラス
@@ -62,7 +78,8 @@ public:
 	);
 
 	//衝突判定処理
-	void CheckCollisions(); //衝突判定
+	void CheckCollisions();			//衝突判定
+	void CheckCollisionStates();	//衝突状態チェック
 
 	//コライダー配列の操作
 	void RegisterCollider(Collider* collider);	//コライダー登録
@@ -88,7 +105,7 @@ private:
 	void BroadPhase();	//ブロードフェーズ
 	void NarrowPhase();	//ナローフェーズ
 
-	bool NarrowPhaseCollision(	//ナローフェーズの衝突判定
+	ContactResult NarrowPhaseCollision(	//ナローフェーズの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
@@ -110,29 +127,45 @@ private:
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionBoxToBox(	//ボックス対ボックスの衝突判定
+	ContactResult CollisionBoxToBox(	//ボックス対ボックスの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionSphereToSphere(	//球対球の衝突判定
+	ContactResult CollisionSphereToSphere(	//球対球の衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionCapsuleToCapsule(	//カプセル対カプセルの衝突判定
+	ContactResult CollisionCapsuleToCapsule(	//カプセル対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionBoxToSphere(	//ボックス対球の衝突判定
+	ContactResult CollisionBoxToSphere(	//ボックス対球の衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionBoxToCapsule(	//ボックス対カプセルの衝突判定
+	ContactResult CollisionBoxToCapsule(	//ボックス対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
 	);
-	bool CollisionSphereToCapsule(	//球対カプセルの衝突判定
+	ContactResult CollisionSphereToCapsule(	//球対カプセルの衝突判定
 		Collider* colliderA,	//コライダーA
 		Collider* colliderB		//コライダーB
+	);
+
+	//継続的衝突検出(CCD)用関数
+	ContactResult CollisionBoxToCapsuleCCD(	//ボックス対カプセルの衝突判定(継続的衝突検出)
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
+	);
+
+	//補助関数
+	ContactResult CollisonOBBtoCapsule(	//OBB対カプセルの衝突判定
+		const OBB& obb,					//OBB
+		const CapsuleSegment& capsule	//カプセルセグメント
+	);
+	ContactResult CollisionSpheresSegments(	//球セグメント同士の衝突判定
+		const SphereSegment& sphereA,	//球セグメントA
+		const SphereSegment& sphereB	//球セグメントB
 	);
 
 	void SendNarrowPhase( //ナローフェーズ用配列に衝突ペアを追加
@@ -140,11 +173,21 @@ private:
 		Collider* colliderB		//コライダーB
 	);
 
-	OBB CreateOBB(							//コライダーからOBBを作成
-		Collider* collider	//コライダー
+	OBB CreateOBB(	//コライダーからOBBを作成(LERP補間付き)
+		Collider* collider,	//コライダー
+		float alpfa = 1.0f	//LERP補間係数
 	);
-	CapsuleSegment CreateCapsuleSegment(	//コライダーからカプセルセグメントを作成
-		Collider* collider	//コライダー
+
+	CapsuleSegment CreateCapsuleSegment(	//コライダーからカプセルセグメントを作成(LERP補間付き)
+		Collider* collider,	//コライダー
+		float alpfa = 1.0f	//LERP補間係数
+	);
+
+	bool NeedsCCD(Collider* collider);	//継続的衝突検出が必要かどうかチェック
+
+	int CalculateSubsteps(	//継続的衝突検出のサブステップ数を計算
+		Collider* colliderA,	//コライダーA
+		Collider* colliderB		//コライダーB
 	);
 
 	static float GetMinDistanceSquaredSegmentToSegment(	//セグメント間の最小距離の二乗を取得
@@ -174,5 +217,15 @@ private:
 		Collider* self,							//自分自身のコライダー
 		Collider* opponent,						//衝突相手のコライダー
 		CollisionData::COLLISION_STATE state	//衝突状態
+	);
+	static void PushCollisionInfo(	//コライダーに衝突情報を追加
+		Collider* colliderA,	//自分自身のコライダー
+		Collider* colliderB,	//衝突相手のコライダー
+		ContactResult& result	//衝突時のパラメータ
+	);
+	static void OrientNormalAToB(	//法線ベクトルをAからBの方向に向ける
+		Collider* colliderA,	//自分自身のコライダー
+		Collider* colliderB,	//衝突相手のコライダー
+		ContactResult& result	//衝突時のパラメータ
 	);
 };

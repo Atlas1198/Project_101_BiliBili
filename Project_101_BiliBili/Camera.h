@@ -10,11 +10,11 @@
 class Camera
 {
 public:	//公開定数
-	static constexpr  DirectX::XMFLOAT3 DEFAULT_POSITION = DirectX::XMFLOAT3(0.0f, 11.0f, -5.0f);		//デフォルトのカメラ位置
+	static constexpr  DirectX::XMFLOAT3 DEFAULT_POSITION = DirectX::XMFLOAT3(0.0f, 14.0f, -7.0f);		//デフォルトのカメラ位置
 	static constexpr  DirectX::XMFLOAT3 DEFAULT_TARGET = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//デフォルトの注視点
 	static constexpr  DirectX::XMFLOAT3 DEFAULT_UP = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);			//デフォルトの上方向ベクトル
 
-	static constexpr float DEFAULT_FOV = DirectX::XM_PIDIV4;	//デフォルトの垂直視野角
+	static constexpr float DEFAULT_FOV = DirectX::XM_PIDIV2;	//デフォルトの垂直視野角
 	static constexpr float DEFAULT_NEAR_Z = 0.1f;				//デフォルトのニアクリップ距離
 	static constexpr float DEFAULT_FAR_Z = 100.0f;				//デフォルトのファークリップ距離
 

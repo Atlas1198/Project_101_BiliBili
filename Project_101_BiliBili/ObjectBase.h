@@ -37,15 +37,16 @@ public:	//公開関数
 	void ClearCollisionInfos();											//衝突情報のクリア
 
 	//ゲッター
-	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
-	const DirectX::XMFLOAT3 GetPosition() const;					//位置の取得
-	const DirectX::XMFLOAT3 GetRotation() const;					//回転の取得
-	const DirectX::XMFLOAT3 GetScale() const;						//スケールの取得
-	const DirectX::XMFLOAT4 GetColor() const;						//色RGBAの取得
-	const bool IsActive() const;									//アクティブかどうかを取得
-	const bool IsDrawn() const;										//描画フラグの取得
-	Collider* GetCollider() const;									//コライダーの取得
-	MeshData::MESH_TYPE GetMeshType() const;						//メッシュタイプの取得
+	const DirectX::XMMATRIX GetWorldMatrix() const;	//ワールド行列の取得
+	const DirectX::XMFLOAT3 GetPosition() const;	//位置の取得
+	const DirectX::XMFLOAT3 GetRotation() const;	//回転の取得
+	const DirectX::XMFLOAT3 GetScale() const;		//スケールの取得
+	const DirectX::XMFLOAT4 GetColor() const;		//色RGBAの取得
+	const bool IsActive() const;					//アクティブかどうかを取得
+	const bool IsDrawn() const;						//描画フラグの取得
+	Collider* GetCollider() const;					//コライダーの取得
+	MeshData::MESH_TYPE GetMeshType() const;		//メッシュタイプの取得
+	OBJECT_TAG GetTag() const;						//オブジェクトタグの取得
 
 	//セッター
 	void SetPosition(DirectX::XMFLOAT3 position);	//位置の設定

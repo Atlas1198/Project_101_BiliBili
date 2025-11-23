@@ -9,8 +9,7 @@ Collider::Collider(ObjectBase* owner, ColliderType type, COLLISION_LAYER layer, 
 	: m_pOwner(owner), m_isTrigger(isTrigger), m_type(type), m_layer(layer)
 {
 	CreateCollider(scale);
-	UpdateCollider();	//コライダー初期化
-	UpdateAABB();		//軸平行境界ボックス初期化
+	Update();
 }
 
 //デストラクタ
@@ -28,6 +27,7 @@ void Collider::Update()
 //コライダー更新
 void Collider::UpdateCollider()
 {
+	//各種コライダー更新
 	switch (m_type)
 	{
 	case ColliderType::BOX:
@@ -47,6 +47,7 @@ void Collider::UpdateCollider()
 //軸平行境界ボックス更新
 void Collider::UpdateAABB()
 {
+	//現在のAABB更新
 	switch (m_type)
 	{
 	case ColliderType::BOX:
@@ -61,6 +62,20 @@ void Collider::UpdateAABB()
 	default:
 		break;
 	}
+
+	//SweptAABB計算
+	MakeSweptAABB();
+}
+
+//前回の状態保存
+void Collider::SetPreviousState()
+{
+	m_previousBoxCollider = m_currentBoxCollider;			//前回のボックスコライダー保存
+	m_previousSphereCollider = m_currentSphereCollider;		//前回の球コライダー保存
+	m_previousCapsuleCollider = m_currentCapsuleCollider;	//前回のカプセルコライダー保存
+	m_previousAABB = m_currentAABB;							//前回のAABB保存
+	m_previousCenter = m_currentCenter;						//前回の中心座標保存
+	m_previousScale = m_currentScale;						//前回のサイズ保存
 }
 
 //所有者オブジェクト取得
@@ -93,39 +108,57 @@ const bool Collider::IsTrigger() const
 	return m_isTrigger;
 }
 
-//軸平行境界ボックス取得
-const AABB Collider::GetAABB() 
+//SWEPT軸平行境界ボックス取得
+const AABB Collider::GetSewptAABB() 
 {
-	return m_aabb;
+	return m_sweptAABB;
 }
 
-//ボックスコライダー取得
-const BoxCollider Collider::GetBoxCollider()
+//現在のボックスコライダー取得
+const BoxCollider Collider::GetCurrentBoxCollider()
 {
-	return m_boxCollider;
+	return m_currentBoxCollider;
 }
 
-//球コライダー取得
-const SphereCollider Collider::GetSphereCollider()
+//前回のボックスコライダー取得
+const BoxCollider Collider::GetPreviousBoxCollider()
 {
-	return m_sphereCollider;
+	return m_previousBoxCollider;
 }
 
-//カプセルコライダー取得
-const CapsuleCollider Collider::GetCapsuleCollider()
+//現在の球コライダー取得
+const SphereCollider Collider::GetCurrentSphereCollider()
 {
-	return m_capsuleCollider;
+	return m_currentSphereCollider;
+}
+
+//前回の球コライダー取得
+const SphereCollider Collider::GetPreviousSphereCollider()
+{
+	return m_previousSphereCollider;
+}
+
+//現在のカプセルコライダー取得
+const CapsuleCollider Collider::GetCurrentCapsuleCollider()
+{
+	return m_currentCapsuleCollider;
+}
+
+//前回のカプセルコライダー取得
+const CapsuleCollider Collider::GetPreviousCapsuleCollider()
+{
+	return m_previousCapsuleCollider;
 }
 
 //ワールド行列の取得
 const DirectX::XMMATRIX Collider::GetWorldMatrix() const
 {
-	XMMATRIX T = XMMatrixTranslation(m_center.x, m_center.y, m_center.z);
+	XMMATRIX T = XMMatrixTranslation(m_currentCenter.x, m_currentCenter.y, m_currentCenter.z);
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(
 		XMConvertToRadians(m_rotation.x),
 		XMConvertToRadians(m_rotation.y),
 		XMConvertToRadians(m_rotation.z));
-	XMMATRIX S = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+	XMMATRIX S = XMMatrixScaling(m_currentScale.x, m_currentScale.y, m_currentScale.z);
 	return S * R * T;
 }
 
@@ -148,15 +181,27 @@ const bool Collider::deleteFlag() const
 }
 
 //中心座標取得
-DirectX::XMFLOAT3 Collider::GetCenter() const
+DirectX::XMFLOAT3 Collider::GetCurrentCenter() const
 {
-	return m_center;
+	return m_currentCenter;
+}
+
+//前回の中心座標取得
+DirectX::XMFLOAT3 Collider::GetPreviousCenter() const
+{
+	return m_previousCenter;
 }
 
 //サイズ取得
-DirectX::XMFLOAT3 Collider::GetScale() const
+DirectX::XMFLOAT3 Collider::GetCurrentScale() const
 {
-	return m_scale;
+	return m_currentScale;
+}
+
+//前回のサイズ取得
+DirectX::XMFLOAT3 Collider::GetPreviousScale() const
+{
+	return m_previousScale;
 }
 
 //回転取得
@@ -202,16 +247,16 @@ void Collider::CreateCollider(DirectX::XMFLOAT3 scale)
 //ボックスコライダー生成
 void Collider::CreateBoxCollider(XMFLOAT3 scale)
 {
-	m_boxCollider.scale = scale;			//ボックスコライダーサイズ初期化
-	m_boxCollider.defaultScale = scale;	//ボックスコライダー初期サイズ保存
+	m_currentBoxCollider.scale = scale;			//ボックスコライダーサイズ初期化
+	m_currentBoxCollider.defaultScale = scale;	//ボックスコライダー初期サイズ保存
 
 	const XMFLOAT3 ownerScale = m_pOwner->GetScale();
 
 	m_scaleOffset =
 	{
-		 m_boxCollider.scale.x - ownerScale.x,
-		 m_boxCollider.scale.y - ownerScale.y,
-		 m_boxCollider.scale.z - ownerScale.z,
+		 m_currentBoxCollider.scale.x - ownerScale.x,
+		 m_currentBoxCollider.scale.y - ownerScale.y,
+		 m_currentBoxCollider.scale.z - ownerScale.z,
 	};
 }
 
@@ -224,11 +269,11 @@ void Collider::CreateSphereCollider(XMFLOAT3 scale)
 	const float diamiter = maxScale;					//最大値を直径として使用
 	const float radius = diamiter * 0.5f;				//半径
 
-	m_sphereCollider.radius = radius;			//球コライダー半径初期化
-	m_sphereCollider.defaultRadius = radius;	//球コライダー初期半径保存
+	m_currentSphereCollider.radius = radius;			//球コライダー半径初期化
+	m_currentSphereCollider.defaultRadius = radius;	//球コライダー初期半径保存
 
 	//コライダースケールの反映
-	m_scale =
+	m_currentScale =
 	{
 		diamiter,
 		diamiter,
@@ -266,13 +311,13 @@ void Collider::CreateCapsuleCollider(XMFLOAT3 scale)
 		(std::max)(0.0f, capusleHeight - diamiter);		//円柱部分の高さ(負の値にならないようにする)
 
 	//カプセルサイズ初期化
-	m_capsuleCollider.radius = radius;					//カプセルコライダー半径初期化
-	m_capsuleCollider.defaultRadius = radius;			//カプセルコライダー初期半径保存
-	m_capsuleCollider.cylHeight = cylHeight;			//カプセルコライダー高さ初期化
-	m_capsuleCollider.defaultHeight = cylHeight;		//カプセルコライダー初期高さ保存
+	m_currentCapsuleCollider.radius = radius;					//カプセルコライダー半径初期化
+	m_currentCapsuleCollider.defaultRadius = radius;			//カプセルコライダー初期半径保存
+	m_currentCapsuleCollider.cylHeight = cylHeight;			//カプセルコライダー高さ初期化
+	m_currentCapsuleCollider.defaultHeight = cylHeight;		//カプセルコライダー初期高さ保存
 
 	//コライダーサイズ初期化
-	m_scale =
+	m_currentScale =
 	{
 		diamiter,
 		capusleHeight,
@@ -289,7 +334,7 @@ void Collider::CreateCapsuleCollider(XMFLOAT3 scale)
 	m_scaleOffset =
 	{
 		diamiter - maxHorizontal,
-		m_scale.y - ownerSy,
+		m_currentScale.y - ownerSy,
 		diamiter - maxHorizontal
 	};
 }
@@ -299,12 +344,12 @@ void Collider::UpdateBoxCollider()
 {
 	//中心点更新
 	XMFLOAT3 position = m_pOwner->GetPosition();	//オーナーオブジェクトの位置取得
-	m_boxCollider.center = position;				//ボックスコライダー中心点更新
-	m_center = position;							//コライダーの中心座標
+	m_currentBoxCollider.center = position;				//ボックスコライダー中心点更新
+	m_currentCenter = position;							//コライダーの中心座標
 
 	//スケール反映
 	XMFLOAT3 ownerScale = m_pOwner->GetScale();		//オーナーオブジェクトのスケール取得
-	m_boxCollider.scale =
+	m_currentBoxCollider.scale =
 	{
 		ownerScale.x + m_scaleOffset.x,
 		ownerScale.y + m_scaleOffset.y,
@@ -312,7 +357,7 @@ void Collider::UpdateBoxCollider()
 	};
 
 	//コライダーサイズ更新
-	m_scale = m_boxCollider.scale;
+	m_currentScale = m_currentBoxCollider.scale;
 
 	//回転反映
 	m_rotation = m_pOwner->GetRotation();
@@ -323,7 +368,8 @@ void Collider::UpdateSphereCollider()
 {
 	//中心点更新
 	XMFLOAT3 position = m_pOwner->GetPosition();	//オーナーオブジェクトの位置取得
-	m_center = position;							//コライダーの中心座標
+	m_currentCenter = position;						//コライダーの中心座標
+	m_currentSphereCollider.center = position;		//球コライダー中心点更新
 
 	//スケール反映
 	XMFLOAT3 scale = m_pOwner->GetScale();			//オーナーオブジェクトのスケール取得
@@ -340,10 +386,10 @@ void Collider::UpdateSphereCollider()
 	const float radius = diamiter / 2.0f;									//半径
 
 	//球コライダーサイズ更新
-	m_sphereCollider.radius = radius;				//球コライダー半径更新
+	m_currentSphereCollider.radius = radius;				//球コライダー半径更新
 
 	//コライダーサイズ更新
-	m_scale =
+	m_currentScale =
 	{
 		diamiter,
 		diamiter,
@@ -356,7 +402,7 @@ void Collider::UpdateCapsuleCollider()
 {
 	//中心点更新
 	XMFLOAT3 position = m_pOwner->GetPosition();	//オーナーオブジェクトの位置取得
-	m_center = position;							//コライダーの中心座標
+	m_currentCenter = position;							//コライダーの中心座標
 
 	//スケール反映
 	const XMFLOAT3 ownerScale = m_pOwner->GetScale();	//オーナーオブジェクトのスケール取得
@@ -372,8 +418,8 @@ void Collider::UpdateCapsuleCollider()
 		(std::max)(0.0f, capusleHeight - diamiter);				//円柱部分の高さ(負の値にならないようにする)
 
 	//カプセルサイズ更新
-	m_capsuleCollider.radius = radius;					//カプセルコライダー半径更新
-	m_capsuleCollider.cylHeight = cylHeight;				//カプセルコライダー高さ更新
+	m_currentCapsuleCollider.radius = radius;					//カプセルコライダー半径更新
+	m_currentCapsuleCollider.cylHeight = cylHeight;				//カプセルコライダー高さ更新
 
 	//回転反映
 	m_rotation = m_pOwner->GetRotation();
@@ -392,17 +438,17 @@ void Collider::UpdateCapsuleCollider()
 
 	//端点A,B計算
 	float halfHeight = cylHeight * 0.5f;					//シリンダーの半分の高さ
-	XMVECTOR center = XMLoadFloat3(&m_center);				//中心点
+	XMVECTOR center = XMLoadFloat3(&m_currentCenter);				//中心点
 	XMVECTOR offset = XMVectorScale(axisWorld, halfHeight);	//オフセットベクトル
 
-	XMVECTOR pA = XMVectorSubtract(center, offset);	//端点A
-	XMVECTOR pB = XMVectorAdd(center, offset);		//端点B
+	XMVECTOR pA = XMVectorAdd(center, offset);	//端点A
+	XMVECTOR pB = XMVectorSubtract(center, offset);		//端点B
 
-	XMStoreFloat3(&m_capsuleCollider.pointA, pA);	//端点A保存
-	XMStoreFloat3(&m_capsuleCollider.pointB, pB);	//端点B保存
+	XMStoreFloat3(&m_currentCapsuleCollider.pointA, pA);	//端点A保存
+	XMStoreFloat3(&m_currentCapsuleCollider.pointB, pB);	//端点B保存
 
 	//コライダーサイズ更新
-	m_scale =
+	m_currentScale =
 	{
 		diamiter,
 		capusleHeight,
@@ -414,8 +460,8 @@ void Collider::UpdateCapsuleCollider()
 void Collider::UpdateAABBBox()
 {
 	//ボックスコライダー情報取得
-	const XMFLOAT3 center = m_center;
-	const XMFLOAT3 scale = m_boxCollider.scale;
+	const XMFLOAT3 center = m_currentCenter;
+	const XMFLOAT3 scale = m_currentBoxCollider.scale;
 	const float halfX = scale.x * 0.5f;
 	const float halfY = scale.y * 0.5f;
 	const float halfZ = scale.z * 0.5f;
@@ -446,12 +492,12 @@ void Collider::UpdateAABBBox()
 		fabsf(XMVectorGetZ(u2)) * halfZ;
 
 	//AABB更新
-	m_aabb.min = {
+	m_currentAABB.min = {
 		center.x - aabbHalfX,
 		center.y - aabbHalfY,
 		center.z - aabbHalfZ
 	};
-	m_aabb.max = {
+	m_currentAABB.max = {
 		center.x + aabbHalfX,
 		center.y + aabbHalfY,
 		center.z + aabbHalfZ
@@ -461,16 +507,16 @@ void Collider::UpdateAABBBox()
 //軸平行境界ボックス更新(球コライダー用)
 void Collider::UpdateAABBSphere()
 {
-	const float radius = m_sphereCollider.radius;
-	const XMFLOAT3 center = m_center;
+	const float radius = m_currentSphereCollider.radius;
+	const XMFLOAT3 center = m_currentCenter;
 
-	m_aabb.min = {
+	m_currentAABB.min = {
 	center.x - radius,
 	center.y - radius,
 	center.z - radius
 	};
 
-	m_aabb.max = {
+	m_currentAABB.max = {
 	center.x + radius,
 	center.y + radius,
 	center.z + radius
@@ -480,17 +526,32 @@ void Collider::UpdateAABBSphere()
 //軸平行境界ボックス更新(カプセルコライダー用)
 void Collider::UpdateAABBCapsule()
 {
-	const float radius = m_capsuleCollider.radius;
-	const XMFLOAT3 pointA = m_capsuleCollider.pointA;
-	const XMFLOAT3 pointB = m_capsuleCollider.pointB;
-	m_aabb.min = {
+	const float radius = m_currentCapsuleCollider.radius;
+	const XMFLOAT3 pointA = m_currentCapsuleCollider.pointA;
+	const XMFLOAT3 pointB = m_currentCapsuleCollider.pointB;
+	m_currentAABB.min = {
 		(std::min)(pointA.x, pointB.x) - radius,
 		(std::min)(pointA.y, pointB.y) - radius,
 		(std::min)(pointA.z, pointB.z) - radius
 	};
-	m_aabb.max = {
+	m_currentAABB.max = {
 		(std::max)(pointA.x, pointB.x) + radius,
 		(std::max)(pointA.y, pointB.y) + radius,
 		(std::max)(pointA.z, pointB.z) + radius
 	};
+}
+
+//SweptAABB作成関数
+void Collider::MakeSweptAABB()
+{
+	AABB s{};
+	s.min.x = (std::min)(m_previousAABB.min.x, m_currentAABB.min.x);
+	s.min.y = (std::min)(m_previousAABB.min.y, m_currentAABB.min.y);
+	s.min.z = (std::min)(m_previousAABB.min.z, m_currentAABB.min.z);
+
+	s.max.x = (std::max)(m_previousAABB.max.x, m_currentAABB.max.x);
+	s.max.y = (std::max)(m_previousAABB.max.y, m_currentAABB.max.y);
+	s.max.z = (std::max)(m_previousAABB.max.z, m_currentAABB.max.z);
+
+	m_sweptAABB = s;
 }
