@@ -24,8 +24,14 @@ ObjectBase::ObjectBase(
 	COLLISION_LAYER layer,
 	XMFLOAT3 collisionBoxSize, 
 	bool collisionIsTrigger
-)
-	: m_meshType(meshType), m_position(position), m_rotation(rotation), m_scale(scale), m_velocity(velocity), m_isActive(isActive), m_tag(tag)
+) : 
+	m_meshType(meshType), 
+	m_position(position), 
+	m_rotation(rotation), 
+	m_scale(scale), 
+	m_velocity(velocity), 
+	m_isActive(isActive), 
+	m_tag(tag)
 {
 	//コライダーの生成
 	m_pCollider = new Collider(
