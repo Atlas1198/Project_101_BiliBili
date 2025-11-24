@@ -5,11 +5,20 @@ using namespace DirectX;
 using namespace CollisionData;
 
 //コンストラクタ
-Collider::Collider(ObjectBase* owner, ColliderType type, COLLISION_LAYER layer, XMFLOAT3 scale, bool isTrigger)
-	: m_pOwner(owner), m_isTrigger(isTrigger), m_type(type), m_layer(layer)
+Collider::Collider(
+	ObjectBase* owner,		//所有者オブジェクト
+	ColliderType type,		//コライダータイプ
+	COLLISION_LAYER layer,	//衝突レイヤー
+	XMFLOAT3 scale,			//ボックスサイズ
+	bool isTrigger			//トリガーフラグ
+) : 
+	m_pOwner(owner),		//所有者オブジェクト
+	m_isTrigger(isTrigger),	//トリガーフラグ
+	m_type(type),			//コライダータイプ
+	m_layer(layer)			//衝突レイヤー
 {
-	CreateCollider(scale);
-	Update();
+	CreateCollider(scale);	//コライダー生成
+	Update();				//更新
 }
 
 //デストラクタ

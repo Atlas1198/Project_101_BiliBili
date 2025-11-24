@@ -52,7 +52,7 @@ void PlayerManager::AddPlayer(
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			id,							//ID
 			true,						//アクティブフラグ
-			ColliderType::CAPSULE,		//コライダータイプ	
+			ColliderType::BOX,			//コライダータイプ	
 			XMFLOAT3(1.0f, 2.0f, 1.0f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)

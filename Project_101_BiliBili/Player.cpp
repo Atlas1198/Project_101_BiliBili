@@ -50,7 +50,14 @@ void Player::ResolveCollisionsOverride()
 	XMFLOAT3 pushVector{};	//押し出しベクトル
 	auto& infos = m_pCollider->GetCollisionInfos();
 
-	pushVector = GetPushOutVector(infos, {OBJECT_TAG::PLAYER, OBJECT_TAG::WALL, OBJECT_TAG::GROUND});
+	pushVector = GetPushOutVector(
+		infos,	//衝突情報配列
+		{//対象タグリスト(レイヤーマスクにも含まれている必要がある)
+			OBJECT_TAG::PLAYER,	//他のプレイヤーも押し出す
+			OBJECT_TAG::WALL,	//壁
+			OBJECT_TAG::GROUND	//地面
+		}
+	);
 
 	//最大押し出しベクトル分だけ移動
 	m_position.x += pushVector.x;

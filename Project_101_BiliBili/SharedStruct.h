@@ -355,7 +355,7 @@ namespace CollisionData
 	//貫入深さから押し出しベクトルを取得する関数
 	DirectX::XMFLOAT3 GetPushOutVector(
 		std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
-		const std::initializer_list<OBJECT_TAG>& tagList		//対象タグリスト
+		const std::initializer_list<OBJECT_TAG>& tagList	//対象タグリスト
 	);
 }
 
