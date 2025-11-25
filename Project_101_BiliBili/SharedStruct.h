@@ -66,12 +66,13 @@ enum BLEND_MODE
 //タグ列挙体
 enum class OBJECT_TAG
 {
-	NONE = 0,	//なし
-	PLAYER,		//プレイヤー
-	WALL,		//壁
-	GROUND,		//地面
-	BULLET,		//弾
-	MAX			//最大数
+	NONE = 0,		//なし
+	PLAYER,			//プレイヤー
+	WALL,			//壁
+	GROUND,			//地面
+	BULLET,			//弾
+	ITEM_TRANSFORM,	//変身アイテム
+	MAX				//最大数
 };
 
 //描画情報用名前空間
@@ -327,6 +328,7 @@ namespace CollisionData
 		WALL,			//壁
 		GROUND,			//地面
 		BULLET,			//弾
+		ITEM_TRANSFORM,	//変身アイテム
 		MAX_LAYER		//最大数
 	};
 
