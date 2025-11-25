@@ -77,6 +77,7 @@ enum class OBJECT_TAG
 	NONE = 0,	//なし
 	PLAYER,		//プレイヤー
 	WALL,		//壁
+	WALLPASS,	//弾貫通壁
 	GROUND,		//地面
 	BULLET,		//弾
 	MAX			//最大数
@@ -333,6 +334,7 @@ namespace CollisionData
 		DEFAULT = 0,	//デフォルト
 		PLAYER,			//プレイヤー
 		WALL,			//壁
+		WALLPASS,		//弾貫通壁
 		GROUND,			//地面
 		BULLET,			//弾
 		MAX_LAYER		//最大数
