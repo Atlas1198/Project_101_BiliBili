@@ -138,10 +138,7 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 		100.0f);
 
 	//スクリーンカメラ行列の更新
-	m_screenView = DirectX::XMMatrixLookAtLH(
-		XMVectorSet(info.position.x, info.position.y, info.position.z, 0.0f),	//カメラの位置
-		XMVectorSet(info.target.x, info.target.y, info.target.z, 0.0f),			//カメラの注視点
-		XMVectorSet(info.up.x, info.up.y, info.up.z, 0.0f));					//カメラの上方
+	m_screenView = XMMatrixIdentity();					//カメラの上方
 
 	
 
@@ -149,8 +146,8 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 	m_screenProj = XMMatrixOrthographicLH(
 		orthowidth,	//画面幅
 		orthoheight,	//画面高さ
-		0.1f,									//ニアクリップ距離
-		100.0f);									//ファークリップ距離
+		0.0f,									//ニアクリップ距離
+		1.0f);									//ファークリップ距離
 }
 
 //描画
