@@ -145,7 +145,7 @@ void PlayerManager::PrepareRenderInfo(
 	)
 {
 	//描画情報生成関数を呼び出し、描画情報を作成
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_playerInfo,					//描画情報構造体配列へのポインタ

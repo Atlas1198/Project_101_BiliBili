@@ -1,0 +1,36 @@
+#pragma once
+#include <d3d12.h>
+#include "d3dx12.h"
+#include "UIBase.h"
+
+class UIImage : public UIBase
+{
+public:
+	UIImage(
+		DirectX::XMFLOAT3 position = { 0,0,0 },
+		DirectX::XMFLOAT3 scale = { 1,1,1 },
+		DirectX::XMFLOAT3 rotation = { 0,0,0 },
+		UINT order = 0,
+		const std::wstring& texturePath = L""
+	);
+	~UIImage() {};
+	void InitializeOverride(
+		TextureManager& textureManager,
+		MeshManager& meshManager
+	) override;
+	void UpdateOverride() override;
+	void FinalizeOverride() override;
+
+	void SetTexturePath(const std::wstring& texturePath) { m_texturePath = texturePath; }
+	void SetBlendMode(BLEND_MODE blendMode) { m_blendMode = blendMode; }
+
+private:
+	std::wstring m_texturePath;								//テクスチャパス
+	BLEND_MODE m_blendMode = BLEND_MODE::BLEND_TRANSPARENT;	//ブレンドモード
+
+protected:
+	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成
+		TextureManager& textureManager,	//テクスチャ管理クラスの参照
+		MeshManager& meshManager		//メッシュ管理クラスの参照
+	) override;
+};

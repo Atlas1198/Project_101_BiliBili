@@ -42,6 +42,14 @@ struct alignas(256) Transform
 	DirectX::XMFLOAT4 objectColor;	//オブジェクトの色RGBA
 };
 
+//3D変換情報構造体
+struct Transform3D
+{
+	DirectX::XMFLOAT3 position;	//位置
+	DirectX::XMFLOAT3 scale;	//スケール
+	DirectX::XMFLOAT3 rotation;	//回転
+};
+
 // カメラ情報構造体
 struct CameraInfo
 {
@@ -265,7 +273,7 @@ namespace MeshData
 namespace RenderData
 {
 	//モデルデータ又はテクスチャファイルから描画情報を作成する関数
-	void CreteRenderInfo(
+	void CreateRenderInfo(
 		TextureManager& textureManager,	//テクスチャマネージャへの参照
 		MeshManager& meshManager,		//メッシュマネージャへの参照
 		std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
@@ -415,7 +423,7 @@ inline static float Dot(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
 }
 
 //線形補間を行う関数(XMFLOAT3版)
-static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, float t)
+inline static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, float t)
 {
 	return DirectX::XMFLOAT3{
 		start.x + (end.x - start.x) * t,
@@ -425,7 +433,70 @@ static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const DirectX:
 }
 
 //線形補間を行う関数(XMVECTOR版)
-static DirectX::XMVECTOR LerpXMV(const DirectX::XMVECTOR& start, const DirectX::XMVECTOR& end, float t)
+inline static DirectX::XMVECTOR LerpXMV(const DirectX::XMVECTOR& start, const DirectX::XMVECTOR& end, float t)
 {
 	return DirectX::XMVectorLerp(start, end, t);
+}
+
+//3D変換情報合成関数
+inline static Transform3D CombineTransform3D(const Transform3D& world, const Transform3D& local)
+{
+	Transform3D result;
+	//スケールの合成
+	result.scale.x = world.scale.x * local.scale.x;
+	result.scale.y = world.scale.y * local.scale.y;
+	result.scale.z = world.scale.z * local.scale.z;
+
+	//回転の合成
+	result.rotation.x = world.rotation.x + local.rotation.x;
+	result.rotation.y = world.rotation.y + local.rotation.y;
+	result.rotation.z = world.rotation.z + local.rotation.z;
+
+	//位置の合成(スケールと回転を考慮)
+	DirectX::XMVECTOR childPos = DirectX::XMLoadFloat3(&local.position);	//子の位置ベクトル
+	DirectX::XMVECTOR parentScale = DirectX::XMLoadFloat3(&world.scale);	//親のスケールベクトル
+	childPos = DirectX::XMVectorMultiply(childPos, parentScale);			//スケール適用
+
+	DirectX::XMVECTOR parentRot = DirectX::XMLoadFloat3(&world.rotation);	//親の回転ベクトル
+	DirectX::XMMATRIX rotMatrix =											//親の回転行列
+		DirectX::XMMatrixRotationRollPitchYaw(
+			DirectX::XMVectorGetX(parentRot),	//ピッチ
+			DirectX::XMVectorGetY(parentRot),	//ヨー
+			DirectX::XMVectorGetZ(parentRot)	//ロール
+		);
+	childPos = DirectX::XMVector3Transform(childPos, rotMatrix);				//回転適用
+
+	DirectX::XMVECTOR parentPos = DirectX::XMLoadFloat3(&world.position);		//親の位置ベクトル
+	DirectX::XMVECTOR resultPos = DirectX::XMVectorAdd(parentPos, childPos);	//位置合成
+	DirectX::XMStoreFloat3(&result.position, resultPos);						//結果を格納
+
+	return result;
+}
+
+//変換情報から変換行列を取得する関数
+inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& transform)
+{
+	//スケール行列
+	DirectX::XMMATRIX scaleMatrix =
+		DirectX::XMMatrixScaling(
+			transform.scale.x,
+			transform.scale.y,
+			transform.scale.z
+		);
+	//回転行列
+	DirectX::XMMATRIX rotMatrix =
+		DirectX::XMMatrixRotationRollPitchYaw(
+			DirectX::XMConvertToRadians(transform.rotation.x),	//ピッチ
+			DirectX::XMConvertToRadians(transform.rotation.y),	//ヨー
+			DirectX::XMConvertToRadians(transform.rotation.z)	//ロール
+		);
+	//平行移動行列
+	DirectX::XMMATRIX transMatrix =
+		DirectX::XMMatrixTranslation(
+			transform.position.x,
+			transform.position.y,
+			transform.position.z
+		);
+	//ワールド行列の合成(スケール→回転→平行移動)
+	return scaleMatrix * rotMatrix * transMatrix;
 }

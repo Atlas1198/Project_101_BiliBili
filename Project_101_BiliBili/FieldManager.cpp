@@ -163,7 +163,7 @@ void FieldManager::FinalizeOverride()
 void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
 	//描画情報生成関数を呼び出し、描画情報を作成
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallInfo,					//描画情報構造体配列へのポインタ
@@ -172,7 +172,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		wallTexPath							//テクスチャのファイル名
 	);
 
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_groundInfo,					//描画情報構造体配列へのポインタ

@@ -164,7 +164,7 @@ void CollisionManager::SubmitDraw(
 	//描画要求をシーンに提出
 	for (auto& i : submitInfos)
 	{
-		renderer.Submit(i);
+		renderer.SubmitToWorldList(i);
 	}
 }
 
@@ -445,7 +445,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 {
 	//ボックスコライダーの描画情報作成
 	m_colliderRenderInfoBox.clear();
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,				//テクスチャ管理クラスの参照
 		meshManager,				//メッシュ管理クラスの参照
 		&m_colliderRenderInfoBox,	//描画情報構造体配列へのポインタ
@@ -456,7 +456,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 
 	//球コライダーの描画情報作成
 	m_colliderRenderInfoSphere.clear();
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,					//テクスチャ管理クラスの参照
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoSphere,	//描画情報構造体配列へのポインタ
@@ -467,7 +467,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 
 	//カプセルコライダーの描画情報作成
 	m_colliderRenderInfoCapsule.clear();
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,					//テクスチャ管理クラスの参照
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoCapsule,	//描画情報構造体配列へのポインタ
