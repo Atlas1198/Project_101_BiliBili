@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "PlayerManager.h"
 #include "FieldManager.h"
+#include "GameUIManager.h"
 #include "SharedStruct.h"
 
 //前方宣言
@@ -34,4 +35,5 @@ public:	//公開関数
 private:
 	PlayerManager* m_pPlayerManager = nullptr;	//プレイヤー管理クラス
 	FieldManager* m_pFieldManager = nullptr;	//フィールド管理クラス
+	GameUIManager* m_pGameUIManager = nullptr;	//ゲームUI管理クラス
 };

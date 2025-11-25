@@ -1,0 +1,40 @@
+#pragma once
+#include <d3d12.h>
+#include "d3dx12.h"
+#include "UIBase.h"
+#include "UIImage.h"
+
+
+// HPバーUIクラス
+class HPBarUI : public UIBase
+{
+public:
+	//テクスチャファイルパス定数(仮)
+	static constexpr const wchar_t* FRAME_TEXTURE_PATH = L"asset/texture/white.png"; // フレームテクスチャパス
+	static constexpr const wchar_t* BAR_TEXTURE_PATH = L"asset/texture/white.png"; // バーテクスチャパス
+	static constexpr const wchar_t* BG_TEXTURE_PATH = L"asset/texture/white.png"; // 背景テクスチャパス
+public:
+	HPBarUI(
+		DirectX::XMFLOAT3 position = { 0,0,0 },
+		DirectX::XMFLOAT3 scale = { 1,1,1 },
+		DirectX::XMFLOAT3 rotation = { 0,0,0 },
+		UINT order = 0
+	);
+	~HPBarUI() {};
+	void InitializeOverride(
+		TextureManager& textureManager,
+		MeshManager& meshManager
+	) override;
+	void UpdateOverride() override;
+	void FinalizeOverride() override;
+private:
+	UIImage* m_pFrameImage = nullptr;	//フレーム画像UIポインタ
+	UIImage* m_pBarImage = nullptr;		//バー画像UIポインタ
+	UIImage* m_pBgImage = nullptr;		//背景画像UIポインタ
+
+private:
+	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成
+		TextureManager& textureManager,	//テクスチャ管理クラスの参照
+		MeshManager& meshManager		//メッシュ管理クラスの参照
+	) override;
+};

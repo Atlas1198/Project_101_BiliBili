@@ -100,7 +100,7 @@ void ObjectManagerBase::SubmitRenderInfo(
 		//描画要求をシーンに提出
 		for (auto& i : submitInfos)
 		{
-			renderer.Submit(i);
+			renderer.SubmitToWorldList(i);
 		}
 
 	}

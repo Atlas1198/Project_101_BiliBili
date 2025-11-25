@@ -29,7 +29,7 @@ const D3D12_INPUT_LAYOUT_DESC Vertex::InputLayout =
 };
 
 //描画情報構造体を作成する関数
-void RenderData::CreteRenderInfo(
+void RenderData::CreateRenderInfo(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
 	MeshManager& meshManager,		//メッシュマネージャへの参照
 	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
