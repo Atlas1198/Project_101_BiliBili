@@ -119,22 +119,38 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 		XMVectorSet(info.up.x, info.up.y, info.up.z, 0.0f));					//カメラの上方向ベクトル
 
 	//ワールドプロジェクション行列の更新
+	/*
 	m_worldProj = XMMatrixPerspectiveFovLH(
 		info.fov,			//視野角
 		info.aspectRatio,	//アスペクト比
 		info.nearZ,			//ニアクリップ距離
 		info.farZ			//ファークリップ距離
 	);
+	*/
+
+	float orthoheight = 30;
+	float orthowidth = orthoheight * info.aspectRatio;
+
+	m_worldProj = XMMatrixOrthographicLH(
+		orthowidth,	//画面幅
+		orthoheight,	//画面高さ
+		0.1f,									//ニアクリップ距離
+		100.0f);
 
 	//スクリーンカメラ行列の更新
-	m_screenView = XMMatrixIdentity();	//スクリーン座標用ビュー行列は単位行列
+	m_screenView = DirectX::XMMatrixLookAtLH(
+		XMVectorSet(info.position.x, info.position.y, info.position.z, 0.0f),	//カメラの位置
+		XMVectorSet(info.target.x, info.target.y, info.target.z, 0.0f),			//カメラの注視点
+		XMVectorSet(info.up.x, info.up.y, info.up.z, 0.0f));					//カメラの上方
+
+	
 
 	//スクリーンプロジェクション行列の更新
 	m_screenProj = XMMatrixOrthographicLH(
-		static_cast<float>(App::WINDOW_WIDTH),	//画面幅
-		static_cast<float>(App::WINDOW_HEIGHT),	//画面高さ
-		0.0f,									//ニアクリップ距離
-		1.0f);									//ファークリップ距離
+		orthowidth,	//画面幅
+		orthoheight,	//画面高さ
+		0.1f,									//ニアクリップ距離
+		100.0f);									//ファークリップ距離
 }
 
 //描画

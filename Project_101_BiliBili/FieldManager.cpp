@@ -40,52 +40,52 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(15.0f, 0.0f, 0.0f),	//位置
-			XMFLOAT3(0.0f, 40.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(-25.0f, 0.0f, 25.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(2.0f, 10.0f, 50.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			XMFLOAT3(2.1f, 10.1f, 50.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(-15.0f, 0.0f, 0.0f),	//位置
-			XMFLOAT3(0.0f, 40.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(25.0f, 0.0f, 25.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(2.0f, 10.0f, 50.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			XMFLOAT3(2.1f, 10.1f, 50.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(-10.0f, 0.0f, 20.0f),	//位置
-			XMFLOAT3(0.0f, 130.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(0.0f, 0.0f, 50.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(50.0f, 10.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			XMFLOAT3(50.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(-10.0f, 0.0f, -10.0f),	//位置
-			XMFLOAT3(0.0f, 130.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(50.0f, 10.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			XMFLOAT3(50.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
