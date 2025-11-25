@@ -133,7 +133,7 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 
 	m_worldProj = XMMatrixOrthographicLH(
 		orthowidth,	//画面幅
-		orthoheight,	//画面高さ
+		orthoheight,	//画面高さ5
 		0.1f,									//ニアクリップ距離
 		100.0f);
 
@@ -144,8 +144,8 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 
 	//スクリーンプロジェクション行列の更新
 	m_screenProj = XMMatrixOrthographicLH(
-		orthowidth,	//画面幅
-		orthoheight,	//画面高さ
+		(int)App::WINDOW_WIDTH,	//画面幅
+		(int)App::WINDOW_HEIGHT,	//画面高さ
 		0.0f,									//ニアクリップ距離
 		1.0f);									//ファークリップ距離
 }
