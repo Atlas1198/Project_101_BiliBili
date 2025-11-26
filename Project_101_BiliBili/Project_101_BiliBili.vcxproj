@@ -186,6 +186,7 @@
     <ClInclude Include="UIManagerBase.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -224,6 +225,7 @@
     <ClCompile Include="UIManagerBase.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="WallPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicShader.hlsli" />
