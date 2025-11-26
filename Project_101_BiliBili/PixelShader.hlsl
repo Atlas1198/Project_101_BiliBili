@@ -9,7 +9,8 @@ cbuffer Transform : register(b0)
     float4x4 world;     //ワールド行列
     float4x4 view;      //ビュー行列
     float4x4 proj;      //プロジェクション行列
-    float4 objColor;   //全体の色
+    float4 objColor;    //全体の色
+    float4 uvRect;      //UV矩形
 }
 
 Texture2D gTexture : register(t0);      //テクスチャオブジェクト
@@ -19,19 +20,22 @@ float4 BasicPS(
     VSOutPut input //頂点シェーダーから送られてきたデータ構造体
 ) : SV_TARGET //レンダーターゲットへ出力
 {
-    float4 texColor = gTexture.Sample(gSampler, input.uv); //テクスチャの色を取得
-
-    return texColor * input.color * objColor; //頂点カラーをそのまま返す
+    float2 uv = input.uv;                            //頂点シェーダーから送られてきたUV座標
+    uv = uvRect.xy + uv * uvRect.zw;                 //UV矩形を適用
+    float4 texColor = gTexture.Sample(gSampler, uv); //テクスチャの色を取得
+    return texColor * input.color * objColor;        //頂点カラーをそのまま返す
 }
 
 float4 BasicPSMasked(
     VSOutPut input
 ) : SV_TARGET
 {
-    float4 texColor = gTexture.Sample(gSampler, input.uv);
+    float2 uv = input.uv;                               //頂点シェーダーから送られてきたUV座標
+    uv = uvRect.xy + uv * uvRect.zw;                    //UV矩形を適用
+    float4 texColor = gTexture.Sample(gSampler, uv);    //テクスチャの色を取得
     
     //アルファテスト
-    clip(texColor.a - 0.5f);
-    return texColor * input.color;
+    clip(texColor.a - 0.5f);        //アルファ値が0.5未満なら描画しない
+    return texColor * input.color;  //頂点カラーをそのまま返す
 
 }

@@ -33,13 +33,23 @@ private:
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputLayoutCount];	//入力要素の配列
 };
 
-//変換行列構造体(256バイトアライメント)
+//UV��`�\����
+struct UVRect
+{
+	float u = 0.0f;		//UV��`�̍���X���W
+	float v = 0.0f;		//UV��`�̍���Y���W
+	float su = 1.0f;	//UV��`�̕�
+	float sv = 1.0f;	//UV��`�̍���
+};
+
+//�ϊ��s��\����(256�o�C�g�A���C�����g)
 struct alignas(256) Transform
 {
-	DirectX::XMMATRIX worldMatrix;	//ワールド行列
-	DirectX::XMMATRIX viewMatrix;	//ビュー行列
-	DirectX::XMMATRIX projMatrix;	//プロジェクション行列
-	DirectX::XMFLOAT4 objectColor;	//オブジェクトの色RGBA
+	DirectX::XMMATRIX worldMatrix;	//���[���h�s��
+	DirectX::XMMATRIX viewMatrix;	//�r���[�s��
+	DirectX::XMMATRIX projMatrix;	//�v���W�F�N�V�����s��
+	DirectX::XMFLOAT4 objectColor;	//�I�u�W�F�N�g�̐FRGBA
+	DirectX::XMFLOAT4 uvRect;		//UV��`
 };
 
 //3D変換情報構造体
@@ -94,16 +104,18 @@ class MeshGPU;
 
 namespace RenderData
 {
+	//�`����\����
 	struct RenderInfo
 	{
-		MeshGPU* pMeshGPU = nullptr;			//メッシュGPUデータへのポインタ
-		DirectX::XMMATRIX world = {};			//ワールド行列
-		UINT startIndex = 0;					//開始インデックス
-		INT  baseVertex = 0;					//ベース頂点
-		uint32_t srvIndex = UINT32_MAX;			//SRVインデックス
-		DirectX::XMFLOAT4 color = { 1,1,1,1 };	//オブジェクトの色RGBA(デフォルトは白)
-		BLEND_MODE blendMode = BLEND_OPAQUE;	//ブレンドモード
-		DirectX::XMFLOAT3 positionW{};			//ワールド座標系の位置
+		MeshGPU* pMeshGPU = nullptr;						//���b�V��GPU�f�[�^�ւ̃|�C���^
+		DirectX::XMMATRIX world = {};						//���[���h�s��
+		UINT startIndex = 0;								//�J�n�C���f�b�N�X
+		INT  baseVertex = 0;								//�x�[�X���_
+		uint32_t srvIndex = UINT32_MAX;						//SRV�C���f�b�N�X
+		DirectX::XMFLOAT4 color = { 1,1,1,1 };				//�I�u�W�F�N�g�̐FRGBA(�f�t�H���g�͔�)
+		BLEND_MODE blendMode = BLEND_OPAQUE;				//�u�����h���[�h
+		DirectX::XMFLOAT3 positionW{};						//���[���h���W�n�̈ʒu
+		DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UV��`
 	};
 }
 
@@ -503,4 +515,33 @@ inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& tran
 		);
 	//ワールド行列の合成(スケール→回転→平行移動)
 	return scaleMatrix * rotMatrix * transMatrix;
+}
+
+//�e�N�X�`���������\����
+struct TexSplitInfo
+{
+	int index = 0;			//�����C���f�b�N�X
+	int cols = 1;			//������
+	int rows = 1;			//�����s��
+	int total = 1;			//��������(�ő�C���f�b�N�X��+1)
+	int frameCount = 0;		//�t���[���J�E���g
+	int updateRate = 0;		//�X�V�p�x(�t���[����)
+};
+
+//�X�v���C�g�𕪊�������̉ӏ���؂���֐�
+inline static DirectX::XMFLOAT4 SplitSprite(TexSplitInfo info)
+{
+	//�C���f�b�N�X����؂蔲���ӏ����v�Z
+	float col = info.index % info.cols;
+	float row = info.index / info.cols;
+
+	//�؂蔲����`�̃T�C�Y���v�Z
+	float su = 1.0f / info.cols;
+	float sv = 1.0f / info.rows;
+
+	//�؂蔲����`�̍��W���v�Z
+	float u = col * su;
+	float v = row * sv;
+
+	return DirectX::XMFLOAT4{ u, v, su, sv };
 }

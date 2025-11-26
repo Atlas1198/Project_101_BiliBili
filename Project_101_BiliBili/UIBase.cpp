@@ -67,13 +67,15 @@ void UIBase::CollectRenderInfos(std::vector<RenderData::RenderInfo>& out) const
 	if (!m_isActive) return;	//非アクティブなら何もしない
 	//自身の描画情報構造体配列を収集
 
-	auto worldMatrix = GetMatrixFromTransform3D(m_world); // ワールド行列を取得
+	auto worldMatrix = GetMatrixFromTransform3D(m_world);	//ワールド行列を取得
 
 	for (const auto& renderInfo : m_renderInfos) {
-		RenderData::RenderInfo renderInfoCopy = renderInfo;	//描画情報構造体をコピー
-		renderInfoCopy.world = worldMatrix;					//ワールド行列を設定
-		renderInfoCopy.color = m_color;						//色RGBAを設定
-		out.push_back(renderInfoCopy);						//配列に追加
+		RenderData::RenderInfo renderInfoCopy = renderInfo;		//描画情報構造体をコピー
+		renderInfoCopy.world = worldMatrix;						//ワールド行列を設定
+		renderInfoCopy.color = m_color;							//色RGBAを設定
+		renderInfoCopy.uvRect = 
+		{ m_uvRect.u, m_uvRect.v, m_uvRect.su, m_uvRect.sv };	//UV矩形を設定
+		out.push_back(renderInfoCopy);							//配列に追加
 	}
 	//子UIオブジェクトの描画情報構造体配列を収集
 	for (const auto& child : m_children) {
@@ -101,6 +103,12 @@ const bool UIBase::IsActive() const {
 	return m_isActive;
 }
 
+//ローカル変換情報の設定
+void UIBase::SetLocalTransform(const Transform3D& local)
+{
+	m_local = local;
+}
+
 // 色RGBAの設定
 void UIBase::SetColor(DirectX::XMFLOAT4 color) {
 	m_color = color;
@@ -109,6 +117,15 @@ void UIBase::SetColor(DirectX::XMFLOAT4 color) {
 // アクティブフラグの設定
 void UIBase::SetActive(bool isActive) {
 	m_isActive = isActive;
+}
+
+//UV矩形の設定
+void UIBase::SetUVRect(const UVRect& uvRect)
+{
+	m_uvRect.u = uvRect.u;
+	m_uvRect.v = uvRect.v;
+	m_uvRect.su = uvRect.su;
+	m_uvRect.sv = uvRect.sv;
 }
 
 // ワールド変換情報更新

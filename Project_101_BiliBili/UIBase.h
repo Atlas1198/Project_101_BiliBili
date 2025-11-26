@@ -42,8 +42,10 @@ public:	//公開関数
 	const bool IsActive() const;					//アクティブかどうかを取得
 
 	//セッター
-	void SetColor(DirectX::XMFLOAT4 color);			//色RGBAの設定
-	void SetActive(bool isActive);					//アクティブフラグの設定
+	void SetLocalTransform(const Transform3D& local); //ローカル変換情報の設定
+	void SetColor(DirectX::XMFLOAT4 color);	//色RGBAの設定
+	void SetActive(bool isActive);			//アクティブフラグの設定
+	void SetUVRect(const UVRect& uvRect);	//UV矩形の設定
 
 	//UI親子関係関数
 	//子UIオブジェクト追加関数(テンプレート)
@@ -85,4 +87,6 @@ protected:
 	UINT m_order = 0;	//描画順
 
 	std::vector<RenderData::RenderInfo> m_renderInfos;	//描画情報構造体配列
+
+	UVRect m_uvRect{};	//UV矩形
 };

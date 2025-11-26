@@ -154,6 +154,10 @@
     <ClInclude Include="UIimage.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="BulletCountUI.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="IconUI.h">
     <ClInclude Include="WallPass.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -252,6 +256,7 @@
     <ClCompile Include="DatabaseManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="UIBase.cpp">
     <ClCompile Include="Bullet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -280,6 +285,10 @@
     <ClCompile Include="HPBarUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="BulletCountUI.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IconUI.cpp">
     <ClCompile Include="WallPass.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>

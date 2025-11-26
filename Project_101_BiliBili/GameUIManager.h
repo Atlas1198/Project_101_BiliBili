@@ -4,6 +4,8 @@
 #include "TextureManager.h"
 #include "UIManagerBase.h"
 #include "HPBarUI.h"
+#include "BulletCountUI.h"
+#include "IconUI.h"
 
 //ゲームUI管理クラス
 class GameUIManager : public UIManagerBase
@@ -21,6 +23,12 @@ public:	//公開関数
 private:
 	HPBarUI* m_pHPBarUI1 = nullptr;	//HPバーUIポインタ
 	HPBarUI* m_pHPBarUI2 = nullptr;	//HPバーUIポインタ
+
+	BulletCountUI* m_pBulletCountUI1 = nullptr; //弾数UIポインタ
+	BulletCountUI* m_pBulletCountUI2 = nullptr; //弾数UIポインタ
+
+	IconUI* m_pIconUI1 = nullptr; //アイコンUIポインタ
+	IconUI* m_pIconUI2 = nullptr; //アイコンUIポインタ
 
 private:
 	void PrepareRenderInfo(	//オブジェクトの描画情報生成

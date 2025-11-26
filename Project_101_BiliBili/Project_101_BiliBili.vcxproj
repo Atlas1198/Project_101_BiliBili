@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="AssimpLoader.h" />
+    <ClInclude Include="BulletCountUI.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BulletManager.h" />
     <ClInclude Include="Camera.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="GameUIManager.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="HPBarUI.h" />
+    <ClInclude Include="IconUI.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ToolbarControl.h" />
     <ClInclude Include="ObjectBase.h" />
@@ -196,6 +198,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="AssimpLoader.cpp" />
+    <ClCompile Include="BulletCountUI.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletManager.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -208,6 +211,7 @@
     <ClCompile Include="GameUIManager.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="HPBarUI.cpp" />
+    <ClCompile Include="IconUI.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
     <ClCompile Include="ObjectManagerBase.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -227,6 +231,7 @@
     <ClCompile Include="SharedStruct.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="UIBase.cpp" />
     <ClCompile Include="TransformItem.cpp" />
     <ClCompile Include="TransformItemManager.cpp" />
     <ClCompile Include="TransformSystem.cpp" />
