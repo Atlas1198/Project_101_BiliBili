@@ -144,14 +144,28 @@ void PipelineState::Create()
 }
 
 //アルファブレンドを有効化
-void PipelineState::EnableAlphaBlend(bool enable)
+void PipelineState::EnableAlphaBlend(
+	bool enable,	//有効化フラグ
+	ALPHA_MODE mode	//アルファモード
+	)
 {
 	auto& rt0 = m_desc.BlendState.RenderTarget[0];				//レンダーターゲット0のブレンドステート設定
 
 	if(enable)
 	{
+		switch (mode)
+		{
+		case ALPHA_MODE::STRAIGHT:
+			rt0.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+			break;
+		case ALPHA_MODE::PREMULTIPLIED:
+			rt0.SrcBlend = D3D12_BLEND_ONE;
+			break;
+		default:
+			break;
+		}
+
 		rt0.BlendEnable = TRUE;
-		rt0.SrcBlend = D3D12_BLEND_SRC_ALPHA;
 		rt0.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 		rt0.BlendOp = D3D12_BLEND_OP_ADD;
 		rt0.SrcBlendAlpha = D3D12_BLEND_ONE;
@@ -174,6 +188,18 @@ void PipelineState::EnableAlphaBlend(bool enable)
 void PipelineState::EnableDepthWrite(bool enable)
 {
 	m_desc.DepthStencilState.DepthWriteMask = enable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO; //深度書き込みマスクの設定
+}
+
+//深度テストを有効化
+void PipelineState::EnableDepthTest(bool enable)
+{
+	m_desc.DepthStencilState.DepthEnable = enable; //深度テストの有効化設定
+}
+
+//カリングモードを設定
+void PipelineState::SetCullMode(D3D12_CULL_MODE mode)
+{
+	m_desc.RasterizerState.CullMode = mode; //カリングモードを設定
 }
 
 //パイプラインステートオブジェクトを取得

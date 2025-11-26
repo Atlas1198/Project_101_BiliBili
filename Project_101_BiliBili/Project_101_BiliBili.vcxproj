@@ -158,7 +158,9 @@
     <ClInclude Include="DirectXTex.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="FieldManager.h" />
+    <ClInclude Include="GameUIManager.h" />
     <ClInclude Include="Ground.h" />
+    <ClInclude Include="HPBarUI.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ToolbarControl.h" />
     <ClInclude Include="ObjectBase.h" />
@@ -184,8 +186,12 @@
     <ClInclude Include="TransformItem.h" />
     <ClInclude Include="TransformItemManager.h" />
     <ClInclude Include="TransformSystem.h" />
+    <ClInclude Include="UIBase.h" />
+    <ClInclude Include="UIimage.h" />
+    <ClInclude Include="UIManagerBase.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -199,7 +205,9 @@
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="FieldManager.cpp" />
+    <ClCompile Include="GameUIManager.cpp" />
     <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="HPBarUI.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
     <ClCompile Include="ObjectManagerBase.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -222,8 +230,12 @@
     <ClCompile Include="TransformItem.cpp" />
     <ClCompile Include="TransformItemManager.cpp" />
     <ClCompile Include="TransformSystem.cpp" />
+    <ClCompile Include="UIBasecpp.cpp" />
+    <ClCompile Include="UIimage.cpp" />
+    <ClCompile Include="UIManagerBase.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="WallPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicShader.hlsli" />

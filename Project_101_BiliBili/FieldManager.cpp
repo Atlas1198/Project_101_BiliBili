@@ -25,6 +25,14 @@ FieldManager::~FieldManager()
 	}
 	m_pWalls.clear();
 
+	//弾貫通壁オブジェクトの解放
+	for (auto& wallpass : m_pWallPasses)
+	{
+		delete wallpass;
+		wallpass = nullptr;
+	}
+	m_pWallPasses.clear();
+
 	//地面オブジェクトの解放
 	for (auto& ground : m_pGrounds)
 	{
@@ -40,52 +48,66 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(15.0f, 0.0f, 0.0f),	//位置
-			XMFLOAT3(0.0f, 40.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(-15.0f, 0.0f, 5.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(2.0f, 10.0f, 30.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			XMFLOAT3(2.1f, 10.1f, 30.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(-15.0f, 0.0f, 0.0f),	//位置
-			XMFLOAT3(0.0f, 40.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(15.0f, 0.0f, 5.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(2.0f, 10.0f, 30.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			XMFLOAT3(2.1f, 10.1f, 30.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(-10.0f, 0.0f, 20.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 20.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(30.0f, 10.0f, 2.0f),	//スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+			true,						//アクティブフラグ
+			ColliderType::BOX,		//コライダータイプ
+			XMFLOAT3(30.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
+			false						//コライダーのトリガーフラグ
+		)
+	);
+	m_pWalls.push_back(
+		new Wall(
+			MeshData::MESH_TYPE::CUBE,
+			XMFLOAT3(0.0f, 0.0f, -10.0f),	//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+			XMFLOAT3(30.0f, 10.0f, 2.0f),	//スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+			true,						//アクティブフラグ
+			ColliderType::BOX,		//コライダータイプ
+			XMFLOAT3(30.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
+			false						//コライダーのトリガーフラグ
+		)
+	);
+
+	m_pWallPasses.push_back(
+		new WallPass(
+			MeshData::MESH_TYPE::CUBE,
+			XMFLOAT3(5.0f, 0.0f, 0.0f),	//位置
 			XMFLOAT3(0.0f, 130.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
+			XMFLOAT3(2.0f, 10.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
-			false						//コライダーのトリガーフラグ
-		)
-	);
-	m_pWalls.push_back(
-		new Wall(
-			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(-10.0f, 0.0f, -10.0f),	//位置
-			XMFLOAT3(0.0f, 130.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 100.0f),	//スケール
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
-			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 100.1f),	//コライダーボックスサイズ
+			XMFLOAT3(2.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
@@ -93,13 +115,13 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pGrounds.push_back(
 		new Ground(
 			MeshData::MESH_TYPE::QUAD,
-			XMFLOAT3(0.0f, -5.0f, 0.0f),	//位置
+			XMFLOAT3(0.0f, -5.0f, 5.0f),	//位置
 			XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(50.0f, 50.0f, 1.0f),	//スケール
+			XMFLOAT3(30.0f, 30.0f, 1.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
 			true,							//アクティブフラグ
 			ColliderType::BOX,				//コライダータイプ
-			XMFLOAT3(50.0f, 50.0f, 1.0f),		//コライダーボックスサイズ
+			XMFLOAT3(30.0f, 30.0f, 1.0f),		//コライダーボックスサイズ
 			false							//コライダーのトリガーフラグ
 		)
 	);
@@ -107,6 +129,11 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	for (auto& wall : m_pWalls)
 	{
 		SubmitColliders(collisionManager, wall->GetCollider());
+	}
+
+	for (auto& wallpass : m_pWallPasses)
+	{
+		SubmitColliders(collisionManager, wallpass->GetCollider());
 	}
 
 	for(auto& ground : m_pGrounds)
@@ -133,6 +160,16 @@ void FieldManager::SubmitDrawsOverride(Renderer& renderer)
 		);
 	}
 
+	//弾貫通壁描画情報をシーンに提出
+	for (auto& wallpass : m_pWallPasses)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*wallpass,			//ゲームオブジェクト配列の参照
+			m_wallPassInfo		//弾貫通壁描画情報
+		);
+	}
+
 	//地面描画情報をシーンに提出
 	for (auto& ground : m_pGrounds)
 	{//描画要求をシーンに提出
@@ -153,9 +190,11 @@ void FieldManager::ResolveCollisionsOverride()
 void FieldManager::FinalizeOverride()
 {
 	m_pWalls.clear();
+	m_pWallPasses.clear();
 	m_pGrounds.clear();
 
 	m_wallInfo.clear();
+	m_wallPassInfo.clear();
 	m_groundInfo.clear();
 }
 
@@ -163,7 +202,7 @@ void FieldManager::FinalizeOverride()
 void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
 	//描画情報生成関数を呼び出し、描画情報を作成
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallInfo,					//描画情報構造体配列へのポインタ
@@ -172,7 +211,16 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		wallTexPath							//テクスチャのファイル名
 	);
 
-	CreteRenderInfo(
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_wallPassInfo,					//描画情報構造体配列へのポインタ
+		m_pWallPasses[0]->GetMeshType(),	//メッシュタイプ
+		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
+		wallPassTexPath							//テクスチャのファイル名
+	);
+
+	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_groundInfo,					//描画情報構造体配列へのポインタ

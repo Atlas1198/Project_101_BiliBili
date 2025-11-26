@@ -3,6 +3,13 @@
 #include <string>
 #include "ComPtr.h"
 
+//アルファモード
+enum class ALPHA_MODE
+{
+	STRAIGHT,		//ストレート
+	PREMULTIPLIED,	//プレマルチプライド
+};
+
 class PipelineState
 {
 private:
@@ -29,11 +36,16 @@ public:
 	void SetPixelShader(												//ピクセルシェーダーを設定（エントリーポイント指定版）
 		const std::wstring& filename,	//シェーダーファイル名
 		const std::string& entryPoint	//エントリーポイント名
-	); 
+	);
 	void Create();														//パイプラインステートオブジェクトを作成
 
-	void EnableAlphaBlend(bool enable);	//アルファブレンドを有効化
-	void EnableDepthWrite(bool enable);	//深度ステンシルを有効化
+	void EnableAlphaBlend(					//アルファブレンドを有効化
+		bool enable,
+		ALPHA_MODE mode = ALPHA_MODE::STRAIGHT
+	);
+	void EnableDepthWrite(bool enable);		//深度ステンシルを有効化
+	void EnableDepthTest(bool enable);		//深度テストを有効化
+	void SetCullMode(D3D12_CULL_MODE mode);	//カリングモードを設定
 
 	ID3D12PipelineState* GetPipelineState() const; //パイプラインステートオブジェクトを取得
 	bool IsValid() const; //パイプラインステート生成に成功したかを取得

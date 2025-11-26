@@ -58,7 +58,7 @@ void PlayerManager::AddPlayer(
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			id,							//ID
 			true,						//アクティブフラグ
-			ColliderType::CAPSULE,		//コライダータイプ	
+			ColliderType::BOX,			//コライダータイプ	
 			XMFLOAT3(1.0f, 2.0f, 1.0f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
@@ -145,7 +145,7 @@ void PlayerManager::PrepareRenderInfo(
 	)
 {
 	//描画情報生成関数を呼び出し、描画情報を作成
-	CreteRenderInfo(
+	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_playerInfo,					//描画情報構造体配列へのポインタ

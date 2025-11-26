@@ -4,6 +4,7 @@
 #include "ObjectManagerBase.h"
 #include "SharedStruct.h"
 #include "Wall.h"
+#include "WallPass.h"
 #include "Ground.h"
 
 //前方宣言
@@ -16,6 +17,7 @@ class MeshManager;
 class FieldManager : public ObjectManagerBase
 {
 	const wchar_t* wallTexPath = L"asset/texture/white.png";
+	const wchar_t* wallPassTexPath = L"asset/texture/black.png";
 	const wchar_t* groundTexPath = L"asset/texture/tile.PNG";
 public:
 	FieldManager();		//コンストラクタ
@@ -41,7 +43,9 @@ private:	//非公開メンバ変数
 
 private:	//非公開メンバ変数
 	std::vector<Wall*> m_pWalls;						//壁オブジェクト配列
+	std::vector<WallPass*> m_pWallPasses;						//壁オブジェクト配列
 	std::vector<Ground*> m_pGrounds;					//地面オブジェクト配列
 	std::vector<RenderData::RenderInfo> m_wallInfo;		//壁描画情報
+	std::vector<RenderData::RenderInfo> m_wallPassInfo;		//壁描画情報
 	std::vector<RenderData::RenderInfo> m_groundInfo;	//地面描画情報
 };

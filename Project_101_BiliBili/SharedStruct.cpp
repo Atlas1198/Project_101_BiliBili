@@ -29,7 +29,7 @@ const D3D12_INPUT_LAYOUT_DESC Vertex::InputLayout =
 };
 
 //描画情報構造体を作成する関数
-void RenderData::CreteRenderInfo(
+void RenderData::CreateRenderInfo(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
 	MeshManager& meshManager,		//メッシュマネージャへの参照
 	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
@@ -680,6 +680,7 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 	case CollisionData::COLLISION_LAYER::PLAYER:
 		return MakeMask({
 			COLLISION_LAYER::WALL,		//壁レイヤー
+			COLLISION_LAYER::WALLPASS,	//弾貫通壁レイヤー
 			COLLISION_LAYER::GROUND,	//地面レイヤー
 			COLLISION_LAYER::BULLET		//弾レイヤー
 			});
@@ -688,6 +689,11 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 		return MakeMask({
 			COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
 			COLLISION_LAYER::BULLET		//弾レイヤー
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::WALLPASS:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER		//プレイヤーレイヤー
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::GROUND:
