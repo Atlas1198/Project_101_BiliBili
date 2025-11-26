@@ -139,6 +139,8 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="TransformSystem.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="UIBase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -158,6 +160,8 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="IconUI.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="WallPass.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -257,6 +261,8 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="UIBase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -270,7 +276,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="TransformSystem.cpp">
-    <ClCompile Include="UIBasecpp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="UIManagerBase.cpp">
@@ -289,6 +294,8 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="IconUI.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="WallPass.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>

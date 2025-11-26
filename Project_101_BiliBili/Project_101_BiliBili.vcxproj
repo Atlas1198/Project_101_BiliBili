@@ -235,7 +235,6 @@
     <ClCompile Include="TransformItem.cpp" />
     <ClCompile Include="TransformItemManager.cpp" />
     <ClCompile Include="TransformSystem.cpp" />
-    <ClCompile Include="UIBasecpp.cpp" />
     <ClCompile Include="UIimage.cpp" />
     <ClCompile Include="UIManagerBase.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
