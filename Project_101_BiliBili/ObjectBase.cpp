@@ -58,6 +58,7 @@ void ObjectBase::Update()
 {
 	UpdateOverride();
 	m_pCollider->Update();
+	UpdateAnimation();
 }
 
 //衝突解決
@@ -164,6 +165,27 @@ void ObjectBase::SetActive(bool isActive)
 	m_isActive = isActive;
 }
 
+//アニメーション更新
+void ObjectBase::UpdateAnimation()
+{
+	if (m_texSplitInfo.total <= 1 || m_texSplitInfo.updateRate <= 0) return;
+
+	m_texSplitInfo.frameCount++;	//フレームカウントをインクリメント
+
+	//更新頻度に達したらインデックスを更新
+	if (m_texSplitInfo.frameCount >= m_texSplitInfo.updateRate)
+	{
+		m_texSplitInfo.frameCount = 0;	//フレームカウントリセット
+		m_texSplitInfo.index++;			//インデックスをインクリメント
+
+		//インデックスが総数を超えたらリセット
+		if (m_texSplitInfo.index >= m_texSplitInfo.total)
+		{
+			m_texSplitInfo.index = 0;
+		}
+	}
+}
+
 //コライダーの取得
 Collider* ObjectBase::GetCollider() const
 {
@@ -180,4 +202,10 @@ MeshData::MESH_TYPE ObjectBase::GetMeshType() const
 OBJECT_TAG ObjectBase::GetTag() const
 {
 	return m_tag;
+}
+
+//テクスチャ分割情報構造体取得関数
+const TexSplitInfo& ObjectBase::GetTexSplitInfo() const
+{
+	return m_texSplitInfo;
 }

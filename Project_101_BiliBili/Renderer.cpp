@@ -236,9 +236,10 @@ void Renderer::DrawRenderListWorld(
 
 			//定数バッファに transform を書く（各オブジェクト専用のメモリ）
 			ptr->worldMatrix = m_drawListWorld[i][j].world;	//ワールド行列
-			ptr->viewMatrix = m_worldView;						//ビュー行列
-			ptr->projMatrix = m_worldProj;						//プロジェクション行列
+			ptr->viewMatrix = m_worldView;					//ビュー行列
+			ptr->projMatrix = m_worldProj;					//プロジェクション行列
 			ptr->objectColor = m_drawListWorld[i][j].color;	//オブジェクトの色
+			ptr->uvRect = m_drawListWorld[i][j].uvRect;		//UV矩形
 
 			//メッシュGPUデータの取得
 			auto meshGPU = m_drawListWorld[i][j].pMeshGPU;
@@ -313,6 +314,7 @@ void Renderer::DrawRenderListScreen(
 			ptr->viewMatrix = m_screenView;						//ビュー行列
 			ptr->projMatrix = m_screenProj;						//プロジェクション行列
 			ptr->objectColor = m_drawListScreen[i][j].color;	//オブジェクトの色
+			ptr->uvRect = m_drawListScreen[i][j].uvRect;		//UV矩形
 
 			//メッシュGPUデータの取得
 			auto meshGPU = m_drawListScreen[i][j].pMeshGPU;

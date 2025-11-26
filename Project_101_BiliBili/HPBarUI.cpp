@@ -10,37 +10,41 @@ HPBarUI::HPBarUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::X
 void HPBarUI::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager)
 {
 	//背景画像UIの作成
-	m_pBgImage = AddChild<UIImage>(
+	m_pBaseImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-		DirectX::XMFLOAT3{ 2.0f, 2.0f, 1.0f },
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order,
-		HPBarUI::BG_TEXTURE_PATH
+		HPBarUI::BASE_TEXTURE_PATH
+	);
+	//バー画像UIの作成
+	m_pGageImage = AddChild<UIImage>(
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		m_order + 1,
+		HPBarUI::GAGE_TEXTURE_PATH
 	);
 	//フレーム画像UIの作成
 	m_pFrameImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-		DirectX::XMFLOAT3{ 1.8f, 1.8f, 1.0f },
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-		m_order + 1,
-		HPBarUI::FRAME_TEXTURE_PATH
-	);
-	//バー画像UIの作成
-	m_pBarImage = AddChild<UIImage>(
-		DirectX::XMFLOAT3{ -0.6f, 0.0f, 0.0f },
-		DirectX::XMFLOAT3{ 0.7f, 1.8f, 1.0f },
+		DirectX::XMFLOAT3{ 1.02f, 1.02f, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order + 2,
-		HPBarUI::BAR_TEXTURE_PATH
+		HPBarUI::FRAME_TEXTURE_PATH
 	);
+
 }
 
 //更新
 void HPBarUI::UpdateOverride()
 {
-	m_pBgImage->SetColor(DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 1.0f });
-	m_pFrameImage->SetColor(DirectX::XMFLOAT4{ 1.0f, 0.0f, 0.0f, 1.0f });
-	m_pBarImage->SetColor(DirectX::XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f });
+	m_hpRate = (std::max)(0.0f, m_hpRate - 0.001f); // 仮のHP値
+	if(m_hpRate <= 0.0f)
+	{
+		m_hpRate = 1.0f;
+	}
+	UpdateGageImage();
 }
 
 //終了
@@ -51,4 +55,21 @@ void HPBarUI::FinalizeOverride()
 //オブジェクトの描画情報生成
 void HPBarUI::PrepareRenderInfoOverride(TextureManager& textureManager, MeshManager& meshManager)
 {
+}
+
+//ゲージ画像更新関数
+void HPBarUI::UpdateGageImage()
+{
+	auto local = m_pGageImage->GetLocalTransform();
+	local.scale.x = 1.0f * m_hpRate;
+	local.position.x = -(1.0f - local.scale.x) * 0.5f;
+	m_pGageImage->SetLocalTransform(local);
+
+	UVRect uvRect{};
+	uvRect.u = 0.0;
+	uvRect.v = 0.0f;
+	uvRect.su = m_hpRate;
+	uvRect.sv = 1.0f;
+
+	m_pGageImage->SetUVRect(uvRect);
 }

@@ -95,6 +95,7 @@ void ObjectManagerBase::SubmitRenderInfo(
 		{
 			submitInfos[i].positionW = object.GetPosition();
 			submitInfos[i].blendMode = info[i].blendMode;
+			submitInfos[i].uvRect = SplitSprite(object.GetTexSplitInfo());
 		}
 
 		//描画要求をシーンに提出

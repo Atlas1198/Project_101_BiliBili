@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="AssimpLoader.h" />
+    <ClInclude Include="BulletCountUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="GameUIManager.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="HPBarUI.h" />
+    <ClInclude Include="IconUI.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ToolbarControl.h" />
     <ClInclude Include="ObjectBase.h" />
@@ -190,6 +192,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="AssimpLoader.cpp" />
+    <ClCompile Include="BulletCountUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -200,6 +203,7 @@
     <ClCompile Include="GameUIManager.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="HPBarUI.cpp" />
+    <ClCompile Include="IconUI.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
     <ClCompile Include="ObjectManagerBase.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -219,7 +223,7 @@
     <ClCompile Include="SharedStruct.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />
-    <ClCompile Include="UIBasecpp.cpp" />
+    <ClCompile Include="UIBase.cpp" />
     <ClCompile Include="UIimage.cpp" />
     <ClCompile Include="UIManagerBase.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />

@@ -33,6 +33,15 @@ private:
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputLayoutCount];	//入力要素の配列
 };
 
+//UV矩形構造体
+struct UVRect
+{
+	float u = 0.0f;		//UV矩形の左上X座標
+	float v = 0.0f;		//UV矩形の左上Y座標
+	float su = 1.0f;	//UV矩形の幅
+	float sv = 1.0f;	//UV矩形の高さ
+};
+
 //変換行列構造体(256バイトアライメント)
 struct alignas(256) Transform
 {
@@ -40,6 +49,7 @@ struct alignas(256) Transform
 	DirectX::XMMATRIX viewMatrix;	//ビュー行列
 	DirectX::XMMATRIX projMatrix;	//プロジェクション行列
 	DirectX::XMFLOAT4 objectColor;	//オブジェクトの色RGBA
+	DirectX::XMFLOAT4 uvRect;		//UV矩形
 };
 
 //3D変換情報構造体
@@ -92,16 +102,18 @@ class MeshGPU;
 
 namespace RenderData
 {
+	//描画情報構造体
 	struct RenderInfo
 	{
-		MeshGPU* pMeshGPU = nullptr;			//メッシュGPUデータへのポインタ
-		DirectX::XMMATRIX world = {};			//ワールド行列
-		UINT startIndex = 0;					//開始インデックス
-		INT  baseVertex = 0;					//ベース頂点
-		uint32_t srvIndex = UINT32_MAX;			//SRVインデックス
-		DirectX::XMFLOAT4 color = { 1,1,1,1 };	//オブジェクトの色RGBA(デフォルトは白)
-		BLEND_MODE blendMode = BLEND_OPAQUE;	//ブレンドモード
-		DirectX::XMFLOAT3 positionW{};			//ワールド座標系の位置
+		MeshGPU* pMeshGPU = nullptr;						//メッシュGPUデータへのポインタ
+		DirectX::XMMATRIX world = {};						//ワールド行列
+		UINT startIndex = 0;								//開始インデックス
+		INT  baseVertex = 0;								//ベース頂点
+		uint32_t srvIndex = UINT32_MAX;						//SRVインデックス
+		DirectX::XMFLOAT4 color = { 1,1,1,1 };				//オブジェクトの色RGBA(デフォルトは白)
+		BLEND_MODE blendMode = BLEND_OPAQUE;				//ブレンドモード
+		DirectX::XMFLOAT3 positionW{};						//ワールド座標系の位置
+		DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UV矩形
 	};
 }
 
@@ -499,4 +511,33 @@ inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& tran
 		);
 	//ワールド行列の合成(スケール→回転→平行移動)
 	return scaleMatrix * rotMatrix * transMatrix;
+}
+
+//テクスチャ分割情報構造体
+struct TexSplitInfo
+{
+	int index = 0;			//分割インデックス
+	int cols = 1;			//分割列数
+	int rows = 1;			//分割行数
+	int total = 1;			//分割総数(最大インデックス数+1)
+	int frameCount = 0;		//フレームカウント
+	int updateRate = 0;		//更新頻度(フレーム数)
+};
+
+//スプライトを分割し特定の箇所を切り取る関数
+inline static DirectX::XMFLOAT4 SplitSprite(TexSplitInfo info)
+{
+	//インデックスから切り抜き箇所を計算
+	float col = info.index % info.cols;
+	float row = info.index / info.cols;
+
+	//切り抜き矩形のサイズを計算
+	float su = 1.0f / info.cols;
+	float sv = 1.0f / info.rows;
+
+	//切り抜き矩形の座標を計算
+	float u = col * su;
+	float v = row * sv;
+
+	return DirectX::XMFLOAT4{ u, v, su, sv };
 }

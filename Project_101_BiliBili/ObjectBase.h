@@ -47,6 +47,7 @@ public:	//公開関数
 	Collider* GetCollider() const;					//コライダーの取得
 	MeshData::MESH_TYPE GetMeshType() const;		//メッシュタイプの取得
 	OBJECT_TAG GetTag() const;						//オブジェクトタグの取得
+	const TexSplitInfo& GetTexSplitInfo() const;	//テクスチャ分割情報構造体取得関数
 
 	//セッター
 	void SetPosition(DirectX::XMFLOAT3 position);	//位置の設定
@@ -68,8 +69,10 @@ protected:	//非公開メンバ変数
 
 	Collider* m_pCollider = nullptr;	//コライダー
 	OBJECT_TAG m_tag = OBJECT_TAG::NONE; //オブジェクトタグ
+	TexSplitInfo m_texSplitInfo{}; //テクスチャ分割情報構造体
 
 protected:	//非公開メンバ変数
 	virtual void UpdateOverride() = 0;				//シーン固有の更新
 	virtual void ResolveCollisionsOverride() = 0;	//シーン固有の衝突解決
+	void UpdateAnimation();							//アニメーション更新
 };
