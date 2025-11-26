@@ -680,6 +680,7 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 	case CollisionData::COLLISION_LAYER::PLAYER:
 		return MakeMask({
 			COLLISION_LAYER::WALL,		//壁レイヤー
+			COLLISION_LAYER::WALLPASS,	//弾貫通壁レイヤー
 			COLLISION_LAYER::GROUND,	//地面レイヤー
 			COLLISION_LAYER::BULLET		//弾レイヤー
 			});
@@ -688,6 +689,11 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 		return MakeMask({
 			COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
 			COLLISION_LAYER::BULLET		//弾レイヤー
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::WALLPASS:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER		//プレイヤーレイヤー
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::GROUND:

@@ -1,0 +1,38 @@
+#pragma once
+#include "ObjectManagerBase.h"
+#include "Bullet.h"
+#include <vector>
+#include <memory>
+#include "SharedStruct.h"
+
+class BulletManager : public ObjectManagerBase
+{
+public:
+    BulletManager() {}
+    ~BulletManager() {}
+
+    const wchar_t *texPath = L"asset/texture/change_item.png";
+
+    void FireBullet(
+        const DirectX::XMFLOAT3& position,
+        const DirectX::XMFLOAT3& direction,
+        float speed,
+        int ownerTeam);
+
+protected:
+    void InitializeOverride(InputManager* pInputManager,
+        TextureManager& textureManager,
+        MeshManager& meshManager,
+        CollisionManager& collisionManager) override;
+
+    void UpdateOverride() override;
+    void SubmitDrawsOverride(Renderer& renderer) override;
+    void ResolveCollisionsOverride() override;
+    void FinalizeOverride() override;
+    void PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager) override;
+
+private:
+    std::vector<std::unique_ptr<Bullet>> m_bullets;
+    CollisionManager* m_pCollisionManager = nullptr;
+    std::vector<RenderData::RenderInfo> m_bulletInfo;
+};

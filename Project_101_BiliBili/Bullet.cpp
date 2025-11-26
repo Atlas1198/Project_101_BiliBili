@@ -1,0 +1,95 @@
+#include "Bullet.h"
+#include <cmath>
+
+Bullet::Bullet(const DirectX::XMFLOAT3& pos,
+               const DirectX::XMFLOAT3& dir,
+               float speed,
+               int ownerTeam,
+               float lifeTimeSec,
+               float maxDistance)
+
+    : ObjectBase(
+        MeshData::MESH_TYPE::CUBE,
+        pos,
+        {0,0,0},
+        {0.2f,0.2f,0.2f}, 
+        {0,0,0},
+        true,
+        OBJECT_TAG::BULLET,
+        ColliderType::BOX,
+        CollisionData::COLLISION_LAYER::BULLET
+        ), m_direction(dir), m_speed(speed), m_ownerTeam(ownerTeam), m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance)
+{
+    SetActive(true);
+}
+
+
+void Bullet::UpdateOverride()
+{
+    if (!IsActive()) 
+    {
+        return;
+    }
+
+    // ‘O‰ñˆÊ’u
+    DirectX::XMFLOAT3 oldPos = m_position;
+
+    // ˆÚ“®
+    m_position.x += m_direction.x * m_speed;
+    m_position.y += m_direction.y * m_speed;
+    m_position.z += m_direction.z * m_speed;
+
+    // ‹——£‰ÁŽZ
+    float dx = m_position.x - oldPos.x;
+    float dy = m_position.y - oldPos.y;
+    float dz = m_position.z - oldPos.z;
+    m_traveled += sqrtf(dx * dx + dy * dy + dz * dz);
+
+    SetPosition(m_position);
+
+    //’e‚Ì‘¶ÝŽžŠÔ
+    m_livedTime += 1.0f / 60.0f;
+    if (m_livedTime >= m_lifeTime || m_traveled >= m_maxDistance)
+    {
+        m_deleteFlag = true;
+        SetActive(false);
+    }
+}
+
+
+void Bullet::ResolveCollisionsOverride()
+{
+    if (!IsActive()) 
+    {
+        return;
+    }
+
+    auto& infos = GetCollider()->GetCollisionInfos();
+
+    for (const auto& info : infos)
+    {
+        Collider* other = info.opponent;
+        if (!other) 
+        {
+            continue;
+        }
+
+        ObjectBase* otherOwner = other->GetOwner();
+        if (!otherOwner) 
+        {
+            continue;
+        }
+
+        // “¯‚¶ƒ`[ƒ€’e‚Í–³Ž‹
+        //if (otherOwner->GetTeam() == m_ownerTeam)
+        //{
+        //    continue;
+        //}
+
+        // Õ“Ë ¨ Á–Å
+        m_deleteFlag = true;
+        SetActive(false);
+        break;
+    }
+    GetCollider()->ClearInfos();
+}
