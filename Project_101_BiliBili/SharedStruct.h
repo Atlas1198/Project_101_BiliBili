@@ -17,377 +17,377 @@
 #include "IndexBuffer.h"
 #include "TextureManager.h"
 
-// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+// ’¸“_ƒf[ƒ^\‘¢‘Ì
 struct Vertex
 {
-	DirectX::XMFLOAT3 position;	//é ‚ç‚¹ã®ä½ç½®
-	DirectX::XMFLOAT3 normal;	//é ‚ç‚¹ã®æ³•ç·š
-	DirectX::XMFLOAT2 uv;		//é ‚ç‚¹ã®UVåº§æ¨™
-	DirectX::XMFLOAT3 tangent;	//æ¥ç©ºé–“
-	DirectX::XMFLOAT4 color;	//é ‚ç‚¹è‰²
+	DirectX::XMFLOAT3 position;	//’¸“_‚ÌˆÊ’u
+	DirectX::XMFLOAT3 normal;	//’¸“_‚Ì–@ü
+	DirectX::XMFLOAT2 uv;		//’¸“_‚ÌUVÀ•W
+	DirectX::XMFLOAT3 tangent;	//Ú‹óŠÔ
+	DirectX::XMFLOAT4 color;	//’¸“_F
 
-	static const D3D12_INPUT_LAYOUT_DESC InputLayout; //å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout; //“ü—ÍƒŒƒCƒAƒEƒg
 
 private:
-	static const size_t InputLayoutCount = 5;								//å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®è¦ç´ æ•°
-	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputLayoutCount];	//å…¥åŠ›è¦ç´ ã®é…åˆ—
+	static const size_t InputLayoutCount = 5;								//“ü—ÍƒŒƒCƒAƒEƒg‚Ì—v‘f”
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputLayoutCount];	//“ü—Í—v‘f‚Ì”z—ñ
 };
 
-//UVï¿½ï¿½`ï¿½\ï¿½ï¿½ï¿½ï¿½
+//UV??`?\????
 struct UVRect
 {
-	float u = 0.0f;		//UVï¿½ï¿½`ï¿½Ìï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½W
-	float v = 0.0f;		//UVï¿½ï¿½`ï¿½Ìï¿½ï¿½ï¿½Yï¿½ï¿½ï¿½W
-	float su = 1.0f;	//UVï¿½ï¿½`ï¿½Ì•ï¿½
-	float sv = 1.0f;	//UVï¿½ï¿½`ï¿½Ìï¿½ï¿½ï¿½
+	float u = 0.0f;		//UV??`?????X???W
+	float v = 0.0f;		//UV??`?????Y???W
+	float su = 1.0f;	//UV??`???
+	float sv = 1.0f;	//UV??`?????
 };
 
-//ï¿½ÏŠï¿½ï¿½sï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½(256ï¿½oï¿½Cï¿½gï¿½Aï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½g)
+//????s??\????(256?o?C?g?A???C?????g)
 struct alignas(256) Transform
 {
-	DirectX::XMMATRIX worldMatrix;	//ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½hï¿½sï¿½ï¿½
-	DirectX::XMMATRIX viewMatrix;	//ï¿½rï¿½ï¿½ï¿½[ï¿½sï¿½ï¿½
-	DirectX::XMMATRIX projMatrix;	//ï¿½vï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
-	DirectX::XMFLOAT4 objectColor;	//ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÌFRGBA
-	DirectX::XMFLOAT4 uvRect;		//UVï¿½ï¿½`
+	DirectX::XMMATRIX worldMatrix;	//???[???h?s??
+	DirectX::XMMATRIX viewMatrix;	//?r???[?s??
+	DirectX::XMMATRIX projMatrix;	//?v???W?F?N?V?????s??
+	DirectX::XMFLOAT4 objectColor;	//?I?u?W?F?N?g??FRGBA
+	DirectX::XMFLOAT4 uvRect;		//UV??`
 };
 
-//3Då¤‰æ›æƒ…å ±æ§‹é€ ä½“
+//3D•ÏŠ·î•ñ\‘¢‘Ì
 struct Transform3D
 {
-	DirectX::XMFLOAT3 position;	//ä½ç½®
-	DirectX::XMFLOAT3 scale;	//ã‚¹ã‚±ãƒ¼ãƒ«
-	DirectX::XMFLOAT3 rotation;	//å›è»¢
+	DirectX::XMFLOAT3 position;	//ˆÊ’u
+	DirectX::XMFLOAT3 scale;	//ƒXƒP[ƒ‹
+	DirectX::XMFLOAT3 rotation;	//‰ñ“]
 };
 
-// ã‚«ãƒ¡ãƒ©æƒ…å ±æ§‹é€ ä½“
+// ƒJƒƒ‰î•ñ\‘¢‘Ì
 struct CameraInfo
 {
-	DirectX::XMFLOAT3 position;	//ã‚«ãƒ¡ãƒ©ã®ä½ç½®
-	DirectX::XMFLOAT3 target;	//ã‚«ãƒ¡ãƒ©ã®æ³¨è¦–ç‚¹
-	DirectX::XMFLOAT3 up;		//ã‚«ãƒ¡ãƒ©ã®ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
-	float fov;					//å‚ç›´è¦–é‡è§’
-	float aspectRatio;			//ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”
-	float nearZ;				//ãƒ‹ã‚¢ã‚¯ãƒªãƒƒãƒ—è·é›¢
-	float farZ;					//ãƒ•ã‚¡ãƒ¼ã‚¯ãƒªãƒƒãƒ—è·é›¢
+	DirectX::XMFLOAT3 position;	//ƒJƒƒ‰‚ÌˆÊ’u
+	DirectX::XMFLOAT3 target;	//ƒJƒƒ‰‚Ì’‹“_
+	DirectX::XMFLOAT3 up;		//ƒJƒƒ‰‚Ìã•ûŒüƒxƒNƒgƒ‹
+	float fov;					//‚’¼‹–ìŠp
+	float aspectRatio;			//ƒAƒXƒyƒNƒg”ä
+	float nearZ;				//ƒjƒAƒNƒŠƒbƒv‹——£
+	float farZ;					//ƒtƒ@[ƒNƒŠƒbƒv‹——£
 };
 
-//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰åˆ—æŒ™ä½“
+//ƒuƒŒƒ“ƒhƒ‚[ƒh—ñ‹“‘Ì
 enum BLEND_MODE
 {
-	BLEND_OPAQUE,		//ä¸é€æ˜
-	BLEND_MASKED,		//ãƒã‚¹ã‚¯
-	BLEND_TRANSPARENT,	//é€æ˜
-	BLEND_MAX			//æœ€å¤§æ•°
+	BLEND_OPAQUE,		//•s“§–¾
+	BLEND_MASKED,		//ƒ}ƒXƒN
+	BLEND_TRANSPARENT,	//“§–¾
+	BLEND_MAX			//Å‘å”
 };
 
-//ã‚¿ã‚°åˆ—æŒ™ä½“
+//ƒ^ƒO—ñ‹“‘Ì
 enum class OBJECT_TAG
 {
-	NONE = 0,	//ãªã—
-	PLAYER,		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
-	WALL,		//å£
-	WALLPASS,	//å¼¾è²«é€šå£
-	GROUND,		//åœ°é¢
-	BULLET,		//å¼¾
-	ITEM_TRANSFORM, //å¤‰èº«ã‚¢ã‚¤ãƒ†ãƒ 
-	MAX			//æœ€å¤§æ•°
+	NONE = 0,	//‚È‚µ
+	PLAYER,		//ƒvƒŒƒCƒ„[
+	WALL,		//•Ç
+	WALLPASS,	//’eŠÑ’Ê•Ç
+	GROUND,		//’n–Ê
+	BULLET,		//’e
+	ITEM_TRANSFORM, //•ÏgƒAƒCƒeƒ€
+	MAX			//Å‘å”
 };
 
-//æç”»æƒ…å ±ç”¨åå‰ç©ºé–“
-//MeshDataå†…ã§ä½¿ç”¨ã™ã‚‹ãŸã‚åˆ†é›¢
+//•`‰æî•ñ—p–¼‘O‹óŠÔ
+//MeshData“à‚Åg—p‚·‚é‚½‚ß•ª—£
 
-//å‰æ–¹å®£è¨€
+//‘O•ûéŒ¾
 class TextureManager;
 class MeshManager;
 class MeshGPU;
 
 namespace RenderData
 {
-	//ï¿½`ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
+	//?`????\????
 	struct RenderInfo
 	{
-		MeshGPU* pMeshGPU = nullptr;						//ï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½GPUï¿½fï¿½[ï¿½^ï¿½Ö‚Ìƒ|ï¿½Cï¿½ï¿½ï¿½^
-		DirectX::XMMATRIX world = {};						//ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½hï¿½sï¿½ï¿½
-		UINT startIndex = 0;								//ï¿½Jï¿½nï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
-		INT  baseVertex = 0;								//ï¿½xï¿½[ï¿½Xï¿½ï¿½ï¿½_
-		uint32_t srvIndex = UINT32_MAX;						//SRVï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
-		DirectX::XMFLOAT4 color = { 1,1,1,1 };				//ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÌFRGBA(ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Í”ï¿½)
-		BLEND_MODE blendMode = BLEND_OPAQUE;				//ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½[ï¿½h
-		DirectX::XMFLOAT3 positionW{};						//ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Wï¿½nï¿½ÌˆÊ’u
-		DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UVï¿½ï¿½`
+		MeshGPU* pMeshGPU = nullptr;						//???b?V??GPU?f?[?^???|?C???^
+		DirectX::XMMATRIX world = {};						//???[???h?s??
+		UINT startIndex = 0;								//?J?n?C???f?b?N?X
+		INT  baseVertex = 0;								//?x?[?X???_
+		uint32_t srvIndex = UINT32_MAX;						//SRV?C???f?b?N?X
+		DirectX::XMFLOAT4 color = { 1,1,1,1 };				//?I?u?W?F?N?g??FRGBA(?f?t?H???g???)
+		BLEND_MODE blendMode = BLEND_OPAQUE;				//?u?????h???[?h
+		DirectX::XMFLOAT3 positionW{};						//???[???h???W?n???u
+		DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UV??`
 	};
 }
 
-//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ç”¨åå‰ç©ºé–“
+//ƒƒbƒVƒ…ƒf[ƒ^—p–¼‘O‹óŠÔ
 namespace MeshData
 {
-	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
 	struct Mesh
 	{
-		std::vector<Vertex> vertices;	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—
-		size_t vertexCount = 0;			//é ‚ç‚¹æ•°
-		std::vector<uint32_t> indices;	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—
-		size_t indexCount = 0;			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°
-		std::wstring texPath;			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		std::vector<Vertex> vertices;	//’¸“_ƒf[ƒ^”z—ñ
+		size_t vertexCount = 0;			//’¸“_”
+		std::vector<uint32_t> indices;	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ
+		size_t indexCount = 0;			//ƒCƒ“ƒfƒbƒNƒX”
+		std::wstring texPath;			//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
 	};
 
-	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
 	struct Model
 	{
-		std::vector<Mesh> meshes;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿é…åˆ—
+		std::vector<Mesh> meshes;	//ƒƒbƒVƒ…ƒf[ƒ^”z—ñ
 	};
 
-	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—åˆ—æŒ™ä½“
+	//ƒƒbƒVƒ…ƒ^ƒCƒv—ñ‹“‘Ì
 	enum MESH_TYPE
 	{
-		IMPORT,		//ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ¢ãƒ‡ãƒ«
-		QUAD,		//å››è§’å¹³é¢
-		CUBE,		//ç«‹æ–¹ä½“
-		SPHERE,		//çƒä½“
-		CAPSULE,	//ã‚«ãƒ—ã‚»ãƒ«
-		CYLINDER,	//å††æŸ±
+		IMPORT,		//ƒCƒ“ƒ|[ƒgƒ‚ƒfƒ‹
+		QUAD,		//lŠp•½–Ê
+		CUBE,		//—§•û‘Ì
+		SPHERE,		//‹…‘Ì
+		CAPSULE,	//ƒJƒvƒZƒ‹
+		CYLINDER,	//‰~’Œ
 	};
 
 	//=======================
-	//å››è§’å¹³é¢
+	//lŠp•½–Ê
 	//=======================
-	//å››è§’å¹³é¢ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
+	//lŠp•½–Ê‚Ì’¸“_ƒf[ƒ^
 	inline constexpr Vertex QuadVertices[4] = 
 	{
-		{{-0.5f,  0.5f, 0.f},{0,0,1},{0,0},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹0
-		{{ 0.5f,  0.5f, 0.f},{0,0,1},{1,0},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹1
-		{{ 0.5f, -0.5f, 0.f},{0,0,1},{1,1},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹2
-		{{-0.5f, -0.5f, 0.f},{0,0,1},{0,1},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹3
+		{{-0.5f,  0.5f, 0.f},{0,0,1},{0,0},{1,0,0},{1,1,1,1}},	//’¸“_0
+		{{ 0.5f,  0.5f, 0.f},{0,0,1},{1,0},{1,0,0},{1,1,1,1}},	//’¸“_1
+		{{ 0.5f, -0.5f, 0.f},{0,0,1},{1,1},{1,0,0},{1,1,1,1}},	//’¸“_2
+		{{-0.5f, -0.5f, 0.f},{0,0,1},{0,1},{1,0,0},{1,1,1,1}},	//’¸“_3
 	};
 
-	//å››è§’å¹³é¢ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿
+	//lŠp•½–Ê‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^
 	inline constexpr uint32_t QuadIndices[6] = 
 	{ 
-		0,1,2,	//ä¸‰è§’å½¢1
-		0,2,3	//ä¸‰è§’å½¢2
+		0,1,2,	//OŠpŒ`1
+		0,2,3	//OŠpŒ`2
 	};
 
-	//å››è§’å¹³é¢ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
+	//lŠp•½–Ê‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
 	Model MakeQuadModel();
 
 	//=======================
-	//ç«‹æ–¹ä½“
+	//—§•û‘Ì
 	//=======================
-	//ç«‹æ–¹ä½“ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿(24é ‚ç‚¹)
+	//—§•û‘Ì‚Ì’¸“_ƒf[ƒ^(24’¸“_)
 	inline constexpr Vertex CubeVertices[24]=
 	{
 		// +Z
-		{{-0.5,  0.5,  0.5}, {0,0,1}, {0,0}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹0
-		{{ 0.5,  0.5,  0.5}, {0,0,1}, {1,0}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹1
-		{{ 0.5, -0.5,  0.5}, {0,0,1}, {1,1}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹2
-		{{-0.5, -0.5,  0.5}, {0,0,1}, {0,1}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹3
+		{{-0.5,  0.5,  0.5}, {0,0,1}, {0,0}, {1,0,0}, {1,1,1,1}},		//’¸“_0
+		{{ 0.5,  0.5,  0.5}, {0,0,1}, {1,0}, {1,0,0}, {1,1,1,1}},		//’¸“_1
+		{{ 0.5, -0.5,  0.5}, {0,0,1}, {1,1}, {1,0,0}, {1,1,1,1}},		//’¸“_2
+		{{-0.5, -0.5,  0.5}, {0,0,1}, {0,1}, {1,0,0}, {1,1,1,1}},		//’¸“_3
 
 		// -Z
-		{{ 0.5,  0.5, -0.5}, {0,0,-1}, {0,0}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹4
-		{{-0.5,  0.5, -0.5}, {0,0,-1}, {1,0}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹5
-		{{-0.5, -0.5, -0.5}, {0,0,-1}, {1,1}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹6
-		{{ 0.5, -0.5, -0.5}, {0,0,-1}, {0,1}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹7
+		{{ 0.5,  0.5, -0.5}, {0,0,-1}, {0,0}, {-1,0,0}, {1,1,1,1}},	//’¸“_4
+		{{-0.5,  0.5, -0.5}, {0,0,-1}, {1,0}, {-1,0,0}, {1,1,1,1}},	//’¸“_5
+		{{-0.5, -0.5, -0.5}, {0,0,-1}, {1,1}, {-1,0,0}, {1,1,1,1}},	//’¸“_6
+		{{ 0.5, -0.5, -0.5}, {0,0,-1}, {0,1}, {-1,0,0}, {1,1,1,1}},	//’¸“_7
 
 		// +X
-		{{ 0.5,  0.5,  0.5}, {1,0,0}, {0,0}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹1
-		{{ 0.5,  0.5, -0.5}, {1,0,0}, {1,0}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹5
-		{{ 0.5, -0.5, -0.5}, {1,0,0}, {1,1}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹6
-		{{ 0.5, -0.5,  0.5}, {1,0,0}, {0,1}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹2
+		{{ 0.5,  0.5,  0.5}, {1,0,0}, {0,0}, {0,0,-1}, {1,1,1,1}},	//’¸“_1
+		{{ 0.5,  0.5, -0.5}, {1,0,0}, {1,0}, {0,0,-1}, {1,1,1,1}},	//’¸“_5
+		{{ 0.5, -0.5, -0.5}, {1,0,0}, {1,1}, {0,0,-1}, {1,1,1,1}},	//’¸“_6
+		{{ 0.5, -0.5,  0.5}, {1,0,0}, {0,1}, {0,0,-1}, {1,1,1,1}},	//’¸“_2
 
 		// -X
-		{{-0.5,  0.5, -0.5}, {-1,0,0}, {0,0}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹4
-		{{-0.5,  0.5,  0.5}, {-1,0,0}, {1,0}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹0
-		{{-0.5, -0.5,  0.5}, {-1,0,0}, {1,1}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹3
-		{{-0.5, -0.5, -0.5}, {-1,0,0}, {0,1}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹7
+		{{-0.5,  0.5, -0.5}, {-1,0,0}, {0,0}, {0,0,1}, {1,1,1,1}},	//’¸“_4
+		{{-0.5,  0.5,  0.5}, {-1,0,0}, {1,0}, {0,0,1}, {1,1,1,1}},	//’¸“_0
+		{{-0.5, -0.5,  0.5}, {-1,0,0}, {1,1}, {0,0,1}, {1,1,1,1}},	//’¸“_3
+		{{-0.5, -0.5, -0.5}, {-1,0,0}, {0,1}, {0,0,1}, {1,1,1,1}},	//’¸“_7
 
 		// +Y
-		{{-0.5,  0.5, -0.5}, {0,1,0}, {0,0}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹4
-		{{ 0.5,  0.5, -0.5}, {0,1,0}, {1,0}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹5
-		{{ 0.5,  0.5,  0.5}, {0,1,0}, {1,1}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹1
-		{{-0.5,  0.5,  0.5}, {0,1,0}, {0,1}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹0
+		{{-0.5,  0.5, -0.5}, {0,1,0}, {0,0}, {1,0,0}, {1,1,1,1}},		//’¸“_4
+		{{ 0.5,  0.5, -0.5}, {0,1,0}, {1,0}, {1,0,0}, {1,1,1,1}},		//’¸“_5
+		{{ 0.5,  0.5,  0.5}, {0,1,0}, {1,1}, {1,0,0}, {1,1,1,1}},		//’¸“_1
+		{{-0.5,  0.5,  0.5}, {0,1,0}, {0,1}, {1,0,0}, {1,1,1,1}},		//’¸“_0
 
 		// -Y
-		{{-0.5, -0.5,  0.5}, {0,-1,0}, {0,0}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹3
-		{{ 0.5, -0.5,  0.5}, {0,-1,0}, {1,0}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹2
-		{{ 0.5, -0.5, -0.5}, {0,-1,0}, {1,1}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹6
-		{{-0.5, -0.5, -0.5}, {0,-1,0}, {0,1}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹7
+		{{-0.5, -0.5,  0.5}, {0,-1,0}, {0,0}, {1,0,0}, {1,1,1,1}},	//’¸“_3
+		{{ 0.5, -0.5,  0.5}, {0,-1,0}, {1,0}, {1,0,0}, {1,1,1,1}},	//’¸“_2
+		{{ 0.5, -0.5, -0.5}, {0,-1,0}, {1,1}, {1,0,0}, {1,1,1,1}},	//’¸“_6
+		{{-0.5, -0.5, -0.5}, {0,-1,0}, {0,1}, {1,0,0}, {1,1,1,1}},	//’¸“_7
 	};
 
-	//ç«‹æ–¹ä½“ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿
+	//—§•û‘Ì‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^
 	inline constexpr uint32_t CubeIndices[36] = 
 	{
 		// +Z
-		0,1,2,  0,2,3,			//ä¸‰è§’å½¢1ã€2
+		0,1,2,  0,2,3,			//OŠpŒ`1A2
 		// -Z
-		4,6,5,  4,7,6,			//ä¸‰è§’å½¢3ã€4
+		4,6,5,  4,7,6,			//OŠpŒ`3A4
 		// +X
-		8,9,10,  8,10,11,		//ä¸‰è§’å½¢5ã€6
+		8,9,10,  8,10,11,		//OŠpŒ`5A6
 		// -X
-		12,13,14,  12,14,15,	//ä¸‰è§’å½¢7ã€8
+		12,13,14,  12,14,15,	//OŠpŒ`7A8
 		// +Y
-		16,17,18,  16,18,19,	//ä¸‰è§’å½¢9ã€10
+		16,17,18,  16,18,19,	//OŠpŒ`9A10
 	};
 
-	//ç«‹æ–¹ä½“ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
+	//—§•û‘Ì‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
 	Model MakeCubeModel();
 
 	//=======================
-	//çƒä½“
+	//‹…‘Ì
 	//=======================
-	//çƒä½“ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
+	//‹…‘Ì‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
 	Model MakeSphereModel(int slice = 32, int stacks = 16);
 
 	//=======================
-	//ã‚«ãƒ—ã‚»ãƒ«
+	//ƒJƒvƒZƒ‹
 	//=======================
-	//ã‚«ãƒ—ã‚»ãƒ«ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
+	//ƒJƒvƒZƒ‹‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
 	Model MakeCapsuleModel(int slice = 32, int stacks = 16);
 
-	//ã‚«ãƒ—ã‚»ãƒ«ã®ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¨˜è¿°æ§‹é€ ä½“
+	//ƒJƒvƒZƒ‹‚ÌƒrƒWƒ…ƒAƒ‹‹Lq\‘¢‘Ì
 	struct CapsuleVisualDesc
 	{
-		float baseRadius = 0.5f;		//åº•é¢åŠå¾„
-		float basehalfHeight = 0.5f;	//åŠåˆ†ã®é«˜ã•
+		float baseRadius = 0.5f;		//’ê–Ê”¼Œa
+		float basehalfHeight = 0.5f;	//”¼•ª‚Ì‚‚³
 	};
 
-	//ã‚«ãƒ—ã‚»ãƒ«ã®æç”»æƒ…å ±è¿½åŠ é–¢æ•°
+	//ƒJƒvƒZƒ‹‚Ì•`‰æî•ñ’Ç‰ÁŠÖ”
 	void AppendCapsuleRenderInfos(
-		const CapsuleVisualDesc& desc,				//ã‚«ãƒ—ã‚»ãƒ«æç”»æƒ…å ±è¨˜è¿°å­
-		const DirectX::XMFLOAT3& position,			//ä½ç½®
-		const DirectX::XMFLOAT3& scale,				//ã‚¹ã‚±ãƒ¼ãƒ«
-		const DirectX::XMFLOAT3& rotEuler,			//å›è»¢Eulerè§’
-		const DirectX::XMFLOAT4& color,				//è‰²
-		std::vector<RenderData::RenderInfo>& infos,	//å…¥åŠ›å…ƒæç”»æƒ…å ±é…åˆ—
-		std::vector<RenderData::RenderInfo>& out	//å‡ºåŠ›å…ˆæç”»æƒ…å ±é…åˆ—
+		const CapsuleVisualDesc& desc,				//ƒJƒvƒZƒ‹•`‰æî•ñ‹Lqq
+		const DirectX::XMFLOAT3& position,			//ˆÊ’u
+		const DirectX::XMFLOAT3& scale,				//ƒXƒP[ƒ‹
+		const DirectX::XMFLOAT3& rotEuler,			//‰ñ“]EulerŠp
+		const DirectX::XMFLOAT4& color,				//F
+		std::vector<RenderData::RenderInfo>& infos,	//“ü—ÍŒ³•`‰æî•ñ”z—ñ
+		std::vector<RenderData::RenderInfo>& out	//o—Íæ•`‰æî•ñ”z—ñ
 		);
 
 	//=======================
-	//å††æŸ±
+	//‰~’Œ
 	//=======================
-	//å††æŸ±ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
+	//‰~’Œ‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
 	Model MakeCylinderModel(int slice = 32, int stacks = 16);
 
-	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿å–å¾—é–¢æ•°
+	//ƒƒbƒVƒ…ƒf[ƒ^æ“¾ŠÖ”
 	inline Model GetModel(MESH_TYPE type)
 	{
-		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—ã«å¿œã˜ãŸãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’è¿”ã™
+		//ƒƒbƒVƒ…ƒ^ƒCƒv‚É‰‚¶‚½ƒƒbƒVƒ…ƒf[ƒ^‚ğ•Ô‚·
 		switch (type) 
 		{
-		case QUAD: return MakeQuadModel();			//å››è§’å¹³é¢
-		case CUBE: return MakeCubeModel();			//ç«‹æ–¹ä½“
-		case SPHERE: return MakeSphereModel();		//çƒä½“
-		case CAPSULE: return MakeCapsuleModel();	//ã‚«ãƒ—ã‚»ãƒ«
-		case CYLINDER: return MakeCylinderModel();	//å††æŸ±
-		default:   return {};						//ãã®ä»–
+		case QUAD: return MakeQuadModel();			//lŠp•½–Ê
+		case CUBE: return MakeCubeModel();			//—§•û‘Ì
+		case SPHERE: return MakeSphereModel();		//‹…‘Ì
+		case CAPSULE: return MakeCapsuleModel();	//ƒJƒvƒZƒ‹
+		case CYLINDER: return MakeCylinderModel();	//‰~’Œ
+		default:   return {};						//‚»‚Ì‘¼
 		}
 	}
 }
 
 namespace RenderData
 {
-	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
+	//ƒ‚ƒfƒ‹ƒf[ƒ^–”‚ÍƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
 	void CreateRenderInfo(
-		TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		MeshManager& meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		std::vector<RenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-		MeshData::MESH_TYPE type,		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
-		BLEND_MODE mode,				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
-		const wchar_t* path,			//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
-		bool inverseU = false,			//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹(ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã®å ´åˆã®ã¿æœ‰åŠ¹)
-		bool inverseV = false			//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹(ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã®å ´åˆã®ã¿æœ‰åŠ¹)
+		TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		MeshManager& meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		std::vector<RenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
+		MeshData::MESH_TYPE type,		//ƒƒbƒVƒ…ƒ^ƒCƒv
+		BLEND_MODE mode,				//ƒuƒŒƒ“ƒhƒ‚[ƒh
+		const wchar_t* path,			//ƒ‚ƒfƒ‹ƒf[ƒ^–”‚ÍƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹‚ÌƒpƒX
+		bool inverseU = false,			//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©(ƒ‚ƒfƒ‹ƒf[ƒ^‚Ìê‡‚Ì‚İ—LŒø)
+		bool inverseV = false			//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©(ƒ‚ƒfƒ‹ƒf[ƒ^‚Ìê‡‚Ì‚İ—LŒø)
 	);
 
-	//FBXãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
+	//FBXƒtƒ@ƒCƒ‹‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
 	void CreateRenderInfoFromFBX(
-		TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		MeshManager& meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		std::vector<RenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-		BLEND_MODE mode,				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
-		const wchar_t* path,			//ãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
-		bool inverseU = false,			//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
-		bool inverseV = false			//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
+		TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		MeshManager& meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		std::vector<RenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
+		BLEND_MODE mode,				//ƒuƒŒƒ“ƒhƒ‚[ƒh
+		const wchar_t* path,			//ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ÌƒpƒX
+		bool inverseU = false,			//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
+		bool inverseV = false			//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
 	);
 
-	//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
+	//ƒfƒtƒHƒ‹ƒg‚ÌƒƒbƒVƒ…ƒf[ƒ^‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
 	void CreateRenderInfoFromDefaultMesh(
-		TextureManager& textureManager,		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		MeshManager& meshManager,			//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		std::vector<RenderInfo>* pInfo,		//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-		MeshData::MESH_TYPE type,			//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
-		BLEND_MODE mode,					//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
-		const wchar_t* path					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		TextureManager& textureManager,		//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		MeshManager& meshManager,			//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		std::vector<RenderInfo>* pInfo,		//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
+		MeshData::MESH_TYPE type,			//ƒƒbƒVƒ…ƒ^ƒCƒv
+		BLEND_MODE mode,					//ƒuƒŒƒ“ƒhƒ‚[ƒh
+		const wchar_t* path					//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
 	);
 
-	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æç”»æƒ…å ±ã‚’æ§‹ç¯‰ã™ã‚‹é–¢æ•°
+	//ƒƒbƒVƒ…ƒf[ƒ^‚©‚ç•`‰æî•ñ‚ğ\’z‚·‚éŠÖ”
 	RenderInfo CreateRenderInfoFromMeshData(
-		TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		MeshManager& meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		MeshData::Mesh& mesh,			//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã¸ã®å‚ç…§
-		BLEND_MODE mode					//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		MeshManager& meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		MeshData::Mesh& mesh,			//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì‚Ö‚ÌQÆ
+		BLEND_MODE mode					//ƒuƒŒƒ“ƒhƒ‚[ƒh
 	);
 }
 
-//å‰æ–¹å®£è¨€
+//‘O•ûéŒ¾
 class Collider;
-//è¡çªãƒ‡ãƒ¼ã‚¿ç”¨åå‰ç©ºé–“
+//Õ“Ëƒf[ƒ^—p–¼‘O‹óŠÔ
 namespace CollisionData
 {
-	//è¡çªçŠ¶æ…‹åˆ—æŒ™ä½“
+	//Õ“Ëó‘Ô—ñ‹“‘Ì
 	enum COLLISION_STATE
 	{
-		COLLISION_ENTER = 0,	//è¡çªé–‹å§‹
-		COLLISION_STAY,			//è¡çªç¶™ç¶š
-		COLLISION_EXIT,			//è¡çªçµ‚äº†
+		COLLISION_ENTER = 0,	//Õ“ËŠJn
+		COLLISION_STAY,			//Õ“ËŒp‘±
+		COLLISION_EXIT,			//Õ“ËI—¹
 	};
 
-	//ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒ¬ã‚¤ãƒ¤ãƒ¼åˆ—æŒ™ä½“
+	//ƒRƒŠƒWƒ‡ƒ“ƒŒƒCƒ„[—ñ‹“‘Ì
 	enum class COLLISION_LAYER
 	{
-		DEFAULT = 0,	//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
-		PLAYER,			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
-		WALL,			//å£
-		WALLPASS,		//å¼¾è²«é€šå£
-		GROUND,			//åœ°é¢
-		BULLET,			//å¼¾
-		ITEM_TRANSFORM,	//å¤‰èº«ã‚¢ã‚¤ãƒ†ãƒ 
-		MAX_LAYER		//æœ€å¤§æ•°
+		DEFAULT = 0,	//ƒfƒtƒHƒ‹ƒg
+		PLAYER,			//ƒvƒŒƒCƒ„[
+		WALL,			//•Ç
+		WALLPASS,		//’eŠÑ’Ê•Ç
+		GROUND,			//’n–Ê
+		BULLET,			//’e
+		ITEM_TRANSFORM,	//•ÏgƒAƒCƒeƒ€
+		MAX_LAYER		//Å‘å”
 	};
 
-	//è¡çªæƒ…å ±æ§‹é€ ä½“
+	//Õ“Ëî•ñ\‘¢‘Ì
 	struct CollisionInfo
 	{
-		Collider* opponent;						//è¡çªç›¸æ‰‹ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
-		DirectX::XMFLOAT3 contactPoint;			//è¡çªç‚¹
-		DirectX::XMFLOAT3 contactNormal;		//è¡çªæ³•ç·š
-		DirectX::XMFLOAT3 penetrationDepth;		//è²«å…¥æ·±ã•
-		CollisionData::COLLISION_STATE state;	//è¡çªçŠ¶æ…‹
+		Collider* opponent;						//Õ“Ë‘Šè‚ÌƒRƒ‰ƒCƒ_[
+		DirectX::XMFLOAT3 contactPoint;			//Õ“Ë“_
+		DirectX::XMFLOAT3 contactNormal;		//Õ“Ë–@ü
+		DirectX::XMFLOAT3 penetrationDepth;		//ŠÑ“ü[‚³
+		CollisionData::COLLISION_STATE state;	//Õ“Ëó‘Ô
 	};
 
-	//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯å‹
+	//ƒŒƒCƒ„[ƒ}ƒXƒNŒ^
 	using LayerMask = uint32_t;
 
-	//ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ãƒ“ãƒƒãƒˆã«å¤‰æ›ã™ã‚‹é–¢æ•°
+	//ƒŒƒCƒ„[‚ğƒrƒbƒg‚É•ÏŠ·‚·‚éŠÖ”
 	LayerMask LayerToBit(COLLISION_LAYER layer);
 
-	//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯å–å¾—é–¢æ•°
+	//ƒŒƒCƒ„[ƒ}ƒXƒNæ“¾ŠÖ”
 	LayerMask GetLayerMask(COLLISION_LAYER layer);
 
-	//è¤‡æ•°ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ã‚’ä½œæˆã™ã‚‹é–¢æ•°
+	//•¡”‚ÌƒŒƒCƒ„[‚©‚çƒŒƒCƒ„[ƒ}ƒXƒN‚ğì¬‚·‚éŠÖ”
 	LayerMask MakeMask(std::initializer_list<COLLISION_LAYER> layers);
 
-	//è²«å…¥æ·±ã•ã‹ã‚‰æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—ã™ã‚‹é–¢æ•°
+	//ŠÑ“ü[‚³‚©‚ç‰Ÿ‚µo‚µƒxƒNƒgƒ‹‚ğæ“¾‚·‚éŠÖ”
 	DirectX::XMFLOAT3 GetPushOutVector(
-		std::vector<CollisionData::CollisionInfo>& infos,	//è¡çªæƒ…å ±é…åˆ—
-		const std::initializer_list<OBJECT_TAG>& tagList	//å¯¾è±¡ã‚¿ã‚°ãƒªã‚¹ãƒˆ
+		std::vector<CollisionData::CollisionInfo>& infos,	//Õ“Ëî•ñ”z—ñ
+		const std::initializer_list<OBJECT_TAG>& tagList	//‘ÎÛƒ^ƒOƒŠƒXƒg
 	);
 }
 
 
 //=======================
-//ãƒ™ã‚¯ãƒˆãƒ«æ¼”ç®—é–¢æ•°ç¾¤
+//ƒxƒNƒgƒ‹‰‰ZŠÖ”ŒQ
 //=======================
-//2ç‚¹é–“ã®è·é›¢ã®äºŒä¹—ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
+//2“_ŠÔ‚Ì‹——£‚Ì“ñæ‚ğŒvZ‚·‚éŠÖ”
 inline static float LengthSqBetween(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
 {
 	DirectX::XMFLOAT3 diff{
@@ -398,19 +398,19 @@ inline static float LengthSqBetween(const DirectX::XMFLOAT3& a, const DirectX::X
 	return diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 }
 
-//2ç‚¹é–“ã®è·é›¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
+//2“_ŠÔ‚Ì‹——£‚ğŒvZ‚·‚éŠÖ”
 inline static float LengthBetween(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
 {
 	return sqrtf(LengthSqBetween(a, b));
 }
 
-//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°(XMFLOAT3ç‰ˆ)
+//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğŒvZ‚·‚éŠÖ”(XMFLOAT3”Å)
 inline static float LengthXMF3(const DirectX::XMFLOAT3& v)
 {
 	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
-//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°(XMVECTORç‰ˆ)
+//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğŒvZ‚·‚éŠÖ”(XMVECTOR”Å)
 inline static float LengthXMV(const DirectX::XMVECTOR& v)
 {
 	DirectX::XMFLOAT3 temp;
@@ -418,7 +418,7 @@ inline static float LengthXMV(const DirectX::XMVECTOR& v)
 	return sqrtf(temp.x * temp.x + temp.y * temp.y + temp.z * temp.z);
 }
 
-//ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–ã‚’è¡Œã†é–¢æ•°
+//ƒxƒNƒgƒ‹‚Ì³‹K‰»‚ğs‚¤ŠÖ”
 inline static DirectX::XMFLOAT3 Normalize(const DirectX::XMFLOAT3& v)
 {
 	float len = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
@@ -432,13 +432,13 @@ inline static DirectX::XMFLOAT3 Normalize(const DirectX::XMFLOAT3& v)
 	}
 }
 
-//å†…ç©ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
+//“àÏ‚ğŒvZ‚·‚éŠÖ”
 inline static float Dot(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-//ç·šå½¢è£œé–“ã‚’è¡Œã†é–¢æ•°(XMFLOAT3ç‰ˆ)
+//üŒ`•âŠÔ‚ğs‚¤ŠÖ”(XMFLOAT3”Å)
 inline static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, float t)
 {
 	return DirectX::XMFLOAT3{
@@ -448,98 +448,98 @@ inline static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const D
 	};
 }
 
-//ç·šå½¢è£œé–“ã‚’è¡Œã†é–¢æ•°(XMVECTORç‰ˆ)
+//üŒ`•âŠÔ‚ğs‚¤ŠÖ”(XMVECTOR”Å)
 inline static DirectX::XMVECTOR LerpXMV(const DirectX::XMVECTOR& start, const DirectX::XMVECTOR& end, float t)
 {
 	return DirectX::XMVectorLerp(start, end, t);
 }
 
-//3Då¤‰æ›æƒ…å ±åˆæˆé–¢æ•°
+//3D•ÏŠ·î•ñ‡¬ŠÖ”
 inline static Transform3D CombineTransform3D(const Transform3D& world, const Transform3D& local)
 {
 	Transform3D result;
-	//ã‚¹ã‚±ãƒ¼ãƒ«ã®åˆæˆ
+	//ƒXƒP[ƒ‹‚Ì‡¬
 	result.scale.x = world.scale.x * local.scale.x;
 	result.scale.y = world.scale.y * local.scale.y;
 	result.scale.z = world.scale.z * local.scale.z;
 
-	//å›è»¢ã®åˆæˆ
+	//‰ñ“]‚Ì‡¬
 	result.rotation.x = world.rotation.x + local.rotation.x;
 	result.rotation.y = world.rotation.y + local.rotation.y;
 	result.rotation.z = world.rotation.z + local.rotation.z;
 
-	//ä½ç½®ã®åˆæˆ(ã‚¹ã‚±ãƒ¼ãƒ«ã¨å›è»¢ã‚’è€ƒæ…®)
-	DirectX::XMVECTOR childPos = DirectX::XMLoadFloat3(&local.position);	//å­ã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«
-	DirectX::XMVECTOR parentScale = DirectX::XMLoadFloat3(&world.scale);	//è¦ªã®ã‚¹ã‚±ãƒ¼ãƒ«ãƒ™ã‚¯ãƒˆãƒ«
-	childPos = DirectX::XMVectorMultiply(childPos, parentScale);			//ã‚¹ã‚±ãƒ¼ãƒ«é©ç”¨
+	//ˆÊ’u‚Ì‡¬(ƒXƒP[ƒ‹‚Æ‰ñ“]‚ğl—¶)
+	DirectX::XMVECTOR childPos = DirectX::XMLoadFloat3(&local.position);	//q‚ÌˆÊ’uƒxƒNƒgƒ‹
+	DirectX::XMVECTOR parentScale = DirectX::XMLoadFloat3(&world.scale);	//e‚ÌƒXƒP[ƒ‹ƒxƒNƒgƒ‹
+	childPos = DirectX::XMVectorMultiply(childPos, parentScale);			//ƒXƒP[ƒ‹“K—p
 
-	DirectX::XMVECTOR parentRot = DirectX::XMLoadFloat3(&world.rotation);	//è¦ªã®å›è»¢ãƒ™ã‚¯ãƒˆãƒ«
-	DirectX::XMMATRIX rotMatrix =											//è¦ªã®å›è»¢è¡Œåˆ—
+	DirectX::XMVECTOR parentRot = DirectX::XMLoadFloat3(&world.rotation);	//e‚Ì‰ñ“]ƒxƒNƒgƒ‹
+	DirectX::XMMATRIX rotMatrix =											//e‚Ì‰ñ“]s—ñ
 		DirectX::XMMatrixRotationRollPitchYaw(
-			DirectX::XMVectorGetX(parentRot),	//ãƒ”ãƒƒãƒ
-			DirectX::XMVectorGetY(parentRot),	//ãƒ¨ãƒ¼
-			DirectX::XMVectorGetZ(parentRot)	//ãƒ­ãƒ¼ãƒ«
+			DirectX::XMVectorGetX(parentRot),	//ƒsƒbƒ`
+			DirectX::XMVectorGetY(parentRot),	//ƒˆ[
+			DirectX::XMVectorGetZ(parentRot)	//ƒ[ƒ‹
 		);
-	childPos = DirectX::XMVector3Transform(childPos, rotMatrix);				//å›è»¢é©ç”¨
+	childPos = DirectX::XMVector3Transform(childPos, rotMatrix);				//‰ñ“]“K—p
 
-	DirectX::XMVECTOR parentPos = DirectX::XMLoadFloat3(&world.position);		//è¦ªã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«
-	DirectX::XMVECTOR resultPos = DirectX::XMVectorAdd(parentPos, childPos);	//ä½ç½®åˆæˆ
-	DirectX::XMStoreFloat3(&result.position, resultPos);						//çµæœã‚’æ ¼ç´
+	DirectX::XMVECTOR parentPos = DirectX::XMLoadFloat3(&world.position);		//e‚ÌˆÊ’uƒxƒNƒgƒ‹
+	DirectX::XMVECTOR resultPos = DirectX::XMVectorAdd(parentPos, childPos);	//ˆÊ’u‡¬
+	DirectX::XMStoreFloat3(&result.position, resultPos);						//Œ‹‰Ê‚ğŠi”[
 
 	return result;
 }
 
-//å¤‰æ›æƒ…å ±ã‹ã‚‰å¤‰æ›è¡Œåˆ—ã‚’å–å¾—ã™ã‚‹é–¢æ•°
+//•ÏŠ·î•ñ‚©‚ç•ÏŠ·s—ñ‚ğæ“¾‚·‚éŠÖ”
 inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& transform)
 {
-	//ã‚¹ã‚±ãƒ¼ãƒ«è¡Œåˆ—
+	//ƒXƒP[ƒ‹s—ñ
 	DirectX::XMMATRIX scaleMatrix =
 		DirectX::XMMatrixScaling(
 			transform.scale.x,
 			transform.scale.y,
 			transform.scale.z
 		);
-	//å›è»¢è¡Œåˆ—
+	//‰ñ“]s—ñ
 	DirectX::XMMATRIX rotMatrix =
 		DirectX::XMMatrixRotationRollPitchYaw(
-			DirectX::XMConvertToRadians(transform.rotation.x),	//ãƒ”ãƒƒãƒ
-			DirectX::XMConvertToRadians(transform.rotation.y),	//ãƒ¨ãƒ¼
-			DirectX::XMConvertToRadians(transform.rotation.z)	//ãƒ­ãƒ¼ãƒ«
+			DirectX::XMConvertToRadians(transform.rotation.x),	//ƒsƒbƒ`
+			DirectX::XMConvertToRadians(transform.rotation.y),	//ƒˆ[
+			DirectX::XMConvertToRadians(transform.rotation.z)	//ƒ[ƒ‹
 		);
-	//å¹³è¡Œç§»å‹•è¡Œåˆ—
+	//•½sˆÚ“®s—ñ
 	DirectX::XMMATRIX transMatrix =
 		DirectX::XMMatrixTranslation(
 			transform.position.x,
 			transform.position.y,
 			transform.position.z
 		);
-	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®åˆæˆ(ã‚¹ã‚±ãƒ¼ãƒ«â†’å›è»¢â†’å¹³è¡Œç§»å‹•)
+	//ƒ[ƒ‹ƒhs—ñ‚Ì‡¬(ƒXƒP[ƒ‹¨‰ñ“]¨•½sˆÚ“®)
 	return scaleMatrix * rotMatrix * transMatrix;
 }
 
-//ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
+//?e?N?X?`?????????\????
 struct TexSplitInfo
 {
-	int index = 0;			//ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
-	int cols = 1;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	int rows = 1;			//ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
-	int total = 1;			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½Å‘ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½+1)
-	int frameCount = 0;		//ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½g
-	int updateRate = 0;		//ï¿½Xï¿½Vï¿½pï¿½x(ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½)
+	int index = 0;			//?????C???f?b?N?X
+	int cols = 1;			//??????
+	int rows = 1;			//?????s??
+	int total = 1;			//????????(???C???f?b?N?X??+1)
+	int frameCount = 0;		//?t???[???J?E???g
+	int updateRate = 0;		//?X?V?p?x(?t???[????)
 };
 
-//ï¿½Xï¿½vï¿½ï¿½ï¿½Cï¿½gï¿½ğ•ªŠï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‰Óï¿½ï¿½ï¿½Ø‚ï¿½ï¿½ï¿½Öï¿½
+//?X?v???C?g?????????????????????
 inline static DirectX::XMFLOAT4 SplitSprite(TexSplitInfo info)
 {
-	//ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½Ø‚è”²ï¿½ï¿½ï¿½Óï¿½ï¿½ï¿½ï¿½vï¿½Z
+	//?C???f?b?N?X??????????????v?Z
 	float col = info.index % info.cols;
 	float row = info.index / info.cols;
 
-	//ï¿½Ø‚è”²ï¿½ï¿½ï¿½ï¿½`ï¿½ÌƒTï¿½Cï¿½Yï¿½ï¿½ï¿½vï¿½Z
+	//???????`??T?C?Y???v?Z
 	float su = 1.0f / info.cols;
 	float sv = 1.0f / info.rows;
 
-	//ï¿½Ø‚è”²ï¿½ï¿½ï¿½ï¿½`ï¿½Ìï¿½ï¿½Wï¿½ï¿½ï¿½vï¿½Z
+	//???????`????W???v?Z
 	float u = col * su;
 	float v = row * sv;
 
