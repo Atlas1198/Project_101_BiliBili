@@ -80,6 +80,7 @@ enum class OBJECT_TAG
 	WALLPASS,	//弾貫通壁
 	GROUND,		//地面
 	BULLET,		//弾
+	ITEM_TRANSFORM, //変身アイテム
 	MAX			//最大数
 };
 

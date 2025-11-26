@@ -39,16 +39,12 @@ void TransformItemManager::SubmitDrawsOverride(Renderer& renderer)
 {
     for (auto& item : m_items)
     {
-        if (item->IsActive())
-        {
-            RenderData::RenderInfo info{};
-            info.pMeshGPU = nullptr;
-            info.world = item->GetWorldMatrix();
-            info.positionW = item->GetPosition();
-            info.blendMode = BLEND_OPAQUE;
-
-            renderer.Submit(info);
-        }
+        //描画要求をシーンに提出
+        ObjectManagerBase::SubmitRenderInfo(
+            renderer,		//シーンの参照
+            *item,		//ゲームオブジェクト配列の参照
+            m_itemInfo	//プレイヤー描画情報
+        );
     }
 }
 
@@ -72,9 +68,14 @@ void TransformItemManager::PrepareRenderInfo(TextureManager& textureManager, Mes
 {
     for (auto& item : m_items)
     {
-        if (item->IsActive())
-        {
-            // テクスチャやメッシュを登録
-        }
+        //描画情報生成関数を呼び出し、描画情報を作成
+        CreateRenderInfo(
+            textureManager,					//テクスチャマネージャへの参照
+            meshManager,					//メッシュマネージャへの参照
+            &m_itemInfo,					//描画情報構造体配列へのポインタ
+            m_items[0]->GetMeshType(),	//メッシュタイプ
+            BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+            texPath							//テクスチャのファイル名
+        );
     }
 }

@@ -3,12 +3,15 @@
 #include "Bullet.h"
 #include <vector>
 #include <memory>
+#include "SharedStruct.h"
 
 class BulletManager : public ObjectManagerBase
 {
 public:
     BulletManager() {}
     ~BulletManager() {}
+
+    const wchar_t *texPath = L"asset/texture/change_item.png";
 
     void FireBullet(
         const DirectX::XMFLOAT3& position,
@@ -31,4 +34,5 @@ protected:
 private:
     std::vector<std::unique_ptr<Bullet>> m_bullets;
     CollisionManager* m_pCollisionManager = nullptr;
+    std::vector<RenderData::RenderInfo> m_bulletInfo;
 };

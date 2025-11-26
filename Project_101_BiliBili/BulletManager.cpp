@@ -55,28 +55,14 @@ void BulletManager::UpdateOverride()
 
 void BulletManager::SubmitDrawsOverride(Renderer& renderer)
 {
-    for (auto& b : m_bullets)
+    for (auto &bullet : m_bullets)
     {
-        if (!b->IsActive())
-        {
-            continue;
-        }
-
-        RenderData::RenderInfo info{};
-
-        DirectX::XMMATRIX world = DirectX::XMMatrixTranslation(
-            b->GetPosition().x,
-            b->GetPosition().y,
-            b->GetPosition().z
+        //描画要求をシーンに提出
+        ObjectManagerBase::SubmitRenderInfo(
+            renderer,		//シーンの参照
+            *bullet,		//ゲームオブジェクト配列の参照
+            m_bulletInfo	//プレイヤー描画情報
         );
-        info.world = world;
-        info.pMeshGPU = nullptr;
-        info.srvIndex = UINT32_MAX;
-        info.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-        info.positionW = b->GetPosition();
-        info.blendMode = BLEND_OPAQUE;
-
-        renderer.Submit(info);
     }
 }
 
@@ -98,5 +84,16 @@ void BulletManager::FinalizeOverride()
 
 void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-    // テクスチャやメッシュを登録
+    for (auto &bullet : m_bullets)
+    {
+        //描画情報生成関数を呼び出し、描画情報を作成
+        CreateRenderInfo(
+            textureManager,					//テクスチャマネージャへの参照
+            meshManager,					//メッシュマネージャへの参照
+            &m_bulletInfo,					//描画情報構造体配列へのポインタ
+            m_bullets[0]->GetMeshType(),	//メッシュタイプ
+            BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+            texPath							//テクスチャのファイル名
+        );
+    }
 }
