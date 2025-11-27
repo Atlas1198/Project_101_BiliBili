@@ -34,7 +34,7 @@ public:
 		CollisionManager& collisionManager	//衝突管理クラスの参照
 	) override;
 
-	void AddPlayer(
+	Player* AddPlayer(
 		uint32_t id,						//ID
 		InputManager *pInputManager,		//入力マネージャーのポインタ
 		CollisionManager &collisionManager	//衝突管理クラスの参照

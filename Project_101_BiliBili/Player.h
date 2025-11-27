@@ -13,6 +13,8 @@ public:	//公開定数
 
 private:	//非公開メンバ変数
 	InputInfo* m_pInputInfo{};	//入力情報構造体
+	Player* teammate = nullptr;
+	int teamID = -1;
 
 public:	//公開関数
 	Player(	//コンストラクタ
@@ -50,9 +52,13 @@ public:	//公開関数
 	void Initialize(InputManager* pInputManager);	//初期化
 	void UpdateOverride() override;					//更新
 	void ResolveCollisionsOverride() override;		//衝突解決
+	void SetTeamID(int team) { teamID = team; } //チームIDセット
+	void BindTeammate(Player* teammate) { this->teammate = teammate; } //味方のセット
+	XMFLOAT3 GetPosition() const { return m_position; } //位置取得
 
 private:	//非公開関数
 	void Move();	//移動
 	void Rotate();	//回転
 	void Scale();	//スケール
+	void Shoot();	//射撃
 };

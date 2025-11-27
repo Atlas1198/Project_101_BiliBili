@@ -104,6 +104,11 @@ void SceneManager::AddPlayer(uint32_t id)
 	m_pGameScene->AddPlayer(id, m_pInputManager);
 }
 
+void SceneManager::SpawnPlayers()
+{
+	m_pGameScene->SpawnPlayers(m_pInputManager);
+}
+
 void SceneManager::RemovePlayer(uint32_t id)
 {
 	m_pGameScene->RemovePlayer(id);

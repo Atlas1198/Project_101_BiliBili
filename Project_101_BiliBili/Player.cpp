@@ -41,6 +41,7 @@ void Player::UpdateOverride()
 	else
 	{
 		Move();		//ˆÚ“®
+		Shoot();
 	}
 }
  
@@ -165,6 +166,36 @@ void Player::Move()
 	}
 
 	m_position.y += m_velocity.y;
+}
+
+void Player::Shoot()
+{
+	bool shoot = m_pInputInfo->z.trigger;
+
+	if (!App::GetInstance()->isOnline)
+	{
+		switch (id)
+		{
+		case 0:
+			break;
+		case 1:
+			shoot = m_pInputInfo->c.trigger;
+			break;
+		case 2:
+			shoot = m_pInputInfo->n.trigger;
+			break;
+		case 3:
+			shoot = m_pInputInfo->rightCtrl.trigger;
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (shoot)
+	{
+		
+	}
 }
 
 //‰ñ“]

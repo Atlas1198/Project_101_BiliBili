@@ -30,6 +30,7 @@ public:	//ŒöŠJŠÖ”
 	void DrawOverride(Renderer& pRenderer) override;	//•`‰æ
 	void FinalizeOverride() override;							//I—¹
 	void AddPlayer(uint32_t id, InputManager *pInputManager);
+	void SpawnPlayers(InputManager *pInputManager);
 	void RemovePlayer(uint32_t id);
 
 private:

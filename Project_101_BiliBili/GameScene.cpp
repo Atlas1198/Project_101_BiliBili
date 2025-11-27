@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
+#include "App.h"
 
 using namespace RenderData;
 
@@ -66,6 +67,32 @@ void GameScene::InitializeOverride(
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
 {
 	m_pPlayerManager->AddPlayer(id, pInputManager, *m_pCollisionManager);
+}
+
+void GameScene::SpawnPlayers(InputManager* pInputManager)
+{
+	std::vector<Player *> players;
+
+	for (int i = 0; i < 4; i++)
+	{
+		PlayerDescription newDesc;
+		newDesc.uniqueID = static_cast<uint32_t>(i);
+		newDesc.ingameID = static_cast<uint32_t>(i);
+		newDesc.pos = {0.0f, 0.0f, 0.0f};
+		App::GetInstance()->players.emplace(newDesc.uniqueID, newDesc);
+
+		players.push_back(m_pPlayerManager->AddPlayer(newDesc.uniqueID, pInputManager, *m_pCollisionManager));
+	}
+
+	players[0]->SetTeamID(0);
+	players[1]->SetTeamID(0);
+	players[2]->SetTeamID(1);
+	players[3]->SetTeamID(1);
+
+	players[0]->BindTeammate(players[1]);
+	players[1]->BindTeammate(players[0]);
+	players[2]->BindTeammate(players[3]);
+	players[3]->BindTeammate(players[2]);
 }
 
 void GameScene::RemovePlayer(uint32_t id)

@@ -39,7 +39,7 @@ void PlayerManager::InitializeOverride(
 	}
 }
 
-void PlayerManager::AddPlayer(
+Player* PlayerManager::AddPlayer(
 	uint32_t id,						//ID
 	InputManager *pInputManager,		//入力マネージャーのポインタ
 	CollisionManager &collisionManager	//衝突管理クラスの参照
@@ -47,21 +47,23 @@ void PlayerManager::AddPlayer(
 {
 	Vec3 spawnPos = App::GetInstance()->spawnPos;
 
-	//プレイヤーオブジェクトの生成
-	m_pPlayer.push_back(
-		new Player
-		(
-			MeshData::MESH_TYPE::QUAD,
-			XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			id,							//ID
-			true,						//アクティブフラグ
-			ColliderType::BOX,			//コライダータイプ	
-			XMFLOAT3(1.0f, 2.0f, 1.0f),	//コライダーボックスサイズ
-			false						//コライダーのトリガーフラグ
-		)
+	Player *newPlayer = new Player
+	(
+		MeshData::MESH_TYPE::QUAD,
+		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
+		XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+		XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
+		XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+		id,							//ID
+		true,						//アクティブフラグ
+		ColliderType::BOX,			//コライダータイプ	
+		XMFLOAT3(1.0f, 2.0f, 1.0f),	//コライダーボックスサイズ
+		false						//コライダーのトリガーフラグ
+	);
+
+		//プレイヤーオブジェクトの生成
+		m_pPlayer.push_back(
+			newPlayer
 	);
 
 
@@ -80,6 +82,8 @@ void PlayerManager::AddPlayer(
 		//プレイヤーオブジェクトの初期化
 		m_pPlayer.back()->Initialize(pInputManager); //入力情報構造体の取得
 	}
+
+	return newPlayer;
 }
 
 void PlayerManager::RemovePlayer(uint32_t id)
