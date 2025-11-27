@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "SharedStruct.h"
+#include "GameUIManager.h"
 
 class BulletManager : public ObjectManagerBase
 {
@@ -17,7 +18,13 @@ public:
         const DirectX::XMFLOAT3& position,
         const DirectX::XMFLOAT3& direction,
         float speed,
-        int ownerTeam);
+        int ownerTeam,
+        uint32_t ownerID);
+
+    void SetGameUIManager(GameUIManager* pGameUIManager)
+    {
+        m_pGameUIManager = pGameUIManager;
+	}
 
 protected:
     void InitializeOverride(InputManager* pInputManager,
@@ -35,4 +42,5 @@ private:
     std::vector<std::unique_ptr<Bullet>> m_bullets;
     CollisionManager* m_pCollisionManager = nullptr;
     std::vector<RenderData::RenderInfo> m_bulletInfo;
+	GameUIManager *m_pGameUIManager = nullptr;
 };

@@ -75,6 +75,8 @@ void GameScene::InitializeOverride(
 		pMeshManager,
 		*m_pCollisionManager
 	);
+
+	m_pBulletManager->SetGameUIManager(m_pGameUIManager);
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)

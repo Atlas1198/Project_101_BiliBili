@@ -98,6 +98,18 @@ void GameUIManager::FinalizeOverride()
 {
 }
 
+void GameUIManager::TakeDamage(int teamID, float damage)
+{
+	if (teamID == 0 && m_pHPBarUI1)
+	{
+		m_pHPBarUI1->TakeDamage(damage);
+	}
+	else if (teamID == 1 && m_pHPBarUI2)
+	{
+		m_pHPBarUI2->TakeDamage(damage);
+	}
+}
+
 void GameUIManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
 	//HPƒo[UI‚Ì•`‰æî•ñ¶¬

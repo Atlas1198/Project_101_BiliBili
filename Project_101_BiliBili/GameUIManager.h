@@ -20,6 +20,8 @@ public:	//公開関数
 	) override;
 	void UpdateOverride() override;						//更新
 	void FinalizeOverride() override;					//終了
+
+	void TakeDamage(int teamID, float damage); //ダメージ処理関数
 private:
 	HPBarUI* m_pHPBarUI1 = nullptr;	//HPバーUIポインタ
 	HPBarUI* m_pHPBarUI2 = nullptr;	//HPバーUIポインタ

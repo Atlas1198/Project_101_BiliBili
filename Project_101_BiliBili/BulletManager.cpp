@@ -6,10 +6,11 @@ void BulletManager::FireBullet(
     const DirectX::XMFLOAT3& position,
     const DirectX::XMFLOAT3& direction,
     float speed,
-    int ownerTeam
+    int ownerTeam,
+    uint32_t ownerID
     )
 {
-    auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam);
+    auto bullet = std::make_unique<Bullet>(m_pGameUIManager, position, direction, speed, ownerTeam, ownerID);
     if (m_pCollisionManager)
     {
         m_pCollisionManager->RegisterCollider(bullet->GetCollider());

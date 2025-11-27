@@ -39,11 +39,6 @@ void HPBarUI::InitializeOverride(TextureManager& textureManager, MeshManager& me
 //çXêV
 void HPBarUI::UpdateOverride()
 {
-	m_hpRate = (std::max)(0.0f, m_hpRate - 0.001f); // âºÇÃHPíl
-	if(m_hpRate <= 0.0f)
-	{
-		m_hpRate = 1.0f;
-	}
 	UpdateGageImage();
 }
 
@@ -72,4 +67,13 @@ void HPBarUI::UpdateGageImage()
 	uvRect.sv = 1.0f;
 
 	m_pGageImage->SetUVRect(uvRect);
+}
+
+void HPBarUI::TakeDamage(float damage)
+{
+	m_hpRate = (std::max)(0.0f, m_hpRate - damage);
+	if (m_hpRate <= 0.0f)
+	{
+		m_hpRate = 0.0f;
+	}
 }

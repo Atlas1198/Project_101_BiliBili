@@ -223,7 +223,8 @@ void Player::Shoot()
 			m_position,
 			dir,
 			0.2f,
-			teamID
+			teamID,
+			id
 		);
 	}
 }
