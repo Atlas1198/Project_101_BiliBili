@@ -48,6 +48,10 @@ void InputManager::UpdateTriggerKeyInfo()
 	m_inputInfo.space.trigger = Keyboard_IsKeyDownTrigger(KK_SPACE);
 	m_inputInfo.enter.trigger = Keyboard_IsKeyDownTrigger(KK_ENTER);
 	m_inputInfo.p.trigger = Keyboard_IsKeyDownTrigger(KK_P);
+	m_inputInfo.z.trigger = Keyboard_IsKeyDownTrigger(KK_Z);
+	m_inputInfo.c.trigger = Keyboard_IsKeyDownTrigger(KK_C);
+	m_inputInfo.n.trigger = Keyboard_IsKeyDownTrigger(KK_N);
+	m_inputInfo.rightCtrl.trigger = Keyboard_IsKeyDownTrigger(KK_RIGHTCONTROL);
 }
 
 //押下情報更新
@@ -72,6 +76,10 @@ void InputManager::UpdateDownKeyInfo()
 	m_inputInfo.space.down = Keyboard_IsKeyDown(KK_SPACE);
 	m_inputInfo.enter.down = Keyboard_IsKeyDown(KK_ENTER);
 	m_inputInfo.p.down = Keyboard_IsKeyDown(KK_P);
+	m_inputInfo.z.down = Keyboard_IsKeyDown(KK_Z);
+	m_inputInfo.c.down = Keyboard_IsKeyDown(KK_C);
+	m_inputInfo.n.down = Keyboard_IsKeyDown(KK_N);
+	m_inputInfo.rightCtrl.down = Keyboard_IsKeyDown(KK_RIGHTCONTROL);
 }
 
 //離上情報更新
@@ -96,4 +104,8 @@ void InputManager::UpdateUpKeyInfo()
 	m_inputInfo.space.up = !Keyboard_IsKeyUp(KK_SPACE);
 	m_inputInfo.enter.up = !Keyboard_IsKeyUp(KK_ENTER);
 	m_inputInfo.p.up = !Keyboard_IsKeyUp(KK_P);
+	m_inputInfo.z.up = Keyboard_IsKeyUp(KK_Z);
+	m_inputInfo.c.up = Keyboard_IsKeyUp(KK_C);
+	m_inputInfo.n.up = Keyboard_IsKeyUp(KK_N);
+	m_inputInfo.rightCtrl.up = Keyboard_IsKeyUp(KK_RIGHTCONTROL);
 }

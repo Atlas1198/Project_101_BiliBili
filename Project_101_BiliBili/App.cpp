@@ -127,16 +127,7 @@ void App::Run()
 	{
 		isOnline = false;
 
-		for (int i = 0; i < 4; i++)
-		{
-			PlayerDescription newDesc;
-			newDesc.uniqueID = static_cast<uint32_t>(i);
-			newDesc.ingameID = static_cast<uint32_t>(i);
-			newDesc.pos = spawnPos;
-			players.emplace(newDesc.uniqueID, newDesc);
-
-			m_pSceneManager->AddPlayer(newDesc.uniqueID);
-		}
+		m_pSceneManager->SpawnPlayers();
 
 		int msgboxID = MessageBox(
 			NULL,

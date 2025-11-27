@@ -6,9 +6,10 @@ using namespace DirectX;
 using namespace CollisionData;
 
 //初期化
-void Player::Initialize(InputManager* pInputManager)
+void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManager)
 {
 	m_pInputInfo = pInputManager->GetInputInfo();	//入力情報構造体の取得
+	m_pBulletManager = pBulletManager;
 }
 
 //更新
@@ -41,6 +42,7 @@ void Player::UpdateOverride()
 	else
 	{
 		Move();		//移動
+		Shoot();
 	}
 }
  
@@ -165,6 +167,66 @@ void Player::Move()
 	}
 
 	m_position.y += m_velocity.y;
+}
+
+void Player::Shoot()
+{
+	if (!m_pBulletManager) return;
+
+	bool shoot = m_pInputInfo->z.trigger;
+
+	if (!App::GetInstance()->isOnline)
+	{
+		switch (id)
+		{
+		case 0:
+			break;
+		case 1:
+			shoot = m_pInputInfo->c.trigger;
+			break;
+		case 2:
+			shoot = m_pInputInfo->n.trigger;
+			break;
+		case 3:
+			shoot = m_pInputInfo->rightCtrl.trigger;
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (shoot && teammate)
+	{
+		DirectX::XMFLOAT3 dir{ 0.0f, 0.0f, 1.0f };
+
+		DirectX::XMFLOAT3 matePos = teammate->GetPosition();
+		DirectX::XMVECTOR vThis = DirectX::XMLoadFloat3(&m_position);
+		DirectX::XMVECTOR vMate = DirectX::XMLoadFloat3(&matePos);
+
+		DirectX::XMVECTOR vDir = DirectX::XMVectorSubtract(vMate, vThis);
+
+		DirectX::XMVECTOR vLenVec = DirectX::XMVector3Length(vDir);
+		float len = DirectX::XMVectorGetX(vLenVec);
+		const float EPS = 1e-6f;
+		if (len > EPS)
+		{
+			vDir = DirectX::XMVectorScale(vDir, 1.0f / len);
+			DirectX::XMStoreFloat3(&dir, vDir);
+		}
+		else
+		{
+			// 味方と同じ位置なら前方に撃つ
+			dir = DirectX::XMFLOAT3{ 0.0f, 0.0f, 1.0f };
+		}
+
+		m_pBulletManager->FireBullet(
+			m_position,
+			dir,
+			0.2f,
+			teamID,
+			id
+		);
+	}
 }
 
 //回転

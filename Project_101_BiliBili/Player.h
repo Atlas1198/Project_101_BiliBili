@@ -1,6 +1,7 @@
 #pragma once
 #include "ObjectBase.h"
 #include "InputManager.h"
+#include "BulletManager.h"
 
 //プレイヤークラス
 class Player : public ObjectBase
@@ -13,6 +14,9 @@ public:	//公開定数
 
 private:	//非公開メンバ変数
 	InputInfo* m_pInputInfo{};	//入力情報構造体
+	Player* teammate = nullptr;
+	int teamID = -1;
+	BulletManager *m_pBulletManager = nullptr;
 
 public:	//公開関数
 	Player(	//コンストラクタ
@@ -47,12 +51,16 @@ public:	//公開関数
 	~Player() {}	//デストラクタ
 
 	//メイン処理関数
-	void Initialize(InputManager* pInputManager);	//初期化
+	void Initialize(InputManager* pInputManager, BulletManager* pBulletManager);	//初期化
 	void UpdateOverride() override;					//更新
 	void ResolveCollisionsOverride() override;		//衝突解決
+	void SetTeamID(int team) { teamID = team; } //チームIDセット
+	void BindTeammate(Player* teammate) { this->teammate = teammate; } //味方のセット
+	int GetTeamID() const { return teamID; } //チームID取得
 
 private:	//非公開関数
 	void Move();	//移動
 	void Rotate();	//回転
 	void Scale();	//スケール
+	void Shoot();	//射撃
 };

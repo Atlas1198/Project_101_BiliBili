@@ -4,6 +4,7 @@
 #include "PlayerManager.h"
 #include "FieldManager.h"
 #include "GameUIManager.h"
+#include "BulletManager.h"
 #include "SharedStruct.h"
 
 //前方宣言
@@ -30,10 +31,12 @@ public:	//公開関数
 	void DrawOverride(Renderer& pRenderer) override;	//描画
 	void FinalizeOverride() override;							//終了
 	void AddPlayer(uint32_t id, InputManager *pInputManager);
+	void SpawnPlayers(InputManager *pInputManager);
 	void RemovePlayer(uint32_t id);
 
 private:
 	PlayerManager* m_pPlayerManager = nullptr;	//プレイヤー管理クラス
 	FieldManager* m_pFieldManager = nullptr;	//フィールド管理クラス
 	GameUIManager* m_pGameUIManager = nullptr;	//ゲームUI管理クラス
+	BulletManager *m_pBulletManager = nullptr;	//弾管理クラス
 };

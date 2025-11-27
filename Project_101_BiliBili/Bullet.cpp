@@ -1,10 +1,14 @@
 #include "Bullet.h"
 #include <cmath>
+#include "Player.h"
 
-Bullet::Bullet(const DirectX::XMFLOAT3& pos,
+Bullet::Bullet(
+	GameUIManager *pGameUIManager,
+               const DirectX::XMFLOAT3& pos,
                const DirectX::XMFLOAT3& dir,
                float speed,
                int ownerTeam,
+	           uint32_t ownerID,
                float lifeTimeSec,
                float maxDistance)
 
@@ -18,7 +22,8 @@ Bullet::Bullet(const DirectX::XMFLOAT3& pos,
         OBJECT_TAG::BULLET,
         ColliderType::BOX,
         CollisionData::COLLISION_LAYER::BULLET
-        ), m_direction(dir), m_speed(speed), m_ownerTeam(ownerTeam), m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance)
+	), m_direction(dir), m_speed(speed), m_ownerTeam(ownerTeam), m_ownerID(ownerID),
+    m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance), m_pGameUIManager(pGameUIManager)
 {
     SetActive(true);
 }
@@ -78,6 +83,18 @@ void Bullet::ResolveCollisionsOverride()
         if (!otherOwner) 
         {
             continue;
+        }
+
+        if (Player *otherPlayer = dynamic_cast<Player *>(otherOwner))
+        {
+            if (otherPlayer->id == m_ownerID)
+            {
+                continue;
+			}
+            else if (otherPlayer->GetTeamID() != m_ownerTeam)
+            {
+				m_pGameUIManager->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
+            }
         }
 
         // ìØÇ∂É`Å[ÉÄíeÇÕñ≥éã
