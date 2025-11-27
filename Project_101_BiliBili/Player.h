@@ -56,6 +56,7 @@ public:	//公開関数
 	void ResolveCollisionsOverride() override;		//衝突解決
 	void SetTeamID(int team) { teamID = team; } //チームIDセット
 	void BindTeammate(Player* teammate) { this->teammate = teammate; } //味方のセット
+	int GetTeamID() const { return teamID; } //チームID取得
 
 private:	//非公開関数
 	void Move();	//移動

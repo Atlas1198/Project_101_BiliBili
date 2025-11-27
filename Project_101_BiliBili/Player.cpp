@@ -195,16 +195,34 @@ void Player::Shoot()
 		}
 	}
 
-	if (shoot)
+	if (shoot && teammate)
 	{
+		DirectX::XMFLOAT3 dir{ 0.0f, 0.0f, 1.0f };
+
+		DirectX::XMFLOAT3 matePos = teammate->GetPosition();
+		DirectX::XMVECTOR vThis = DirectX::XMLoadFloat3(&m_position);
+		DirectX::XMVECTOR vMate = DirectX::XMLoadFloat3(&matePos);
+
+		DirectX::XMVECTOR vDir = DirectX::XMVectorSubtract(vMate, vThis);
+
+		DirectX::XMVECTOR vLenVec = DirectX::XMVector3Length(vDir);
+		float len = DirectX::XMVectorGetX(vLenVec);
+		const float EPS = 1e-6f;
+		if (len > EPS)
+		{
+			vDir = DirectX::XMVectorScale(vDir, 1.0f / len);
+			DirectX::XMStoreFloat3(&dir, vDir);
+		}
+		else
+		{
+			// –¡•û‚Æ“¯‚¶ˆÊ’u‚È‚ç‘O•û‚ÉŒ‚‚Â
+			dir = DirectX::XMFLOAT3{ 0.0f, 0.0f, 1.0f };
+		}
+
 		m_pBulletManager->FireBullet(
 			m_position,
-			XMFLOAT3(
-				sinf(XMConvertToRadians(m_rotation.y)),
-				0.0f,
-				cosf(XMConvertToRadians(m_rotation.y))
-			),
-			1.0f,
+			dir,
+			0.2f,
 			teamID
 		);
 	}

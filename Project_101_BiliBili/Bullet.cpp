@@ -1,5 +1,6 @@
 #include "Bullet.h"
 #include <cmath>
+#include "Player.h"
 
 Bullet::Bullet(const DirectX::XMFLOAT3& pos,
                const DirectX::XMFLOAT3& dir,
@@ -78,6 +79,14 @@ void Bullet::ResolveCollisionsOverride()
         if (!otherOwner) 
         {
             continue;
+        }
+
+        if (Player *otherPlayer = dynamic_cast<Player *>(otherOwner))
+        {
+            if (otherPlayer->GetTeamID() == m_ownerTeam)
+            {
+                continue;
+			}
         }
 
         // ìØÇ∂É`Å[ÉÄíeÇÕñ≥éã
