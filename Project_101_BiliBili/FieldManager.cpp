@@ -1,3 +1,4 @@
+#include <random>
 #include "FieldManager.h"
 #include "Renderer.h"
 #include "InputManager.h"
@@ -45,6 +46,12 @@ FieldManager::~FieldManager()
 //初期化
 void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
+	std::random_device rd;               
+	std::mt19937 gen(rd());              
+	std::uniform_int_distribution<> dist(1, 3); 
+
+	int Stagenum = dist(gen);
+		
 	m_pWalls.push_back(
 		new Wall(
 			MeshData::MESH_TYPE::CUBE,
@@ -52,7 +59,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(2.0f, 10.0f, 30.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
+			false,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(2.1f, 10.1f, 30.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
@@ -65,7 +72,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(2.0f, 10.0f, 30.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
+			false,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(2.1f, 10.1f, 30.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
@@ -78,7 +85,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(30.0f, 10.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
+			false,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(30.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
@@ -91,23 +98,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(30.0f, 10.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
+			false,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(30.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
-			false						//コライダーのトリガーフラグ
-		)
-	);
-
-	m_pWallPasses.push_back(
-		new WallPass(
-			MeshData::MESH_TYPE::CUBE,
-			XMFLOAT3(5.0f, 0.0f, 0.0f),	//位置
-			XMFLOAT3(0.0f, 130.0f, 0.0f),	//回転
-			XMFLOAT3(2.0f, 10.0f, 2.0f),	//スケール
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
-			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(2.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
@@ -125,6 +118,412 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			false							//コライダーのトリガーフラグ
 		)
 	);
+
+	switch (Stagenum)
+	{
+		case 1:	//ステージ1
+			//-------------
+			//左側
+			//-------------
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-6.0f, -4.0f, 15.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(5.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(5.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-11.0f, -4.0f, 3.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(2.0f, 3.0f, 6.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(2.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-3.0f, -4.0f, 7.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 6.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-8.0f, -4.0f, -4.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(2.0f, 3.0f, 2.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(2.1f, 3.1f, 2.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			m_pWallPasses.push_back(
+				new WallPass(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-4.0f, -4.0f, -4.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(6.0f, 3.0f, 2.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(6.1f, 3.1f, 2.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+
+			//-------------
+			//右側
+			//-------------
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(3.0f, -4.0f, 3.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 6.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(8.0f, -4.0f, 14.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(2.0f, 3.0f, 2.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(2.1f, 3.1f, 2.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			m_pWallPasses.push_back(
+				new WallPass(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(4.0f, -4.0f, 14.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(6.0f, 3.0f, 2.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(6.1f, 3.1f, 2.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(11.0f, -4.0f, 7.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(2.0f, 3.0f, 6.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(2.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(6.0f, -4.0f, -5.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(5.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(5.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			
+			break;
+		case 2:	//ステージ2
+			//-------------
+			//左側
+			//-------------
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-10.0f, -3.0f, 8.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(3.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(3.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-9.0f, -3.0f, 5.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 5.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 5.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-10.0f, -3.0f, 2.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(3.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(3.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-5.0f, -3.0f, 13.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(7.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(7.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-5.0f, -3.0f, 10.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 5.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 5.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWallPasses.push_back(
+				new WallPass(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-5.0f, -3.0f, -5.5f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 7.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 7.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			//-------------
+			//右側
+			//-------------
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(10.0f, -3.0f, 8.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(3.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(3.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(9.0f, -3.0f, 5.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 5.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 5.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(10.0f, -3.0f, 2.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(3.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(3.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(5.0f, -3.0f, -3.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(7.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(7.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(5.0f, -3.0f, 0.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 5.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 5.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			m_pWallPasses.push_back(
+				new WallPass(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(5.0f, -3.0f, 15.5f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 7.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 7.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			break;
+		case 3: //ステージ3
+			//-------------
+			//左側
+			//-------------
+			m_pWallPasses.push_back(
+				new WallPass(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-8.0f, -3.0f, -4.5f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 9.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 9.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(-5.0f, -3.0f, 17.5f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 3.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 3.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			//-------------
+			//真ん中
+			//-------------
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(0.0f, -3.0f, 5.0f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(8.0f, 3.0f, 1.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(8.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			//-------------
+			//右側
+			//-------------
+			m_pWallPasses.push_back(
+				new WallPass(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(8.0f, -3.0f, 14.5f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 9.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 9.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+
+			m_pWalls.push_back(
+				new Wall(
+					MeshData::MESH_TYPE::CUBE,
+					XMFLOAT3(5.0f, -3.0f, -7.5f),	//位置
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
+					XMFLOAT3(1.0f, 3.0f, 3.0f),	//スケール
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+					true,						//アクティブフラグ
+					ColliderType::BOX,		//コライダータイプ
+					XMFLOAT3(1.1f, 3.1f, 3.1f),	//コライダーボックスサイズ
+					false						//コライダーのトリガーフラグ
+				)
+			);
+			break;
+
+	}
+	
+
+	
 
 	for (auto& wall : m_pWalls)
 	{
