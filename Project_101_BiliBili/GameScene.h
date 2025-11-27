@@ -4,6 +4,7 @@
 #include "PlayerManager.h"
 #include "FieldManager.h"
 #include "GameUIManager.h"
+#include "BulletManager.h"
 #include "SharedStruct.h"
 
 //前方宣言
@@ -37,4 +38,5 @@ private:
 	PlayerManager* m_pPlayerManager = nullptr;	//プレイヤー管理クラス
 	FieldManager* m_pFieldManager = nullptr;	//フィールド管理クラス
 	GameUIManager* m_pGameUIManager = nullptr;	//ゲームUI管理クラス
+	BulletManager *m_pBulletManager = nullptr;	//弾管理クラス
 };

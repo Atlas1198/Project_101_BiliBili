@@ -6,9 +6,10 @@ using namespace DirectX;
 using namespace CollisionData;
 
 //‰Šú‰»
-void Player::Initialize(InputManager* pInputManager)
+void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManager)
 {
 	m_pInputInfo = pInputManager->GetInputInfo();	//“ü—Íî•ñ\‘¢‘Ì‚ÌŽæ“¾
+	m_pBulletManager = pBulletManager;
 }
 
 //XV
@@ -170,6 +171,8 @@ void Player::Move()
 
 void Player::Shoot()
 {
+	if (!m_pBulletManager) return;
+
 	bool shoot = m_pInputInfo->z.trigger;
 
 	if (!App::GetInstance()->isOnline)
@@ -194,7 +197,16 @@ void Player::Shoot()
 
 	if (shoot)
 	{
-		
+		m_pBulletManager->FireBullet(
+			m_position,
+			XMFLOAT3(
+				sinf(XMConvertToRadians(m_rotation.y)),
+				0.0f,
+				cosf(XMConvertToRadians(m_rotation.y))
+			),
+			1.0f,
+			teamID
+		);
 	}
 }
 

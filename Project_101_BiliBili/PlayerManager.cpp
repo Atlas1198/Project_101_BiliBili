@@ -42,7 +42,8 @@ void PlayerManager::InitializeOverride(
 Player* PlayerManager::AddPlayer(
 	uint32_t id,						//ID
 	InputManager *pInputManager,		//入力マネージャーのポインタ
-	CollisionManager &collisionManager	//衝突管理クラスの参照
+	CollisionManager &collisionManager,	//衝突管理クラスの参照
+	BulletManager *pBulletManager	//弾丸管理クラスの参照
 )
 {
 	Vec3 spawnPos = App::GetInstance()->spawnPos;
@@ -61,9 +62,9 @@ Player* PlayerManager::AddPlayer(
 		false						//コライダーのトリガーフラグ
 	);
 
-		//プレイヤーオブジェクトの生成
-		m_pPlayer.push_back(
-			newPlayer
+	//プレイヤーオブジェクトの生成
+	m_pPlayer.push_back(
+		newPlayer
 	);
 
 
@@ -74,13 +75,13 @@ Player* PlayerManager::AddPlayer(
 		//プレイヤーオブジェクトの初期化
 		if (id == selfID)
 		{
-			m_pPlayer.back()->Initialize(pInputManager); //入力情報構造体の取得
+			m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //入力情報構造体の取得
 		}
 	}
 	else
 	{
 		//プレイヤーオブジェクトの初期化
-		m_pPlayer.back()->Initialize(pInputManager); //入力情報構造体の取得
+		m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //入力情報構造体の取得
 	}
 
 	return newPlayer;

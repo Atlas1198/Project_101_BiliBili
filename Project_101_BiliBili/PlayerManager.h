@@ -2,6 +2,7 @@
 #include "ObjectManagerBase.h"
 #include "Player.h"
 #include "SharedStruct.h"
+#include "BulletManager.h"
 
 //前方宣言
 class Renderer;
@@ -37,7 +38,8 @@ public:
 	Player* AddPlayer(
 		uint32_t id,						//ID
 		InputManager *pInputManager,		//入力マネージャーのポインタ
-		CollisionManager &collisionManager	//衝突管理クラスの参照
+		CollisionManager &collisionManager,	//衝突管理クラスの参照
+		BulletManager *pBulletManager	//弾丸管理クラスの参照
 	);
 	void RemovePlayer(uint32_t id);
 
