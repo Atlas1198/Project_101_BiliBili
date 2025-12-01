@@ -50,7 +50,7 @@ void BB::Initialize()
 		m_electricityBB[i]->SetColor(XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));	//色設定(黄色)
 	}
 
-	m_activatedBB = false;
+	m_activatedBB = true;
 }
 
 //更新
@@ -173,6 +173,7 @@ void BB::ActivateBB()
 {
 	m_activatedBB = true;
 	m_electricityBB[0]->SetActive(true);
+	m_pCollisionManager->RegisterCollider(m_electricityBB[0]->GetCollider());	//衝突マネージャーに登録
 }
 
 //ビリビリの無効化

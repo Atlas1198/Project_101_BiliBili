@@ -56,6 +56,8 @@ void BBManager::InitializeOverride(
 				SubmitColliders(collisionManager, electricityBB[j]->GetCollider());
 			}
 		}
+
+		m_BB[i]->DisableBB();
 	}
 }
 
