@@ -98,7 +98,7 @@ void BB::ResolveCollisions()
 
 			//ƒ_ƒ[ƒWˆ—
 			m_pUIManager->TakeDamage(
-				m_teamId,
+				1 - m_teamId,
 				BB::DAMAGE * eb->GetHitNum()
 			);
 
