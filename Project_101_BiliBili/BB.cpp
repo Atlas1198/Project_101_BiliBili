@@ -7,53 +7,53 @@
 
 using namespace DirectX;
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 BB::BB(GameUIManager* pUIManager, CollisionManager* pCollisionManager)
 	: m_pUIManager(pUIManager), m_pCollisionManager(pCollisionManager)
 {
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 BB::~BB()
 {
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void BB::Initialize()
 {
 	m_lineBB = new LineBB(
 		MeshData::MESH_TYPE::QUAD,
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//À•W
-		DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//‰ñ“]
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),	//ƒXƒP[ƒ‹
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-		true,									//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-		ColliderType::CAPSULE,					//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv	
-		DirectX::XMFLOAT3(0.1f, 1.0f, 0.2f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-		false									//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//åº§æ¨™
+		DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//å›è»¢
+		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+		true,									//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+		ColliderType::CAPSULE,					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—	
+		DirectX::XMFLOAT3(0.1f, 1.0f, 0.2f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+		false									//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 	);
 
 	for (int i = 0; i < PLAYER_NUM; i++)
 	{
 		m_electricityBB[i] = new ElectricityBB(
 			MeshData::MESH_TYPE::QUAD,
-			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//À•W
-			DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//‰ñ“]
-			DirectX::XMFLOAT3(0.2f, 1.0f, 0.2f),	//ƒXƒP[ƒ‹
-			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-			true,									//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::CAPSULE,					//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv	
-			DirectX::XMFLOAT3(0.5f, 1.0f, 0.5f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-			false									//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//åº§æ¨™
+			DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//å›è»¢
+			DirectX::XMFLOAT3(0.2f, 1.0f, 0.2f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+			true,									//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::CAPSULE,					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—	
+			DirectX::XMFLOAT3(0.5f, 1.0f, 0.5f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+			false									//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 		);
 
-		m_electricityBB[i]->SetColor(XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));	//Fİ’è(‰©F)
+		m_electricityBB[i]->SetColor(XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));	//è‰²è¨­å®š(é»„è‰²)
 	}
 
 	m_activatedBB = true;
 }
 
-//XV
+//æ›´æ–°
 void BB::Update()
 {
 	m_lineBB->SetEdgePos(
@@ -73,7 +73,7 @@ void BB::Update()
 	}
 }
 
-//Õ“Ë‰ğŒˆ
+//è¡çªè§£æ±º
 void BB::ResolveCollisions()
 {
 	m_lineBB->ResolveCollisions();
@@ -88,22 +88,22 @@ void BB::ResolveCollisions()
 			}
 		}
 
-		//ƒ_ƒ[ƒWˆ—
+		//ãƒ€ãƒ¡ãƒ¼ã‚¸å‡¦ç†
 		for (auto& eb : m_electricityBB)
 		{
-			//ƒAƒNƒeƒBƒu‚©‚Ç‚¤‚©Šm”F
+			//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‹ã©ã†ã‹ç¢ºèª
 			if (!eb->IsActive()) continue;
 
-			//ƒvƒŒƒCƒ„[‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©æ“¾
+			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å½“ãŸã£ãŸã‹ã©ã†ã‹å–å¾—
 			if (!eb->HasHitPlayer()) continue;
 
-			//ƒ_ƒ[ƒWˆ—
+			//ãƒ€ãƒ¡ãƒ¼ã‚¸å‡¦ç†
 			EventManager::GetInstance()->TakeDamage(
-				m_teamId,
+				1 - m_teamId,
 				BB::DAMAGE * eb->GetHitNum()
 			);
 
-			//ƒŠƒZƒbƒg
+			//ãƒªã‚»ãƒƒãƒˆ
 			eb->SetHasHitPlayer(false);
 			eb->SetHitNum(0);
 		}
@@ -111,7 +111,7 @@ void BB::ResolveCollisions()
 	}
 }
 
-//I—¹
+//çµ‚äº†
 void BB::Finalize()
 {
 	delete m_lineBB;
@@ -123,25 +123,25 @@ void BB::Finalize()
 	}
 }
 
-//I—¹
+//çµ‚äº†
 LineBB* BB::GetLineBB() const
 {
 	return m_lineBB;
 }
 
-//“d‹CBB”z—ñ‚Ìæ“¾
+//é›»æ°—BBé…åˆ—ã®å–å¾—
 ElectricityBB** BB::GetElectricityBB()
 {
 	return m_electricityBB;
 }
 
-//”­“®’†‚©‚Ç‚¤‚©æ“¾
+//ç™ºå‹•ä¸­ã‹ã©ã†ã‹å–å¾—
 bool BB::IsActivated() const
 {
 	return m_activatedBB;
 }
 
-//ƒvƒŒƒCƒ„[ˆÊ’u‚Ìİ’è
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®ã®è¨­å®š
 void BB::SetPlayerPos(DirectX::XMFLOAT3 position[PLAYER_NUM])
 {
 	for (int i = 0; i < PLAYER_NUM; i++)
@@ -150,7 +150,7 @@ void BB::SetPlayerPos(DirectX::XMFLOAT3 position[PLAYER_NUM])
 	}
 }
 
-//ƒ`[ƒ€ID‚Ìİ’è
+//ãƒãƒ¼ãƒ IDã®è¨­å®š
 void BB::SetTeamId(int id)
 {
 	m_teamId = id;
@@ -168,15 +168,15 @@ void BB::SetTeamId(int id)
 	}
 }
 
-//ƒrƒŠƒrƒŠ‚Ì—LŒøŠˆ
+//ãƒ“ãƒªãƒ“ãƒªã®æœ‰åŠ¹æ´»
 void BB::ActivateBB()
 {
 	m_activatedBB = true;
 	m_electricityBB[0]->SetActive(true);
-	m_pCollisionManager->RegisterCollider(m_electricityBB[0]->GetCollider());	//Õ“Ëƒ}ƒl[ƒWƒƒ[‚É“o˜^
+	m_pCollisionManager->RegisterCollider(m_electricityBB[0]->GetCollider());	//è¡çªãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã«ç™»éŒ²
 }
 
-//ƒrƒŠƒrƒŠ‚Ì–³Œø‰»
+//ãƒ“ãƒªãƒ“ãƒªã®ç„¡åŠ¹åŒ–
 void BB::DisableBB()
 {
 	m_activatedBB = false;
@@ -186,45 +186,45 @@ void BB::DisableBB()
 	}
 }
 
-//“d—¬‚Ì‘€ì
+//é›»æµã®æ“ä½œ
 void BB::ControlElectricity()
 {
-	//ƒ‰ƒCƒ“‚Æ•Ç‚ÌÕ“ËˆÊ’u”z—ñ‚ğæ“¾
+	//ãƒ©ã‚¤ãƒ³ã¨å£ã®è¡çªä½ç½®é…åˆ—ã‚’å–å¾—
 	std::vector<XMFLOAT3> lineWallCollisionPoints = m_lineBB->GetWallCollisionPoints();
 
 	if (lineWallCollisionPoints.empty())
-	{//•Ç‚Æ‚ÌÕ“Ë‚ª‚È‚¢ê‡
-		//•Ğ•û‚Ì“d—¬‚ğƒIƒt
+	{//å£ã¨ã®è¡çªãŒãªã„å ´åˆ
+		//ç‰‡æ–¹ã®é›»æµã‚’ã‚ªãƒ•
 		if (m_electricityBB[1]->IsActive())
 		{
 			m_electricityBB[1]->SetActive(false);
 		}
 
-		//‚à‚¤•Ğ•û‚Éî•ñ‚ğó‚¯“n‚µ
-		m_electricityBB[0]->SetStartPos(m_playerPos[0]);			//ŠJn’n“_
-		m_electricityBB[0]->SetEndPos(m_playerPos[1]);				//I—¹’n“_
-		m_electricityBB[0]->SetRotation(m_lineBB->GetRotation());	//‰ñ“]
+		//ã‚‚ã†ç‰‡æ–¹ã«æƒ…å ±ã‚’å—ã‘æ¸¡ã—
+		m_electricityBB[0]->SetStartPos(m_playerPos[0]);			//é–‹å§‹åœ°ç‚¹
+		m_electricityBB[0]->SetEndPos(m_playerPos[1]);				//çµ‚äº†åœ°ç‚¹
+		m_electricityBB[0]->SetRotation(m_lineBB->GetRotation());	//å›è»¢
 	}
 	else
-	{//•Ç‚Æ‚ÌÕ“Ë‚ª‚ ‚éê‡
+	{//å£ã¨ã®è¡çªãŒã‚ã‚‹å ´åˆ
 		if (!m_electricityBB[1]->IsActive())
 		{
-			m_electricityBB[1]->SetActive(true);	//—¼•û‚Ì“d—¬‚ğƒIƒ“
-			m_pCollisionManager->RegisterCollider(m_electricityBB[1]->GetCollider());	//Õ“Ëƒ}ƒl[ƒWƒƒ[‚É“o˜^
+			m_electricityBB[1]->SetActive(true);	//ä¸¡æ–¹ã®é›»æµã‚’ã‚ªãƒ³
+			m_pCollisionManager->RegisterCollider(m_electricityBB[1]->GetCollider());	//è¡çªãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã«ç™»éŒ²
 		}
 
-		//ŠeƒvƒŒƒCƒ„[À•WAÅ‚à‹ß‚¢Õ“Ë“_A‰ñ“]Šp‚ğó‚¯“n‚µ
-		m_electricityBB[0]->SetStartPos(m_playerPos[0]);												//ŠJn’n“_
-		m_electricityBB[0]->SetEndPos(GetClosestCollisionPos(m_playerPos[0], lineWallCollisionPoints));	//I—¹’n“_
-		m_electricityBB[0]->SetRotation(m_lineBB->GetRotation());										//‰ñ“]
+		//å„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™ã€æœ€ã‚‚è¿‘ã„è¡çªç‚¹ã€å›è»¢è§’ã‚’å—ã‘æ¸¡ã—
+		m_electricityBB[0]->SetStartPos(m_playerPos[0]);												//é–‹å§‹åœ°ç‚¹
+		m_electricityBB[0]->SetEndPos(GetClosestCollisionPos(m_playerPos[0], lineWallCollisionPoints));	//çµ‚äº†åœ°ç‚¹
+		m_electricityBB[0]->SetRotation(m_lineBB->GetRotation());										//å›è»¢
 
-		m_electricityBB[1]->SetStartPos(m_playerPos[1]);												//ŠJn’n“_
-		m_electricityBB[1]->SetEndPos(GetClosestCollisionPos(m_playerPos[1], lineWallCollisionPoints));	//I—¹’n“_
-		m_electricityBB[1]->SetRotation(m_lineBB->GetRotation());										//‰ñ“]
+		m_electricityBB[1]->SetStartPos(m_playerPos[1]);												//é–‹å§‹åœ°ç‚¹
+		m_electricityBB[1]->SetEndPos(GetClosestCollisionPos(m_playerPos[1], lineWallCollisionPoints));	//çµ‚äº†åœ°ç‚¹
+		m_electricityBB[1]->SetRotation(m_lineBB->GetRotation());										//å›è»¢
 	}
 }
 
-//ƒvƒŒƒCƒ„[À•W‚©‚çÅ‚à‹ß‚¢À•W‚ğæ“¾
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™ã‹ã‚‰æœ€ã‚‚è¿‘ã„åº§æ¨™ã‚’å–å¾—
 XMFLOAT3 BB::GetClosestCollisionPos(
 	DirectX::XMFLOAT3 position,
 	std::vector<DirectX::XMFLOAT3> collisionPointList
