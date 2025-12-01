@@ -1,4 +1,6 @@
 #include "Item.h"
+#include "EventManager.h"
+#include "Player.h"
 
 using namespace DirectX;
 using namespace CollisionData;
@@ -26,6 +28,11 @@ void Item::ResolveCollisionsOverride()
 		{
 			SetActive(false);
 			m_pCollider->SetDeleteFlag(true);
+
+			if (Player *player = dynamic_cast<Player *>(info.opponent->GetOwner()))
+			{
+				EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
+			}
 		}
 	}
 }

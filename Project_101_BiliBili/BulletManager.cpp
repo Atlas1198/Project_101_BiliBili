@@ -1,6 +1,7 @@
 #include "BulletManager.h"
 #include "CollisionManager.h"
 #include "Renderer.h"
+#include "EventManager.h"
 
 void BulletManager::FireBullet(
     const DirectX::XMFLOAT3& position,
@@ -51,6 +52,14 @@ void BulletManager::UpdateOverride()
         ),
         m_bullets.end()
     );
+
+    m_bulletRestoreElapsed += m_bulletRestoreTimer.Mark();
+
+    if (m_bulletRestoreElapsed >= bulletRestoreSeconds)
+    {
+		EventManager::GetInstance()->AddBullets(1);
+        m_bulletRestoreElapsed = 0.0f;
+    }
 }
 
 

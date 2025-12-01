@@ -4,6 +4,7 @@
 #include "ObjectManagerBase.h"
 #include "SharedStruct.h"
 #include "Item.h"
+#include "FrameTimer.h"
 
 //前方宣言
 class Renderer;
@@ -18,6 +19,7 @@ class ItemManager : public ObjectManagerBase
 public:
 	ItemManager();		//コンストラクタ
 	~ItemManager();	//デストラクタ
+	void SpawnItem();
 
 private:	//非公開メンバ変数
 	//メイン処理関数
@@ -40,4 +42,7 @@ private:	//非公開メンバ変数
 private:
 	std::vector<Item*> m_pItems;						//アイテムオブジェクト配列
 	std::vector<RenderData::RenderInfo> m_itemInfo;		//アイテム描画情報
+	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
+	FrameTimer m_frameTimer;
+	const float itemSpawnSeconds = 15.0f;
 };

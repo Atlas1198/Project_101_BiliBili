@@ -3,6 +3,7 @@
 #include "ObjectManagerBase.h"
 #include "GameUIManager.h"
 #include "CollisionManager.h"
+#include "EventManager.h"
 
 using namespace DirectX;
 
@@ -49,7 +50,7 @@ void BB::Initialize()
 		m_electricityBB[i]->SetColor(XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));	//色設定(黄色)
 	}
 
-	m_activatedBB = true;
+	m_activatedBB = false;
 }
 
 //更新
@@ -97,7 +98,7 @@ void BB::ResolveCollisions()
 			if (!eb->HasHitPlayer()) continue;
 
 			//ダメージ処理
-			m_pUIManager->TakeDamage(
+			EventManager::GetInstance()->TakeDamage(
 				m_teamId,
 				BB::DAMAGE * eb->GetHitNum()
 			);

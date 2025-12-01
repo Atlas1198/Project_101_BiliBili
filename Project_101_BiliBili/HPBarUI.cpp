@@ -69,11 +69,7 @@ void HPBarUI::UpdateGageImage()
 	m_pGageImage->SetUVRect(uvRect);
 }
 
-void HPBarUI::TakeDamage(float damage)
+void HPBarUI::SetHealth(float health)
 {
-	m_hpRate = (std::max)(0.0f, m_hpRate - damage);
-	if (m_hpRate <= 0.0f)
-	{
-		m_hpRate = 0.0f;
-	}
+	m_hpRate = (std::max)(0.0f, health);
 }

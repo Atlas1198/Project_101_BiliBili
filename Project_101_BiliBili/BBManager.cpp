@@ -1,6 +1,7 @@
 #include "BBManager.h"
 #include "Player.h"
 #include "GameUIManager.h"
+#include "EventManager.h"
 
 using namespace DirectX;
 
@@ -63,6 +64,24 @@ void BBManager::UpdateOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
 	{
+		if (EventManager::GetInstance()->itemPickup[i])
+		{
+			m_BB[i]->ActivateBB();
+			m_BBTimer[i] = BBDuration;
+			m_frameTimer[i].Mark();
+			EventManager::GetInstance()->itemPickup[i] = false;
+		}
+
+		if (m_BBTimer[i] > 0.0f)
+		{
+			m_BBTimer[i] -= m_frameTimer[i].Mark();
+			if (m_BBTimer[i] <= 0.0f)
+			{
+				m_BB[i]->DisableBB();
+				m_BBTimer[i] = 0.0f;
+			}
+		}
+
 		m_BB[i]->Update();
 	}
 }
@@ -112,8 +131,8 @@ void BBManager::SetPlayerData(std::vector<Player*>& players)
 
 	std::vector<XMFLOAT3> team1Pos;	//チーム1のプレイヤー位置
 	std::vector<XMFLOAT3> team2Pos;	//チーム2のプレイヤー位置
-	bool team1Transformed = true;	//チーム1の変身フラグ
-	bool team2Transformed = true;	//チーム2の変身フラグ
+	//bool team1Transformed = false;	//チーム1の変身フラグ
+	//bool team2Transformed = false;	//チーム2の変身フラグ
 
 	//プレイヤーの位置・変身フラグをチームごとに分ける
 	for(auto& player : players)
@@ -134,6 +153,7 @@ void BBManager::SetPlayerData(std::vector<Player*>& players)
 	m_BB[0]->SetPlayerPos(team1Pos.data());
 	m_BB[1]->SetPlayerPos(team2Pos.data());
 
+	/*/
 	//BBの有効・無効を設定
 	if(team1Transformed)
 	{
@@ -156,6 +176,23 @@ void BBManager::SetPlayerData(std::vector<Player*>& players)
 		{
 			m_BB[1]->DisableBB();
 		}
+	}
+	*/
+}
+
+void BBManager::SetBB(int teamID, bool activate)
+{
+	if(teamID < 0 || teamID >= BB_NUM)
+	{
+		return;
+	}
+	if(activate)
+	{
+		m_BB[teamID]->ActivateBB();
+	}
+	else
+	{
+		m_BB[teamID]->DisableBB();
 	}
 }
 

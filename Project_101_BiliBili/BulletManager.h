@@ -5,6 +5,7 @@
 #include <memory>
 #include "SharedStruct.h"
 #include "GameUIManager.h"
+#include "FrameTimer.h"
 
 class BulletManager : public ObjectManagerBase
 {
@@ -43,4 +44,7 @@ private:
     CollisionManager* m_pCollisionManager = nullptr;
     std::vector<RenderData::RenderInfo> m_bulletInfo;
 	GameUIManager *m_pGameUIManager = nullptr;
+    FrameTimer m_bulletRestoreTimer;
+	float m_bulletRestoreElapsed;
+	const float bulletRestoreSeconds = 2.0f;
 };

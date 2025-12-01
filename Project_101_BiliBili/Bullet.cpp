@@ -1,6 +1,7 @@
 #include "Bullet.h"
 #include <cmath>
 #include "Player.h"
+#include "EventManager.h"
 
 Bullet::Bullet(
 	GameUIManager *pGameUIManager,
@@ -93,7 +94,8 @@ void Bullet::ResolveCollisionsOverride()
 			}
             else if (otherPlayer->GetTeamID() != m_ownerTeam)
             {
-				m_pGameUIManager->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
+				//m_pGameUIManager->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
+                EventManager::GetInstance()->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
             }
         }
 

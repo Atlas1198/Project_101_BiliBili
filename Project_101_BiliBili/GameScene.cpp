@@ -105,6 +105,8 @@ void GameScene::InitializeOverride(
 		pMeshManager,
 		*m_pCollisionManager
 	);
+
+	m_pItemManager->SpawnItem();
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)

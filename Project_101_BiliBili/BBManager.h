@@ -4,6 +4,7 @@
 #include "BB.h"
 #include "ObjectManagerBase.h"
 #include "SharedStruct.h"
+#include "FrameTimer.h"
 
 class Player;
 class GameUIManager;
@@ -35,11 +36,16 @@ public:
 	void SetPlayerData(std::vector<Player*>& players);				//プレイヤー情報の設定
 	void SetGameUIManager(GameUIManager* pUIManager);				//UIマネージャーの設定
 	void SetCollisionManager(CollisionManager* pCollisionManager);	//衝突マネージャーの設定
+	void SetBB(int teamID, bool activate);						//BBの発動・無効化設定
 
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; //BB配列
 	std::vector<RenderData::RenderInfo> m_LineBBInfo;			//BBライン描画情報
 	std::vector<RenderData::RenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
+
+	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
+	FrameTimer m_frameTimer[BB_NUM];
+	const float BBDuration = 5.0f; //BB持続時間
 
 
 
