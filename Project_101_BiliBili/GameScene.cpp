@@ -141,7 +141,7 @@ void GameScene::UpdateOverride()
 	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
 	m_pBBManager->Update();		//BB管理クラス更新
 
-	if (m_pInputManager->GetInputInfo()->enter.trigger)
+	if (m_pInputManager->GetInputInfo()->key.enter.trigger)
 	{
 		if (m_pCamera->GetCameraInfo()->position.y == 0.0f)
 		{

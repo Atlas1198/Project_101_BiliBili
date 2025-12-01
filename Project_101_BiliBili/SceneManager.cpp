@@ -44,14 +44,14 @@ void SceneManager::Update()
 	if(m_pCurrentScene == m_pTitleScene && 
 	   m_pInputManager != nullptr &&
 	   m_pInputManager->GetInputInfo() != nullptr &&
-	   m_pInputManager->GetInputInfo()->space.trigger)
+	   m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
 		ChangeScene(SCENE_GAME);	//シーン変更
 	}
 	else if (m_pCurrentScene == m_pGameScene &&
 		m_pInputManager != nullptr &&
 		m_pInputManager->GetInputInfo() != nullptr &&
-		m_pInputManager->GetInputInfo()->space.trigger)
+		m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
 		ChangeScene(SCENE_TITLE);	//シーン変更
 	}

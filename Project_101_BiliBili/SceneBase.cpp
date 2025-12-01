@@ -39,7 +39,7 @@ void SceneBase::Initialize(
 //XV
 void SceneBase::Update()
 {
-	if(m_pInputManager->GetInputInfo()->p.trigger)
+	if(m_pInputManager->GetInputInfo()->key.p.trigger)
 	{
 		m_drawColliders = !m_drawColliders;
 	}
