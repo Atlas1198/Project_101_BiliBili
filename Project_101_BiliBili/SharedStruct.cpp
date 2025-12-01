@@ -679,10 +679,11 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 		break;
 	case CollisionData::COLLISION_LAYER::PLAYER:
 		return MakeMask({
-			COLLISION_LAYER::WALL,		//壁レイヤー
-			COLLISION_LAYER::WALLPASS,	//弾貫通壁レイヤー
-			COLLISION_LAYER::GROUND,	//地面レイヤー
-			COLLISION_LAYER::BULLET		//弾レイヤー
+			COLLISION_LAYER::WALL,			//壁レイヤー
+			COLLISION_LAYER::WALLPASS,		//弾貫通壁レイヤー
+			COLLISION_LAYER::GROUND,		//地面レイヤー
+			COLLISION_LAYER::BULLET,		//弾レイヤー
+			COLLISION_LAYER::ITEM_TRANSFORM //アイテム変身レイヤー
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::WALL:
@@ -707,6 +708,11 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 			COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
 			COLLISION_LAYER::WALL,		//壁レイヤー
 			COLLISION_LAYER::GROUND		//地面レイヤー
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::ITEM_TRANSFORM:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER		//プレイヤーレイヤー
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::MAX_LAYER:

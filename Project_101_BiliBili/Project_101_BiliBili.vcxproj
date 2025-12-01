@@ -163,6 +163,8 @@
     <ClInclude Include="Ground.h" />
     <ClInclude Include="HPBarUI.h" />
     <ClInclude Include="IconUI.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemManager.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ToolbarControl.h" />
     <ClInclude Include="ObjectBase.h" />
@@ -212,6 +214,8 @@
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="HPBarUI.cpp" />
     <ClCompile Include="IconUI.cpp" />
+    <ClCompile Include="Item.cpp" />
+    <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
     <ClCompile Include="ObjectManagerBase.cpp" />
     <ClCompile Include="GameScene.cpp" />

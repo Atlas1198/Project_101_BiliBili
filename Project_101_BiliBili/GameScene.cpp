@@ -16,6 +16,7 @@ GameScene::GameScene(float window_width, float window_height)
 	m_pFieldManager = new FieldManager();	//フィールド管理クラスの生成
 	m_pGameUIManager = new GameUIManager();	//ゲームUI管理クラスの生成
 	m_pBulletManager = new BulletManager(); //弾管理クラスの生成
+	m_pItemManager = new ItemManager();		//アイテム管理クラスの生成
 }
 
 //デストラクタ
@@ -40,6 +41,11 @@ GameScene::~GameScene()
 	{
 		delete m_pBulletManager;	//弾管理クラスの削除
 		m_pBulletManager = nullptr;
+	}
+	if (m_pItemManager)
+	{
+		delete m_pItemManager;		//アイテム管理クラスの削除
+		m_pItemManager = nullptr;
 	}
 }
 
@@ -70,6 +76,13 @@ void GameScene::InitializeOverride(
 	);
 
 	m_pBulletManager->Initialize( //弾管理クラス初期化
+		pInputManager,
+		pTextureManager,
+		pMeshManager,
+		*m_pCollisionManager
+	);
+
+	m_pItemManager->Initialize(		//アイテム管理クラス初期化
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
@@ -122,6 +135,7 @@ void GameScene::UpdateOverride()
 	m_pFieldManager->Update();	//フィールド管理クラス更新
 	m_pGameUIManager->Update();	//ゲームUI管理クラス更新
 	m_pBulletManager->Update(); //弾管理クラス更新
+	m_pItemManager->Update();	//アイテム管理クラス更新
 
 	if (m_pInputManager->GetInputInfo()->enter.trigger)
 	{
@@ -141,7 +155,8 @@ void GameScene::ResolveCollisions()
 {
 	m_pPlayerManager->ResolveCollisions();	//プレイヤー管理クラス衝突後処理
 	m_pFieldManager->ResolveCollisions();
-	m_pBulletManager->ResolveCollisions(); //弾管理クラス衝突後処理
+	m_pBulletManager->ResolveCollisions();	//弾管理クラス衝突後処理
+	m_pItemManager->ResolveCollisions();	//アイテム管理クラス衝突後処理
 }
 
 //描画
@@ -151,6 +166,7 @@ void GameScene::DrawOverride(Renderer& pRenderer)
 	m_pFieldManager->SubmitDraws(pRenderer);
 	m_pGameUIManager->SubmitDraws(pRenderer);
 	m_pBulletManager->SubmitDraws(pRenderer);
+	m_pItemManager->SubmitDraws(pRenderer);
 }
 
 //終了
@@ -159,5 +175,6 @@ void GameScene::FinalizeOverride()
 	m_pPlayerManager->Finalize();	//プレイヤー管理クラス終了
 	m_pFieldManager->Finalize();	//フィールド管理クラス終了
 	m_pGameUIManager->Finalize();	//ゲームUI管理クラス終了
-	m_pBulletManager->Finalize(); //弾管理クラス終了
+	m_pBulletManager->Finalize();	//弾管理クラス終了
+	m_pItemManager->Finalize();		//アイテム管理クラス終了
 }
