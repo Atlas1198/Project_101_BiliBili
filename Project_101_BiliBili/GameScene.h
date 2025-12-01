@@ -6,39 +6,41 @@
 #include "GameUIManager.h"
 #include "BulletManager.h"
 #include "ItemManager.h"
+#include "BBManager.h"
 #include "SharedStruct.h"
 
-//‘O•ûéŒ¾
+//å‰æ–¹å®£è¨€
 class Renderer;
 class InputManager;
 class TextureManager;
 class MeshManager;
 
-//ƒQ[ƒ€ƒV[ƒ“ƒNƒ‰ƒX
+//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹
 class GameScene : public SceneBase
 {
-public:	//ŒöŠJŠÖ”
-	GameScene(float window_width, float window_height);	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~GameScene();										//ƒfƒXƒgƒ‰ƒNƒ^
+public:	//å…¬é–‹é–¢æ•°
+	GameScene(float window_width, float window_height);	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~GameScene();										//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-	//ƒƒCƒ“ˆ—ŠÖ”
-	void InitializeOverride(									//‰Šú‰»
-		InputManager* pInputManager,		//“ü—Íƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
-		TextureManager& pTextureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		MeshManager& pMeshManager			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	//ãƒ¡ã‚¤ãƒ³å‡¦ç†é–¢æ•°
+	void InitializeOverride(									//åˆæœŸåŒ–
+		InputManager* pInputManager,		//å…¥åŠ›ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
+		TextureManager& pTextureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		MeshManager& pMeshManager			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 	) override;
-	void UpdateOverride() override;						//XV
-	void ResolveCollisions() override;					//Õ“ËŒãˆ—
-	void DrawOverride(Renderer& pRenderer) override;	//•`‰æ
-	void FinalizeOverride() override;							//I—¹
+	void UpdateOverride() override;						//æ›´æ–°
+	void ResolveCollisions() override;					//è¡çªå¾Œå‡¦ç†
+	void DrawOverride(Renderer& pRenderer) override;	//æç”»
+	void FinalizeOverride() override;							//çµ‚äº†
 	void AddPlayer(uint32_t id, InputManager *pInputManager);
 	void SpawnPlayers(InputManager *pInputManager);
 	void RemovePlayer(uint32_t id);
 
 private:
-	PlayerManager* m_pPlayerManager = nullptr;	//ƒvƒŒƒCƒ„[ŠÇ—ƒNƒ‰ƒX
-	FieldManager* m_pFieldManager = nullptr;	//ƒtƒB[ƒ‹ƒhŠÇ—ƒNƒ‰ƒX
-	GameUIManager* m_pGameUIManager = nullptr;	//ƒQ[ƒ€UIŠÇ—ƒNƒ‰ƒX
-	BulletManager *m_pBulletManager = nullptr;	//’eŠÇ—ƒNƒ‰ƒX
-	ItemManager* m_pItemManager = nullptr;		//ƒAƒCƒeƒ€ŠÇ—ƒNƒ‰ƒX
+	PlayerManager* m_pPlayerManager = nullptr;	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç®¡ç†ã‚¯ãƒ©ã‚¹
+	FieldManager* m_pFieldManager = nullptr;	//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç®¡ç†ã‚¯ãƒ©ã‚¹
+	GameUIManager* m_pGameUIManager = nullptr;	//ã‚²ãƒ¼ãƒ UIç®¡ç†ã‚¯ãƒ©ã‚¹
+	BulletManager *m_pBulletManager = nullptr;	//å¼¾ç®¡ç†ã‚¯ãƒ©ã‚¹
+	ItemManager* m_pItemManager = nullptr;		//ã‚¢ã‚¤ãƒ†ãƒ ç®¡ç†ã‚¯ãƒ©ã‚¹
+	BBManager* m_pBBManager = nullptr;			//BBç®¡ç†ã‚¯ãƒ©ã‚¹
 };

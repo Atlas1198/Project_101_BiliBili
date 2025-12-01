@@ -55,6 +55,7 @@ public:	//公開関数
 	void SetScale(DirectX::XMFLOAT3 scale);			//スケールの設定
 	void SetColor(DirectX::XMFLOAT4 color);			//色RGBAの設定
 	void SetActive(bool isActive);					//アクティブフラグの設定
+	void SetDrawn(bool isDrawn);					//描画フラグの設定
 
 protected:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_position{};						//位置

@@ -73,10 +73,15 @@ void CollisionManager::CheckColliders()
 	for (auto it = m_pCollidersList.begin(); it != m_pCollidersList.end();)
 	{
 		Collider* c = *it;
-		if (c->deleteFlag())
+		if (c->deleteFlag() || !c->GetOwner()->IsActive())
 		{
-			it = m_pCollidersList.erase(it);
-			delete c;
+			it = m_pCollidersList.erase(it);	//リストから削除
+
+			if(c->deleteFlag()) 
+			{//デリートフラグが立っている場合はメモリ解放
+				delete c;
+				c = nullptr;
+			}
 		}
 		else
 		{
@@ -388,23 +393,30 @@ void CollisionManager::UpdateCollisionState()
 	//今回の衝突ペア配列をループ
 	for (auto& pair : m_currentCollisionPairs)
 	{
-		bool isExist = false;	//前回の衝突ペアに存在するかどうか
-		isExist = PairExistsinList(pair, m_previousCollisionPairs);
-		if (isExist)
-		{//継続衝突
-			SetCollisionState(pair.colliderA, pair.colliderB, COLLISION_STATE::COLLISION_STAY);
-		}
-		else
-		{//新規衝突
-			SetCollisionState(pair.colliderA, pair.colliderB, COLLISION_STATE::COLLISION_ENTER);
-		}
+		//前回の衝突ペア配列に存在するかチェック
+		bool isExist = PairExistsinList(pair, m_previousCollisionPairs);
+
+		//衝突状態を設定
+		auto state = isExist ? COLLISION_STATE::COLLISION_STAY : COLLISION_STATE::COLLISION_ENTER;
+
+		SetCollisionState(
+			pair.colliderA,	//コライダーA
+			pair.colliderB,	//コライダーB
+			state			//衝突状態
+		);
+		SetCollisionState(
+			pair.colliderB,	//コライダーA
+			pair.colliderA,	//コライダーB
+			state			//衝突状態
+		);
 	}
 
 	//前回の衝突ペア配列をループ
 	for (auto& pair : m_previousCollisionPairs)
 	{
-		bool isExist = false;	//前回の衝突ペアに存在するかどうか
-		isExist = PairExistsinList(pair, m_currentCollisionPairs);
+		//今回の衝突ペア配列に存在するかチェック
+		bool isExist = PairExistsinList(pair, m_currentCollisionPairs);
+
 		if (!isExist)
 		{//衝突終了
 			CollisionInfo infoA{};
@@ -632,7 +644,7 @@ int CollisionManager::CalculateSubsteps(Collider* colliderA, Collider* colliderB
 	//サブステップ数計算
 	int n = static_cast<int>(ceilf(maxDisp / step));	
 
-	return (std::min)((std::max)(n, 1), 512);	//1から256の範囲にクランプして返す
+	return (std::min)((std::max)(n, 1), 32);	//1から32の範囲にクランプして返す
 }
 
 //ボックス同士の衝突判定

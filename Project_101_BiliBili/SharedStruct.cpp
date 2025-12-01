@@ -11,7 +11,7 @@
 
 using namespace DirectX;
 
-//’¸“_ƒf[ƒ^‚Ì“ü—Í—v‘f”z—ñ‚Ì’è‹`
+//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®å…¥åŠ›è¦ç´ é…åˆ—ã®å®šç¾©
 const D3D12_INPUT_ELEMENT_DESC Vertex::InputElements[] =
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -21,265 +21,265 @@ const D3D12_INPUT_ELEMENT_DESC Vertex::InputElements[] =
 	{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 };
 
-//’¸“_ƒf[ƒ^‚Ì“ü—ÍƒŒƒCƒAƒEƒg‚Ì’è‹`
+//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®å®šç¾©
 const D3D12_INPUT_LAYOUT_DESC Vertex::InputLayout =
 {
-	Vertex::InputElements,		// “ü—Í—v‘f”z—ñ‚Ìƒ|ƒCƒ“ƒ^
-	Vertex::InputLayoutCount	// “ü—Í—v‘f‚Ì”
+	Vertex::InputElements,		// å…¥åŠ›è¦ç´ é…åˆ—ã®ãƒã‚¤ãƒ³ã‚¿
+	Vertex::InputLayoutCount	// å…¥åŠ›è¦ç´ ã®æ•°
 };
 
-//•`‰æî•ñ\‘¢‘Ì‚ğì¬‚·‚éŠÖ”
+//æç”»æƒ…å ±æ§‹é€ ä½“ã‚’ä½œæˆã™ã‚‹é–¢æ•°
 void RenderData::CreateRenderInfo(
-	TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	std::vector<RenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	MeshData::MESH_TYPE type,		//ƒƒbƒVƒ…ƒ^ƒCƒv
-	BLEND_MODE mode,				//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	const wchar_t* path,			//ƒ‚ƒfƒ‹ƒf[ƒ^–”‚ÍƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	bool inverseU,					//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©(ƒ‚ƒfƒ‹ƒf[ƒ^‚Ìê‡‚Ì‚İ—LŒø)
-	bool inverseV					//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©(ƒ‚ƒfƒ‹ƒf[ƒ^‚Ìê‡‚Ì‚İ—LŒø
+	TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	std::vector<RenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	MeshData::MESH_TYPE type,		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+	BLEND_MODE mode,				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	const wchar_t* path,			//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	bool inverseU,					//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹(ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã®å ´åˆã®ã¿æœ‰åŠ¹)
+	bool inverseV					//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹(ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã®å ´åˆã®ã¿æœ‰åŠ¹
 )
 {
-	//ƒƒbƒVƒ…ƒ^ƒCƒv‚É‰‚¶‚Ä•`‰æî•ñ\‘¢‘Ì‚ğì¬
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—ã«å¿œã˜ã¦æç”»æƒ…å ±æ§‹é€ ä½“ã‚’ä½œæˆ
 	if(type == MeshData::IMPORT)
-	{//ƒCƒ“ƒ|[ƒgƒ‚ƒfƒ‹‚Ìê‡
-		CreateRenderInfoFromFBX(	//FBXƒtƒ@ƒCƒ‹‚©‚ç•`‰æî•ñ‚ğì¬
-			textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			meshManager,	//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			pInfo,			//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-			mode,			//ƒuƒŒƒ“ƒhƒ‚[ƒh
-			path,			//ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-			inverseU,		//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
-			inverseV		//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
+	{//ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ¢ãƒ‡ãƒ«ã®å ´åˆ
+		CreateRenderInfoFromFBX(	//FBXãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆ
+			textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			meshManager,	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			pInfo,			//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+			mode,			//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+			path,			//ãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+			inverseU,		//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
+			inverseV		//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
 		);
 	}
 	else
-	{//ƒfƒtƒHƒ‹ƒg‚ÌƒƒbƒVƒ…ƒf[ƒ^‚Ìê‡
-		CreateRenderInfoFromDefaultMesh(	//ƒfƒtƒHƒ‹ƒg‚ÌƒƒbƒVƒ…ƒf[ƒ^‚©‚ç•`‰æî•ñ‚ğì¬
-			textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			meshManager,	//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			pInfo,			//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-			type,			//ƒƒbƒVƒ…ƒ^ƒCƒv
-			mode,			//ƒuƒŒƒ“ƒhƒ‚[ƒh
-			path			//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+	{//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã®å ´åˆ
+		CreateRenderInfoFromDefaultMesh(	//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆ
+			textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			meshManager,	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			pInfo,			//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+			type,			//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+			mode,			//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+			path			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 		);
 	}
 }
 
-//FBXƒtƒ@ƒCƒ‹‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
+//FBXãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
 void RenderData::CreateRenderInfoFromFBX(
-	TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	std::vector<RenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	BLEND_MODE mode,				//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	const wchar_t* path,			//ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	bool inverseU,					//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
-	bool inverseV					//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
+	TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	std::vector<RenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	BLEND_MODE mode,				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	const wchar_t* path,			//ãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	bool inverseU,					//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
+	bool inverseV					//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
 )
 {
-	std::vector<MeshData::Mesh> meshes;	//ƒƒbƒVƒ…ƒf[ƒ^”z—ñ
+	std::vector<MeshData::Mesh> meshes;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿é…åˆ—
 
-	//ƒ‚ƒfƒ‹ƒCƒ“ƒ|[ƒgİ’è\‘¢‘Ì‚Ì¶¬
+	//ãƒ¢ãƒ‡ãƒ«ã‚¤ãƒ³ãƒãƒ¼ãƒˆè¨­å®šæ§‹é€ ä½“ã®ç”Ÿæˆ
 	ImportSettings importSetting =
 	{
-		path,		//ƒtƒ@ƒCƒ‹ƒpƒX
-		meshes,		//ƒƒbƒVƒ…ƒf[ƒ^”z—ñ‚Ö‚ÌQÆ
-		inverseU,	//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
-		inverseV	//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
+		path,		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+		meshes,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿é…åˆ—ã¸ã®å‚ç…§
+		inverseU,	//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
+		inverseV	//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
 	};
 
-	//Assimp‚É‚æ‚éƒ‚ƒfƒ‹“Ç‚İ‚İ
-	AssimpLoader loader;	//Assimpƒ[ƒ_[¶¬
+	//Assimpã«ã‚ˆã‚‹ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
+	AssimpLoader loader;	//Assimpãƒ­ãƒ¼ãƒ€ãƒ¼ç”Ÿæˆ
 	if (!loader.Load(importSetting))
 	{
 		return;
 	}
 
-	//ƒƒbƒVƒ…‚²‚Æ‚É•`‰æî•ñ\‘¢‘Ì‚ğ¶¬‚µ‚Ä”z—ñ‚ÉŠi”[
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã”ã¨ã«æç”»æƒ…å ±æ§‹é€ ä½“ã‚’ç”Ÿæˆã—ã¦é…åˆ—ã«æ ¼ç´
 	for (auto& mesh : meshes)
 	{
-		RenderInfo info = CreateRenderInfoFromMeshData(	//•`‰æî•ñ\‘¢‘Ì‚Ì¶¬
-			textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			meshManager,	//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			mesh,			//ƒƒbƒVƒ…ƒf[ƒ^
-			mode			//ƒuƒŒƒ“ƒhƒ‚[ƒh
+		RenderInfo info = CreateRenderInfoFromMeshData(	//æç”»æƒ…å ±æ§‹é€ ä½“ã®ç”Ÿæˆ
+			textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			meshManager,	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			mesh,			//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿
+			mode			//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
 		);
-		pInfo->push_back(info);	//”z—ñ‚ÉŠi”[
+		pInfo->push_back(info);	//é…åˆ—ã«æ ¼ç´
 	}
 }
 
-//ƒfƒtƒHƒ‹ƒg‚ÌƒƒbƒVƒ…ƒf[ƒ^‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
+//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
 void RenderData::CreateRenderInfoFromDefaultMesh(
-	TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	std::vector<RenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	MeshData::MESH_TYPE type,		//ƒƒbƒVƒ…ƒ^ƒCƒv
-	BLEND_MODE mode,				//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	const wchar_t* path				//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+	TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	std::vector<RenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	MeshData::MESH_TYPE type,		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+	BLEND_MODE mode,				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	const wchar_t* path				//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 )
 {
-	MeshData::Model model;	//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
-	model = MeshData::GetModel(type);	//ƒƒbƒVƒ…ƒ^ƒCƒv‚É‰‚¶‚½ƒƒbƒVƒ…ƒf[ƒ^‚ğæ“¾
+	MeshData::Model model;	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	model = MeshData::GetModel(type);	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—ã«å¿œã˜ãŸãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 
-	//ƒƒbƒVƒ…ƒ^ƒCƒv‚É‰‚¶‚½ƒƒbƒVƒ…ƒf[ƒ^‚ğæ“¾‚µ‚Ä•`‰æî•ñ‚ğì¬
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—ã«å¿œã˜ãŸãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã¦æç”»æƒ…å ±ã‚’ä½œæˆ
 	for (auto& mesh : model.meshes)
 	{
-		mesh.texPath = path;	//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼‚ğİ’è
-		RenderInfo info = CreateRenderInfoFromMeshData(	//•`‰æî•ñ\‘¢‘Ì‚Ì¶¬
-			textureManager,		//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-			mesh,				//ƒƒbƒVƒ…ƒf[ƒ^
-			mode			//ƒuƒŒƒ“ƒhƒ‚[ƒh
+		mesh.texPath = path;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¨­å®š
+		RenderInfo info = CreateRenderInfoFromMeshData(	//æç”»æƒ…å ±æ§‹é€ ä½“ã®ç”Ÿæˆ
+			textureManager,		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+			mesh,				//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿
+			mode			//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
 		);
-		pInfo->push_back(info);	//”z—ñ‚ÉŠi”[
+		pInfo->push_back(info);	//é…åˆ—ã«æ ¼ç´
 	}
 }
 
-//ƒƒbƒVƒ…ƒf[ƒ^‚©‚ç•`‰æî•ñ‚ğ\’z‚·‚éŠÖ”
+//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æç”»æƒ…å ±ã‚’æ§‹ç¯‰ã™ã‚‹é–¢æ•°
 RenderData::RenderInfo RenderData::CreateRenderInfoFromMeshData(
-	TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,		//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshData::Mesh& mesh,			//ƒƒbƒVƒ…ƒf[ƒ^
-	BLEND_MODE mode				//ƒuƒŒƒ“ƒhƒ‚[ƒh
+	TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshData::Mesh& mesh,			//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿
+	BLEND_MODE mode				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
 )
 {
-	RenderInfo info{};	//•`‰æî•ñ\‘¢‘Ì
+	RenderInfo info{};	//æç”»æƒ…å ±æ§‹é€ ä½“
 
-	//ƒƒbƒVƒ…ƒf[ƒ^‚ª‹ó‚Ìê‡‚Íˆ—‚ğ”²‚¯‚é
+	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ãŒç©ºã®å ´åˆã¯å‡¦ç†ã‚’æŠœã‘ã‚‹
 	if (mesh.vertices.empty() || mesh.indices.empty()) return info;
 
-	//ƒƒbƒVƒ…GPUƒf[ƒ^‚Ìì¬‚Æ•`‰æî•ñ\‘¢‘Ì‚Ö‚Ìİ’è
-	info.pMeshGPU = meshManager.CreateMesh(mesh);	//ƒƒbƒVƒ…GPUƒf[ƒ^‚Ìì¬‚Æƒ|ƒCƒ“ƒ^‚Ìæ“¾
-	info.startIndex = 0;							//ŠJnƒCƒ“ƒfƒbƒNƒX
-	info.baseVertex = 0;							//ƒx[ƒX’¸“_
-	info.world = XMMatrixIdentity();				//ƒ[ƒ‹ƒhs—ñ‚ğ’PˆÊs—ñ‚Éİ’è
-	info.color = XMFLOAT4(1, 1, 1, 1);				//ƒIƒuƒWƒFƒNƒg‚ÌF‚ğ”’‚Éİ’è
-	info.blendMode = mode;							//ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğİ’è
+	//ãƒ¡ãƒƒã‚·ãƒ¥GPUãƒ‡ãƒ¼ã‚¿ã®ä½œæˆã¨æç”»æƒ…å ±æ§‹é€ ä½“ã¸ã®è¨­å®š
+	info.pMeshGPU = meshManager.CreateMesh(mesh);	//ãƒ¡ãƒƒã‚·ãƒ¥GPUãƒ‡ãƒ¼ã‚¿ã®ä½œæˆã¨ãƒã‚¤ãƒ³ã‚¿ã®å–å¾—
+	info.startIndex = 0;							//é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	info.baseVertex = 0;							//ãƒ™ãƒ¼ã‚¹é ‚ç‚¹
+	info.world = XMMatrixIdentity();				//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’å˜ä½è¡Œåˆ—ã«è¨­å®š
+	info.color = XMFLOAT4(1, 1, 1, 1);				//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è‰²ã‚’ç™½ã«è¨­å®š
+	info.blendMode = mode;							//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®š
 
-	//ƒeƒNƒXƒ`ƒƒ‚ÌSRVƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®SRVã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	if (!mesh.texPath.empty() && &textureManager)
-	{//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼‚ªİ’è‚³‚ê‚Ä‚¢‚ÄAƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚ª—LŒø‚Èê‡
-		info.srvIndex = textureManager.LoadSrvFromFile(mesh.texPath);	//ƒeƒNƒXƒ`ƒƒ‚ÌSRVƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	{//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«åãŒè¨­å®šã•ã‚Œã¦ã„ã¦ã€ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ãŒæœ‰åŠ¹ãªå ´åˆ
+		info.srvIndex = textureManager.LoadSrvFromFile(mesh.texPath);	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®SRVã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	}
 	else
-	{//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ê‡
-		info.srvIndex = UINT32_MAX;	//SRVƒCƒ“ƒfƒbƒNƒX‚ğ–³Œø‚Éİ’è
+	{//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«åãŒè¨­å®šã•ã‚Œã¦ã„ãªã„å ´åˆ
+		info.srvIndex = UINT32_MAX;	//SRVã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ç„¡åŠ¹ã«è¨­å®š
 	}
 
-	return info;	//•`‰æî•ñ\‘¢‘Ì‚ğ•Ô‚·
+	return info;	//æç”»æƒ…å ±æ§‹é€ ä½“ã‚’è¿”ã™
 }
 
 MeshData::Model MeshData::MakeQuadModel()
 {
-	Mesh mesh;		//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
-	Model model;	//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
+	Mesh mesh;		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	Model model;	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 
-	//’¸“_ƒf[ƒ^‚Ìİ’è
+	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
 	mesh.vertices.assign(
-		std::begin(QuadVertices),	//’¸“_ƒf[ƒ^”z—ñ‚Ìæ“ªƒAƒhƒŒƒX
-		std::end(QuadVertices)		//’¸“_ƒf[ƒ^”z—ñ‚ÌI’[ƒAƒhƒŒƒX
+		std::begin(QuadVertices),	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+		std::end(QuadVertices)		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®çµ‚ç«¯ã‚¢ãƒ‰ãƒ¬ã‚¹
 	);
 
-	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚Ìİ’è
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
 	mesh.indices.assign(
-		std::begin(QuadIndices),	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚Ìæ“ªƒAƒhƒŒƒX
-		std::end(QuadIndices)		//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚ÌI’[ƒAƒhƒŒƒX
+		std::begin(QuadIndices),	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+		std::end(QuadIndices)		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®çµ‚ç«¯ã‚¢ãƒ‰ãƒ¬ã‚¹
 	);
 
-	//’¸“_”‚Ìİ’è
+	//é ‚ç‚¹æ•°ã®è¨­å®š
 	mesh.vertexCount = mesh.vertices.size();
 
-	//ƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
 	mesh.indexCount = mesh.indices.size();
 
-	//ƒƒbƒVƒ…ƒf[ƒ^‚ğƒ‚ƒfƒ‹ƒf[ƒ^‚É’Ç‰Á
+	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ 
 	model.meshes.push_back(mesh);
 
-	return model;	//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì‚ğ•Ô‚·
+	return model;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã‚’è¿”ã™
 
 }
 
-//—§•û‘Ì‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//ç«‹æ–¹ä½“ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 MeshData::Model MeshData::MakeCubeModel()
 {
 	{
-		Mesh mesh;		//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
-		Model model;	//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
+		Mesh mesh;		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+		Model model;	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 
-		//’¸“_ƒf[ƒ^‚Ìİ’è
+		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
 		mesh.vertices.assign(
-			std::begin(CubeVertices),	//’¸“_ƒf[ƒ^”z—ñ‚Ìæ“ªƒAƒhƒŒƒX
-			std::end(CubeVertices)		//’¸“_ƒf[ƒ^”z—ñ‚ÌI’[ƒAƒhƒŒƒX
+			std::begin(CubeVertices),	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+			std::end(CubeVertices)		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®çµ‚ç«¯ã‚¢ãƒ‰ãƒ¬ã‚¹
 		);
 
-		//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚Ìİ’è
+		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
 		mesh.indices.assign(
-			std::begin(CubeIndices),	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚Ìæ“ªƒAƒhƒŒƒX
-			std::end(CubeIndices)		//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚ÌI’[ƒAƒhƒŒƒX
+			std::begin(CubeIndices),	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+			std::end(CubeIndices)		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®çµ‚ç«¯ã‚¢ãƒ‰ãƒ¬ã‚¹
 		);
 
-		//’¸“_”‚Ìİ’è
+		//é ‚ç‚¹æ•°ã®è¨­å®š
 		mesh.vertexCount = mesh.vertices.size();
 
-		//ƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
+		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
 		mesh.indexCount = mesh.indices.size();
 
-		//ƒƒbƒVƒ…ƒf[ƒ^‚ğƒ‚ƒfƒ‹ƒf[ƒ^‚É’Ç‰Á
+		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ 
 		model.meshes.push_back(mesh);
 
-		return model;	//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì‚ğ•Ô‚·
+		return model;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã‚’è¿”ã™
 	}
 
 }
 
-//‹…‘Ì‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//çƒä½“ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 MeshData::Model MeshData::MakeSphereModel(int slices, int stacks)
 {
-	Mesh mesh;		//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
-	Model model;	//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
+	Mesh mesh;		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	Model model;	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 
-	//’¸“_ƒf[ƒ^‚Ìì¬
+	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
 	for(int stack = 0; stack <= stacks; stack++)
-	{//ƒXƒ^ƒbƒNƒ‹[ƒv
-		float v = static_cast<float>(stack) / static_cast<float>(stacks);	//VÀ•W
-		float phi = (v - 0.5f) * XM_PI;							//ˆÜ“xŠp
+	{//ã‚¹ã‚¿ãƒƒã‚¯ãƒ«ãƒ¼ãƒ—
+		float v = static_cast<float>(stack) / static_cast<float>(stacks);	//Våº§æ¨™
+		float phi = (v - 0.5f) * XM_PI;							//ç·¯åº¦è§’
 
-		float y = sin(phi);	 //YÀ•W
-		float r = cos(phi);	 //”¼Œa
+		float y = sin(phi);	 //Yåº§æ¨™
+		float r = cos(phi);	 //åŠå¾„
 
 		for (int slice = 0; slice <= slices; slice++)
-		{//ƒXƒ‰ƒCƒXƒ‹[ƒv
-			float u = static_cast<float>(slice) / static_cast<float>(slices);	//UÀ•W
-			float theta = u * XM_2PI;									//Œo“xŠp
+		{//ã‚¹ãƒ©ã‚¤ã‚¹ãƒ«ãƒ¼ãƒ—
+			float u = static_cast<float>(slice) / static_cast<float>(slices);	//Uåº§æ¨™
+			float theta = u * XM_2PI;									//çµŒåº¦è§’
 
-			float x = r * cos(theta);	//XÀ•W
-			float z = r * sin(theta);	//ZÀ•W
+			float x = r * cos(theta);	//Xåº§æ¨™
+			float z = r * sin(theta);	//Zåº§æ¨™
 
-			//’¸“_ƒf[ƒ^‚Ìì¬
+			//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
 			Vertex vertex{};
-			vertex.position = XMFLOAT3(x * 0.5f, y * 0.5f, z * 0.5f);	//ˆÊ’u
-			vertex.normal = XMFLOAT3(x, y, z);							//–@ü
-			vertex.uv = XMFLOAT2(u, 1.0f - v);							//UVÀ•W
-			vertex.tangent = XMFLOAT3(-sin(theta), 0.0f, cos(theta));	//Ú‹óŠÔ
-			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);			//’¸“_F
+			vertex.position = XMFLOAT3(x * 0.5f, y * 0.5f, z * 0.5f);	//ä½ç½®
+			vertex.normal = XMFLOAT3(x, y, z);							//æ³•ç·š
+			vertex.uv = XMFLOAT2(u, 1.0f - v);							//UVåº§æ¨™
+			vertex.tangent = XMFLOAT3(-sin(theta), 0.0f, cos(theta));	//æ¥ç©ºé–“
+			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);			//é ‚ç‚¹è‰²
 
-			mesh.vertices.push_back(vertex);	//’¸“_ƒf[ƒ^‚ğ”z—ñ‚É’Ç‰Á
+			mesh.vertices.push_back(vertex);	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é…åˆ—ã«è¿½åŠ 
 		}
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚Ìì¬
-	int ringStride = slices + 1; //ƒŠƒ“ƒO‚ ‚½‚è‚Ì’¸“_”
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
+	int ringStride = slices + 1; //ãƒªãƒ³ã‚°ã‚ãŸã‚Šã®é ‚ç‚¹æ•°
 	for (int stack = 0; stack < stacks; stack++)
-	{//ƒXƒ^ƒbƒNƒ‹[ƒv
+	{//ã‚¹ã‚¿ãƒƒã‚¯ãƒ«ãƒ¼ãƒ—
 		for (int slice = 0; slice < slices; slice++)
-		{//ƒXƒ‰ƒCƒXƒ‹[ƒv
-			//ƒCƒ“ƒfƒbƒNƒX‚ÌŒvZ
+		{//ã‚¹ãƒ©ã‚¤ã‚¹ãƒ«ãƒ¼ãƒ—
+			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¨ˆç®—
 			uint32_t index0 = stack * ringStride + slice;
 			uint32_t index1 = (stack + 1) * ringStride + slice;
 			uint32_t index2 = (stack + 1) * ringStride + (slice + 1);
 			uint32_t index3 = stack * ringStride + (slice + 1);
 
-			//OŠpŒ`‚Ì’Ç‰Á
+			//ä¸‰è§’å½¢ã®è¿½åŠ 
 			mesh.indices.push_back(index0);
 			mesh.indices.push_back(index1);
 			mesh.indices.push_back(index2);
@@ -289,164 +289,164 @@ MeshData::Model MeshData::MakeSphereModel(int slices, int stacks)
 		}
 	}
 
-	mesh.vertexCount = mesh.vertices.size();	//’¸“_”‚Ìİ’è
-	mesh.indexCount = mesh.indices.size();		//ƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
+	mesh.vertexCount = mesh.vertices.size();	//é ‚ç‚¹æ•°ã®è¨­å®š
+	mesh.indexCount = mesh.indices.size();		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
 
-	model.meshes.push_back(mesh);	//ƒƒbƒVƒ…ƒf[ƒ^‚ğƒ‚ƒfƒ‹ƒf[ƒ^‚É’Ç‰Á
+	model.meshes.push_back(mesh);	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ 
 
-	return model;	//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì‚ğ•Ô‚·
+	return model;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã‚’è¿”ã™
 }
 
-//ƒJƒvƒZƒ‹‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//ã‚«ãƒ—ã‚»ãƒ«ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 MeshData::Model MeshData::MakeCapsuleModel(int slices, int stacks)
 {
-	//ˆø”‚Ì•â³
-	if (slices < 3) slices = 3;	//ƒXƒ‰ƒCƒX‚ÍÅ’á3
-	if (stacks < 4) stacks = 4;	//ƒXƒ^ƒbƒN‚ÍÅ’á4
+	//å¼•æ•°ã®è£œæ­£
+	if (slices < 3) slices = 3;	//ã‚¹ãƒ©ã‚¤ã‚¹ã¯æœ€ä½3
+	if (stacks < 4) stacks = 4;	//ã‚¹ã‚¿ãƒƒã‚¯ã¯æœ€ä½4
 
-	//•K—v‚È\‘¢‘Ì‚Ì¶¬
-	Mesh cylinder;				//ƒVƒŠƒ“ƒ_[•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
-	Mesh halfSphereTop;			//ã”¼‹…‚Ì•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
-	Mesh halfSphereBottom;		//‰º”¼‹…•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
-	Model model;	//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
+	//å¿…è¦ãªæ§‹é€ ä½“ã®ç”Ÿæˆ
+	Mesh cylinder;				//ã‚·ãƒªãƒ³ãƒ€ãƒ¼éƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	Mesh halfSphereTop;			//ä¸ŠåŠçƒã®éƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	Mesh halfSphereBottom;		//ä¸‹åŠçƒéƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	Model model;	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 
-	//’PˆÊƒJƒvƒZƒ‹‚Ìƒpƒ‰ƒ[ƒ^
-	const float radius = 0.5f;		//”¼Œa
-	const float halfHeight = 0.5f;	//”¼•ª‚Ì‚‚³
+	//å˜ä½ã‚«ãƒ—ã‚»ãƒ«ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	const float radius = 0.5f;		//åŠå¾„
+	const float halfHeight = 0.5f;	//åŠåˆ†ã®é«˜ã•
 
-	//ƒXƒ^ƒbƒN”‚Ì“à–óŒvZ
-	const int hemiStacks = stacks / 4;				//”¼‹…‚ÌƒXƒ^ƒbƒN”
-	int cylinderStacks = stacks - hemiStacks * 2;	//‰~’Œ‚ÌƒXƒ^ƒbƒN”
-	if (cylinderStacks < 1) cylinderStacks = 1;		//‰~’Œ‚ÌƒXƒ^ƒbƒN”‚ÍÅ’á1‚É‚·‚é
+	//ã‚¹ã‚¿ãƒƒã‚¯æ•°ã®å†…è¨³è¨ˆç®—
+	const int hemiStacks = stacks / 4;				//åŠçƒã®ã‚¹ã‚¿ãƒƒã‚¯æ•°
+	int cylinderStacks = stacks - hemiStacks * 2;	//å††æŸ±ã®ã‚¹ã‚¿ãƒƒã‚¯æ•°
+	if (cylinderStacks < 1) cylinderStacks = 1;		//å††æŸ±ã®ã‚¹ã‚¿ãƒƒã‚¯æ•°ã¯æœ€ä½1ã«ã™ã‚‹
 
-	//’¸“_EƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚Ì—\–ñ
-	const int ringStride = slices + 1;					//ƒŠƒ“ƒO‚ ‚½‚è‚Ì’¸“_”	
-	const int cylinderRingCount = cylinderStacks + 1;	//‰~’Œ•”•ª‚ÌƒŠƒ“ƒO”
-	const int topHemiRingCount = hemiStacks + 1;		//ã”¼‹…•”•ª‚ÌƒŠƒ“ƒO”
-	const int bottomHemiRingCount = hemiStacks + 1;		//‰º”¼‹…•”•ª‚ÌƒŠƒ“ƒO”
+	//é ‚ç‚¹ãƒ»ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
+	const int ringStride = slices + 1;					//ãƒªãƒ³ã‚°ã‚ãŸã‚Šã®é ‚ç‚¹æ•°	
+	const int cylinderRingCount = cylinderStacks + 1;	//å††æŸ±éƒ¨åˆ†ã®ãƒªãƒ³ã‚°æ•°
+	const int topHemiRingCount = hemiStacks + 1;		//ä¸ŠåŠçƒéƒ¨åˆ†ã®ãƒªãƒ³ã‚°æ•°
+	const int bottomHemiRingCount = hemiStacks + 1;		//ä¸‹åŠçƒéƒ¨åˆ†ã®ãƒªãƒ³ã‚°æ•°
 
-	int estimatedVertexCount =							//’¸“_”‚ÌŒ©Ï‚à‚è
+	int estimatedVertexCount =							//é ‚ç‚¹æ•°ã®è¦‹ç©ã‚‚ã‚Š
 		(cylinderRingCount + topHemiRingCount + bottomHemiRingCount) * ringStride;
 
-	cylinder.vertices.reserve(estimatedVertexCount);			//’¸“_ƒf[ƒ^”z—ñ‚Ì—\–ñ
-	cylinder.indices.reserve(estimatedVertexCount * 6);			//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚Ì—\–ñ
-	halfSphereTop.vertices.reserve(estimatedVertexCount);		//’¸“_ƒf[ƒ^”z—ñ‚Ì—\–ñ
-	halfSphereTop.indices.reserve(estimatedVertexCount * 6);	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚Ì—\–ñ
-	halfSphereBottom.vertices.reserve(estimatedVertexCount);	//’¸“_ƒf[ƒ^”z—ñ‚Ì—\–ñ
-	halfSphereBottom.indices.reserve(estimatedVertexCount * 6);//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚Ì—\–ñ
+	cylinder.vertices.reserve(estimatedVertexCount);			//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
+	cylinder.indices.reserve(estimatedVertexCount * 6);			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
+	halfSphereTop.vertices.reserve(estimatedVertexCount);		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
+	halfSphereTop.indices.reserve(estimatedVertexCount * 6);	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
+	halfSphereBottom.vertices.reserve(estimatedVertexCount);	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
+	halfSphereBottom.indices.reserve(estimatedVertexCount * 6);//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
 
-	//’¸“_ƒf[ƒ^‚Ìì¬
-	//ƒVƒŠƒ“ƒ_•”•ª‚Ì’¸“_ƒf[ƒ^ì¬
+	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
+	//ã‚·ãƒªãƒ³ãƒ€éƒ¨åˆ†ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ä½œæˆ
 	for (int stack = 0; stack <= cylinderStacks; stack++)
 	{
-		float t = static_cast<float>(stack) / static_cast<float>(cylinderStacks);	//ƒXƒ^ƒbƒN”ä—¦
-		float y = -halfHeight + t * (halfHeight * 2.0f);							//YÀ•W
+		float t = static_cast<float>(stack) / static_cast<float>(cylinderStacks);	//ã‚¹ã‚¿ãƒƒã‚¯æ¯”ç‡
+		float y = -halfHeight + t * (halfHeight * 2.0f);							//Yåº§æ¨™
 
 		for (int slice = 0; slice <= slices; slice++)
 		{
-			float u = static_cast<float>(slice) / static_cast<float>(slices);	//UÀ•W
-			float theta = u * XM_2PI;											//Œo“xŠp
+			float u = static_cast<float>(slice) / static_cast<float>(slices);	//Uåº§æ¨™
+			float theta = u * XM_2PI;											//çµŒåº¦è§’
 
-			float x = radius * cos(theta);	//XÀ•W
-			float z = radius * sin(theta);	//ZÀ•W
+			float x = radius * cos(theta);	//Xåº§æ¨™
+			float z = radius * sin(theta);	//Zåº§æ¨™
 
 			Vertex vertex{};
-			vertex.position = XMFLOAT3(x, y, z);						//ˆÊ’u
-			vertex.normal = XMFLOAT3(x / radius, 0.0f, z / radius);		//–@ü
-			vertex.uv = XMFLOAT2(u, t);									//UVÀ•W
+			vertex.position = XMFLOAT3(x, y, z);						//ä½ç½®
+			vertex.normal = XMFLOAT3(x / radius, 0.0f, z / radius);		//æ³•ç·š
+			vertex.uv = XMFLOAT2(u, t);									//UVåº§æ¨™
 
-			float tx = -radius * sin(theta);	//Ú‹óŠÔX
-			float tz = radius * cos(theta);		//Ú‹óŠÔZ
-			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);					//Ú‹óŠÔ
+			float tx = -radius * sin(theta);	//æ¥ç©ºé–“X
+			float tz = radius * cos(theta);		//æ¥ç©ºé–“Z
+			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);					//æ¥ç©ºé–“
 
-			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);			//’¸“_F
+			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);			//é ‚ç‚¹è‰²
 
-			cylinder.vertices.push_back(vertex);	//’¸“_ƒf[ƒ^‚ğ”z—ñ‚É’Ç‰Á
+			cylinder.vertices.push_back(vertex);	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é…åˆ—ã«è¿½åŠ 
 		}
 	}
 
-	//ã”¼‹…•”•ª‚Ì’¸“_ƒf[ƒ^ì¬
+	//ä¸ŠåŠçƒéƒ¨åˆ†ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ä½œæˆ
 	for (int stack = 0; stack <= hemiStacks; stack++)
 	{
-		float v = static_cast<float>(stack) / static_cast<float>(hemiStacks);	//VÀ•W
-		float phi = v * XM_PIDIV2;												//ˆÜ“xŠp
+		float v = static_cast<float>(stack) / static_cast<float>(hemiStacks);	//Våº§æ¨™
+		float phi = v * XM_PIDIV2;												//ç·¯åº¦è§’
 
-		float sinPhi = sin(phi);	//sinƒÓ
-		float cosPhi = cos(phi);	//cosƒÓ
+		float sinPhi = sin(phi);	//sinÏ†
+		float cosPhi = cos(phi);	//cosÏ†
 
-		float y = radius * sinPhi;	//YÀ•W
+		float y = radius * sinPhi;	//Yåº§æ¨™
 
-		float ringR = cosPhi * radius;	//ƒŠƒ“ƒO‚Ì”¼Œa
+		float ringR = cosPhi * radius;	//ãƒªãƒ³ã‚°ã®åŠå¾„
 
 		for(int slice = 0; slice <= slices; slice++)
 		{
-			float u = static_cast<float>(slice) / static_cast<float>(slices);	//UÀ•W
-			float theta = u * XM_2PI;											//Œo“xŠp
+			float u = static_cast<float>(slice) / static_cast<float>(slices);	//Uåº§æ¨™
+			float theta = u * XM_2PI;											//çµŒåº¦è§’
 
-			float x = ringR * cos(theta);	//XÀ•W
-			float z = ringR * sin(theta);	//ZÀ•W
+			float x = ringR * cos(theta);	//Xåº§æ¨™
+			float z = ringR * sin(theta);	//Zåº§æ¨™
 
-			float nx = cosPhi * cos(theta);	//–@üX
-			float ny = sinPhi;				//–@üY
-			float nz = cosPhi * sin(theta);	//–@üZ
+			float nx = cosPhi * cos(theta);	//æ³•ç·šX
+			float ny = sinPhi;				//æ³•ç·šY
+			float nz = cosPhi * sin(theta);	//æ³•ç·šZ
 
 			Vertex vertex{};
-			vertex.position = XMFLOAT3(x, y, z);				//ˆÊ’u
-			vertex.normal = XMFLOAT3(nx, ny, nz);				//–@ü
-			vertex.uv = XMFLOAT2(u, 1.0f - (v * 0.5f + 0.5f));	//UVÀ•W
+			vertex.position = XMFLOAT3(x, y, z);				//ä½ç½®
+			vertex.normal = XMFLOAT3(nx, ny, nz);				//æ³•ç·š
+			vertex.uv = XMFLOAT2(u, 1.0f - (v * 0.5f + 0.5f));	//UVåº§æ¨™
 
-			float tx = -ringR * sin(theta);		//Ú‹óŠÔX
-			float tz = ringR * cos(theta);		//Ú‹óŠÔZ
-			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);			//Ú‹óŠÔ
+			float tx = -ringR * sin(theta);		//æ¥ç©ºé–“X
+			float tz = ringR * cos(theta);		//æ¥ç©ºé–“Z
+			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);			//æ¥ç©ºé–“
 
-			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);	//’¸“_F
+			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);	//é ‚ç‚¹è‰²
 
-			halfSphereTop.vertices.push_back(vertex);	//’¸“_ƒf[ƒ^‚ğ”z—ñ‚É’Ç‰Á
+			halfSphereTop.vertices.push_back(vertex);	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é…åˆ—ã«è¿½åŠ 
 		}
 	}
 
-	//‰º”¼‹…•”•ª‚Ì’¸“_ƒf[ƒ^ì¬
+	//ä¸‹åŠçƒéƒ¨åˆ†ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ä½œæˆ
 	for(int stack = 0; stack <= hemiStacks; stack++)
 	{
-		float v = static_cast<float>(stack) / static_cast<float>(hemiStacks);	//VÀ•W
-		float phi = v * XM_PIDIV2;												//ˆÜ“xŠp
+		float v = static_cast<float>(stack) / static_cast<float>(hemiStacks);	//Våº§æ¨™
+		float phi = v * XM_PIDIV2;												//ç·¯åº¦è§’
 
-		float sinPhi = sin(phi);	//sinƒÓ
-		float cosPhi = cos(phi);	//cosƒÓ
+		float sinPhi = sin(phi);	//sinÏ†
+		float cosPhi = cos(phi);	//cosÏ†
 
-		float y = -sinPhi * radius;	//YÀ•W
+		float y = -sinPhi * radius;	//Yåº§æ¨™
 
-		float ringR = cosPhi * radius;	//ƒŠƒ“ƒO‚Ì”¼Œa
+		float ringR = cosPhi * radius;	//ãƒªãƒ³ã‚°ã®åŠå¾„
 
 		for (int slice = 0; slice <= slices; slice++)
 		{
-			float u = static_cast<float>(slice) / static_cast<float>(slices);	//UÀ•W
-			float theta = u * XM_2PI;											//Œo“xŠp
+			float u = static_cast<float>(slice) / static_cast<float>(slices);	//Uåº§æ¨™
+			float theta = u * XM_2PI;											//çµŒåº¦è§’
 
-			float x = ringR * cos(theta);	//XÀ•W
-			float z = ringR * sin(theta);	//ZÀ•W
+			float x = ringR * cos(theta);	//Xåº§æ¨™
+			float z = ringR * sin(theta);	//Zåº§æ¨™
 
-			float nx = cosPhi * cos(theta);	//–@üX
-			float ny = -sinPhi;				//–@üY
-			float nz = cosPhi * sin(theta);	//–@üZ
+			float nx = cosPhi * cos(theta);	//æ³•ç·šX
+			float ny = -sinPhi;				//æ³•ç·šY
+			float nz = cosPhi * sin(theta);	//æ³•ç·šZ
 
 			Vertex vertex{};
-			vertex.position = XMFLOAT3(x, y, z);				//ˆÊ’u
-			vertex.normal = XMFLOAT3(nx, ny, nz);				//–@ü
-			vertex.uv = XMFLOAT2(u, (v * 0.5f));				//UVÀ•W
+			vertex.position = XMFLOAT3(x, y, z);				//ä½ç½®
+			vertex.normal = XMFLOAT3(nx, ny, nz);				//æ³•ç·š
+			vertex.uv = XMFLOAT2(u, (v * 0.5f));				//UVåº§æ¨™
 
-			float tx = -ringR * sin(theta);		//Ú‹óŠÔX
-			float tz = ringR * cos(theta);		//Ú‹óŠÔZ
-			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);			//Ú‹óŠÔ
+			float tx = -ringR * sin(theta);		//æ¥ç©ºé–“X
+			float tz = ringR * cos(theta);		//æ¥ç©ºé–“Z
+			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);			//æ¥ç©ºé–“
 
-			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);	//’¸“_F
+			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);	//é ‚ç‚¹è‰²
 
-			halfSphereBottom.vertices.push_back(vertex);	//’¸“_ƒf[ƒ^‚ğ”z—ñ‚É’Ç‰Á
+			halfSphereBottom.vertices.push_back(vertex);	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é…åˆ—ã«è¿½åŠ 
 		}
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚Ìì¬
-	//ƒVƒŠƒ“ƒ_•”•ª‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^ì¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
+	//ã‚·ãƒªãƒ³ãƒ€éƒ¨åˆ†ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ä½œæˆ
 	for (uint32_t stack = 0; stack < cylinderStacks; stack++)
 	{
 		for (uint32_t slice = 0; slice < slices; slice++)
@@ -465,7 +465,7 @@ MeshData::Model MeshData::MakeCapsuleModel(int slices, int stacks)
 		}
 	}
 
-	//ã”¼‹…•”•ª‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^ì¬
+	//ä¸ŠåŠçƒéƒ¨åˆ†ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ä½œæˆ
 	const int ringCountTop = hemiStacks + 1;
 	for (uint32_t stack = 0; stack < ringCountTop - 1; stack++)
 	{
@@ -484,7 +484,7 @@ MeshData::Model MeshData::MakeCapsuleModel(int slices, int stacks)
 		}
 	}
 
-	//‰º”¼‹…•”•ª‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^ì¬
+	//ä¸‹åŠçƒéƒ¨åˆ†ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ä½œæˆ
 	const int ringCountBottom = hemiStacks + 1;
 	for (uint32_t stack = 0; stack < ringCountBottom - 1; stack++)
 	{
@@ -503,75 +503,75 @@ MeshData::Model MeshData::MakeCapsuleModel(int slices, int stacks)
 		}
 	}
 
-	//’¸“_”‚ÆƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
-	cylinder.vertexCount = cylinder.vertices.size();					//’¸“_”‚Ìİ’è
-	cylinder.indexCount = cylinder.indices.size();						//ƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
-	halfSphereTop.vertexCount = halfSphereTop.vertices.size();			//’¸“_”‚Ìİ’è
-	halfSphereTop.indexCount = halfSphereTop.indices.size();			//ƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
-	halfSphereBottom.vertexCount = halfSphereBottom.vertices.size();	//’¸“_”‚Ìİ’è
-	halfSphereBottom.indexCount = halfSphereBottom.indices.size();		//ƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
+	//é ‚ç‚¹æ•°ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
+	cylinder.vertexCount = cylinder.vertices.size();					//é ‚ç‚¹æ•°ã®è¨­å®š
+	cylinder.indexCount = cylinder.indices.size();						//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
+	halfSphereTop.vertexCount = halfSphereTop.vertices.size();			//é ‚ç‚¹æ•°ã®è¨­å®š
+	halfSphereTop.indexCount = halfSphereTop.indices.size();			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
+	halfSphereBottom.vertexCount = halfSphereBottom.vertices.size();	//é ‚ç‚¹æ•°ã®è¨­å®š
+	halfSphereBottom.indexCount = halfSphereBottom.indices.size();		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
 
-	//ƒ‚ƒfƒ‹ƒf[ƒ^‚ÉƒƒbƒVƒ…ƒf[ƒ^‚ğ’Ç‰Á
-	model.meshes.push_back(cylinder);			//‰~’Œ•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^‚ğƒ‚ƒfƒ‹ƒf[ƒ^‚É’Ç‰Á
-	model.meshes.push_back(halfSphereTop);		//ã”¼‹…•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^‚ğƒ‚ƒfƒ‹ƒf[ƒ^‚É’Ç‰Á
-	model.meshes.push_back(halfSphereBottom);	//‰º”¼‹…•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^‚ğƒ‚ƒfƒ‹ƒf[ƒ^‚É’Ç‰Á
+	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’è¿½åŠ 
+	model.meshes.push_back(cylinder);			//å††æŸ±éƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ 
+	model.meshes.push_back(halfSphereTop);		//ä¸ŠåŠçƒéƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ 
+	model.meshes.push_back(halfSphereBottom);	//ä¸‹åŠçƒéƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ 
 
-	return model;	//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì‚ğ•Ô‚·
+	return model;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã‚’è¿”ã™
 }
 
-//‰~’Œ‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//å††æŸ±ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 MeshData::Model MeshData::MakeCylinderModel(int slices, int stacks)
 {
-	Mesh mesh;	//ƒVƒŠƒ“ƒ_[•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
-	Model model;	//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
+	Mesh mesh;	//ã‚·ãƒªãƒ³ãƒ€ãƒ¼éƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+	Model model;	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 
-	const float radius = 0.5f;		//”¼Œa
-	const float halfHeight = 0.5f;	//”¼•ª‚Ì‚‚³
+	const float radius = 0.5f;		//åŠå¾„
+	const float halfHeight = 0.5f;	//åŠåˆ†ã®é«˜ã•
 
-	const int hemiStacks = stacks / 4;				//”¼‹…‚ÌƒXƒ^ƒbƒN”
-	int cylinderStacks = stacks - hemiStacks * 2;	//‰~’Œ‚ÌƒXƒ^ƒbƒN”
-	if (cylinderStacks < 1) cylinderStacks = 1;		//‰~’Œ‚ÌƒXƒ^ƒbƒN”‚ÍÅ’á1‚É‚·‚é
+	const int hemiStacks = stacks / 4;				//åŠçƒã®ã‚¹ã‚¿ãƒƒã‚¯æ•°
+	int cylinderStacks = stacks - hemiStacks * 2;	//å††æŸ±ã®ã‚¹ã‚¿ãƒƒã‚¯æ•°
+	if (cylinderStacks < 1) cylinderStacks = 1;		//å††æŸ±ã®ã‚¹ã‚¿ãƒƒã‚¯æ•°ã¯æœ€ä½1ã«ã™ã‚‹
 
-	const int ringStride = slices + 1; //ƒŠƒ“ƒO‚ ‚½‚è‚Ì’¸“_”	
+	const int ringStride = slices + 1; //ãƒªãƒ³ã‚°ã‚ãŸã‚Šã®é ‚ç‚¹æ•°	
 
-	const int cylinderRingCount = cylinderStacks + 1;	//‰~’Œ•”•ª‚ÌƒŠƒ“ƒO”
+	const int cylinderRingCount = cylinderStacks + 1;	//å††æŸ±éƒ¨åˆ†ã®ãƒªãƒ³ã‚°æ•°
 
-	int estimatedVertexCount = cylinderRingCount * ringStride;	//’¸“_”‚ÌŒ©Ï‚à‚è
+	int estimatedVertexCount = cylinderRingCount * ringStride;	//é ‚ç‚¹æ•°ã®è¦‹ç©ã‚‚ã‚Š
 
-	mesh.vertices.reserve(estimatedVertexCount);		//’¸“_ƒf[ƒ^”z—ñ‚Ì—\–ñ
-	mesh.indices.reserve(estimatedVertexCount * 6);	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ‚Ì—\–ñ
+	mesh.vertices.reserve(estimatedVertexCount);		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
+	mesh.indices.reserve(estimatedVertexCount * 6);	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—ã®äºˆç´„
 
-	//’¸“_ƒf[ƒ^‚Ìì¬
-	//ƒVƒŠƒ“ƒ_•”•ª‚Ì’¸“_ƒf[ƒ^ì¬
+	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
+	//ã‚·ãƒªãƒ³ãƒ€éƒ¨åˆ†ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ä½œæˆ
 	for (int stack = 0; stack <= cylinderStacks; stack++)
 	{
-		float t = static_cast<float>(stack) / static_cast<float>(cylinderStacks);	//ƒXƒ^ƒbƒN”ä—¦
-		float y = -halfHeight + t * (halfHeight * 2.0f);							//YÀ•W
+		float t = static_cast<float>(stack) / static_cast<float>(cylinderStacks);	//ã‚¹ã‚¿ãƒƒã‚¯æ¯”ç‡
+		float y = -halfHeight + t * (halfHeight * 2.0f);							//Yåº§æ¨™
 
 		for (int slice = 0; slice <= slices; slice++)
 		{
-			float u = static_cast<float>(slice) / static_cast<float>(slices);	//UÀ•W
-			float theta = u * XM_2PI;									//Œo“xŠp
+			float u = static_cast<float>(slice) / static_cast<float>(slices);	//Uåº§æ¨™
+			float theta = u * XM_2PI;									//çµŒåº¦è§’
 
-			float x = radius * cos(theta);	//XÀ•W
-			float z = radius * sin(theta);	//ZÀ•W
+			float x = radius * cos(theta);	//Xåº§æ¨™
+			float z = radius * sin(theta);	//Zåº§æ¨™
 
 			Vertex vertex{};
-			vertex.position = XMFLOAT3(x, y, z);						//ˆÊ’u
-			vertex.normal = XMFLOAT3(x / radius, 0.0f, z / radius);		//–@ü
-			vertex.uv = XMFLOAT2(u, t);									//UVÀ•W
+			vertex.position = XMFLOAT3(x, y, z);						//ä½ç½®
+			vertex.normal = XMFLOAT3(x / radius, 0.0f, z / radius);		//æ³•ç·š
+			vertex.uv = XMFLOAT2(u, t);									//UVåº§æ¨™
 
-			float tx = -radius * sin(theta);	//Ú‹óŠÔX
-			float tz = radius * cos(theta);		//Ú‹óŠÔZ
-			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);					//Ú‹óŠÔ
+			float tx = -radius * sin(theta);	//æ¥ç©ºé–“X
+			float tz = radius * cos(theta);		//æ¥ç©ºé–“Z
+			vertex.tangent = XMFLOAT3(tx, 0.0f, tz);					//æ¥ç©ºé–“
 
-			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);			//’¸“_F
+			vertex.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);			//é ‚ç‚¹è‰²
 
-			mesh.vertices.push_back(vertex);	//’¸“_ƒf[ƒ^‚ğ”z—ñ‚É’Ç‰Á
+			mesh.vertices.push_back(vertex);	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é…åˆ—ã«è¿½åŠ 
 		}
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚Ìì¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã®ä½œæˆ
 	for (uint32_t stack = 0; stack < cylinderStacks; stack++)
 	{
 		for (uint32_t slice = 0; slice < slices; slice++)
@@ -590,45 +590,45 @@ MeshData::Model MeshData::MakeCylinderModel(int slices, int stacks)
 		}
 	}
 
-	//’¸“_”‚ÆƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
-	mesh.vertexCount = mesh.vertices.size();					//’¸“_”‚Ìİ’è
-	mesh.indexCount = mesh.indices.size();						//ƒCƒ“ƒfƒbƒNƒX”‚Ìİ’è
+	//é ‚ç‚¹æ•°ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
+	mesh.vertexCount = mesh.vertices.size();					//é ‚ç‚¹æ•°ã®è¨­å®š
+	mesh.indexCount = mesh.indices.size();						//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ã®è¨­å®š
 
-	model.meshes.push_back(mesh);			//‰~’Œ•”•ª‚ÌƒƒbƒVƒ…ƒf[ƒ^‚ğƒ‚ƒfƒ‹ƒf[ƒ^‚É’Ç‰Á
+	model.meshes.push_back(mesh);			//å††æŸ±éƒ¨åˆ†ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã«è¿½åŠ 
 
-	return model;	//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì‚ğ•Ô‚·
+	return model;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã‚’è¿”ã™
 }
 
-//ƒJƒvƒZƒ‹‚Ì•`‰æî•ñ’Ç‰ÁŠÖ”
+//ã‚«ãƒ—ã‚»ãƒ«ã®æç”»æƒ…å ±è¿½åŠ é–¢æ•°
 void MeshData::AppendCapsuleRenderInfos(
-	const CapsuleVisualDesc& desc,				//ƒJƒvƒZƒ‹•`‰æî•ñ‹Lqq
-	const DirectX::XMFLOAT3& position,			//ˆÊ’u
-	const DirectX::XMFLOAT3& scale,				//ƒXƒP[ƒ‹
-	const DirectX::XMFLOAT3& rotEuler,			//‰ñ“]EulerŠp
-	const DirectX::XMFLOAT4& color,				//F
-	std::vector<RenderData::RenderInfo>& infos,	//ƒJƒvƒZƒ‹‚ÌÀ‘Ì
-	std::vector<RenderData::RenderInfo>& out	//o—Íæ•`‰æî•ñ”z—ñ
+	const CapsuleVisualDesc& desc,				//ã‚«ãƒ—ã‚»ãƒ«æç”»æƒ…å ±è¨˜è¿°å­
+	const DirectX::XMFLOAT3& position,			//ä½ç½®
+	const DirectX::XMFLOAT3& scale,				//ã‚¹ã‚±ãƒ¼ãƒ«
+	const DirectX::XMFLOAT3& rotEuler,			//å›è»¢Eulerè§’
+	const DirectX::XMFLOAT4& color,				//è‰²
+	std::vector<RenderData::RenderInfo>& infos,	//ã‚«ãƒ—ã‚»ãƒ«ã®å®Ÿä½“
+	std::vector<RenderData::RenderInfo>& out	//å‡ºåŠ›å…ˆæç”»æƒ…å ±é…åˆ—
 )
 {
 	using namespace DirectX;
 
-	//ƒRƒ‰ƒCƒ_[ƒXƒP[ƒ‹‚Ìæ“¾
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã®å–å¾—
 	const float sx = fabs(scale.x);
 	const float sy = fabs(scale.y);
 	const float sz = fabs(scale.z);
 
-	//ƒpƒ‰ƒ[ƒ^ŒvZ
-	const float diamiter = (std::max)(sx, sz);					//’¼Œa
-	const float radius = diamiter * 0.5f;						//”¼Œa
-	const float cylHeight = (std::max)(sy - diamiter, 0.0f);	//‰~’Œ•”•ª‚Ì‚‚³
-	const float halfHeight = cylHeight * 0.5f;					//‰~’Œ•”•ª‚Ì”¼•ª‚Ì‚‚³
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨ˆç®—
+	const float diamiter = (std::max)(sx, sz);					//ç›´å¾„
+	const float radius = diamiter * 0.5f;						//åŠå¾„
+	const float cylHeight = (std::max)(sy - diamiter, 0.0f);	//å††æŸ±éƒ¨åˆ†ã®é«˜ã•
+	const float halfHeight = cylHeight * 0.5f;					//å††æŸ±éƒ¨åˆ†ã®åŠåˆ†ã®é«˜ã•
 
-	//Šeís—ñ‚ÌŒvZ
-	//ƒXƒP[ƒŠƒ“ƒOs—ñ
-	const XMMATRIX cylS = XMMatrixScaling(diamiter, cylHeight, diamiter);	//‰~’Œ•”•ª‚ÌƒXƒP[ƒŠƒ“ƒOs—ñ
-	const XMMATRIX sphS = XMMatrixScaling(diamiter, diamiter, diamiter);	//”¼‹…•”•ª‚ÌƒXƒP[ƒŠƒ“ƒOs—ñ
+	//å„ç¨®è¡Œåˆ—ã®è¨ˆç®—
+	//ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°è¡Œåˆ—
+	const XMMATRIX cylS = XMMatrixScaling(diamiter, cylHeight, diamiter);	//å††æŸ±éƒ¨åˆ†ã®ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°è¡Œåˆ—
+	const XMMATRIX sphS = XMMatrixScaling(diamiter, diamiter, diamiter);	//åŠçƒéƒ¨åˆ†ã®ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°è¡Œåˆ—
 
-	//‰ñ“]E•½sˆÚ“®s—ñ
+	//å›è»¢ãƒ»å¹³è¡Œç§»å‹•è¡Œåˆ—
 	const XMMATRIX R = XMMatrixRotationRollPitchYaw(						
 		XMConvertToRadians(rotEuler.x),
 		XMConvertToRadians(rotEuler.y), 
@@ -636,83 +636,104 @@ void MeshData::AppendCapsuleRenderInfos(
 	);
 	const XMMATRIX T = XMMatrixTranslation(position.x, position.y, position.z);
 
-	const XMMATRIX topT = XMMatrixTranslation(0, +halfHeight, 0);	//ã”¼‹…‚Ì•½sˆÚ“®s—ñ(ƒVƒŠƒ“ƒ_[‚Ìã’[‚ÉˆÚ“®)
-	const XMMATRIX botT = XMMatrixTranslation(0, -halfHeight, 0);	//‰º”¼‹…‚Ì•½sˆÚ“®s—ñ(ƒVƒŠƒ“ƒ_[‚Ì‰º’[‚ÉˆÚ“®)
+	const XMMATRIX topT = XMMatrixTranslation(0, +halfHeight, 0);	//ä¸ŠåŠçƒã®å¹³è¡Œç§»å‹•è¡Œåˆ—(ã‚·ãƒªãƒ³ãƒ€ãƒ¼ã®ä¸Šç«¯ã«ç§»å‹•)
+	const XMMATRIX botT = XMMatrixTranslation(0, -halfHeight, 0);	//ä¸‹åŠçƒã®å¹³è¡Œç§»å‹•è¡Œåˆ—(ã‚·ãƒªãƒ³ãƒ€ãƒ¼ã®ä¸‹ç«¯ã«ç§»å‹•)
 
-	//ƒ[ƒ‹ƒhs—ñ‚ÌŒvZ
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®è¨ˆç®—
 	const XMMATRIX cylW = cylS * R * T;
 	const XMMATRIX topW = sphS * topT * R * T;
 	const XMMATRIX botW = sphS * botT * R * T;
 
-	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ìì¬
-	out.clear();				//o—Íæ”z—ñ‚ÌƒNƒŠƒA
-	out.resize(infos.size());	//o—Íæ”z—ñ‚ÌƒŠƒTƒCƒY
+	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã®ä½œæˆ
+	out.clear();				//å‡ºåŠ›å…ˆé…åˆ—ã®ã‚¯ãƒªã‚¢
+	out.resize(infos.size());	//å‡ºåŠ›å…ˆé…åˆ—ã®ãƒªã‚µã‚¤ã‚º
 	for (size_t i = 0; i < infos.size(); i++)
-	{//•`‰æî•ñ\‘¢‘Ì‚ÌƒRƒs[
+	{//æç”»æƒ…å ±æ§‹é€ ä½“ã®ã‚³ãƒ”ãƒ¼
 		out[i] = infos[i];
 	}
 
-	//Še•`‰æî•ñ\‘¢‘Ì‚Ìƒ[ƒ‹ƒhs—ñ‚ÆF‚Ìİ’è
-	//‰~’Œ•”•ª
+	//å„æç”»æƒ…å ±æ§‹é€ ä½“ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã¨è‰²ã®è¨­å®š
+	//å††æŸ±éƒ¨åˆ†
 	out[0].world = cylW;
 	out[0].color = color;
-	//ã”¼‹…•”•ª
+	//ä¸ŠåŠçƒéƒ¨åˆ†
 	out[1].world = topW;
 	out[1].color = color;
-	//‰º”¼‹…•”•ª
+	//ä¸‹åŠçƒéƒ¨åˆ†
 	out[2].world = botW;
 	out[2].color = color;
 }
 
-//ƒRƒŠƒWƒ‡ƒ“ƒŒƒCƒ„[‚ğƒrƒbƒgƒ}ƒXƒN‚É•ÏŠ·‚·‚éŠÖ”
+//ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ãƒ“ãƒƒãƒˆãƒã‚¹ã‚¯ã«å¤‰æ›ã™ã‚‹é–¢æ•°
 CollisionData::LayerMask CollisionData::LayerToBit(COLLISION_LAYER layer)
 {
 	return static_cast<LayerMask>(1 << static_cast<uint32_t>(layer));
 }
 
-//ƒRƒŠƒWƒ‡ƒ“ƒŒƒCƒ„[‚©‚çƒŒƒCƒ„[ƒ}ƒXƒN‚ğæ“¾‚·‚éŠÖ”
+//ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ã‚’å–å¾—ã™ã‚‹é–¢æ•°
 CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 {
 	switch (layer)
-	{//ƒRƒŠƒWƒ‡ƒ“ƒŒƒCƒ„[‚²‚Æ‚É“–‚½‚è”»’è‚ğs‚¤ƒŒƒCƒ„[ƒ}ƒXƒN‚ğİ’è
+	{//ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒ¬ã‚¤ãƒ¤ãƒ¼ã”ã¨ã«å½“ãŸã‚Šåˆ¤å®šã‚’è¡Œã†ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ã‚’è¨­å®š
 	case CollisionData::COLLISION_LAYER::DEFAULT:
 		break;
 	case CollisionData::COLLISION_LAYER::PLAYER:
 		return MakeMask({
-			COLLISION_LAYER::WALL,			//•ÇƒŒƒCƒ„[
-			COLLISION_LAYER::WALLPASS,		//’eŠÑ’Ê•ÇƒŒƒCƒ„[
-			COLLISION_LAYER::GROUND,		//’n–ÊƒŒƒCƒ„[
-			COLLISION_LAYER::BULLET,		//’eƒŒƒCƒ„[
-			COLLISION_LAYER::ITEM_TRANSFORM //ƒAƒCƒeƒ€•ÏgƒŒƒCƒ„[
+			COLLISION_LAYER::WALL,			//å£ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::WALLPASS,		//å¼¾è²«é€šå£ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::GROUND,		//åœ°é¢ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::BULLET,		//å¼¾ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::ITEM_TRANSFORM, //ã‚¢ã‚¤ãƒ†ãƒ å¤‰èº«ãƒ¬ã‚¤ãƒ¤ãƒ¼
+      COLLISION_LAYER::BB_LINE,			//ãƒ“ãƒªãƒ“ãƒªãƒ©ã‚¤ãƒ³
+			COLLISION_LAYER::BB_ELECTRICITY,	//ãƒ“ãƒªãƒ“ãƒªé›»æµ
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::WALL:
 		return MakeMask({
-			COLLISION_LAYER::PLAYER,	//ƒvƒŒƒCƒ„[ƒŒƒCƒ„[
-			COLLISION_LAYER::BULLET		//’eƒŒƒCƒ„[
+			COLLISION_LAYER::PLAYER,			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::BULLET,			//å¼¾ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::BB_LINE,			//ãƒ“ãƒªãƒ“ãƒªãƒ©ã‚¤ãƒ³
+			COLLISION_LAYER::BB_ELECTRICITY,	//ãƒ“ãƒªãƒ“ãƒªé›»æµ
+
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::WALLPASS:
 		return MakeMask({
-			COLLISION_LAYER::PLAYER		//ƒvƒŒƒCƒ„[ƒŒƒCƒ„[
+			COLLISION_LAYER::PLAYER,			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::BB_LINE,			//ãƒ“ãƒªãƒ“ãƒªãƒ©ã‚¤ãƒ³
+			COLLISION_LAYER::BB_ELECTRICITY,	//ãƒ“ãƒªãƒ“ãƒªé›»æµ
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::GROUND:
 		return MakeMask({
-			COLLISION_LAYER::PLAYER,	//ƒvƒŒƒCƒ„[ƒŒƒCƒ„[
-			COLLISION_LAYER::BULLET		//’eƒŒƒCƒ„[
+			COLLISION_LAYER::PLAYER,	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::BULLET		//å¼¾ãƒ¬ã‚¤ãƒ¤ãƒ¼
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::BULLET:
 		return MakeMask({
-			COLLISION_LAYER::PLAYER,	//ƒvƒŒƒCƒ„[ƒŒƒCƒ„[
-			COLLISION_LAYER::WALL,		//•ÇƒŒƒCƒ„[
-			COLLISION_LAYER::GROUND		//’n–ÊƒŒƒCƒ„[
+			COLLISION_LAYER::PLAYER,	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::WALL,		//å£ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::GROUND		//åœ°é¢ãƒ¬ã‚¤ãƒ¤ãƒ¼
 			});
 		break;
-	case CollisionData::COLLISION_LAYER::ITEM_TRANSFORM:
+	case CollisionData::COLLISION_LAYER::BB_LINE:
 		return MakeMask({
-			COLLISION_LAYER::PLAYER		//ƒvƒŒƒCƒ„[ƒŒƒCƒ„[
+			COLLISION_LAYER::PLAYER,	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::WALL,		//å£ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::WALLPASS,	//å£ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			});
+		break;
+	case CollisionData::COLLISION_LAYER::BB_ELECTRICITY:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER,	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::WALL,		//å£ãƒ¬ã‚¤ãƒ¤ãƒ¼
+			COLLISION_LAYER::WALLPASS,	//å£ãƒ¬ã‚¤ãƒ¤ãƒ¼
+      });
+		break;
+      case CollisionData::COLLISION_LAYER::ITEM_TRANSFORM:
+		return MakeMask({
+			COLLISION_LAYER::PLAYER		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¬ã‚¤ãƒ¤ãƒ¼
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::MAX_LAYER:
@@ -723,47 +744,47 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 	}
 }
 
-//•¡”‚ÌƒRƒŠƒWƒ‡ƒ“ƒŒƒCƒ„[‚©‚çƒŒƒCƒ„[ƒ}ƒXƒN‚ğì¬‚·‚éŠÖ”
+//è¤‡æ•°ã®ã‚³ãƒªã‚¸ãƒ§ãƒ³ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ã‚’ä½œæˆã™ã‚‹é–¢æ•°
 CollisionData::LayerMask CollisionData::MakeMask(std::initializer_list<COLLISION_LAYER> layers)
 {
-	LayerMask mask = 0;	//ƒŒƒCƒ„[ƒ}ƒXƒN
+	LayerMask mask = 0;	//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
 	for (auto layer : layers)
 	{
-		mask |= LayerToBit(layer);	//ƒrƒbƒgƒ}ƒXƒN‚ğ‡¬
+		mask |= LayerToBit(layer);	//ãƒ“ãƒƒãƒˆãƒã‚¹ã‚¯ã‚’åˆæˆ
 	}
-	return mask;	//ƒŒƒCƒ„[ƒ}ƒXƒN‚ğ•Ô‚·
+	return mask;	//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ã‚’è¿”ã™
 }
 
-//ŠÑ“ü[‚³‚©‚ç‰Ÿ‚µo‚µƒxƒNƒgƒ‹‚ğæ“¾‚·‚éŠÖ”
+//è²«å…¥æ·±ã•ã‹ã‚‰æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—ã™ã‚‹é–¢æ•°
 DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
-	std::vector<CollisionData::CollisionInfo>& infos,	//Õ“Ëî•ñ”z—ñ
-	const std::initializer_list<OBJECT_TAG>& tagList	//‰Ÿ‚µo‚µƒxƒNƒgƒ‹‚ğŒvZ‚·‚é‘ÎÛ‚Ìƒ^ƒOƒŠƒXƒg
+	std::vector<CollisionData::CollisionInfo>& infos,	//è¡çªæƒ…å ±é…åˆ—
+	const std::initializer_list<OBJECT_TAG>& tagList	//æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—ã™ã‚‹å¯¾è±¡ã®ã‚¿ã‚°ãƒªã‚¹ãƒˆ
 )
 {
 	using namespace DirectX;
 
-	XMFLOAT3 total{ 0,0,0 };	//Å‘å‰Ÿ‚µo‚µƒxƒNƒgƒ‹
-	float epsilon = 0.0001f;	//Œë·‹–—e’l
+	XMFLOAT3 total{ 0,0,0 };	//æœ€å¤§æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«
+	float epsilon = 0.0001f;	//èª¤å·®è¨±å®¹å€¤
 
-	std::vector<CollisionData::CollisionInfo*> cands;	//Õ“Ëî•ñ”z—ñ‚ğƒ‹[ƒv
+	std::vector<CollisionData::CollisionInfo*> cands;	//è¡çªæƒ…å ±é…åˆ—ã‚’ãƒ«ãƒ¼ãƒ—
 
 	for (auto& info : infos)
 	{
-		//Õ“ËI—¹‚Í–³‹
+		//è¡çªçµ‚äº†ã¯ç„¡è¦–
 		if (info.state == CollisionData::COLLISION_STATE::COLLISION_EXIT) continue;
 
-		OBJECT_TAG opponentTag = info.opponent->GetOwner()->GetTag();	//Õ“Ë‘Šè‚Ìƒ^ƒOæ“¾
+		OBJECT_TAG opponentTag = info.opponent->GetOwner()->GetTag();	//è¡çªç›¸æ‰‹ã®ã‚¿ã‚°å–å¾—
 
-		//Õ“Ë‘Šè‚Ìƒ^ƒO‚ªƒŠƒXƒg‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚é‚©Šm”F
+		//è¡çªç›¸æ‰‹ã®ã‚¿ã‚°ãŒãƒªã‚¹ãƒˆã«å«ã¾ã‚Œã¦ã„ã‚‹ã‹ç¢ºèª
 		if (std::find(tagList.begin(), tagList.end(), opponentTag) == tagList.end()) continue;
 
-		cands.push_back(&info);	//Œó•âƒŠƒXƒg‚É’Ç‰Á
+		cands.push_back(&info);	//å€™è£œãƒªã‚¹ãƒˆã«è¿½åŠ 
 	}
 
 	auto begin = cands.begin();
 	auto end = cands.end();
 
-	//ŠÑ“ü[‚³‚Ì‘å‚«‚¢‡‚Éƒ\[ƒg
+	//è²«å…¥æ·±ã•ã®å¤§ãã„é †ã«ã‚½ãƒ¼ãƒˆ
 	std::sort(cands.begin(), cands.end(),
 		[](const CollisionData::CollisionInfo* a, const CollisionData::CollisionInfo* b)
 		{
@@ -771,37 +792,37 @@ DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
 		}
 	);
 
-	const int REPEAT_MAX = 5;	//Å‘åŒJ‚è•Ô‚µ‰ñ”
+	const int REPEAT_MAX = 5;	//æœ€å¤§ç¹°ã‚Šè¿”ã—å›æ•°
 
 	for (int i = 0; i < REPEAT_MAX; i++)
 	{
-		bool any = false;	//‰Ÿ‚µo‚µ‚ª”­¶‚µ‚½‚©‚Ç‚¤‚©
+		bool any = false;	//æŠ¼ã—å‡ºã—ãŒç™ºç”Ÿã—ãŸã‹ã©ã†ã‹
 
 		for (auto pInfo : cands)
 		{
-			XMFLOAT3 penetration = pInfo->penetrationDepth;	//ŠÑ“ü[‚³ƒxƒNƒgƒ‹
+			XMFLOAT3 penetration = pInfo->penetrationDepth;	//è²«å…¥æ·±ã•ãƒ™ã‚¯ãƒˆãƒ«
 
-			XMFLOAT3 dir = { -penetration.x, -penetration.y, -penetration.z };	//‰Ÿ‚µo‚µ•ûŒüƒxƒNƒgƒ‹
-			float depth = LengthXMF3(dir);									//ŠÑ“ü[‚³
-			if (depth < epsilon) continue;									//Œë·‹–—e’lˆÈ‰º‚È‚ç–³‹
+			XMFLOAT3 dir = { -penetration.x, -penetration.y, -penetration.z };	//æŠ¼ã—å‡ºã—æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+			float depth = LengthXMF3(dir);									//è²«å…¥æ·±ã•
+			if (depth < epsilon) continue;									//èª¤å·®è¨±å®¹å€¤ä»¥ä¸‹ãªã‚‰ç„¡è¦–
 
-			//‰Ÿ‚µo‚µƒxƒNƒgƒ‹‚Ì³‹K‰»
+			//æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–
 			dir = Normalize(dir);
 
-			float resolved = (std::max)(0.0f, Dot(total, dir));	//Šù‚É‰Ÿ‚µo‚³‚ê‚½•ª
-			float remain = depth - resolved;					//c‚è‚Ì‰Ÿ‚µo‚µ•ª
+			float resolved = (std::max)(0.0f, Dot(total, dir));	//æ—¢ã«æŠ¼ã—å‡ºã•ã‚ŒãŸåˆ†
+			float remain = depth - resolved;					//æ®‹ã‚Šã®æŠ¼ã—å‡ºã—åˆ†
 			if (remain > epsilon)
-			{//‰Ÿ‚µo‚µ‚ª”­¶‚·‚éê‡
-				//‰Ÿ‚µo‚µƒxƒNƒgƒ‹‚Ì‰ÁZ
+			{//æŠ¼ã—å‡ºã—ãŒç™ºç”Ÿã™ã‚‹å ´åˆ
+				//æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«ã®åŠ ç®—
 				total.x += dir.x * remain;
 				total.y += dir.y * remain;
 				total.z += dir.z * remain;
-				any = true;	//‰Ÿ‚µo‚µ‚ª”­¶‚µ‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+				any = true;	//æŠ¼ã—å‡ºã—ãŒç™ºç”Ÿã—ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 			}
 		}
 
-		if (!any) break;	//‰Ÿ‚µo‚µ‚ª”­¶‚µ‚È‚©‚Á‚½‚çI—¹
+		if (!any) break;	//æŠ¼ã—å‡ºã—ãŒç™ºç”Ÿã—ãªã‹ã£ãŸã‚‰çµ‚äº†
 	}
 
-	return total;	//‰Ÿ‚µo‚µƒxƒNƒgƒ‹‚ğ•Ô‚·
+	return total;	//æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¿”ã™
 }

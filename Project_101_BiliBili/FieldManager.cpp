@@ -59,7 +59,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(2.0f, 10.0f, 30.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			false,						//アクティブフラグ
+			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(2.1f, 10.1f, 30.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
@@ -72,7 +72,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(2.0f, 10.0f, 30.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			false,						//アクティブフラグ
+			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(2.1f, 10.1f, 30.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
@@ -85,7 +85,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(30.0f, 10.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			false,						//アクティブフラグ
+			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(30.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
@@ -98,12 +98,17 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(30.0f, 10.0f, 2.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			false,						//アクティブフラグ
+			true,						//アクティブフラグ
 			ColliderType::BOX,		//コライダータイプ
 			XMFLOAT3(30.1f, 10.1f, 2.1f),	//コライダーボックスサイズ
 			false						//コライダーのトリガーフラグ
 		)
 	);
+
+	for(auto& wall : m_pWalls)
+	{
+		wall->SetDrawn(false);
+	}
 
 	m_pGrounds.push_back(
 		new Ground(

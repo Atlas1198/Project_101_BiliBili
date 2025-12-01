@@ -124,9 +124,9 @@ void PlayerManager::FinalizeOverride()
 }
 
 //プレイヤーオブジェクトを取得
-Player* PlayerManager::GetPlayer() const
+std::vector<Player*>& PlayerManager::GetPlayers()
 {
-	return m_pPlayer[0];
+	return m_pPlayer;
 }
 
 //描画要求をシーンに提出
