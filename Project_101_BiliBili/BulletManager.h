@@ -27,6 +27,9 @@ public:
         m_pGameUIManager = pGameUIManager;
 	}
 
+    inline static float BULLET_RECOVERY = 2.0f;
+    inline static float BULLET_DAMAGE = 0.1f;
+
 protected:
     void InitializeOverride(InputManager* pInputManager,
         TextureManager& textureManager,
@@ -46,5 +49,4 @@ private:
 	GameUIManager *m_pGameUIManager = nullptr;
     FrameTimer m_bulletRestoreTimer;
 	float m_bulletRestoreElapsed;
-	const float bulletRestoreSeconds = 2.0f;
 };

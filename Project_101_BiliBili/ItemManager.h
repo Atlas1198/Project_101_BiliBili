@@ -20,6 +20,7 @@ public:
 	ItemManager();		//コンストラクタ
 	~ItemManager();	//デストラクタ
 	void SpawnItem();
+	inline static float ITEM_RESPAWN = 15.0f;
 
 private:	//非公開メンバ変数
 	//メイン処理関数
@@ -44,5 +45,4 @@ private:
 	std::vector<RenderData::RenderInfo> m_itemInfo;		//アイテム描画情報
 	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
 	FrameTimer m_frameTimer;
-	const float itemSpawnSeconds = 15.0f;
 };

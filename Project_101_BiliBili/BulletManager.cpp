@@ -11,7 +11,7 @@ void BulletManager::FireBullet(
     uint32_t ownerID
     )
 {
-    auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID);
+    auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
         m_pCollisionManager->RegisterCollider(bullet->GetCollider());
@@ -64,7 +64,7 @@ void BulletManager::UpdateOverride()
 
     m_bulletRestoreElapsed += m_bulletRestoreTimer.Mark();
 
-    if (m_bulletRestoreElapsed >= bulletRestoreSeconds)
+    if (m_bulletRestoreElapsed >= BULLET_RECOVERY)
     {
 		EventManager::GetInstance()->AddBullets(1);
         m_bulletRestoreElapsed = 0.0f;

@@ -11,6 +11,7 @@ public:
         float speed,
         int ownerTeam,
 		uint32_t ownerID,
+        float damage,
         float lifeTimeSec = 3.0f,  //‘¶İŠÔ
         float maxDistance = 50.0f  //Å‘åˆÚ“®‹——£
     );
@@ -28,5 +29,6 @@ private:
     float m_livedTime = 0.0f;       //Œ»İ‚Ì¶‘¶ŠÔ
     float m_maxDistance;            //Å‘åˆÚ“®‹——£
     float m_traveled = 0.0f;        //ˆÚ“®‚µ‚½‹——£
+	float m_damage;                 //ƒ_ƒ[ƒW—Ê
     bool m_deleteFlag = false;
 };

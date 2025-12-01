@@ -18,6 +18,8 @@ public:
 	const wchar_t* lineBBTexPath = L"asset/texture/line.png";
 	const wchar_t* electricityBBTexPath = L"asset/texture/white.png";
 
+	inline static float BB_DURATION = 5.0f;
+
 public:
 	BBManager();		//コンストラクタ
 	~BBManager();	//デストラクタ
@@ -45,7 +47,6 @@ private:
 
 	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
 	FrameTimer m_frameTimer[BB_NUM];
-	const float BBDuration = 5.0f; //BB持続時間
 
 
 

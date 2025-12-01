@@ -15,7 +15,8 @@ class BB
 {
 public:
 	static constexpr int PLAYER_NUM = 2; //プレイヤーの数
-	static constexpr float DAMAGE = 0.001f;	//ダメージ量
+	//static constexpr float DAMAGE = 0.001f;	//ダメージ量
+	inline static float DAMAGE = 0.001f;
 
 public:
 	BB(GameUIManager* pUIManager, CollisionManager* pCollisionManager);

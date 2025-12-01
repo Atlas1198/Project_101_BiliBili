@@ -9,6 +9,7 @@ Bullet::Bullet(
                float speed,
                int ownerTeam,
 	           uint32_t ownerID,
+               float damage,
                float lifeTimeSec,
                float maxDistance)
 
@@ -24,7 +25,7 @@ Bullet::Bullet(
         CollisionData::COLLISION_LAYER::BULLET,
         { 0.2f,0.2f,0.2f }
 	), m_direction(dir), m_speed(speed), m_ownerTeam(ownerTeam), m_ownerID(ownerID),
-    m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance)
+	m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance), m_damage(damage)
 {
     SetActive(true);
 }
@@ -95,7 +96,7 @@ void Bullet::ResolveCollisionsOverride()
             else if (otherPlayer->GetTeamID() != m_ownerTeam)
             {
 				//m_pGameUIManager->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
-                EventManager::GetInstance()->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
+                EventManager::GetInstance()->TakeDamage(otherPlayer->GetTeamID(), m_damage);
             }
         }
 

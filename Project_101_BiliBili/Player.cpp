@@ -225,7 +225,7 @@ void Player::Shoot()
 		m_pBulletManager->FireBullet(
 			m_position,
 			dir,
-			0.2f,
+			BULLET_SPEED,
 			teamID,
 			id
 		);

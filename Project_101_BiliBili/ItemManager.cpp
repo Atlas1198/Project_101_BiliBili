@@ -80,7 +80,7 @@ void ItemManager::SpawnItem()
 //XV
 void ItemManager::UpdateOverride()
 {
-	if (m_frameTimer.Peek() >= itemSpawnSeconds)
+	if (m_frameTimer.Peek() >= ITEM_RESPAWN)
 	{
 		SpawnItem();
 		m_frameTimer.Mark();
