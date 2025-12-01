@@ -47,6 +47,7 @@ GameScene::~GameScene()
 	{
 		delete m_pItemManager;		//アイテム管理クラスの削除
 		m_pItemManager = nullptr;
+	}
 	if (m_pBBManager)
 	{
 		delete m_pBBManager;		//BB管理クラスの削除
