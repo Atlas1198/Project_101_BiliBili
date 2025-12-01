@@ -35,7 +35,7 @@ float4 BasicPSMasked(
     float4 texColor = gTexture.Sample(gSampler, uv);    //テクスチャの色を取得
     
     //アルファテスト
-    clip(texColor.a - 0.5f);        //アルファ値が0.5未満なら描画しない
-    return texColor * input.color;  //頂点カラーをそのまま返す
+    clip(texColor.a - 0.5f);                    //アルファ値が0.5未満なら描画しない
+    return texColor * input.color * objColor;   //頂点カラーをそのまま返す
 
 }

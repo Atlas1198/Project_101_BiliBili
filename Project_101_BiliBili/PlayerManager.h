@@ -20,8 +20,8 @@ public:
 
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
-	std::vector<RenderData::RenderInfo> m_playerInfo;					//プレイヤー描画情報
-	InputManager *m_pInputManager = nullptr;
+	std::vector<RenderData::RenderInfo> m_playerInfo;			//プレイヤー描画情報
+	InputManager* m_pInputManager = nullptr;					//入力マネージャーポインタ
 
 public:
 	PlayerManager(){};			//コンストラクタ
@@ -51,7 +51,7 @@ public:
 	void SubmitDrawsOverride(Renderer& renderer) override;	//描画要求をシーンに提出
 
 	//ゲッター
-	Player* GetPlayer() const; // プレイヤーオブジェクトを取得
+	std::vector<Player*>& GetPlayers(); // プレイヤーオブジェクト配列を取得
 
 private:	//非公開関数
 	void PrepareRenderInfo(	//プレイヤー描画情報生成

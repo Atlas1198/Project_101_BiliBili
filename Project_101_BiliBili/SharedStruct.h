@@ -84,14 +84,16 @@ enum BLEND_MODE
 //タグ列挙体
 enum class OBJECT_TAG
 {
-	NONE = 0,	//なし
-	PLAYER,		//プレイヤー
-	WALL,		//壁
-	WALLPASS,	//弾貫通壁
-	GROUND,		//地面
-	BULLET,		//弾
-	ITEM_TRANSFORM, //変身アイテム
-	MAX			//最大数
+	NONE = 0,			//なし
+	PLAYER,				//プレイヤー
+	WALL,				//壁
+	WALLPASS,			//弾貫通壁
+	GROUND,				//地面
+	BULLET,				//弾
+	ITEM_TRANSFORM,		//変身アイテム
+	BB_LINE,			//ビリビリライン
+	BB_ELECTRICITY,		//ビリビリ電流
+	MAX					//最大数
 };
 
 //描画情報用名前空間
@@ -351,6 +353,8 @@ namespace CollisionData
 		GROUND,			//地面
 		BULLET,			//弾
 		ITEM_TRANSFORM,	//変身アイテム
+		BB_LINE,		//ビリビリライン
+		BB_ELECTRICITY,	//ビリビリ電流
 		MAX_LAYER		//最大数
 	};
 
@@ -544,4 +548,36 @@ inline static DirectX::XMFLOAT4 SplitSprite(TexSplitInfo info)
 	float v = row * sv;
 
 	return DirectX::XMFLOAT4{ u, v, su, sv };
+}
+
+//クオータニオンからオイラー角への変換
+inline DirectX::XMFLOAT3 QuaternionToEuler(const DirectX::XMVECTOR& q)
+{
+	using namespace DirectX;
+
+	// q = (x, y, z, w)
+	XMFLOAT4 fq;
+	XMStoreFloat4(&fq, q);
+
+	// --- x軸回転（Pitch として使うやつ） ---
+	// roll_x = atan2( 2(w*x + y*z), 1 - 2(x^2 + y^2) )
+	float sinr_cosp = 2.0f * (fq.w * fq.x + fq.y * fq.z);
+	float cosr_cosp = 1.0f - 2.0f * (fq.x * fq.x + fq.y * fq.y);
+	float rotX = std::atan2(sinr_cosp, cosr_cosp);
+
+	// --- y軸回転（Yaw として使うやつ） ---
+	// pitch_y = asin( 2(w*y - z*x) )   （±90°近辺でクランプ）
+	float sinp = 2.0f * (fq.w * fq.y - fq.z * fq.x);
+	if (sinp > 1.0f)  sinp = 1.0f;
+	if (sinp < -1.0f) sinp = -1.0f;
+	float rotY = std::asin(sinp);
+
+	// --- z軸回転（Roll として使うやつ） ---
+	// yaw_z = atan2( 2(w*z + x*y), 1 - 2(y^2 + z^2) )
+	float siny_cosp = 2.0f * (fq.w * fq.z + fq.x * fq.y);
+	float cosy_cosp = 1.0f - 2.0f * (fq.y * fq.y + fq.z * fq.z);
+	float rotZ = std::atan2(siny_cosp, cosy_cosp);
+
+	// X: x軸まわり, Y: y軸まわり, Z: z軸まわり
+	return XMFLOAT3(rotX, rotY, rotZ);
 }

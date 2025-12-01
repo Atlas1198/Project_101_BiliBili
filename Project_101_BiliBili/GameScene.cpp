@@ -16,6 +16,7 @@ GameScene::GameScene(float window_width, float window_height)
 	m_pFieldManager = new FieldManager();	//フィールド管理クラスの生成
 	m_pGameUIManager = new GameUIManager();	//ゲームUI管理クラスの生成
 	m_pBulletManager = new BulletManager(); //弾管理クラスの生成
+	m_pBBManager = new BBManager();			//BB管理クラスの生成
 }
 
 //デストラクタ
@@ -40,6 +41,11 @@ GameScene::~GameScene()
 	{
 		delete m_pBulletManager;	//弾管理クラスの削除
 		m_pBulletManager = nullptr;
+	}
+	if (m_pBBManager)
+	{
+		delete m_pBBManager;		//BB管理クラスの削除
+		m_pBBManager = nullptr;
 	}
 }
 
@@ -77,6 +83,15 @@ void GameScene::InitializeOverride(
 	);
 
 	m_pBulletManager->SetGameUIManager(m_pGameUIManager);
+
+	m_pBBManager->SetGameUIManager(m_pGameUIManager);
+	m_pBBManager->SetCollisionManager(m_pCollisionManager);
+	m_pBBManager->Initialize(			//BB管理クラス初期化
+		pInputManager,
+		pTextureManager,
+		pMeshManager,
+		*m_pCollisionManager
+	);
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
@@ -122,6 +137,9 @@ void GameScene::UpdateOverride()
 	m_pFieldManager->Update();	//フィールド管理クラス更新
 	m_pGameUIManager->Update();	//ゲームUI管理クラス更新
 	m_pBulletManager->Update(); //弾管理クラス更新
+	
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();		//BB管理クラス更新
 
 	if (m_pInputManager->GetInputInfo()->enter.trigger)
 	{
@@ -140,8 +158,9 @@ void GameScene::UpdateOverride()
 void GameScene::ResolveCollisions()
 {
 	m_pPlayerManager->ResolveCollisions();	//プレイヤー管理クラス衝突後処理
-	m_pFieldManager->ResolveCollisions();
-	m_pBulletManager->ResolveCollisions(); //弾管理クラス衝突後処理
+	m_pFieldManager->ResolveCollisions();	//フィールド管理クラス衝突後処理
+	m_pBulletManager->ResolveCollisions();	//弾管理クラス衝突後処理
+	m_pBBManager->ResolveCollisions();		//BB管理クラス衝突後処理
 }
 
 //描画
@@ -151,6 +170,7 @@ void GameScene::DrawOverride(Renderer& pRenderer)
 	m_pFieldManager->SubmitDraws(pRenderer);
 	m_pGameUIManager->SubmitDraws(pRenderer);
 	m_pBulletManager->SubmitDraws(pRenderer);
+	m_pBBManager->SubmitDraws(pRenderer);
 }
 
 //終了
@@ -159,5 +179,6 @@ void GameScene::FinalizeOverride()
 	m_pPlayerManager->Finalize();	//プレイヤー管理クラス終了
 	m_pFieldManager->Finalize();	//フィールド管理クラス終了
 	m_pGameUIManager->Finalize();	//ゲームUI管理クラス終了
-	m_pBulletManager->Finalize(); //弾管理クラス終了
+	m_pBulletManager->Finalize();	//弾管理クラス終了
+	m_pBBManager->Finalize();		//BB管理クラス終了
 }
