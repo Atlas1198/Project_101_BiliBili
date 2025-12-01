@@ -11,7 +11,7 @@ void BulletManager::FireBullet(
     uint32_t ownerID
     )
 {
-    auto bullet = std::make_unique<Bullet>(m_pGameUIManager, position, direction, speed, ownerTeam, ownerID);
+    auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID);
     if (m_pCollisionManager)
     {
         m_pCollisionManager->RegisterCollider(bullet->GetCollider());
@@ -28,6 +28,15 @@ void BulletManager::InitializeOverride(
     )
 {
     m_pCollisionManager = &collisionManager;
+
+	//TODO: âòÇ¢ÉRÅ[ÉhÇ»ÇÃÇ≈íºÇ∑
+    FireBullet(
+        DirectX::XMFLOAT3(100.0f, 0.0f, 0.0f),
+        DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f),
+        0.0f,
+        0,
+        0
+    );
 }
 
 

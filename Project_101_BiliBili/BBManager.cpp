@@ -66,7 +66,7 @@ void BBManager::UpdateOverride()
 	{
 		if (EventManager::GetInstance()->itemPickup[i])
 		{
-			m_BB[i]->ActivateBB();
+			SetBB(i, true);
 			m_BBTimer[i] = BBDuration;
 			m_frameTimer[i].Mark();
 			EventManager::GetInstance()->itemPickup[i] = false;
@@ -77,7 +77,7 @@ void BBManager::UpdateOverride()
 			m_BBTimer[i] -= m_frameTimer[i].Mark();
 			if (m_BBTimer[i] <= 0.0f)
 			{
-				m_BB[i]->DisableBB();
+				SetBB(i, false);
 				m_BBTimer[i] = 0.0f;
 			}
 		}

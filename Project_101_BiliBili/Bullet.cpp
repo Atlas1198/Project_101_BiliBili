@@ -4,7 +4,6 @@
 #include "EventManager.h"
 
 Bullet::Bullet(
-	GameUIManager *pGameUIManager,
                const DirectX::XMFLOAT3& pos,
                const DirectX::XMFLOAT3& dir,
                float speed,
@@ -14,17 +13,18 @@ Bullet::Bullet(
                float maxDistance)
 
     : ObjectBase(
-        MeshData::MESH_TYPE::CUBE,
+        MeshData::MESH_TYPE::QUAD,
         pos,
         {0,0,0},
-        {0.2f,0.2f,0.2f}, 
+        {1.0f,1.0f,1.0f}, 
         {0,0,0},
         true,
         OBJECT_TAG::BULLET,
         ColliderType::BOX,
-        CollisionData::COLLISION_LAYER::BULLET
+        CollisionData::COLLISION_LAYER::BULLET,
+        { 0.2f,0.2f,0.2f }
 	), m_direction(dir), m_speed(speed), m_ownerTeam(ownerTeam), m_ownerID(ownerID),
-    m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance), m_pGameUIManager(pGameUIManager)
+    m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance)
 {
     SetActive(true);
 }

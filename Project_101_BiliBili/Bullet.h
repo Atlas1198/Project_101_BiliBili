@@ -1,13 +1,11 @@
 #pragma once
 #include "ObjectBase.h"
 #include <DirectXMath.h>
-#include "GameUIManager.h"
 
 class Bullet : public ObjectBase
 {
 public:
     Bullet(
-		GameUIManager *m_pGameUIManager,
         const DirectX::XMFLOAT3& pos,
         const DirectX::XMFLOAT3& dir,
         float speed,
@@ -31,5 +29,4 @@ private:
     float m_maxDistance;            //Å‘åˆÚ“®‹——£
     float m_traveled = 0.0f;        //ˆÚ“®‚µ‚½‹——£
     bool m_deleteFlag = false;
-	GameUIManager *m_pGameUIManager;
 };

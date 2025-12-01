@@ -35,7 +35,7 @@ void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager
 	//TODO: 汚いコードなので後で直す
 	m_pItems.push_back(
 		new Item(
-			MeshData::MESH_TYPE::CUBE,
+			MeshData::MESH_TYPE::QUAD,
 			XMFLOAT3(50.0f, -3.0f, 0.0f),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
@@ -62,7 +62,7 @@ void ItemManager::SpawnItem()
 
 	m_pItems.push_back(
 		new Item(
-			MeshData::MESH_TYPE::CUBE,
+			MeshData::MESH_TYPE::QUAD,
 			XMFLOAT3(xDist(gen), -3.0f, zDist(gen)),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
