@@ -119,14 +119,14 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 		XMVectorSet(info.up.x, info.up.y, info.up.z, 0.0f));					//カメラの上方向ベクトル
 
 	//ワールドプロジェクション行列の更新
-	/*
-	m_worldProj = XMMatrixPerspectiveFovLH(
-		info.fov,			//視野角
-		info.aspectRatio,	//アスペクト比
-		info.nearZ,			//ニアクリップ距離
-		info.farZ			//ファークリップ距離
-	);
-	*/
+	
+	//m_worldProj = XMMatrixPerspectiveFovLH(
+	//	info.fov,			//視野角
+	//	info.aspectRatio,	//アスペクト比
+	//	info.nearZ,			//ニアクリップ距離
+	//	info.farZ			//ファークリップ距離
+	//);
+	
 
 	float orthoheight = 30;
 	float orthowidth = orthoheight * info.aspectRatio;
