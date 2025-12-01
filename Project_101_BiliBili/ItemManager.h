@@ -4,6 +4,7 @@
 #include "ObjectManagerBase.h"
 #include "SharedStruct.h"
 #include "Item.h"
+#include "FrameTimer.h"
 
 //前方宣言
 class Renderer;
@@ -14,10 +15,12 @@ class MeshManager;
 //フィールド管理クラス
 class ItemManager : public ObjectManagerBase
 {
-	const wchar_t* itemTexPath = L"asset/texture/white.png";
+	const wchar_t* itemTexPath = L"asset/texture/change_item.png";
 public:
 	ItemManager();		//コンストラクタ
 	~ItemManager();	//デストラクタ
+	void SpawnItem();
+	inline static float ITEM_RESPAWN = 15.0f;
 
 private:	//非公開メンバ変数
 	//メイン処理関数
@@ -40,4 +43,6 @@ private:	//非公開メンバ変数
 private:
 	std::vector<Item*> m_pItems;						//アイテムオブジェクト配列
 	std::vector<RenderData::RenderInfo> m_itemInfo;		//アイテム描画情報
+	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
+	FrameTimer m_frameTimer;
 };

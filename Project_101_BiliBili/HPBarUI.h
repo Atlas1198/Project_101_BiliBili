@@ -41,7 +41,7 @@ private:
 	void UpdateGageImage();	//ゲージ画像更新関数
 
 public:
-	void TakeDamage(float damage);	//ダメージ処理関数
+	void SetHealth(float health);
 
 private:
 	float m_hpRate = 1.0f;		//HP割合(0.0~1.0)

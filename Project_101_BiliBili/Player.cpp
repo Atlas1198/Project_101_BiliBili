@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <DirectXMath.h>
 #include "App.h"
+#include "EventManager.h"
 
 using namespace DirectX;
 using namespace CollisionData;
@@ -197,6 +198,8 @@ void Player::Shoot()
 
 	if (shoot && teammate)
 	{
+		if (!EventManager::GetInstance()->UseBullet(teamID)) return;
+
 		DirectX::XMFLOAT3 dir{ 0.0f, 0.0f, 1.0f };
 
 		DirectX::XMFLOAT3 matePos = teammate->GetPosition();
@@ -222,7 +225,7 @@ void Player::Shoot()
 		m_pBulletManager->FireBullet(
 			m_position,
 			dir,
-			0.2f,
+			BULLET_SPEED,
 			teamID,
 			id
 		);

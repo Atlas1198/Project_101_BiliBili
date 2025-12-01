@@ -1,3 +1,9 @@
 {
-    "move-speed": 0.2
+  "move-speed": 0.2,
+  "bullet-speed": 0.2,
+  "bullet-recovery": 2.0,
+  "bullet-damage": 0.1,
+  "item-spawn": 15.0,
+  "bilibili-duration": 5.0,
+  "bilibili-damage": 0.001
 }

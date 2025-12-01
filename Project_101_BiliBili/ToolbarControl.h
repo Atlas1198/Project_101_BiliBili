@@ -10,24 +10,22 @@
 struct ToolParameter
 {
 	private:
-		int current = 2;
+		float current = 0.2f;
 	public:
-		float divisionBy = 10;
-		int min = 0;
-		int max = 10;
+		float min = 0;
+		float max = 1.0f;
 		std::string name;
 
-		void SetValue(int val) 
+		void SetValue(float val) 
 		{ 
 			if (val < min) current = min;
 			else if (val > max) current = max;
 			else current = val; 
 		}
-		float GetValue() const { return static_cast<float>(current) / divisionBy; }
-		int GetIntValue() const { return current; }
+		float GetValue() const { return current; }
 
-		ToolParameter(std::string paramName, int minVal, int maxVal, int currentVal, float divBy)
-			: name(paramName), divisionBy(divBy)
+		ToolParameter(std::string paramName, float minVal, float maxVal, float currentVal)
+			: name(paramName)
 		{
 			min = minVal;
 			max = maxVal;
@@ -43,6 +41,12 @@ struct ToolbarControl
 
 	std::vector<ToolParameter> parameters =
 	{
-		{ "move-speed", 0, 10, 2, 10.0f },
+		{ "move-speed", 0, 1.0f, 0.2f},
+		{ "bullet-speed", 0.05f, 1.0f, 0.2f},
+		{ "bullet-recovery", 1.0f, 5.0f, 2.0f},
+		{ "bullet-damage", 0, 0.3f, 0.1f},
+		{ "item-spawn", 0, 20.0f, 15.0f},
+		{ "bilibili-duration", 1.0f, 20.0f, 5.0f},
+		{ "bilibili-damage", 0, 0.01f, 0.001f},
 	};
 };

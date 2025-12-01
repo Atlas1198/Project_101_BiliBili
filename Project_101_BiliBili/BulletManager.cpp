@@ -1,6 +1,7 @@
 #include "BulletManager.h"
 #include "CollisionManager.h"
 #include "Renderer.h"
+#include "EventManager.h"
 
 void BulletManager::FireBullet(
     const DirectX::XMFLOAT3& position,
@@ -10,7 +11,7 @@ void BulletManager::FireBullet(
     uint32_t ownerID
     )
 {
-    auto bullet = std::make_unique<Bullet>(m_pGameUIManager, position, direction, speed, ownerTeam, ownerID);
+    auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
         m_pCollisionManager->RegisterCollider(bullet->GetCollider());
@@ -27,6 +28,15 @@ void BulletManager::InitializeOverride(
     )
 {
     m_pCollisionManager = &collisionManager;
+
+	//TODO: ‰˜‚¢ƒR[ƒh‚È‚Ì‚Å’¼‚·
+    FireBullet(
+        DirectX::XMFLOAT3(100.0f, 0.0f, 0.0f),
+        DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f),
+        0.0f,
+        0,
+        0
+    );
 }
 
 
@@ -51,6 +61,14 @@ void BulletManager::UpdateOverride()
         ),
         m_bullets.end()
     );
+
+    m_bulletRestoreElapsed += m_bulletRestoreTimer.Mark();
+
+    if (m_bulletRestoreElapsed >= BULLET_RECOVERY)
+    {
+		EventManager::GetInstance()->AddBullets(1);
+        m_bulletRestoreElapsed = 0.0f;
+    }
 }
 
 

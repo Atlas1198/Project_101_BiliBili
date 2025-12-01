@@ -5,6 +5,7 @@
 #include <memory>
 #include "SharedStruct.h"
 #include "GameUIManager.h"
+#include "FrameTimer.h"
 
 class BulletManager : public ObjectManagerBase
 {
@@ -12,7 +13,7 @@ public:
     BulletManager() {}
     ~BulletManager() {}
 
-    const wchar_t *texPath = L"asset/texture/change_item.png";
+    const wchar_t *texPath = L"asset/texture/bullet.png";
 
     void FireBullet(
         const DirectX::XMFLOAT3& position,
@@ -25,6 +26,9 @@ public:
     {
         m_pGameUIManager = pGameUIManager;
 	}
+
+    inline static float BULLET_RECOVERY = 2.0f;
+    inline static float BULLET_DAMAGE = 0.1f;
 
 protected:
     void InitializeOverride(InputManager* pInputManager,
@@ -43,4 +47,6 @@ private:
     CollisionManager* m_pCollisionManager = nullptr;
     std::vector<RenderData::RenderInfo> m_bulletInfo;
 	GameUIManager *m_pGameUIManager = nullptr;
+    FrameTimer m_bulletRestoreTimer;
+	float m_bulletRestoreElapsed;
 };

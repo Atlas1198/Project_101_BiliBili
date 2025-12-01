@@ -1,4 +1,5 @@
 #include "HPBarUI.h"
+#include "EventManager.h"
 
 //コンストラクタ
 HPBarUI::HPBarUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order)
@@ -69,11 +70,11 @@ void HPBarUI::UpdateGageImage()
 	m_pGageImage->SetUVRect(uvRect);
 }
 
-void HPBarUI::TakeDamage(float damage)
+void HPBarUI::SetHealth(float health)
 {
-	m_hpRate = (std::max)(0.0f, m_hpRate - damage);
-	if (m_hpRate <= 0.0f)
+	m_hpRate = (std::max)(0.0f, health);
+	if (health < 0.01f)
 	{
-		m_hpRate = 0.0f;
+		EventManager::GetInstance()->gameOver = true;
 	}
 }

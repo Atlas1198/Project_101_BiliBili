@@ -23,6 +23,7 @@ public:
 	) override;
 	void UpdateOverride() override;
 	void FinalizeOverride() override;
+	void SetBulletCount(int count) { m_currentBulletCount = count; } // ’e”İ’è
 private:
 	UIImage* m_pBulletImage = nullptr;	//’e”‰æ‘œUIƒ|ƒCƒ“ƒ^
 	int m_bulletCountMax = 6;			//Å‘å’e”
