@@ -10,8 +10,8 @@ struct ControllerInputInfo;
 
 // コントローラーが接続できる最大数　
 static constexpr int CONTROLLERS_MAX = 4;
-static constexpr float DEADZONE_L = 0.0f;
-static constexpr float DEADZONE_R = 0.5f;
+static constexpr float DEADZONE_L = 0.4f;
+static constexpr float DEADZONE_R = 0.4f;
 
 // 1つのコントローラーの状態を表す構造体
 struct ControllerState
