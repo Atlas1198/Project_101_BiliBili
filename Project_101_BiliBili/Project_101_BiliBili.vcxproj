@@ -156,6 +156,7 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="DirectXTex.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="ElectricityBB.cpp" />
     <ClCompile Include="Engine.cpp" />

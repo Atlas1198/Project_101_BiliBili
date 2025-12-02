@@ -1,54 +1,83 @@
 #pragma once
 #include "SharedStruct.h"
+#include "Controller.h"
 
 //キー入力状態構造体
-struct KeyInputState
+struct InputState
 {
 	bool trigger = false;
 	bool down = false;
 	bool up = false;
 };
 
+struct KeyInputInfo
+{
+	InputState w;
+	InputState a;
+	InputState s;
+	InputState d;
+	InputState t;
+	InputState f;
+	InputState g;
+	InputState h;
+	InputState i;
+	InputState j;
+	InputState k;
+	InputState l;
+	InputState up;
+	InputState down;
+	InputState left;
+	InputState right;
+	InputState space;
+	InputState enter;
+	InputState p;
+	InputState z;
+	InputState c;
+	InputState n;
+	InputState rightCtrl;
+};
+
+struct ControllerInputInfo
+{
+	InputState A;			//Aボタンor〇ボタン
+	InputState B;			//Bボタンor×ボタン
+	InputState X;			//Xボタンor△ボタン
+	InputState Y;			//Yボタンor□ボタン
+	InputState START;		//STARTボタン
+	InputState BACK;		//BACKボタン
+	InputState LSHOULDER;	//左肩ボタン
+	InputState RSHOULDER;	//右肩ボタン
+	InputState LTHUMB;		//左スティックの押下
+	InputState RTHUMB;		//右スティックの押下
+	InputState UP;			//上ボタン
+	InputState DOWN;		//下ボタン
+	InputState LEFT;		//左ボタン
+	InputState RIGHT;		//右ボタン
+
+	DirectX::XMFLOAT2 leftStick;	//Left stick(normalized)
+	DirectX::XMFLOAT2 rightStick;	//Right stick(normalized)
+};
+
 //入力情報構造体
 struct InputInfo
 {
-	KeyInputState w;
-	KeyInputState a;
-	KeyInputState s;
-	KeyInputState d;
-	KeyInputState t;
-	KeyInputState f;
-	KeyInputState g;
-	KeyInputState h;
-	KeyInputState i;
-	KeyInputState j;
-	KeyInputState k;
-	KeyInputState l;
-	KeyInputState up;
-	KeyInputState down;
-	KeyInputState left;
-	KeyInputState right;
-	KeyInputState space;
-	KeyInputState enter;
-	KeyInputState p;
-	KeyInputState z;
-	KeyInputState c;
-	KeyInputState n;
-	KeyInputState rightCtrl;
+	KeyInputInfo key;
+	ControllerInputInfo controller[CONTROLLERS_MAX];
 };
 
 //入力管理クラス
 class InputManager
 {
 private:
-	InputInfo m_inputInfo{};			//入力情報構造体
+	InputInfo m_inputInfo{};		//入力情報構造体
+	Controller m_controller;	//コントローラー管理クラス
 
 public:
 	InputManager() {};	//コンストラクタ
 	~InputManager() {};	//デストラクタ
 	void Initialize();	//初期化
 	void Update();		//更新
-	void keyCopy();		//キー情報コピー
+	void Copy();		//キー情報コピー
 
 	//ゲッター
 	InputInfo* GetInputInfo();	//入力情報構造体取得

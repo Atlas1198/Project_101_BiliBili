@@ -96,39 +96,52 @@ void Player::Move()
 
 	
 
-	bool up = m_pInputInfo->w.down;
-	bool down = m_pInputInfo->s.down;
-	bool left = m_pInputInfo->a.down;
-	bool right = m_pInputInfo->d.down;
+	bool up = m_pInputInfo->key.w.down;
+	bool down = m_pInputInfo->key.s.down;
+	bool left = m_pInputInfo->key.a.down;
+	bool right = m_pInputInfo->key.d.down;
+
+	XMFLOAT2 dir = { 0.0f, 0.0f };
 
 	if (!App::GetInstance()->isOnline)
 	{
 		switch (id)
 		{
 		case 0:
+			dir = m_pInputInfo->controller[0].leftStick; 
+			up = m_pInputInfo->key.w.down;
+			down = m_pInputInfo->key.s.down;
+			left = m_pInputInfo->key.a.down;
+			right = m_pInputInfo->key.d.down;
 			break;
 		case 1:
-			up = m_pInputInfo->t.down;
-			down = m_pInputInfo->g.down;
-			left = m_pInputInfo->f.down;
-			right = m_pInputInfo->h.down;
+			dir = m_pInputInfo->controller[1].leftStick;
+			up = m_pInputInfo->key.t.down;
+			down = m_pInputInfo->key.g.down;
+			left = m_pInputInfo->key.f.down;
+			right = m_pInputInfo->key.h.down;
 			break;
 		case 2:
-			up = m_pInputInfo->i.down;
-			down = m_pInputInfo->k.down;
-			left = m_pInputInfo->j.down;
-			right = m_pInputInfo->l.down;
+			dir = m_pInputInfo->controller[2].leftStick;
+			up = m_pInputInfo->key.i.down;
+			down = m_pInputInfo->key.k.down;
+			left = m_pInputInfo->key.j.down;
+			right = m_pInputInfo->key.l.down;
 			break;
 		case 3:
-			up = m_pInputInfo->up.down;
-			down = m_pInputInfo->down.down;
-			left = m_pInputInfo->left.down;
-			right = m_pInputInfo->right.down;
+			dir = m_pInputInfo->controller[3].leftStick;
+			up = m_pInputInfo->key.up.down;
+			down = m_pInputInfo->key.down.down;
+			left = m_pInputInfo->key.left.down;
+			right = m_pInputInfo->key.right.down;
 			break;
 		default:
 			break;
 		}
 	}
+
+	m_position.x += dir.x * MOVE_SPEED;
+	m_position.z += dir.y * MOVE_SPEED;
 
 	if(up)
 	{
@@ -161,7 +174,7 @@ void Player::Move()
 
 
 	m_velocity.y -= 0.1f; //d—Í
-	if (m_pInputInfo->a.down && m_pInputInfo->d.down)
+	if (m_pInputInfo->key.a.down && m_pInputInfo->key.d.down)
 	{
 		//ƒWƒƒƒ“ƒv
 		m_velocity.y += 0.2f;
@@ -174,22 +187,23 @@ void Player::Shoot()
 {
 	if (!m_pBulletManager) return;
 
-	bool shoot = m_pInputInfo->z.trigger;
+	bool shoot = false;
 
 	if (!App::GetInstance()->isOnline)
 	{
 		switch (id)
 		{
 		case 0:
+			shoot = m_pInputInfo->key.z.trigger|| m_pInputInfo->controller[0].B.trigger;
 			break;
 		case 1:
-			shoot = m_pInputInfo->c.trigger;
+			shoot = m_pInputInfo->key.c.trigger || m_pInputInfo->controller[1].B.trigger;
 			break;
 		case 2:
-			shoot = m_pInputInfo->n.trigger;
+			shoot = m_pInputInfo->key.n.trigger || m_pInputInfo->controller[2].B.trigger;
 			break;
 		case 3:
-			shoot = m_pInputInfo->rightCtrl.trigger;
+			shoot = m_pInputInfo->key.rightCtrl.trigger || m_pInputInfo->controller[3].B.trigger;
 			break;
 		default:
 			break;

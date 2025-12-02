@@ -194,7 +194,7 @@ void App::Run()
 				Draw();		//描画
 
 				//フレーム終了後処理
-				m_pInputManager->keyCopy(); //入力管理クラスのキー情報コピー
+				m_pInputManager->Copy(); //入力管理クラスのキー情報コピー
 			}
 		}
 	} while (msg.message != WM_QUIT);	//終了メッセージが来るまで
