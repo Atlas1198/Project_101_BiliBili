@@ -67,6 +67,14 @@ public:
 	PlayerDescription descPlayer;
 	std::unordered_map<uint32_t, PlayerDescription> players;
 	Vec3 spawnPos = { 0.0f, 0.0f, 0.0f };
+
+	/*Vec3 spawnPos[4] = {
+		{-13.0f, 0.0f, 18.0f},
+		{13.0f, 0.0f, 18.0f},
+		{-13.0f, 0.0f, -8.0f},
+		{-13.0f, 0.0f, -8.0f}
+	};*/
+
 	bool isOnline = false;
 
 private:

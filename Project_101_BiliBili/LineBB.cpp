@@ -82,7 +82,7 @@ void LineBB::CollectWallCollisions()
 		OBJECT_TAG opponentTag = info.opponent->GetOwner()->GetTag();
 
 		//�ǂƂ̏Փ˂̂ݎ��W
-		if (opponentTag == OBJECT_TAG::WALL || opponentTag == OBJECT_TAG::WALLPASS)
+		if (opponentTag == OBJECT_TAG::WALL)
 		{
 			m_wallCollisionPoints.push_back(info.contactPoint);
 		}

@@ -46,7 +46,16 @@ Player* PlayerManager::AddPlayer(
 	BulletManager *pBulletManager	//’eŠÛŠÇ—ƒNƒ‰ƒX‚ÌŽQÆ
 )
 {
-	Vec3 spawnPos = App::GetInstance()->spawnPos;
+	//Vec3 spawnPos = App::GetInstance()->spawnPos[m_pPlayer.size()];
+
+	Vec3 spawnPoses[4] = {
+		{-13.0f, 0.0f, 18.0f},
+		{13.0f, 0.0f, 18.0f},
+		{-13.0f, 0.0f, -8.0f},
+		{13.0f, 0.0f, -8.0f}
+	};
+
+	Vec3 spawnPos = spawnPoses[m_pPlayer.size()];
 
 	Player *newPlayer = new Player
 	(
