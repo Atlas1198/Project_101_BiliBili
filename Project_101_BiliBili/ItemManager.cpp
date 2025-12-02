@@ -130,7 +130,7 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 		meshManager,					//メッシュマネージャへの参照
 		&m_itemInfo,					//描画情報構造体配列へのポインタ
 		m_pItems[0]->GetMeshType(),	//メッシュタイプ
-		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		itemTexPath					//テクスチャのファイル名
 	);
 
