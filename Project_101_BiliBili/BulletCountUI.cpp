@@ -24,6 +24,7 @@ void BulletCountUI::InitializeOverride(TextureManager& textureManager, MeshManag
 
 void BulletCountUI::UpdateOverride()
 {
+	/*
 	m_frameCount++;
 	if(m_frameCount % 60 == 0) // 60ƒtƒŒ[ƒ€‚²‚Æ‚É’e‚ğÁ”ï(‰¼)
 	{
@@ -33,6 +34,7 @@ void BulletCountUI::UpdateOverride()
 			m_currentBulletCount = m_bulletCountMax;
 		}
 	}
+	*/
 
 	for(int i = 0; i < m_bulletCountMax; ++i)
 	{

@@ -8,74 +8,87 @@
 
 using namespace RenderData;
 
-//�R���X�g���N�^
+//コンストラクタ
 GameScene::GameScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
 {
-	m_pPlayerManager = new PlayerManager();	//�v���C���[�Ǘ��N���X�̐���
-	m_pFieldManager = new FieldManager();	//�t�B�[���h�Ǘ��N���X�̐���
-	m_pGameUIManager = new GameUIManager();	//�Q�[��UI�Ǘ��N���X�̐���
-	m_pBulletManager = new BulletManager(); //�e�Ǘ��N���X�̐���
-	m_pBBManager = new BBManager();			//BB�Ǘ��N���X�̐���
+	m_pPlayerManager = new PlayerManager();	//プレイヤー管理クラスの生成
+	m_pFieldManager = new FieldManager();	//フィールド管理クラスの生成
+	m_pGameUIManager = new GameUIManager();	//ゲームUI管理クラスの生成
+	m_pBulletManager = new BulletManager(); //弾管理クラスの生成
+	m_pItemManager = new ItemManager();		//アイテム管理クラスの生成
+	m_pBBManager = new BBManager();			//BB管理クラスの生成
 }
 
-//�f�X�g���N�^
+//デストラクタ
 GameScene::~GameScene()
 {
 	if (m_pPlayerManager)
 	{
-		delete m_pPlayerManager;	//�v���C���[�Ǘ��N���X�̍폜
+		delete m_pPlayerManager;	//プレイヤー管理クラスの削除
 		m_pPlayerManager = nullptr;
 	}
 	if (m_pFieldManager)
 	{
-		delete m_pFieldManager;		//�t�B�[���h�Ǘ��N���X�̍폜
+		delete m_pFieldManager;		//フィールド管理クラスの削除
 		m_pFieldManager = nullptr;
 	}
 	if (m_pGameUIManager)
 	{
-		delete m_pGameUIManager;	//�Q�[��UI�Ǘ��N���X�̍폜
+		delete m_pGameUIManager;	//ゲームUI管理クラスの削除
 		m_pGameUIManager = nullptr;
 	}
 	if (m_pBulletManager)
 	{
-		delete m_pBulletManager;	//�e�Ǘ��N���X�̍폜
+		delete m_pBulletManager;	//弾管理クラスの削除
 		m_pBulletManager = nullptr;
+	}
+	if (m_pItemManager)
+	{
+		delete m_pItemManager;		//アイテム管理クラスの削除
+		m_pItemManager = nullptr;
 	}
 	if (m_pBBManager)
 	{
-		delete m_pBBManager;		//BB�Ǘ��N���X�̍폜
+		delete m_pBBManager;		//BB管理クラスの削除
 		m_pBBManager = nullptr;
 	}
 }
 
-//������
+//初期化
 void GameScene::InitializeOverride(
-	InputManager* pInputManager,		//���̓}�l�[�W���[�̃|�C���^
-	TextureManager& pTextureManager,	//�e�N�X�`���Ǘ��N���X�̃|�C���^
-	MeshManager& pMeshManager			//���b�V���Ǘ��N���X�̃|�C���^
+	InputManager* pInputManager,		//入力マネージャーのポインタ
+	TextureManager& pTextureManager,	//テクスチャ管理クラスのポインタ
+	MeshManager& pMeshManager			//メッシュ管理クラスのポインタ
 )
 {
-	m_pPlayerManager->Initialize(	//�v���C���[�Ǘ��N���X������
+	m_pPlayerManager->Initialize(	//プレイヤー管理クラス初期化
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
 	);
 
-	m_pFieldManager->Initialize(	//�t�B�[���h�Ǘ��N���X������
+	m_pFieldManager->Initialize(	//フィールド管理クラス初期化
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
 	);
 
-	m_pGameUIManager->Initialize(	//�Q�[��UI�Ǘ��N���X������
+	m_pGameUIManager->Initialize(	//ゲームUI管理クラス初期化
 		pTextureManager,
 		pMeshManager
 	);
 
-	m_pBulletManager->Initialize( //�e�Ǘ��N���X������
+	m_pBulletManager->Initialize( //弾管理クラス初期化
+		pInputManager,
+		pTextureManager,
+		pMeshManager,
+		*m_pCollisionManager
+	);
+
+	m_pItemManager->Initialize(		//アイテム管理クラス初期化
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
@@ -86,12 +99,14 @@ void GameScene::InitializeOverride(
 
 	m_pBBManager->SetGameUIManager(m_pGameUIManager);
 	m_pBBManager->SetCollisionManager(m_pCollisionManager);
-	m_pBBManager->Initialize(			//BB�Ǘ��N���X������
+	m_pBBManager->Initialize(			//BB管理クラス初期化
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
 	);
+
+	m_pItemManager->SpawnItem();
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
@@ -130,16 +145,17 @@ void GameScene::RemovePlayer(uint32_t id)
 	m_pPlayerManager->RemovePlayer(id);
 }
 
-//�X�V
+//更新
 void GameScene::UpdateOverride()
 {
-	m_pPlayerManager->Update();	//�v���C���[�Ǘ��N���X�X�V
-	m_pFieldManager->Update();	//�t�B�[���h�Ǘ��N���X�X�V
-	m_pGameUIManager->Update();	//�Q�[��UI�Ǘ��N���X�X�V
-	m_pBulletManager->Update(); //�e�Ǘ��N���X�X�V
+	m_pPlayerManager->Update();	//プレイヤー管理クラス更新
+	m_pFieldManager->Update();	//フィールド管理クラス更新
+	m_pGameUIManager->Update();	//ゲームUI管理クラス更新
+	m_pBulletManager->Update(); //弾管理クラス更新
+	m_pItemManager->Update();	//アイテム管理クラス更新
 	
-	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//�v���C���[�ʒu�̐ݒ�
-	m_pBBManager->Update();		//BB�Ǘ��N���X�X�V
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();		//BB管理クラス更新
 
 	if (m_pInputManager->GetInputInfo()->key.enter.trigger)
 	{
@@ -154,31 +170,34 @@ void GameScene::UpdateOverride()
 	}
 }
 
-//�Փˌ㏈��
+//衝突後処理
 void GameScene::ResolveCollisions()
 {
-	m_pPlayerManager->ResolveCollisions();	//�v���C���[�Ǘ��N���X�Փˌ㏈��
-	m_pFieldManager->ResolveCollisions();	//�t�B�[���h�Ǘ��N���X�Փˌ㏈��
-	m_pBulletManager->ResolveCollisions();	//�e�Ǘ��N���X�Փˌ㏈��
-	m_pBBManager->ResolveCollisions();		//BB�Ǘ��N���X�Փˌ㏈��
+	m_pPlayerManager->ResolveCollisions();	//プレイヤー管理クラス衝突後処理
+	m_pFieldManager->ResolveCollisions();
+	m_pBulletManager->ResolveCollisions();	//弾管理クラス衝突後処理
+	m_pItemManager->ResolveCollisions();	//アイテム管理クラス衝突後処理
+  m_pBBManager->ResolveCollisions();		//BB管理クラス衝突後処理
 }
 
-//�`��
+//描画
 void GameScene::DrawOverride(Renderer& pRenderer)
 {
 	m_pPlayerManager->SubmitDraws(pRenderer);
 	m_pFieldManager->SubmitDraws(pRenderer);
 	m_pGameUIManager->SubmitDraws(pRenderer);
 	m_pBulletManager->SubmitDraws(pRenderer);
+	m_pItemManager->SubmitDraws(pRenderer);
 	m_pBBManager->SubmitDraws(pRenderer);
 }
 
-//�I��
+//終了
 void GameScene::FinalizeOverride()
 {
-	m_pPlayerManager->Finalize();	//�v���C���[�Ǘ��N���X�I��
-	m_pFieldManager->Finalize();	//�t�B�[���h�Ǘ��N���X�I��
-	m_pGameUIManager->Finalize();	//�Q�[��UI�Ǘ��N���X�I��
-	m_pBulletManager->Finalize();	//�e�Ǘ��N���X�I��
-	m_pBBManager->Finalize();		//BB�Ǘ��N���X�I��
+	m_pPlayerManager->Finalize();	//プレイヤー管理クラス終了
+	m_pFieldManager->Finalize();	//フィールド管理クラス終了
+	m_pGameUIManager->Finalize();	//ゲームUI管理クラス終了
+	m_pBulletManager->Finalize();	//弾管理クラス終了
+	m_pItemManager->Finalize();		//アイテム管理クラス終了
+	m_pBBManager->Finalize();		//BB管理クラス終了
 }

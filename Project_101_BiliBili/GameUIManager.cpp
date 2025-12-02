@@ -1,4 +1,5 @@
 #include "GameUIManager.h"
+#include "EventManager.h"
 
 //デストラクタ
 GameUIManager::~GameUIManager()
@@ -91,6 +92,11 @@ void GameUIManager::InitializeOverride(
 //更新
 void GameUIManager::UpdateOverride()
 {
+	m_pHPBarUI1->SetHealth(EventManager::GetInstance()->teamHP[0]);
+	m_pHPBarUI2->SetHealth(EventManager::GetInstance()->teamHP[1]);
+
+	m_pBulletCountUI1->SetBulletCount(EventManager::GetInstance()->teamBulletCount[0]);
+	m_pBulletCountUI2->SetBulletCount(EventManager::GetInstance()->teamBulletCount[1]);
 }
 
 //終了
@@ -98,17 +104,7 @@ void GameUIManager::FinalizeOverride()
 {
 }
 
-void GameUIManager::TakeDamage(int teamID, float damage)
-{
-	if (teamID == 0 && m_pHPBarUI1)
-	{
-		m_pHPBarUI1->TakeDamage(damage);
-	}
-	else if (teamID == 1 && m_pHPBarUI2)
-	{
-		m_pHPBarUI2->TakeDamage(damage);
-	}
-}
+
 
 void GameUIManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {

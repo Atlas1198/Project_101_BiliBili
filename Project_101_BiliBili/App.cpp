@@ -8,6 +8,7 @@
 #include <commdlg.h>
 #include "json.hpp"
 #include <fstream>
+#include "EventManager.h"
 
 using json = nlohmann::json;
 
@@ -325,8 +326,13 @@ void App::Update()
 
 	//各種更新処理
 	m_pRenderer->BeginFrame(backIdx);	//フレーム開始（内部キューをクリア）
-	m_pInputManager->Update();			//入力管理クラスの更新
-	m_pSceneManager->Update();			//ゲームの更新
+
+	if (!EventManager::GetInstance()->gameOver)
+	{
+		m_pInputManager->Update();			//入力管理クラスの更新
+		m_pSceneManager->Update();			//ゲームの更新
+	}
+
 	m_pRenderer->Update(backIdx, *m_pSceneManager->GetCameraInfo());		//レンダラーの更新
 }
 
@@ -460,6 +466,12 @@ void App::WriteMessages()
 void App::UpdateParameters()
 {
 	Player::MOVE_SPEED = toolbar.parameters[0].GetValue();
+	Player::BULLET_SPEED = toolbar.parameters[1].GetValue();
+	BulletManager::BULLET_RECOVERY = toolbar.parameters[2].GetValue();
+	BulletManager::BULLET_DAMAGE = toolbar.parameters[3].GetValue();
+	ItemManager::ITEM_RESPAWN = toolbar.parameters[4].GetValue();
+	BBManager::BB_DURATION = toolbar.parameters[5].GetValue();
+	BB::DAMAGE = toolbar.parameters[6].GetValue();
 }
 
 void InitializeDPIScale(HWND hwnd)
@@ -479,7 +491,7 @@ void LoadParametersJSON()
 	{
 		if (data.contains(param.name))
 		{
-			param.SetValue(data[param.name].get<float>() * param.divisionBy);
+			param.SetValue(data[param.name].get<float>());
 		}
 	}
 }

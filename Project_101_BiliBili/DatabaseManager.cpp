@@ -240,7 +240,7 @@ void DatabaseManager::ApplyFirebaseStreamData()
 		{
 			try
 			{
-				float newVal = root[param.name].get<float>() * param.divisionBy;
+				float newVal = root[param.name].get<float>();
 				param.SetValue(newVal);
 			}
 			catch (const std::exception &ex)
