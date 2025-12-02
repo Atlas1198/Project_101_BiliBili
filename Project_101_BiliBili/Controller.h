@@ -1,4 +1,5 @@
 #pragma once
+#include <d3d12.h>  // DirectX12を使用するため
 #include <Xinput.h> // Xboxこんとろーらー入力を可能にする
 #include <array>	// std::arrayを使用するため
 
