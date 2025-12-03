@@ -162,7 +162,7 @@ void CollisionManager::SubmitDraw(
 	//位置とブレンドモードを設定
 	for (int i = 0; i < submitInfos.size(); i++)
 	{
-		submitInfos[i].positionW = object.GetPosition();
+		submitInfos[i].position = object.GetPosition();
 		submitInfos[i].blendMode = BLEND_TRANSPARENT;
 	}
 

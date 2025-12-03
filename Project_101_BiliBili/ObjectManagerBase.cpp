@@ -90,10 +90,11 @@ void ObjectManagerBase::SubmitRenderInfo(
 			}
 		}
 
-		//位置とブレンドモードを設定
+		//共通要素の設定
 		for (int i = 0; i < submitInfos.size(); i++)
 		{
-			submitInfos[i].positionW = object.GetPosition();
+			submitInfos[i].position = object.GetPosition();
+			submitInfos[i].scale = object.GetScale();
 			submitInfos[i].blendMode = info[i].blendMode;
 			submitInfos[i].uvRect = SplitSprite(object.GetTexSplitInfo());
 		}

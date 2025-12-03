@@ -106,18 +106,28 @@ class MeshGPU;
 
 namespace RenderData
 {
-	//?`????\????
+	//ビルボードタイプ
+	enum BILLBOARD_TYPE
+	{
+		BILLBOARD_NONE,			//ビルボードなし
+		BILLBOARD_SPHERICAL,	//全軸ビルボード
+		BILLBOARD_CYLINDRICAL	//Y軸のみ
+	};
+
+	//描画情報構造体
 	struct RenderInfo
 	{
-		MeshGPU* pMeshGPU = nullptr;						//???b?V??GPU?f?[?^???|?C???^
-		DirectX::XMMATRIX world = {};						//???[???h?s??
-		UINT startIndex = 0;								//?J?n?C???f?b?N?X
-		INT  baseVertex = 0;								//?x?[?X???_
-		uint32_t srvIndex = UINT32_MAX;						//SRV?C???f?b?N?X
-		DirectX::XMFLOAT4 color = { 1,1,1,1 };				//?I?u?W?F?N?g??FRGBA(?f?t?H???g???)
-		BLEND_MODE blendMode = BLEND_OPAQUE;				//?u?????h???[?h
-		DirectX::XMFLOAT3 positionW{};						//???[???h???W?n???u
-		DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UV??`
+		MeshGPU* pMeshGPU = nullptr;						//メッシュデータ
+		DirectX::XMMATRIX world = {};						//ワールド行列
+		UINT startIndex = 0;								//開始インデックス
+		INT  baseVertex = 0;								//基準インデックス
+		uint32_t srvIndex = UINT32_MAX;						//SRVインデックス(テクスチャ)
+		DirectX::XMFLOAT4 color = { 1,1,1,1 };				//表示色
+		BLEND_MODE blendMode = BLEND_OPAQUE;				//ブレンドモード
+		DirectX::XMFLOAT3 position{};						//座標
+		DirectX::XMFLOAT3 scale{};							//スケール
+		DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UV矩形
+		BILLBOARD_TYPE billboardType = BILLBOARD_NONE;		//ビルボードタイプ
 	};
 }
 
@@ -290,43 +300,47 @@ namespace RenderData
 {
 	//モデルデータ又はテクスチャファイルから描画情報を作成する関数
 	void CreateRenderInfo(
-		TextureManager& textureManager,	//テクスチャマネージャへの参照
-		MeshManager& meshManager,		//メッシュマネージャへの参照
-		std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE type,		//メッシュタイプ
-		BLEND_MODE mode,				//ブレンドモード
-		const wchar_t* path,			//モデルデータ又はテクスチャファイルのパス
-		bool inverseU = false,			//Uを反転するかどうか(モデルデータの場合のみ有効)
-		bool inverseV = false			//Vを反転するかどうか(モデルデータの場合のみ有効)
+		TextureManager& textureManager,			//テクスチャマネージャへの参照
+		MeshManager& meshManager,				//メッシュマネージャへの参照
+		std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+		MeshData::MESH_TYPE mType,				//メッシュタイプ
+		BLEND_MODE mode,						//ブレンドモード
+		const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
+		BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
+		bool inverseU = false,					//Uを反転するかどうか(モデルデータの場合のみ有効)
+		bool inverseV = false					//Vを反転するかどうか(モデルデータの場合のみ有効)
 	);
 
 	//FBXファイルから描画情報を作成する関数
 	void CreateRenderInfoFromFBX(
-		TextureManager& textureManager,	//テクスチャマネージャへの参照
-		MeshManager& meshManager,		//メッシュマネージャへの参照
-		std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
-		BLEND_MODE mode,				//ブレンドモード
-		const wchar_t* path,			//モデルファイルのパス
-		bool inverseU = false,			//Uを反転するかどうか
-		bool inverseV = false			//Vを反転するかどうか
+		TextureManager& textureManager,			//テクスチャマネージャへの参照
+		MeshManager& meshManager,				//メッシュマネージャへの参照
+		std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+		BLEND_MODE mode,						//ブレンドモード
+		const wchar_t* path,					//モデルファイルのパス
+		BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
+		bool inverseU = false,					//Uを反転するかどうか
+		bool inverseV = false					//Vを反転するかどうか
 	);
 
 	//デフォルトのメッシュデータから描画情報を作成する関数
 	void CreateRenderInfoFromDefaultMesh(
-		TextureManager& textureManager,		//テクスチャマネージャへの参照
-		MeshManager& meshManager,			//メッシュマネージャへの参照
-		std::vector<RenderInfo>* pInfo,		//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE type,			//メッシュタイプ
-		BLEND_MODE mode,					//ブレンドモード
-		const wchar_t* path					//テクスチャのファイル名
+		TextureManager& textureManager,			//テクスチャマネージャへの参照
+		MeshManager& meshManager,				//メッシュマネージャへの参照
+		std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+		MeshData::MESH_TYPE type,				//メッシュタイプ
+		BLEND_MODE mode,						//ブレンドモード
+		const wchar_t* path,					//テクスチャのファイル名
+		BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
 	);
 
 	//メッシュデータから描画情報を構築する関数
 	RenderInfo CreateRenderInfoFromMeshData(
-		TextureManager& textureManager,	//テクスチャマネージャへの参照
-		MeshManager& meshManager,		//メッシュマネージャへの参照
-		MeshData::Mesh& mesh,			//メッシュデータ構造体への参照
-		BLEND_MODE mode					//ブレンドモード
+		TextureManager& textureManager,			//テクスチャマネージャへの参照
+		MeshManager& meshManager,				//メッシュマネージャへの参照
+		MeshData::Mesh& mesh,					//メッシュデータ構造体への参照
+		BLEND_MODE mode,						//ブレンドモード
+		BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
 	);
 }
 

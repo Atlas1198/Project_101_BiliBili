@@ -74,4 +74,6 @@ private:	//非公開関数
 	void SortDrawList();			//描画リストのソート
 	void SortDrawListOpaque();		//不透明オブジェクトの描画リストソート
 	void SortDrawListTransparent();	//透明オブジェクトの描画リストソート
+
+	DirectX::XMMATRIX CalcBillBoard(const RenderData::RenderInfo& info);	//ビルボード計算
 };
