@@ -203,6 +203,7 @@
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="WallPass.h" />
+    <ClInclude Include="WinInclude.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />

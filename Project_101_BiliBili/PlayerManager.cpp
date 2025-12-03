@@ -49,10 +49,10 @@ Player* PlayerManager::AddPlayer(
 	//Vec3 spawnPos = App::GetInstance()->spawnPos[m_pPlayer.size()];
 
 	Vec3 spawnPoses[4] = {
-		{-13.0f, 0.0f, 18.0f},
-		{13.0f, 0.0f, 18.0f},
-		{-13.0f, 0.0f, -8.0f},
-		{13.0f, 0.0f, -8.0f}
+		{-13.0f, -4.0f, 18.0f},
+		{13.0f, -4.0f, 18.0f},
+		{-13.0f, -4.0f, -8.0f},
+		{13.0f, -4.0f, -8.0f}
 	};
 
 	Vec3 spawnPos = spawnPoses[m_pPlayer.size()];
@@ -66,8 +66,8 @@ Player* PlayerManager::AddPlayer(
 		XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 		id,							//ID
 		true,						//アクティブフラグ
-		ColliderType::BOX,			//コライダータイプ	
-		XMFLOAT3(1.0f, 2.0f, 1.0f),	//コライダーボックスサイズ
+		ColliderType::SPHERE,			//コライダータイプ	
+		XMFLOAT3(1.0f, 1.0f, 1.0f),	//コライダーボックスサイズ
 		false						//コライダーのトリガーフラグ
 	);
 

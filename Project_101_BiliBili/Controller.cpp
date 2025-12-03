@@ -1,6 +1,5 @@
 #include "App.h"
 #include "Controller.h"
-#include <d3d12.h>
 #include <cmath>	//デッドゾーン処理などで使用する
 #include <cassert>
 #include "InputManager.h"

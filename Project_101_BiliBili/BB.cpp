@@ -39,11 +39,11 @@ void BB::Initialize()
 			MeshData::MESH_TYPE::QUAD,
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//座標
 			DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
-			DirectX::XMFLOAT3(0.2f, 1.0f, 0.2f),	//スケール
+			DirectX::XMFLOAT3(0.6f, 1.0f, 0.6f),	//スケール
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,									//アクティブフラグ
 			ColliderType::CAPSULE,					//コライダータイプ	
-			DirectX::XMFLOAT3(0.5f, 1.0f, 0.5f),	//コライダーボックスサイズ
+			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),	//コライダーボックスサイズ
 			false									//コライダーのトリガーフラグ
 		);
 

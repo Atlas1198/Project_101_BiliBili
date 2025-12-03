@@ -1,6 +1,6 @@
 {
-  "move-speed": 0.2,
-  "bullet-speed": 0.66,
+  "move-speed": 0.15,
+  "bullet-speed": 0.33,
   "bullet-recovery": 1.5,
   "bullet-damage": 0.03,
   "item-spawn": 12.0,

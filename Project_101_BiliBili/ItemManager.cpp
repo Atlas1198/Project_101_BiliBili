@@ -31,23 +31,6 @@ ItemManager::~ItemManager()
 void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
 	m_pCollisionManager = &collisionManager;
-
-	//TODO: 汚いコードなので後で直す
-	m_pItems.push_back(
-		new Item(
-			MeshData::MESH_TYPE::QUAD,
-			XMFLOAT3(50.0f, -3.0f, 0.0f),	//位置
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
-			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(1.1f, 1.1f, 1.1f),	//コライダーボックスサイズ
-			false						//コライダーのトリガーフラグ
-		)
-	);
-
-	SubmitColliders(*m_pCollisionManager, m_pItems.back()->GetCollider());
 }
 
 void ItemManager::SpawnItem()
@@ -63,7 +46,7 @@ void ItemManager::SpawnItem()
 	m_pItems.push_back(
 		new Item(
 			MeshData::MESH_TYPE::QUAD,
-			XMFLOAT3(xDist(gen), -3.0f, zDist(gen)),	//位置
+			XMFLOAT3(xDist(gen), -4.0f, zDist(gen)),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
@@ -129,7 +112,7 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_itemInfo,					//描画情報構造体配列へのポインタ
-		m_pItems[0]->GetMeshType(),	//メッシュタイプ
+		MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		itemTexPath					//テクスチャのファイル名
 	);

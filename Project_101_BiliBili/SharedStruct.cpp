@@ -679,6 +679,7 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 		break;
 	case CollisionData::COLLISION_LAYER::PLAYER:
 		return MakeMask({
+			COLLISION_LAYER::PLAYER,			//プレイヤーレイヤー
 			COLLISION_LAYER::WALL,				//壁レイヤー
 			COLLISION_LAYER::WALLPASS,			//弾貫通壁レイヤー
 			COLLISION_LAYER::GROUND,			//地面レイヤー

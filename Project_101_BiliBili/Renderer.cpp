@@ -120,22 +120,22 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 
 	//ワールドプロジェクション行列の更新
 	
-	//m_worldProj = XMMatrixPerspectiveFovLH(
-	//	info.fov,			//視野角
-	//	info.aspectRatio,	//アスペクト比
-	//	info.nearZ,			//ニアクリップ距離
-	//	info.farZ			//ファークリップ距離
-	//);
+	m_worldProj = XMMatrixPerspectiveFovLH(
+		info.fov,			//視野角
+		info.aspectRatio,	//アスペクト比
+		info.nearZ,			//ニアクリップ距離
+		info.farZ			//ファークリップ距離
+	);
 	
 
-	float orthoheight = 30;
-	float orthowidth = orthoheight * info.aspectRatio;
+	//float orthoheight = 30;
+	//float orthowidth = orthoheight * info.aspectRatio;
 
-	m_worldProj = XMMatrixOrthographicLH(
-		orthowidth,	//画面幅
-		orthoheight,	//画面高さ5
-		0.1f,									//ニアクリップ距離
-		100.0f);
+	//m_worldProj = XMMatrixOrthographicLH(
+	//	orthowidth,	//画面幅
+	//	orthoheight,	//画面高さ5
+	//	0.1f,									//ニアクリップ距離
+	//	100.0f);
 
 	//スクリーンカメラ行列の更新
 	m_screenView = XMMatrixIdentity();					//カメラの上方

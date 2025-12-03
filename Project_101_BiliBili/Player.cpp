@@ -169,18 +169,6 @@ void Player::Move()
 		m_position.x += direction.z * MOVE_SPEED;
 		m_position.z -= direction.x * MOVE_SPEED;
 	}
-
-
-
-
-	m_velocity.y -= 0.1f; //d—Í
-	if (m_pInputInfo->key.a.down && m_pInputInfo->key.d.down)
-	{
-		//ƒWƒƒƒ“ƒv
-		m_velocity.y += 0.2f;
-	}
-
-	m_position.y += m_velocity.y;
 }
 
 void Player::Shoot()
