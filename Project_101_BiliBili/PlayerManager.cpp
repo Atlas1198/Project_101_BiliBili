@@ -165,6 +165,7 @@ void PlayerManager::PrepareRenderInfo(
 		&m_playerInfo,					//描画情報構造体配列へのポインタ
 		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		texPath							//テクスチャのファイル名
+		texPath,							//テクスチャのファイル名
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
 	);
 }

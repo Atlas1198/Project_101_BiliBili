@@ -235,7 +235,15 @@ void Renderer::DrawRenderListWorld(
 			auto* ptr = cb->GetPtr<Transform>();
 
 			//定数バッファに transform を書く（各オブジェクト専用のメモリ）
-			ptr->worldMatrix = m_drawListWorld[i][j].world;	//ワールド行列
+
+			if (m_drawListWorld[i][j].billboardType != BILLBOARD_NONE)
+			{
+				ptr->worldMatrix = CalcBillBoard(m_drawListWorld[i][j]);
+			}
+			else
+			{
+				ptr->worldMatrix = m_drawListWorld[i][j].world;	//ワールド行列
+			}
 			ptr->viewMatrix = m_worldView;					//ビュー行列
 			ptr->projMatrix = m_worldProj;					//プロジェクション行列
 			ptr->objectColor = m_drawListWorld[i][j].color;	//オブジェクトの色
@@ -377,7 +385,7 @@ void Renderer::SortDrawListOpaque()
 		m_drawListWorld[BLEND_OPAQUE].end(),	//ソート終了位置
 		[&](const RenderInfo& a, const RenderInfo& b)
 		{
-			return dist2(a.positionW, cameraPos) < dist2(b.positionW, cameraPos);
+			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
 	);
 	//MASKED
@@ -386,7 +394,7 @@ void Renderer::SortDrawListOpaque()
 		m_drawListWorld[BLEND_MASKED].end(),	//ソート終了位置
 		[&](const RenderInfo& a, const RenderInfo& b)
 		{
-			return dist2(a.positionW, cameraPos) < dist2(b.positionW, cameraPos);
+			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
 	);
 
@@ -397,7 +405,7 @@ void Renderer::SortDrawListOpaque()
 		m_drawListScreen[BLEND_OPAQUE].end(),	//ソート終了位置
 		[&](const RenderInfo& a, const RenderInfo& b)
 		{
-			return dist2(a.positionW, cameraPos) < dist2(b.positionW, cameraPos);
+			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
 	);
 	//MASKED
@@ -406,7 +414,7 @@ void Renderer::SortDrawListOpaque()
 		m_drawListScreen[BLEND_MASKED].end(),	//ソート終了位置
 		[&](const RenderInfo& a, const RenderInfo& b)
 		{
-			return dist2(a.positionW, cameraPos) < dist2(b.positionW, cameraPos);
+			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
 	);
 }
@@ -429,9 +437,9 @@ void Renderer::SortDrawListTransparent()
 	auto depthFar = [&](const RenderInfo& r)
 	{
 		//カメラからの奥行きを計算
-		float vx = r.positionW.x - cameraPos.x;
-		float vy = r.positionW.y - cameraPos.y;
-		float vz = r.positionW.z - cameraPos.z;
+		float vx = r.position.x - cameraPos.x;
+		float vy = r.position.y - cameraPos.y;
+		float vz = r.position.z - cameraPos.z;
 		float centerDepth =
 			vx * cameraForward.x + vy * cameraForward.y + vz * cameraForward.z;
 
@@ -460,4 +468,48 @@ void Renderer::SortDrawListTransparent()
 			return depthFar(a) > depthFar(b);
 		}
 	);
+}
+
+//ビルボード計算
+XMMATRIX Renderer::CalcBillBoard(const RenderData::RenderInfo& info)
+{
+	XMVECTOR objPos = XMLoadFloat3(&info.position);
+
+	XMVECTOR cameraPos = XMLoadFloat3(&m_cameraInfo->position);
+	XMVECTOR upWorld = XMVectorSet(0, 1, 0, 0);
+
+	XMVECTOR toCam = XMVectorSubtract(cameraPos, objPos);
+
+	if (info.billboardType == BILLBOARD_TYPE::BILLBOARD_CYLINDRICAL)
+	{
+		toCam = XMVectorSet(
+			XMVectorGetX(toCam),
+			0.0f,
+			XMVectorGetZ(toCam),
+			0.0f
+		);
+	}
+
+	XMVECTOR forward = XMVector3Normalize(toCam);
+	XMVECTOR right = XMVector3Normalize(XMVector3Cross(upWorld, forward));
+	XMVECTOR up = XMVector3Cross(forward, right);
+
+	XMFLOAT3 r, u, f;
+	XMStoreFloat3(&r, right);
+	XMStoreFloat3(&u, up);
+	XMStoreFloat3(&f, forward);
+
+	XMMATRIX rot =
+		XMMATRIX(
+			r.x, r.y, r.z, 0.0f,
+			u.x, u.y, u.z, 0.0f,
+			f.x, f.y, f.z, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		);
+
+	XMMATRIX scale = XMMatrixScaling(info.scale.x, info.scale.y, info.scale.z);
+
+	XMMATRIX trans = XMMatrixTranslation(info.position.x, info.position.y, info.position.z);
+
+	return scale * rot * trans;
 }

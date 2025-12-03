@@ -30,18 +30,19 @@ const D3D12_INPUT_LAYOUT_DESC Vertex::InputLayout =
 
 //描画情報構造体を作成する関数
 void RenderData::CreateRenderInfo(
-	TextureManager& textureManager,	//テクスチャマネージャへの参照
-	MeshManager& meshManager,		//メッシュマネージャへの参照
-	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
-	MeshData::MESH_TYPE type,		//メッシュタイプ
-	BLEND_MODE mode,				//ブレンドモード
-	const wchar_t* path,			//モデルデータ又はテクスチャファイルのパス
-	bool inverseU,					//Uを反転するかどうか(モデルデータの場合のみ有効)
-	bool inverseV					//Vを反転するかどうか(モデルデータの場合のみ有効
+	TextureManager& textureManager,			//テクスチャマネージャへの参照
+	MeshManager& meshManager,				//メッシュマネージャへの参照
+	std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+	MeshData::MESH_TYPE mType,				//メッシュタイプ
+	BLEND_MODE mode,						//ブレンドモード
+	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
+	BILLBOARD_TYPE bType ,					//ビルボードタイプ
+	bool inverseU,							//Uを反転するかどうか(モデルデータの場合のみ有効)
+	bool inverseV							//Vを反転するかどうか(モデルデータの場合のみ有効
 )
 {
 	//メッシュタイプに応じて描画情報構造体を作成
-	if(type == MeshData::IMPORT)
+	if(mType == MeshData::IMPORT)
 	{//インポートモデルの場合
 		CreateRenderInfoFromFBX(	//FBXファイルから描画情報を作成
 			textureManager,	//テクスチャマネージャへの参照
@@ -49,6 +50,7 @@ void RenderData::CreateRenderInfo(
 			pInfo,			//描画情報構造体配列へのポインタ
 			mode,			//ブレンドモード
 			path,			//モデルファイルのパス
+			bType,			//ビルボードタイプ
 			inverseU,		//Uを反転するかどうか
 			inverseV		//Vを反転するかどうか
 		);
@@ -59,9 +61,10 @@ void RenderData::CreateRenderInfo(
 			textureManager,	//テクスチャマネージャへの参照
 			meshManager,	//メッシュマネージャへの参照
 			pInfo,			//描画情報構造体配列へのポインタ
-			type,			//メッシュタイプ
+			mType,			//メッシュタイプ
 			mode,			//ブレンドモード
-			path			//テクスチャのファイル名
+			path,			//テクスチャのファイル名
+			bType			//ビルボードタイプ
 		);
 	}
 }
@@ -73,6 +76,7 @@ void RenderData::CreateRenderInfoFromFBX(
 	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	BLEND_MODE mode,				//ブレンドモード
 	const wchar_t* path,			//モデルファイルのパス
+	BILLBOARD_TYPE bType ,			//ビルボードタイプ
 	bool inverseU,					//Uを反転するかどうか
 	bool inverseV					//Vを反転するかどうか
 )
@@ -102,7 +106,8 @@ void RenderData::CreateRenderInfoFromFBX(
 			textureManager,	//テクスチャマネージャへの参照
 			meshManager,	//メッシュマネージャへの参照
 			mesh,			//メッシュデータ
-			mode			//ブレンドモード
+			mode,			//ブレンドモード
+			bType			//ビルボードタイプ
 		);
 		pInfo->push_back(info);	//配列に格納
 	}
@@ -115,7 +120,8 @@ void RenderData::CreateRenderInfoFromDefaultMesh(
 	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MeshData::MESH_TYPE type,		//メッシュタイプ
 	BLEND_MODE mode,				//ブレンドモード
-	const wchar_t* path				//テクスチャのファイル名
+	const wchar_t* path,				//テクスチャのファイル名
+	BILLBOARD_TYPE bType			//ビルボードタイプ
 )
 {
 	MeshData::Model model;	//モデルデータ構造体
@@ -129,7 +135,8 @@ void RenderData::CreateRenderInfoFromDefaultMesh(
 			textureManager,		//テクスチャマネージャへの参照
 			meshManager,		//メッシュマネージャへの参照
 			mesh,				//メッシュデータ
-			mode			//ブレンドモード
+			mode,				//ブレンドモード
+			bType				//ビルボードタイプ
 		);
 		pInfo->push_back(info);	//配列に格納
 	}
@@ -140,7 +147,8 @@ RenderData::RenderInfo RenderData::CreateRenderInfoFromMeshData(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
 	MeshManager& meshManager,		//メッシュマネージャへの参照
 	MeshData::Mesh& mesh,			//メッシュデータ
-	BLEND_MODE mode				//ブレンドモード
+	BLEND_MODE mode,				//ブレンドモード
+	BILLBOARD_TYPE bType			//ビルボードタイプ
 )
 {
 	RenderInfo info{};	//描画情報構造体
@@ -155,6 +163,7 @@ RenderData::RenderInfo RenderData::CreateRenderInfoFromMeshData(
 	info.world = XMMatrixIdentity();				//ワールド行列を単位行列に設定
 	info.color = XMFLOAT4(1, 1, 1, 1);				//オブジェクトの色を白に設定
 	info.blendMode = mode;							//ブレンドモードを設定
+	info.billboardType = bType;						//ビルボードタイプ
 
 	//テクスチャのSRVインデックスを取得
 	if (!mesh.texPath.empty() && &textureManager)
