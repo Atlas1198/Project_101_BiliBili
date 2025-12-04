@@ -1,5 +1,6 @@
 #include "EventManager.h"
 
+/*
 //シングルトンインスタンス取得
 EventManager *EventManager::GetInstance()
 {
@@ -38,3 +39,4 @@ bool EventManager::UseBullet(int teamID)
 
 	return false;
 }
+*/

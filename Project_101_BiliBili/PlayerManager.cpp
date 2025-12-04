@@ -4,6 +4,7 @@
 #include "TextureManager.h"
 #include "Collider.h"
 #include "App.h"
+#include "EventManager.h"
 
 using namespace DirectX;
 using namespace RenderData;
@@ -37,6 +38,16 @@ void PlayerManager::InitializeOverride(
 		//コライダー情報をシーンに提出
 		SubmitColliders(collisionManager, (*it)->GetCollider());
 	}
+
+	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
+		EventType::TAKE_DAMAGE,
+		[this](std::shared_ptr<std::pair<int, float>> data)
+		{
+			int teamID = data->first;
+			float damage = data->second;
+			OnTakeDamage(teamID, damage);
+		}
+	);
 }
 
 Player* PlayerManager::AddPlayer(
@@ -106,6 +117,22 @@ void PlayerManager::RemovePlayer(uint32_t id)
 			m_pPlayer.erase(it);
 			break;
 		}
+	}
+}
+
+void PlayerManager::OnTakeDamage(int teamID, float damage)
+{
+	teamHP[teamID] -= damage;
+	if (teamHP[teamID] < 0.0f)
+	{
+		teamHP[teamID] = 0.0f;
+	}
+
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(EventType::UPDATE_HP_UI, std::make_pair(teamID, teamHP[teamID]));
+
+	if (teamHP[teamID] <= 0.0f)
+	{
+		App::GetInstance()->isGameOver = true;
 	}
 }
 

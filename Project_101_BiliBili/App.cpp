@@ -272,6 +272,7 @@ void App::PrepareInstance()
 //インスタンス初期化
 void App::InitInstance()
 {
+	m_pEventManager = EventManager::GetInstance();
 
 	//DirectX12エンジン初期化
 	m_pEngine->Initialize(
@@ -327,7 +328,7 @@ void App::Update()
 	//各種更新処理
 	m_pRenderer->BeginFrame(backIdx);	//フレーム開始（内部キューをクリア）
 
-	if (!EventManager::GetInstance()->gameOver)
+	if (!isGameOver)
 	{
 		m_pInputManager->Update();			//入力管理クラスの更新
 		m_pSceneManager->Update();			//ゲームの更新

@@ -98,10 +98,16 @@ void BB::ResolveCollisions()
 			if (!eb->HasHitPlayer()) continue;
 
 			//ダメージ処理
+			EventManager::GetInstance()->TriggerEvent(EventType::TAKE_DAMAGE, std::pair<int, float>(
+				1 - m_teamId,
+				BB::DAMAGE * eb->GetHitNum()
+			));
+			/*
 			EventManager::GetInstance()->TakeDamage(
 				1 - m_teamId,
 				BB::DAMAGE * eb->GetHitNum()
 			);
+			*/
 
 			//リセット
 			eb->SetHasHitPlayer(false);

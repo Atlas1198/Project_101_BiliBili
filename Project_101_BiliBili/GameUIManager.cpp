@@ -87,16 +87,36 @@ void GameUIManager::InitializeOverride(
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pBulletCountUI2)); //ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pIconUI1)); //ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pIconUI2)); //ルートUIオブジェクト配列に追加
+
+	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
+		EventType::UPDATE_HP_UI,
+		[this](std::shared_ptr<std::pair<int, float>> data)
+		{
+			int teamID = data->first;
+			float newHP = data->second;
+			OnHPChanged(teamID, newHP);
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<std::pair<int, int>>(
+		EventType::UPDATE_BULLET_UI,
+		[this](std::shared_ptr<std::pair<int, int>> data)
+		{
+			int teamID = data->first;
+			int newCount = data->second;
+			OnBulletCountChanged(teamID, newCount);
+		}
+	);
 }
 
 //更新
 void GameUIManager::UpdateOverride()
 {
-	m_pHPBarUI1->SetHealth(EventManager::GetInstance()->teamHP[0]);
-	m_pHPBarUI2->SetHealth(EventManager::GetInstance()->teamHP[1]);
+	//m_pHPBarUI1->SetHealth(EventManager::GetInstance()->teamHP[0]);
+	//m_pHPBarUI2->SetHealth(EventManager::GetInstance()->teamHP[1]);
 
-	m_pBulletCountUI1->SetBulletCount(EventManager::GetInstance()->teamBulletCount[0]);
-	m_pBulletCountUI2->SetBulletCount(EventManager::GetInstance()->teamBulletCount[1]);
+	//m_pBulletCountUI1->SetBulletCount(EventManager::GetInstance()->teamBulletCount[0]);
+	//m_pBulletCountUI2->SetBulletCount(EventManager::GetInstance()->teamBulletCount[1]);
 }
 
 //終了
@@ -105,6 +125,30 @@ void GameUIManager::FinalizeOverride()
 }
 
 
+
+void GameUIManager::OnHPChanged(int teamID, float newHP)
+{
+	if (teamID == 0)
+	{
+		m_pHPBarUI1->SetHealth(newHP);
+	}
+	else if (teamID == 1)
+	{
+		m_pHPBarUI2->SetHealth(newHP);
+	}
+}
+
+void GameUIManager::OnBulletCountChanged(int teamID, int newCount)
+{
+	if (teamID == 0)
+	{
+		m_pBulletCountUI1->SetBulletCount(newCount);
+	}
+	else if (teamID == 1)
+	{
+		m_pBulletCountUI2->SetBulletCount(newCount);
+	}
+}
 
 void GameUIManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {

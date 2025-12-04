@@ -31,7 +31,8 @@ void Item::ResolveCollisionsOverride()
 
 			if (Player *player = dynamic_cast<Player *>(info.opponent->GetOwner()))
 			{
-				EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
+				//EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
+				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
 			}
 		}
 	}

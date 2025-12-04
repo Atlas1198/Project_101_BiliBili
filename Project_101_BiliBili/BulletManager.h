@@ -30,6 +30,8 @@ public:
     inline static float BULLET_RECOVERY = 2.0f;
     inline static float BULLET_DAMAGE = 0.1f;
 
+	static constexpr int MAX_BULLETS_PER_TEAM = 6;
+
 protected:
     void InitializeOverride(InputManager* pInputManager,
         TextureManager& textureManager,
@@ -49,4 +51,6 @@ private:
 	GameUIManager *m_pGameUIManager = nullptr;
     FrameTimer m_bulletRestoreTimer;
 	float m_bulletRestoreElapsed;
+
+    int teamBulletCount[2] = { MAX_BULLETS_PER_TEAM, MAX_BULLETS_PER_TEAM };
 };

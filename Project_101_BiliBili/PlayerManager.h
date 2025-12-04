@@ -22,6 +22,7 @@ private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
 	std::vector<RenderData::RenderInfo> m_playerInfo;			//プレイヤー描画情報
 	InputManager* m_pInputManager = nullptr;					//入力マネージャーポインタ
+	float teamHP[2] = { 1.0f, 1.0f };							//チームの体力
 
 public:
 	PlayerManager(){};			//コンストラクタ
@@ -42,6 +43,8 @@ public:
 		BulletManager *pBulletManager	//弾丸管理クラスの参照
 	);
 	void RemovePlayer(uint32_t id);
+
+	void OnTakeDamage(int teamID, float damage); // ダメージを受けたときの処理
 
 	void UpdateOverride() override;		//更新
 	void ResolveCollisionsOverride() override;	//衝突後処理
