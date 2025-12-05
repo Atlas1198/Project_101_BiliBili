@@ -8,7 +8,7 @@ using namespace CollisionData;
 //XV
 void ElectricityBB::UpdateOverride()
 {
-	SetGeometry();
+	UpdateGeometry();
 }
 
 //Õ“Ë‰ğŒˆ
@@ -78,7 +78,7 @@ void ElectricityBB::SetHitNum(int num)
 	m_hitNum = num;
 }
 
-void ElectricityBB::SetGeometry()
+void ElectricityBB::UpdateGeometry()
 {
 
 	float length = LengthBetween(m_startPos, m_endPos);

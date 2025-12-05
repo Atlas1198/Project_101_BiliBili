@@ -11,7 +11,7 @@ Collider::Collider(
 	COLLISION_LAYER layer,	//衝突レイヤー
 	XMFLOAT3 scale,			//ボックスサイズ
 	bool isTrigger			//トリガーフラグ
-) : 
+) :
 	m_pOwner(owner),		//所有者オブジェクト
 	m_isTrigger(isTrigger),	//トリガーフラグ
 	m_type(type),			//コライダータイプ
@@ -118,7 +118,7 @@ const bool Collider::IsTrigger() const
 }
 
 //SWEPT軸平行境界ボックス取得
-const AABB Collider::GetSewptAABB() 
+const AABB Collider::GetSewptAABB()
 {
 	return m_sweptAABB;
 }
@@ -172,9 +172,9 @@ const DirectX::XMMATRIX Collider::GetWorldMatrix() const
 }
 
 //衝突情報配列取得
-std::vector<CollisionInfo>& Collider::GetCollisionInfos() 
+std::vector<CollisionInfo>& Collider::GetCollisionInfos()
 {
-    return m_collisionInfos;
+	return m_collisionInfos;
 }
 
 //衝突検知フラグ取得
@@ -187,6 +187,12 @@ const bool Collider::isDetected() const
 const bool Collider::deleteFlag() const
 {
 	return m_deleteFlag;
+}
+
+//アクティブフラグ取得
+const bool Collider::isActive() const
+{
+	return m_isActive;
 }
 
 //中心座標取得
@@ -231,6 +237,12 @@ void Collider::SetDeleteFlag(bool flag)
 	m_deleteFlag = flag;
 }
 
+//アクティブフラグ設定
+void Collider::SetActive(bool flag)
+{
+	m_isActive = flag;
+}
+
 //コライダー生成関数
 void Collider::CreateCollider(DirectX::XMFLOAT3 scale)
 {
@@ -273,7 +285,7 @@ void Collider::CreateBoxCollider(XMFLOAT3 scale)
 void Collider::CreateSphereCollider(XMFLOAT3 scale)
 {
 	//球コライダースケール
-	const float maxScale = 
+	const float maxScale =
 		(std::max)(scale.x, (std::max)(scale.y, scale.z));	//各軸のスケールから一番大きいものを取得
 	const float diamiter = maxScale;					//最大値を直径として使用
 	const float radius = diamiter * 0.5f;				//半径
@@ -291,7 +303,7 @@ void Collider::CreateSphereCollider(XMFLOAT3 scale)
 
 	//スケールオフセットの設定
 	const XMFLOAT3 ownerScale = m_pOwner->GetScale();	//オーナーオブジェクトのサイズを取得
-	const float ownerScaleMax = 
+	const float ownerScaleMax =
 		(std::max)(ownerScale.x, (std::max)(ownerScale.y, ownerScale.z));	//各軸のスケールから一番大きいものを取得
 
 	//オーナーオブジェクトのスケール最大値と直径の差をオフセット
@@ -316,7 +328,7 @@ void Collider::CreateCapsuleCollider(XMFLOAT3 scale)
 	const float diamiter = (std::max)(sx, sz);			//直径(水平方向の最大値)
 	const float radius = diamiter / 2.0f;				//半径
 	const float capusleHeight = sy;						//カプセル高さ
-	const float cylHeight = 
+	const float cylHeight =
 		(std::max)(0.0f, capusleHeight - diamiter);		//円柱部分の高さ(負の値にならないようにする)
 
 	//カプセルサイズ初期化
@@ -390,7 +402,7 @@ void Collider::UpdateSphereCollider()
 	const float offsetScaleY = sy + m_scaleOffset.y;
 	const float offsetScaleZ = sz + m_scaleOffset.z;
 
-	const float diamiter = 
+	const float diamiter =
 		(std::max)(offsetScaleX, (std::max)(offsetScaleY, offsetScaleZ));	//直径(水平方向の最大値)
 	const float radius = diamiter / 2.0f;									//半径
 
@@ -419,11 +431,11 @@ void Collider::UpdateCapsuleCollider()
 	const float sy = ownerScale.y;
 	const float sz = ownerScale.z;
 
-	const float diamiter = 
+	const float diamiter =
 		(std::max)(sx + m_scaleOffset.x, sz + m_scaleOffset.z);	//直径(水平方向の最大値)
 	const float radius = diamiter / 2.0f;						//半径
 	const float capusleHeight = sy + m_scaleOffset.y;			//カプセル高さ
-	const float cylHeight = 
+	const float cylHeight =
 		(std::max)(0.0f, capusleHeight - diamiter);				//円柱部分の高さ(負の値にならないようにする)
 
 	//カプセルサイズ更新

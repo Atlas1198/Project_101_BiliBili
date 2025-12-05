@@ -807,11 +807,19 @@ DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
 
 		for (auto pInfo : cands)
 		{
-			XMFLOAT3 penetration = pInfo->penetrationDepth;	//貫入深さベクトル
+			XMFLOAT3 mtv =
+			{
+				-pInfo->penetrationDepth.x,
+				-pInfo->penetrationDepth.y,
+				-pInfo->penetrationDepth.z
+			};
 
-			XMFLOAT3 dir = { -penetration.x, -penetration.y, -penetration.z };	//押し出し方向ベクトル
-			float depth = LengthXMF3(dir);									//貫入深さ
-			if (depth < epsilon) continue;									//誤差許容値以下なら無視
+			float depth = LengthXMF3(mtv);
+			if (depth < epsilon)
+				continue;
+
+			// 押し出し方向だけ取り出す
+			XMFLOAT3 dir = Normalize(mtv);   // 単位ベクトル
 
 			//押し出しベクトルの正規化
 			dir = Normalize(dir);

@@ -90,6 +90,11 @@ public:
 		MeshManager& meshManager		//メッシュ管理クラスの参照
 	);
 
+	//レイキャスト関数
+	void RaycastSegmentQuery(
+		CollisionData::RaycastSegment& ray	//レイ情報
+	);
+
 private:
 	std::vector<Collider*> m_pCollidersList;				//コライダー配列
 	std::vector<CollisionPair> m_pNarrowPhaseColliders;		//ナローフェーズ用コライダー配列
@@ -227,5 +232,26 @@ private:
 		Collider* colliderA,	//自分自身のコライダー
 		Collider* colliderB,	//衝突相手のコライダー
 		ContactResult& result	//衝突時のパラメータ
+	);
+
+	//レイキャスト補助関数
+	bool CheckLayerRaycast(	//レイキャスト用衝突レイヤーのチェック
+		const CollisionData::RaycastSegment& ray,	//レイ情報
+		Collider* collider					//コライダー
+	);
+	bool RaycastBox(	//AABBコライダーへのレイキャスト
+		const CollisionData::RaycastSegment& ray,	//レイ情報
+		Collider* collider,						//コライダー
+		CollisionData::RaycastHitInfo& outHitInfo	//ヒット情報
+	);
+	bool RaycastSphere(	//球コライダーへのレイキャスト
+		const CollisionData::RaycastSegment& ray,	//レイ情報
+		Collider* collider,						//コライダー
+		CollisionData::RaycastHitInfo& outHitInfo	//ヒット情報
+	);
+	bool RaycastCapsule(	//カプセルコライダーへのレイキャスト
+		const CollisionData::RaycastSegment& ray,	//レイ情報
+		Collider* collider,						//コライダー
+		CollisionData::RaycastHitInfo& outHitInfo	//ヒット情報
 	);
 };
