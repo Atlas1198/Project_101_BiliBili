@@ -57,12 +57,12 @@ public:
 	Collider(		//コンストラクタ
 		ObjectBase* owner,								//所有者オブジェクト
 		ColliderType type,								//コライダータイプ
-		CollisionData::COLLISION_LAYER layer = 
-			CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
+		CollisionData::COLLISION_LAYER layer =
+		CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
 		DirectX::XMFLOAT3 boxSize =
 		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),			//ボックスサイズ
 		bool isTrigger = false							//トリガーフラグ
-	);	
+	);
 	~Collider();	//デストラクタ
 
 	//コライダー更新関数
@@ -92,6 +92,7 @@ public:
 	std::vector<CollisionData::CollisionInfo>& GetCollisionInfos();	//衝突情報配列取得
 	const bool isDetected() const;									//衝突検知フラグ取得
 	const bool deleteFlag() const;									//デリートフラグ
+	const bool isActive() const;									//アクティブフラグ取得
 	DirectX::XMFLOAT3 GetCurrentCenter() const;						//現在の中心座標取得
 	DirectX::XMFLOAT3 GetPreviousCenter() const;					//前回の中心座標取得
 	DirectX::XMFLOAT3 GetCurrentScale() const;						//現在のサイズ取得
@@ -101,6 +102,7 @@ public:
 	//セッター
 	void SetDetected(bool flag);	//衝突検知フラグ
 	void SetDeleteFlag(bool flag);	//デリートフラグ
+	void SetActive(bool flag);		//アクティブフラグ設定
 
 private:
 	ObjectBase* m_pOwner = nullptr;			//所有者オブジェクト
@@ -134,6 +136,7 @@ private:
 
 	bool m_isDetected = false;	//衝突検知フラグ（描画用）
 	bool m_deleteFlag = false;	//デリートフラグ
+	bool m_isActive = true;		//アクティブフラグ
 
 private:
 	//コライダー生成関数

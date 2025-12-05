@@ -44,8 +44,10 @@ void BBManager::InitializeOverride(
 	for(int i = 0; i < BB_NUM; i++)
 	{
 		//ラインBBコライダー提出
-		auto lineBB = m_BB[i]->GetLineBB();
-		SubmitColliders(collisionManager, lineBB->GetCollider());
+		for(int j = 0; j < BB::PLAYER_NUM; j++)
+		{
+			auto lineBB = m_BB[i]->GetLineBB();
+		}
 
 		//電気BBコライダー提出
 		auto electricityBB = m_BB[i]->GetElectricityBB();
@@ -97,6 +99,16 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 {
 	for(int i = 0; i < BB_NUM; i++)
 	{
+		//ラインBB描画情報提出
+		auto lineBB = m_BB[i]->GetLineBB();
+		for (int j = 0; j < BB::PLAYER_NUM; j++)
+		{
+			if (lineBB[j])
+			{
+				SubmitRenderInfo(renderer, *lineBB[j], m_LineBBInfo);
+			}
+		}
+
 		//電気BB描画情報提出
 		auto electricityBB = m_BB[i]->GetElectricityBB();
 		for (int j = 0; j < BB::PLAYER_NUM; j++)
@@ -106,10 +118,6 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 				SubmitRenderInfo(renderer, *electricityBB[j], m_ElectricityBBInfo);
 			}
 		}
-
-		//ラインBB描画情報提出
-		auto lineBB = m_BB[i]->GetLineBB();
-		SubmitRenderInfo(renderer, *lineBB, m_LineBBInfo);
 	}
 }
 
@@ -222,7 +230,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		textureManager,
 		meshManager,
 		&m_LineBBInfo,
-		m_BB[0]->GetLineBB()->GetMeshType(),
+		m_BB[0]->GetLineBB()[0]->GetMeshType(),
 		BLEND_MODE::BLEND_MASKED,
 		lineBBTexPath
 	);

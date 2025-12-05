@@ -1,8 +1,27 @@
 #include "LineBB.h"
 #include <DirectXMath.h>
+#include "CollisionManager.h"
 
 using namespace DirectX;
 using namespace CollisionData;
+
+LineBB::LineBB(MeshData::MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
+	:  ObjectBase(
+		meshType,
+		position,
+		rotation,
+		scale,
+		velocity,
+		isActive,
+		OBJECT_TAG::BB_LINE,
+		colliderType,
+		COLLISION_LAYER::BB_LINE,
+		collisionBoxSize,
+		collisionIsTrigger)
+{
+	m_raycastSegment.layer = COLLISION_LAYER::BB_LINE;
+	m_raycastSegment.layerMask = GetLayerMask(COLLISION_LAYER::BB_LINE);
+}
 
 //更新
 void LineBB::UpdateOverride()
@@ -12,13 +31,17 @@ void LineBB::UpdateOverride()
 		m_edgePos[0],
 		m_edgePos[1]
 	);
+
+	//壁との衝突収集
+	CheckRaycastCollision();
+
+	//衝突点取得
+	GetClosestWallCollisionPoints();
 }
 
 //衝突解決
 void LineBB::ResolveCollisionsOverride()
 {
-	//壁との衝突収集
-	CollectWallCollisions();
 }
 
 //エッジの位置設定
@@ -29,9 +52,34 @@ void LineBB::SetEdgePos(DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end)
 }
 
 //壁との衝突点取得
-std::vector<DirectX::XMFLOAT3> LineBB::GetWallCollisionPoints() const
+DirectX::XMFLOAT3 LineBB::GetWallCollisionPoint() const
 {
-	return m_wallCollisionPoints;
+	return m_wallCollisionPoint;
+}
+
+//レイキャストセグメント取得
+CollisionData::RaycastSegment& LineBB::GetRaycastSegment()
+{
+	return m_raycastSegment;
+}
+
+//壁との衝突点収集
+void LineBB::GetClosestWallCollisionPoints()
+{
+	for(auto & hitInfo : m_raycastSegment.hitInfos)
+	{
+		if (hitInfo.opponent->GetOwner()->GetTag() == OBJECT_TAG::WALL)
+		{
+			m_wallCollisionPoint = hitInfo.hitPoint;
+			return;	//近い順にソート済みなので最初の1個だけ取得して終了
+		}
+	}
+}
+
+//衝突マネージャーの設定
+void LineBB::SetCollisionManager(CollisionManager* pCollisionManager)
+{
+	m_pCollisionManager = pCollisionManager;
 }
 
 //ラインの設定
@@ -66,25 +114,10 @@ void LineBB::SetLine(DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end)
 	m_rotation.y = XMConvertToDegrees(angleY);
 }
 
-//壁との衝突収集
-void LineBB::CollectWallCollisions()
+//壁と最も近い衝突点の収集
+void LineBB::CheckRaycastCollision()
 {
-	//衝突点配列クリア
-	m_wallCollisionPoints.clear();
-
-	//衝突情報を走査
-	const auto& collisionInfos = m_pCollider->GetCollisionInfos();
-	for (const auto& info : collisionInfos)
-	{
-		if (info.state == COLLISION_EXIT) continue;	//衝突終了の場合はスキップ
-
-		//衝突相手のタグを取得
-		OBJECT_TAG opponentTag = info.opponent->GetOwner()->GetTag();
-
-		//壁との衝突のみ収集
-		if (opponentTag == OBJECT_TAG::WALL)
-		{
-			m_wallCollisionPoints.push_back(info.contactPoint);
-		}
-	}
+	m_raycastSegment.startPoint = m_edgePos[0];
+	m_raycastSegment.endPoint = m_edgePos[1];
+	m_pCollisionManager->RaycastSegmentQuery(m_raycastSegment);
 }

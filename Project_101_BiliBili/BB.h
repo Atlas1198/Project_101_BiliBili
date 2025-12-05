@@ -30,7 +30,7 @@ public:
 	void DisableBB();	//無効化
 
 	//ゲッター
-	LineBB* GetLineBB() const;			//ラインBBの取得
+	LineBB** GetLineBB() ;				//ラインBBの取得
 	ElectricityBB** GetElectricityBB();	//電気BB配列の取得
 	bool IsActivated() const;			//発動中かどうか取得
 
@@ -39,7 +39,7 @@ public:
 	void SetTeamId(int id);										//チームIDの設定
 
 private:
-	LineBB* m_lineBB = nullptr;									//ラインBB
+	LineBB* m_lineBB[PLAYER_NUM] = { nullptr };					//ラインBB
 	ElectricityBB* m_electricityBB[PLAYER_NUM] = { nullptr };	//電気BB配列
 	
 	int m_teamId = -1;			//チームID
@@ -49,6 +49,8 @@ private:
 
 	GameUIManager* m_pUIManager = nullptr; //UIマネージャーへのポインタ
 	CollisionManager* m_pCollisionManager = nullptr; //衝突マネージャーへのポインタ
+
+	DirectX::XMFLOAT3 m_rotation = { 0.0f, 0.0f, 0.0f }; //回転角
 
 private:
 	void ControlElectricity();		//電流の操作

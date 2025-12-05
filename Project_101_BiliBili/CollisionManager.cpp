@@ -1,4 +1,5 @@
 #include "CollisionManager.h"
+#include <algorithm>
 #include "ObjectBase.h"
 #include "Renderer.h"
 #include "TextureManager.h"
@@ -35,8 +36,10 @@ void CollisionManager::Initialize(
 //描画
 void CollisionManager::Draw(Renderer& renderer)
 {
-	for(auto& collider : m_pCollidersList)
+	for (auto& collider : m_pCollidersList)
 	{
+		if (!collider->isActive()) continue;
+
 		ColliderType type = collider->GetType();	//コライダータイプ取得
 
 		switch (type)
@@ -69,23 +72,31 @@ void CollisionManager::Draw(Renderer& renderer)
 //nullptrになっているコライダーをリストから削除
 void CollisionManager::CheckColliders()
 {
-	//コライダーリストを走査してデリートフラグが立っているコライダーを削除
-	for (auto it = m_pCollidersList.begin(); it != m_pCollidersList.end();)
+	//コライダーリストを走査してデリートフラグが立っているコライダーをnullptrに設定
+	for (auto& c : m_pCollidersList)
 	{
-		Collider* c = *it;
-		if (c->deleteFlag() || !c->GetOwner()->IsActive())
+		if (c->deleteFlag())
 		{
-			it = m_pCollidersList.erase(it);	//リストから削除
-
-			if(c->deleteFlag()) 
-			{//デリートフラグが立っている場合はメモリ解放
-				delete c;
-				c = nullptr;
-			}
+			c = nullptr;
 		}
-		else
+	}
+
+	//nullptrになっているコライダーをリストから削除
+	m_pCollidersList.erase(
+		std::remove(
+			m_pCollidersList.begin(),
+			m_pCollidersList.end(),
+			nullptr
+		),
+		m_pCollidersList.end()
+	);
+
+	//所有者オブジェクトが非アクティブの場合、コライダーも非アクティブに設定
+	for(auto& c : m_pCollidersList)
+	{
+		if (!c->GetOwner()->IsActive())
 		{
-			it++;
+			c->SetActive(false);
 		}
 	}
 
@@ -112,7 +123,7 @@ void CollisionManager::SubmitDraw(
 	ObjectBase& object = *collider.GetOwner();	//コライダー所有者オブジェクトの参照取得
 
 	XMFLOAT4 color;	//描画色
-	if(collider.isDetected())
+	if (collider.isDetected())
 	{//衝突時(ownerに衝突情報があるとき)は赤
 		color = DRAW_COLOR_DETECTED;
 	}
@@ -163,6 +174,7 @@ void CollisionManager::SubmitDraw(
 	for (int i = 0; i < submitInfos.size(); i++)
 	{
 		submitInfos[i].position = object.GetPosition();
+		submitInfos[i].scale = object.GetScale();
 		submitInfos[i].blendMode = BLEND_TRANSPARENT;
 	}
 
@@ -177,7 +189,7 @@ void CollisionManager::SubmitDraw(
 void CollisionManager::CheckCollisions()
 {
 	//各コライダーの初期化
-	for(auto& collider : m_pCollidersList)
+	for (auto& collider : m_pCollidersList)
 	{
 		//各コライダーの衝突情報クリア
 		collider->GetOwner()->ClearCollisionInfos();
@@ -215,15 +227,21 @@ void CollisionManager::CheckCollisionStates()
 //当たっている可能性のあるコライダーをナローフェーズ用配列に追加
 void CollisionManager::BroadPhase()
 {
-	for(int i = 0; i < m_pCollidersList.size(); i++)
+	for (int i = 0; i < m_pCollidersList.size(); i++)
 	{
-		for(int j = i + 1; j < m_pCollidersList.size(); j++)
+		for (int j = i + 1; j < m_pCollidersList.size(); j++)
 		{
 			Collider* colliderA = m_pCollidersList[i];	//コライダーA
 			Collider* colliderB = m_pCollidersList[j];	//コライダーB
 
+			//active check
+			if (!colliderA->isActive() || !colliderB->isActive())
+			{
+				continue;	//when not active, skip
+			}
+
 			//レイヤーチェック
-			if(!CheckLayer(
+			if (!CheckLayer(
 				colliderA,	//コライダーA
 				colliderB	//コライダーB
 			))
@@ -238,7 +256,7 @@ void CollisionManager::BroadPhase()
 			);
 
 			//衝突の可能性あり
-			if(isCollided)
+			if (isCollided)
 			{
 				SendNarrowPhase(	//ナローフェーズ用配列に衝突ペアを追加
 					colliderA,	//コライダーA
@@ -252,7 +270,7 @@ void CollisionManager::BroadPhase()
 //ナローフェーズ
 void CollisionManager::NarrowPhase()
 {
-	for(int i = 0; i < m_pNarrowPhaseColliders.size(); i++)
+	for (int i = 0; i < m_pNarrowPhaseColliders.size(); i++)
 	{
 		//コライダーの取得
 		Collider* colliderA = m_pNarrowPhaseColliders[i].colliderA;
@@ -264,7 +282,7 @@ void CollisionManager::NarrowPhase()
 		result = NarrowPhaseCollision(colliderA, colliderB);
 
 		//衝突していなければスキップ
-		if(!result.isCollided) continue;
+		if (!result.isCollided) continue;
 
 		//法線向きのチェック
 		OrientNormalAToB(
@@ -367,7 +385,10 @@ ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collid
 }
 
 //レイヤーチェック
-bool CollisionManager::CheckLayer(Collider* colliderA, Collider* colliderB)
+bool CollisionManager::CheckLayer(
+	Collider* colliderA, 
+	Collider* colliderB
+)
 {
 	LayerMask bitA = LayerToBit(colliderA->GetLayer());	//コライダーAのレイヤーマスク
 	LayerMask bitB = LayerToBit(colliderB->GetLayer());	//コライダーBのレイヤーマスク
@@ -435,7 +456,7 @@ void CollisionManager::UpdateCollisionState()
 
 	//前回の衝突ペア配列を今回の衝突ペア配列で更新
 	m_previousCollisionPairs = m_currentCollisionPairs;
-	
+
 	//今回の衝突ペア配列クリア
 	m_currentCollisionPairs.clear();
 }
@@ -489,6 +510,68 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 	);
 }
 
+//レイキャスト
+void CollisionManager::RaycastSegmentQuery(
+	CollisionData::RaycastSegment& ray	//レイ情報
+)
+{
+	ray.hitInfos.clear();	//ヒット情報配列クリア
+
+	for(auto& collider : m_pCollidersList)
+	{
+		//非アクティブなコライダーはスキップ
+		if (!collider->isActive()) continue;
+		
+		//レイヤーチェック
+		if (!(CheckLayerRaycast(ray, collider))) continue;
+
+		RaycastHitInfo info{};	//レイキャストヒット情報構造体
+		bool hit = false;		//ヒットフラグ
+
+		//コライダータイプに応じたレイキャスト関数の呼び出し
+		switch (collider->GetType())
+		{
+		case ColliderType::BOX:		//ボックスコライダー
+			hit = RaycastBox(
+				ray,		//レイ情報
+				collider,	//コライダー
+				info		//ヒット情報
+			);
+			break;
+
+		case ColliderType::SPHERE:	//球コライダー
+			hit = RaycastSphere(
+				ray,		//レイ情報
+				collider,	//コライダー
+				info		//ヒット情報
+			);
+			break;
+
+		case ColliderType::CAPSULE:	//カプセルコライダー
+			hit = RaycastCapsule(
+				ray,		//レイ情報
+				collider,	//コライダー
+				info		//ヒット情報
+			);
+			break;
+
+		default:
+			break;
+		}
+
+		if(hit) ray.hitInfos.push_back(info);	//ヒット時にヒット情報配列に追加
+	}
+
+	//ヒット情報配列を距離でソート
+	std::sort(
+		ray.hitInfos.begin(),
+		ray.hitInfos.end(),
+		[](const RaycastHitInfo& a, const RaycastHitInfo& b) {
+			return a.hitDistance < b.hitDistance;	//距離が近い順にソート
+		}
+	);
+}
+
 //AABBの衝突判定
 bool CollisionManager::CollisionAABB(
 	Collider* colliderA,	//コライダーA
@@ -531,7 +614,7 @@ OBB CollisionManager::CreateOBB(Collider* collider, float alpha)
 		center.y,
 		center.z,
 		0.0f
-		);
+	);
 
 	//半分のサイズ
 	XMFLOAT3 prevScale = collider->GetPreviousScale();	//前回のスケール
@@ -565,7 +648,7 @@ CapsuleSegment CollisionManager::CreateCapsuleSegment(Collider* collider, float 
 	CapsuleSegment seg{};	//カプセルセグメント構造体
 	const CapsuleCollider currCap = collider->GetCurrentCapsuleCollider(); //現在のカプセルコライダー取得
 	const CapsuleCollider prevCap = collider->GetPreviousCapsuleCollider(); //前回のカプセルコライダー取得
-	
+
 	seg.radius = prevCap.radius + (currCap.radius - prevCap.radius) * alpha;					//LERP補間で半径を求める
 	seg.pointA = LerpXMV(XMLoadFloat3(&prevCap.pointA), XMLoadFloat3(&currCap.pointA), alpha);	//端点A設定
 	seg.pointB = LerpXMV(XMLoadFloat3(&prevCap.pointB), XMLoadFloat3(&currCap.pointB), alpha);	//端点B設定
@@ -635,14 +718,14 @@ int CollisionManager::CalculateSubsteps(Collider* colliderA, Collider* colliderB
 		default:
 			return 0.1f;
 		}
-	};
+		};
 
 	//ステップ長の計算
 	float step = (std::min)(stepLen(colliderA), stepLen(colliderB));
 	step = (std::max)(step, 0.001f); //最小値でクランプ
 
 	//サブステップ数計算
-	int n = static_cast<int>(ceilf(maxDisp / step));	
+	int n = static_cast<int>(ceilf(maxDisp / step));
 
 	return (std::min)((std::max)(n, 1), 32);	//1から32の範囲にクランプして返す
 }
@@ -668,15 +751,15 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 	for (int i = 0; i < 3; ++i)
 	{//各軸について内積計算
 		t[i] = XMVectorGetX(XMVector3Dot(tWorld, a.axis[i]));
-	}	
+	}
 
 	//回転行列の計算
 	float R[3][3];					//各軸の方向ベクトルの内積を格納する配列
 	float absR[3][3];				//絶対値を格納する配列
 	const float EPSILON = 0.0001f;	//ゼロ除算防止用の微小値
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		for(int j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++)
 		{
 			R[i][j] = XMVectorGetX(XMVector3Dot(a.axis[i], b.axis[j]));	//各軸の方向ベクトルの内積計算
 			absR[i][j] = fabsf(R[i][j]) + EPSILON;						//絶対値計算
@@ -742,7 +825,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 			minOverlap = overlap;
 			minAxis = axis;			// そのAi×Bjを採用
 		}
-	};
+		};
 
 	//交差軸の判定
 	//A0 x B0
@@ -1207,7 +1290,7 @@ ContactResult CollisionManager::CollisionSphereToCapsule(
 	}
 
 	depth = radiusSum - dist;								//貫入深さ計算
-	
+
 	//衝突点の計算(最短点と球の中心点の中間)
 	XMFLOAT3 surfacePoint; //球の表面上の点
 	surfacePoint = {
@@ -1435,7 +1518,7 @@ ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const Capsu
 			normalVec = (localX >= 0.0f) ? obb.axis[0] : XMVectorNegate(obb.axis[0]);
 			cx = (localX >= 0.0f) ? obb.halfSizes.x : -obb.halfSizes.x;
 			distToFace = sx;
-			
+
 		}
 		else if (sy <= sz)
 		{
@@ -1692,10 +1775,10 @@ float CollisionManager::GetMinDistanceSquaredPointToOBB(const DirectX::FXMVECTOR
 bool CollisionManager::PairExistsinList(const CollisionPair& pair, const std::vector<CollisionPair>& collisionPairs)
 {
 	//保存されている衝突ペアと比較
-	for(auto& p : collisionPairs)
+	for (auto& p : collisionPairs)
 	{
-		if(pair.colliderA == p.colliderA && pair.colliderB == p.colliderB
-		|| pair.colliderA == p.colliderB && pair.colliderB == p.colliderA)
+		if (pair.colliderA == p.colliderA && pair.colliderB == p.colliderB
+			|| pair.colliderA == p.colliderB && pair.colliderB == p.colliderA)
 		{
 			return true;
 		}
@@ -1708,9 +1791,9 @@ void CollisionManager::SetCollisionState(Collider* self, Collider* opponent, Col
 {
 	auto& infoList = self->GetCollisionInfos();
 	//衝突情報リストから相手コライダーを探して状態を設定
-	for(auto& info : infoList)
+	for (auto& info : infoList)
 	{
-		if(info.opponent == opponent)
+		if (info.opponent == opponent)
 		{
 			info.state = state;
 			return;
@@ -1725,7 +1808,7 @@ void CollisionManager::PushCollisionInfo(Collider* colliderA, Collider* collider
 	XMStoreFloat3(&contactP, result.point);	//衝突点
 	XMStoreFloat3(&normalF, result.normal);	//法線ベクトル
 
-	XMFLOAT3 penetration = 
+	XMFLOAT3 penetration =
 	{//貫入深さベクトルの計算
 		normalF.x * result.depth,
 		normalF.y * result.depth,
@@ -1782,4 +1865,252 @@ void CollisionManager::OrientNormalAToB(Collider* colliderA, Collider* colliderB
 	}
 
 	result.normal = normal;	//法線ベクトルを更新
+}
+
+//レイヤーマスクによるレイキャストの衝突判定
+bool CollisionManager::CheckLayerRaycast(const CollisionData::RaycastSegment& ray, Collider* collider)
+{
+	LayerMask rayBit = LayerToBit(ray.layer);				//レイのレイヤーマスク
+	LayerMask colBit = LayerToBit(collider->GetLayer());	//コライダーのレイヤーマスク
+
+	LayerMask rayMask = ray.layerMask;				//レイのレイヤーマスク
+	LayerMask colMask = collider->GetLayerMask();	//コライダーのレイヤーマスク
+
+	bool rayWantsCol = (rayMask & colBit) != 0;	//レイがコライダーと衝突したいかどうか
+	bool colWantsRay = (colMask & rayBit) != 0;	//コライダーがレイと衝突したいかどうか
+
+	return rayWantsCol && colWantsRay;	//互いに衝突したい場合はtrueを返す
+}
+
+//レイキャストとボックスコライダーの衝突判定
+bool CollisionManager::RaycastBox(const CollisionData::RaycastSegment& ray, Collider* collider, CollisionData::RaycastHitInfo& outHitInfo)
+{
+	const float EPSILON = 0.0001f; //微小値
+
+	auto obb = CreateOBB(collider, 1.0f); //コライダーのOBB情報取得
+
+	//レイの始点と方向ベクトル取得
+	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//レイの始点ベクトル
+	XMVECTOR rayDirection = XMVectorSubtract(						//レイの方向ベクトル
+		XMLoadFloat3(&ray.endPoint),
+		rayOrigin
+	);
+	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//レイの長さ
+
+	if (rayLength < EPSILON) return false; //レイの長さが極端に短い場合、衝突しない
+
+	XMVECTOR directionNorm = XMVectorScale(	//正規化されたレイの方向ベクトル
+		rayDirection,
+		1.0f / rayLength
+	);
+
+	//レイの始点をOBBのローカル座標系に変換
+	XMVECTOR relativeOrigin = XMVectorSubtract(rayOrigin, obb.center); 
+
+	//レイの始点からOBBの中心へのベクトル
+	float originLocal[3];		//レイの始点のOBBローカル座標系での位置
+	float directionLocal[3];	//レイの方向ベクトルのOBBローカル座標系での成分
+	for(int i = 0; i < 3; i++)
+	{
+		originLocal[i] = XMVectorGetX(XMVector3Dot(relativeOrigin, obb.axis[i]));
+		directionLocal[i] = XMVectorGetX(XMVector3Dot(directionNorm, obb.axis[i]));
+	}
+
+	//スラブ法によるレイとOBBの衝突判定
+	const XMFLOAT3& halfSizes = obb.halfSizes; //OBBの各軸方向の半分のサイズ
+	float half[3] = { halfSizes.x, halfSizes.y, halfSizes.z };
+
+	float tEnter = 0.0f;		//レイの入り口パラメータ
+	float tExit = rayLength;	//レイの出口パラメータ
+
+	for (int i = 0; i < 3; i++)
+	{
+		float origin = originLocal[i];			//レイの始点のOBBローカル座標系での位置
+		float direction = directionLocal[i];	//レイの方向ベクトルのOBBローカル座標系での成分
+		float halfSize = half[i];				//OBBの各軸方向の半分のサイズ
+
+		if (fabs(direction) < EPSILON)
+		{
+			//レイがスラブに平行な場合、始点がスラブの範囲内にあるかチェック
+			if(origin < -halfSize || origin > halfSize) return false;
+		}
+		else
+		{
+			float invD = 1.0f / direction;			//方向成分の逆数
+			float t1 = (-halfSize - origin) * invD;	//スラブの負の面との交点パラメータ
+			float t2 = (halfSize - origin) * invD;	//スラブの正の面との交点パラメータ
+
+			if (t1 > t2) std::swap(t1, t2);	//交点パラメータの入れ替え
+			if (t1 > tEnter) tEnter = t1;	//入り口パラメータの更新
+			if (t2 < tExit) tExit = t2;		//出口パラメータの更新
+
+			if (tEnter > tExit) return false;	//入り口パラメータが出口パラメータを超えた場合、衝突しない
+		}
+	}
+
+	float tHit = (tEnter >= 0.0f) ? tEnter : tExit;		//衝突パラメータ
+	if (tHit < 0.0f || tHit > rayLength) return false;	//衝突パラメータがレイの範囲外の場合、衝突しない
+
+	//衝突情報の設定
+	//衝突点の計算
+	XMVECTOR hitPoint = XMVectorAdd(
+		rayOrigin,
+		XMVectorScale(
+			directionNorm,
+			tHit
+		)
+	);
+
+	//法線の計算
+	float hitNormalLocal[3] = { 0.0f, 0.0f, 0.0f }; //衝突面の法線ベクトル(OBBローカル座標系)
+	for(int i = 0; i < 3; i++)
+	{
+		hitNormalLocal[i] = originLocal[i] + directionLocal[i] * tHit;	//衝突点のOBBローカル座標系での位置
+	}
+
+	float dx = half[0] - fabsf(hitNormalLocal[0]);	//X軸方向の衝突面までの距離
+	float dy = half[1] - fabsf(hitNormalLocal[1]);	//Y軸方向の衝突面までの距離
+	float dz = half[2] - fabsf(hitNormalLocal[2]);	//Z軸方向の衝突面までの距離
+
+	int axis = 0;													 //最も近い衝突面の軸インデックス
+	if (dy < dx) axis = 1;											//Y軸方向の衝突面が最も近い場合
+	if ((axis == 1 && dz < dy) || (axis == 0 && dz < dx)) axis = 2;	//Z軸方向の衝突面が最も近い場合
+
+	float sign = (hitNormalLocal[axis] >= 0.0f) ? 1.0f : -1.0f; //法線の向き
+
+	XMVECTOR noramalWorld = (sign > 0.0f) ? obb.axis[axis] : XMVectorNegate(obb.axis[axis]); //法線ベクトル(ワールド座標系)
+
+	//衝突情報の作成
+	outHitInfo.opponent = collider;						//衝突したコライダー
+	XMStoreFloat3(&outHitInfo.hitPoint, hitPoint);		//衝突点
+	XMStoreFloat3(&outHitInfo.hitNormal, noramalWorld);	//法線ベクトル
+	outHitInfo.hitDistance = tHit;						//衝突距離
+
+	return true;
+}
+
+//レイキャストと球コライダーの衝突判定
+bool CollisionManager::RaycastSphere(const CollisionData::RaycastSegment& ray, Collider* collider, CollisionData::RaycastHitInfo& outHitInfo)
+{
+	//レイの始点と方向ベクトル取得
+	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//レイの始点ベクトル
+	XMVECTOR rayDirection = XMVectorSubtract(						//レイの方向ベクトル
+		XMLoadFloat3(&ray.endPoint),
+		rayOrigin
+	);
+	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//レイの長さ
+
+	//球コライダー情報取得
+	auto sphere = collider->GetCurrentSphereCollider();		//球コライダー情報取得
+	XMVECTOR sphereCenter = XMLoadFloat3(&sphere.center);	//球の中心点ベクトル
+	float radius = sphere.radius;							//球の半径
+
+	//レイと球の衝突判定
+	XMVECTOR m = XMVectorSubtract(rayOrigin, sphereCenter);
+
+	float b = XMVectorGetX(XMVector3Dot(m, rayDirection));
+	float c = XMVectorGetX(XMVector3Dot(m, m)) - radius * radius;
+
+	if (c > 0.0f && b > 0.0f)
+	{//レイの始点が球の外側にあり、レイが球から離れていく場合
+		return false;
+	}
+
+	float disc = b * b - c;
+	if (disc < 0.0f)
+	{//判別式が負の場合、衝突しない
+		return false;
+	}
+
+	float t = -b - sqrtf(disc);
+	if (t < 0.0f)
+	{//レイの始点が球の内部にある場合
+		t = 0.0f;
+	}
+
+	if (t > rayLength)
+	{//レイの長さを超える場合、衝突しない
+		return false;
+	}
+
+	//衝突情報の設定
+	//衝突点の計算
+	XMVECTOR hitPoint = XMVectorAdd(
+		rayOrigin,
+		XMVectorScale(
+			XMVector3Normalize(rayDirection),
+			t
+		)
+	);
+
+	//法線の計算
+	XMVECTOR hitNormal = XMVectorSubtract(hitPoint, sphereCenter);	//法線ベクトルの計算
+	hitNormal = XMVector3Normalize(hitNormal);						//法線ベクトルの正規化
+
+	//衝突情報の作成
+	RaycastHitInfo hitInfo{};
+	hitInfo.opponent = collider;					//衝突したコライダー
+	XMStoreFloat3(&hitInfo.hitPoint, hitPoint);		//衝突点
+	XMStoreFloat3(&hitInfo.hitNormal, hitNormal);	//法線ベクトル
+	hitInfo.hitDistance = t;						//衝突距離
+	outHitInfo = hitInfo;							//衝突情報を出力引数に設定
+
+	return true;
+}
+
+//レイキャストとカプセルコライダーの衝突判定
+bool CollisionManager::RaycastCapsule(const CollisionData::RaycastSegment& ray, Collider* collider, CollisionData::RaycastHitInfo& outHitInfo)
+{
+	const float EPSILON = 0.0001f; //微小値
+
+	//レイの始点と方向ベクトル取得
+	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//レイの始点ベクトル
+	XMVECTOR rayEnd = XMLoadFloat3(&ray.endPoint);					//レイの終点ベクトル
+	XMVECTOR rayDirection = XMVectorSubtract(rayEnd, rayOrigin);	//レイの方向ベクトル
+	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//レイの長さ
+	if (rayLength < EPSILON) return false; //レイの長さが極端に短い場合、衝突しない
+
+	//カプセルコライダー情報取得
+	auto capsule = collider->GetCurrentCapsuleCollider();
+
+	XMVECTOR outP, outQ; //セグメントP・Q上の最短点
+	float distSq = GetMinDistanceSquaredSegmentToSegment(
+		rayOrigin, rayEnd,						//セグメントP：レイ
+		XMLoadFloat3(&capsule.pointA),			//セグメントQ：カプセルセグメント(端点A)
+		XMLoadFloat3(&capsule.pointB),			//セグメントQ：カプセルセグメント(端点B)
+		outP, outQ								//各セグメント上の最短点
+	);
+
+	float radius = capsule.radius; //カプセルの半径
+	if (distSq > radius * radius) return false; //衝突なし
+
+	//衝突情報の設定
+	//衝突点の計算
+	XMFLOAT3 hitPos;
+	XMStoreFloat3(&hitPos, outP); //レイ上の最短点を衝突点とする
+
+	//法線の計算
+	XMVECTOR diff = XMVectorSubtract(outP, outQ);			//最短点同士の差ベクトル
+	float lenSq = XMVectorGetX(XMVector3LengthSq(diff));	//最短距離の二乗
+
+	XMVECTOR hitNormal;
+	if(lenSq > EPSILON * EPSILON)
+	{//最短距離がほぼ0でない場合
+		hitNormal = XMVector3Normalize(diff); //法線ベクトルの計算
+	}
+	else
+	{//最短距離がほぼ0の場合の処理
+		hitNormal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //適当な法線ベクトル
+	}
+
+	//衝突点から法線方向に半径分移動して、カプセル表面上の点を計算
+	float hitDistance = XMVectorGetX(XMVector3Length(XMVectorSubtract(outP, rayOrigin))); //衝突距離
+
+	//衝突情報の作成
+	outHitInfo.opponent = collider;						//衝突したコライダー
+	XMStoreFloat3(&outHitInfo.hitPoint, outP);			//衝突点
+	XMStoreFloat3(&outHitInfo.hitNormal, hitNormal);	//法線ベクトル
+	outHitInfo.hitDistance = hitDistance;				//衝突距離
+
+	return true;
 }

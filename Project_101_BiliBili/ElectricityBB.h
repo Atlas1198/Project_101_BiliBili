@@ -61,5 +61,5 @@ private:
 	int m_hitNum = 0;				//当たった回数(1フレーム内)
 
 private:
-	void SetGeometry();
+	void UpdateGeometry();	//ジオメトリ更新
 };

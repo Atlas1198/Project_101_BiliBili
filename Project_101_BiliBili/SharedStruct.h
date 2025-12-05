@@ -372,6 +372,9 @@ namespace CollisionData
 		MAX_LAYER		//最大数
 	};
 
+	//レイヤーマスク型
+	using LayerMask = uint32_t;
+
 	//衝突情報構造体
 	struct CollisionInfo
 	{
@@ -382,8 +385,24 @@ namespace CollisionData
 		CollisionData::COLLISION_STATE state;	//衝突状態
 	};
 
-	//レイヤーマスク型
-	using LayerMask = uint32_t;
+	//レイキャストヒット情報構造体
+	struct RaycastHitInfo
+	{
+		Collider* opponent;				//衝突したコライダー
+		DirectX::XMFLOAT3 hitPoint;		//衝突点
+		DirectX::XMFLOAT3 hitNormal;	//衝突法線
+		float hitDistance;				//衝突距離
+	};
+
+	//レイキャストセグメント構造体
+	struct RaycastSegment
+	{
+		DirectX::XMFLOAT3 startPoint;			//始点
+		DirectX::XMFLOAT3 endPoint;				//終点
+		LayerMask layerMask;					//レイヤーマスク
+		COLLISION_LAYER layer;					//レイヤー
+		std::vector<RaycastHitInfo> hitInfos;	//ヒット情報配列
+	};
 
 	//レイヤーをビットに変換する関数
 	LayerMask LayerToBit(COLLISION_LAYER layer);
