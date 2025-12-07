@@ -166,7 +166,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 					true,						//アクティブフラグ
 					ColliderType::BOX,		//コライダータイプ
 					XMFLOAT3(1.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
-					false						//コライダーのトリガーフラグ
+					false,						//コライダーのトリガーフラグ
+					1.0f						//回転速度
 				)
 			);
 			m_pWalls.push_back(
@@ -210,7 +211,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 					true,						//アクティブフラグ
 					ColliderType::BOX,		//コライダータイプ
 					XMFLOAT3(1.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
-					false						//コライダーのトリガーフラグ
+					false,						//コライダーのトリガーフラグ
+					-1.0f						//回転速度
 				)
 			);
 			m_pWalls.push_back(
@@ -490,7 +492,10 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 					ColliderType::BOX,			//コライダータイプ
 					XMFLOAT3(8.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
 					false,						//コライダーのトリガーフラグ
-					1.0f						//回転速度
+					1.0f,						//回転速度
+					true,						//
+					4.0f,						//回転半径
+					XMFLOAT3(0.0f, 0.0f, 5.0f)	//回転中心座標
 				)
 			);
 
