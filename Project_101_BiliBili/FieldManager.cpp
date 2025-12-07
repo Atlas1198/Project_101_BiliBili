@@ -166,7 +166,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 					true,						//アクティブフラグ
 					ColliderType::BOX,		//コライダータイプ
 					XMFLOAT3(1.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
-					false						//コライダーのトリガーフラグ
+					false,						//コライダーのトリガーフラグ
+					1.0f						//回転速度
 				)
 			);
 			m_pWalls.push_back(
@@ -210,7 +211,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 					true,						//アクティブフラグ
 					ColliderType::BOX,		//コライダータイプ
 					XMFLOAT3(1.1f, 3.1f, 6.1f),	//コライダーボックスサイズ
-					false						//コライダーのトリガーフラグ
+					false,						//コライダーのトリガーフラグ
+					-1.0f						//回転速度
 				)
 			);
 			m_pWalls.push_back(
@@ -482,14 +484,18 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			m_pWalls.push_back(
 				new Wall(
 					MeshData::MESH_TYPE::CUBE,
-					XMFLOAT3(0.0f, -3.0f, 5.0f),	//位置
+					XMFLOAT3(0.0f, -3.0f, 5.0f),//位置
 					XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 					XMFLOAT3(8.0f, 3.0f, 1.0f),	//スケール
 					XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 					true,						//アクティブフラグ
-					ColliderType::BOX,		//コライダータイプ
+					ColliderType::BOX,			//コライダータイプ
 					XMFLOAT3(8.1f, 3.1f, 1.1f),	//コライダーボックスサイズ
-					false						//コライダーのトリガーフラグ
+					false,						//コライダーのトリガーフラグ
+					1.0f,						//回転速度
+					true,						//
+					4.0f,						//回転半径
+					XMFLOAT3(0.0f, 0.0f, 5.0f)	//回転中心座標
 				)
 			);
 
@@ -549,6 +555,13 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 //更新
 void FieldManager::UpdateOverride()
 {
+	for (auto& i : m_pWalls)
+	{
+		if (i->IsActive())
+		{
+			i->Update();
+		}
+	}
 }
 
 //描画要求をシーンに提出
