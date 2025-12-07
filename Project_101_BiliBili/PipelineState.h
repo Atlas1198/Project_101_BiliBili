@@ -37,7 +37,8 @@ public:
 		const std::wstring& filename,	//シェーダーファイル名
 		const std::string& entryPoint	//エントリーポイント名
 	);
-	void Create();														//パイプラインステートオブジェクトを作成
+
+	void Create();	//パイプラインステートオブジェクトを作成
 
 	void EnableAlphaBlend(					//アルファブレンドを有効化
 		bool enable,
