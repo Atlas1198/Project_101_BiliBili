@@ -18,7 +18,8 @@ public:
 		ColliderType::BOX,
 		DirectX::XMFLOAT3 collisionBoxSize =	//コライダーのボックスサイズ
 		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool collisionIsTrigger = false			//コライダーのトリガーフラグ
+		bool collisionIsTrigger = false,		//コライダーのトリガーフラグ
+		float rotationSpeed = 0.0f				//回転速度
 	);
 	~Wall() {};	//デストラクタ
 
@@ -26,4 +27,5 @@ public:
 	void ResolveCollisionsOverride() override;	//衝突解決
 
 private:
+	float m_rotationSpeed = 0.0f; //回転速度
 };
