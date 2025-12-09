@@ -200,8 +200,6 @@ void Player::Shoot()
 
 	if (shoot && teammate)
 	{
-		if (!EventManager::GetInstance()->UseBullet(teamID)) return;
-
 		DirectX::XMFLOAT3 dir{ 0.0f, 0.0f, 1.0f };
 
 		DirectX::XMFLOAT3 matePos = teammate->GetPosition();

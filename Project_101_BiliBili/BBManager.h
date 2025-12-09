@@ -39,6 +39,7 @@ public:
 	void SetGameUIManager(GameUIManager* pUIManager);				//UIマネージャーの設定
 	void SetCollisionManager(CollisionManager* pCollisionManager);	//衝突マネージャーの設定
 	void SetBB(int teamID, bool activate);						//BBの発動・無効化設定
+	void OnItemPickup(int teamID);								//アイテム取得コールバック
 
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; //BB配列

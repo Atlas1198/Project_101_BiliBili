@@ -10,6 +10,7 @@
 #include "netcommon.h"
 #include "ToolbarControl.h"
 #include "DatabaseManager.h"
+#include "EventManager.h"
 
 //アプリケーションクラス
 class App : public olc::net::client_interface<GameMsg>
@@ -34,6 +35,7 @@ private:
 	InputManager* m_pInputManager = nullptr;		//入力管理クラスのポインタ
 	TextureManager* m_pTextureManager = nullptr;	//テクスチャ管理クラスのポインタ
 	MeshManager* m_pMeshManager = nullptr;			//メッシュ管理クラスのポインタ
+	EventManager *m_pEventManager = nullptr;			//イベント管理クラスのポインタ
 
 public:
 	App() {};	//コンストラクタ
@@ -62,6 +64,8 @@ public:
 	PlayerDescription descPlayer;
 	std::unordered_map<uint32_t, PlayerDescription> players;
 	Vec3 spawnPos = { 0.0f, 0.0f, 0.0f };
+
+	bool isGameOver = false;
 
 	/*Vec3 spawnPos[4] = {
 		{-13.0f, 0.0f, 18.0f},

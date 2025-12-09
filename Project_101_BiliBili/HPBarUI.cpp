@@ -73,8 +73,4 @@ void HPBarUI::UpdateGageImage()
 void HPBarUI::SetHealth(float health)
 {
 	m_hpRate = (std::max)(0.0f, health);
-	if (health < 0.01f)
-	{
-		EventManager::GetInstance()->gameOver = true;
-	}
 }

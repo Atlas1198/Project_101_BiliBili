@@ -60,7 +60,29 @@ void BBManager::InitializeOverride(
 		}
 
 		m_BB[i]->DisableBB();
+
+		EventManager::GetInstance()->Subscribe<int>(
+			EventType::ITEM_PICKUP,
+			[this](std::shared_ptr<int> teamID)
+			{
+				this->OnItemPickup(*teamID);
+			}
+		);
 	}
+}
+
+void BBManager::OnItemPickup(int teamID)
+{
+	if (teamID < 0 || teamID >= BB_NUM)
+	{
+		return;
+	}
+	if (!m_BB[teamID]->IsActivated())
+	{
+		SetBB(teamID, true);
+	}
+	m_BBTimer[teamID] = BB_DURATION;
+	m_frameTimer[teamID].Mark();
 }
 
 //çXêV
@@ -68,18 +90,6 @@ void BBManager::UpdateOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		if (EventManager::GetInstance()->itemPickup[i])
-		{
-			if (!m_BB[i]->IsActivated())
-			{
-				SetBB(i, true);
-			}
-			
-			m_BBTimer[i] = BB_DURATION;
-			m_frameTimer[i].Mark();
-			EventManager::GetInstance()->itemPickup[i] = false;
-		}
-
 		if (m_BBTimer[i] > 0.0f)
 		{
 			m_BBTimer[i] -= m_frameTimer[i].Mark();
