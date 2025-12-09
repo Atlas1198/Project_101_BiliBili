@@ -98,9 +98,10 @@ void GameUIManager::InitializeOverride(
 		}
 	);
 
-	EventManager::GetInstance()->Subscribe<std::pair<int, int>>(
+	using args = std::pair<int, int>;
+	EventManager::GetInstance()->Subscribe<args>(
 		EventType::UPDATE_BULLET_UI,
-		[this](std::shared_ptr<std::pair<int, int>> data)
+		[this](std::shared_ptr<args> data)
 		{
 			int teamID = data->first;
 			int newCount = data->second;

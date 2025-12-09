@@ -18,7 +18,8 @@ void BulletManager::FireBullet(
 
 	teamBulletCount[ownerTeam]--;
 
-	EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::UPDATE_BULLET_UI, { ownerTeam, teamBulletCount[ownerTeam] });
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>
+        (EventType::UPDATE_BULLET_UI, { ownerTeam, teamBulletCount[ownerTeam] });
 
     auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
