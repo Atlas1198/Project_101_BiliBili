@@ -87,19 +87,28 @@ void Wall::UpdateOverride()
         m_position.z = z;
         m_position.y = y;
 
-        // オブジェクト自体の向き（見た目の回転）も変えたい場合はここで変更
-        if (m_rotationSpeed != 0.0f)
-        {
-            m_rotation.y += m_rotationSpeed;
-            if (m_rotation.y >= 360.0f) 
-            {
-                m_rotation.y -= 360.0f;
-            }
-            if (m_rotation.y < 0.0f) 
-            {
-                m_rotation.y += 360.0f;
-            }
-        }
+        //// オブジェクト自体の向き（見た目の回転）も変えたい場合はここで変更
+        //if (m_rotationSpeed != 0.0f)
+        //{
+        //    m_rotation.y += m_rotationSpeed;
+        //    if (m_rotation.y >= 360.0f) 
+        //    {
+        //        m_rotation.y -= 360.0f;
+        //    }
+        //    if (m_rotation.y < 0.0f) 
+        //    {
+        //        m_rotation.y += 360.0f;
+        //    }
+        //}
+
+        // orbit している方向を向くようにする
+        float dx = m_orbitCenter.x - m_position.x;
+        float dz = m_orbitCenter.z - m_position.z;
+
+        float yawRad = atan2f(dx, dz);
+        float yawDeg = XMConvertToDegrees(yawRad);
+
+        m_rotation.y = yawDeg;
     }
     else
     {
