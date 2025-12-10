@@ -3,7 +3,6 @@
 #include "InputManager.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
-using namespace RenderData;
 
 //コンストラクタ
 TitleScene::TitleScene(float window_width, float window_height)

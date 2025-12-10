@@ -25,7 +25,7 @@ void BB::Initialize()
 	for (int i = 0; i < PLAYER_NUM; i++)
 	{
 		m_lineBB[i] = new LineBB(
-			MeshData::MESH_TYPE::QUAD,
+			MESH_TYPE::QUAD,
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//座標
 			DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
 			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
@@ -40,7 +40,7 @@ void BB::Initialize()
 		m_lineBB[i]->GetCollider()->SetActive(false);			//最初はコライダーを無効化
 
 		m_electricityBB[i] = new ElectricityBB(
-			MeshData::MESH_TYPE::QUAD,
+			MESH_TYPE::QUAD,
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//座標
 			DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
 			DirectX::XMFLOAT3(0.6f, 1.0f, 0.6f),	//スケール

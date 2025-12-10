@@ -4,8 +4,6 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 
-using namespace RenderData;
-
 //コンストラクタ
 SceneBase::SceneBase(float window_width, float window_height)
 {

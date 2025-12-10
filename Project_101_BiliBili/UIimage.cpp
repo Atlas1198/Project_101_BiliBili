@@ -34,11 +34,11 @@ void UIImage::PrepareRenderInfoOverride(TextureManager& textureManager, MeshMana
 	m_renderInfos.clear();	//既存の描画情報構造体配列をクリア
 
 	//描画情報生成関数を呼び出し、描画情報を作成
-	RenderData::CreateRenderInfo(
+	::CreateRenderInfo(
 		textureManager,				//テクスチャマネージャへの参照
 		meshManager,				//メッシュマネージャへの参照
 		&m_renderInfos,				//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
+		MESH_TYPE::QUAD,	//メッシュタイプ
 		m_blendMode,				//ブレンドモード
 		m_texturePath.c_str()		//テクスチャのファイル名
 	);

@@ -1,13 +1,11 @@
+#include "App.h"
 #include "PlayerManager.h"
 #include "AssimpLoader.h"
 #include "Engine.h"
 #include "TextureManager.h"
 #include "Collider.h"
-#include "App.h"
 
 using namespace DirectX;
-using namespace RenderData;
-using namespace MeshData;
 
 //デストラクタ
 PlayerManager::~PlayerManager()
@@ -59,7 +57,7 @@ Player* PlayerManager::AddPlayer(
 
 	Player *newPlayer = new Player
 	(
-		MeshData::MESH_TYPE::QUAD,
+		MESH_TYPE::QUAD,
 		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
 		XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 		XMFLOAT3(2.0f, 2.0f, 2.0f),	//スケール
