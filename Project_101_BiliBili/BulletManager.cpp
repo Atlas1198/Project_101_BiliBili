@@ -65,14 +65,21 @@ void BulletManager::UpdateOverride()
 
     m_bulletRestoreElapsed += m_bulletRestoreTimer.Mark();
 
-    if (m_bulletRestoreElapsed >= BULLET_RECOVERY)
+	m_restoreModifier = 1.0f + m_totalTimer.Peek() / 60.0f; // ゲーム経過時間に応じて回復速度を上げる
+
+
+    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_restoreModifier)
     {
         for (int team = 0; team < 2; ++team)
         {
             if (teamBulletCount[team] < MAX_BULLETS_PER_TEAM)
             {
                 teamBulletCount[team]++;
+
+                EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>
+                    (EventType::UPDATE_BULLET_UI, { team, teamBulletCount[team] });
             }
+
         }
 
         m_bulletRestoreElapsed = 0.0f;
@@ -111,16 +118,13 @@ void BulletManager::FinalizeOverride()
 
 void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-    for (auto &bullet : m_bullets)
-    {
-        //描画情報生成関数を呼び出し、描画情報を作成
-        CreateRenderInfo(
-            textureManager,					//テクスチャマネージャへの参照
-            meshManager,					//メッシュマネージャへの参照
-            &m_bulletInfo,					//描画情報構造体配列へのポインタ
-            MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
-            BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-            texPath							//テクスチャのファイル名
-        );
-    }
+    //描画情報生成関数を呼び出し、描画情報を作成
+    CreateRenderInfo(
+        textureManager,					//テクスチャマネージャへの参照
+        meshManager,					//メッシュマネージャへの参照
+        &m_bulletInfo,					//描画情報構造体配列へのポインタ
+        MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
+        BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+        texPath							//テクスチャのファイル名
+    );
 }

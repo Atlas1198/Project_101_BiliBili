@@ -103,6 +103,10 @@ void Bullet::ResolveCollisionsOverride()
 				);
             }
         }
+        else
+        {
+
+        }
 
         // “¯‚¶ƒ`[ƒ€’e‚Í–³Ž‹
         //if (otherOwner->GetTeam() == m_ownerTeam)

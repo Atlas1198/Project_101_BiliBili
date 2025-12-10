@@ -50,7 +50,9 @@ private:
     std::vector<RenderData::RenderInfo> m_bulletInfo;
 	GameUIManager *m_pGameUIManager = nullptr;
     FrameTimer m_bulletRestoreTimer;
+    FrameTimer m_totalTimer;
 	float m_bulletRestoreElapsed;
+	float m_restoreModifier = 1.0f;
 
     int teamBulletCount[2] = { MAX_BULLETS_PER_TEAM, MAX_BULLETS_PER_TEAM };
 };
