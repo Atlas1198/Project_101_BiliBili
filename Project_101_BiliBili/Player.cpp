@@ -43,6 +43,21 @@ void Player::UpdateOverride()
 	else
 	{
 		Move();		//移動
+
+		/*
+		Vec3 spawnPoses[4] = {
+		{-13.0f, -4.0f, 18.0f},
+		{13.0f, -4.0f, 18.0f},
+		{-13.0f, -4.0f, -8.0f},
+		{13.0f, -4.0f, -8.0f}
+	};
+		*/
+
+		if (m_position.x < -13.5f) m_position.x = 13.1f;
+		if (m_position.x > 13.5f) m_position.x = -13.1f;
+		if (m_position.z < -8.5f) m_position.z = 18.1f;
+		if (m_position.z > 18.5f) m_position.z = -8.1f;
+
 		Shoot();
 	}
 }
@@ -65,7 +80,7 @@ void Player::ResolveCollisionsOverride()
 
 	//最大押し出しベクトル分だけ移動
 	m_position.x += pushVector.x;
-	m_position.y += pushVector.y;
+	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
 
 	for (auto& info : infos)
