@@ -32,6 +32,10 @@ private:
 	IconUI* m_pIconUI2 = nullptr; //アイコンUIポインタ
 
 private:
+	void OnHPChanged(int teamID, float newHP); // HP変更時の処理
+	void OnBulletCountChanged(int teamID, int newCount); // 弾数変更時の処理
+
+private:
 	void PrepareRenderInfo(	//オブジェクトの描画情報生成
 		TextureManager& textureManager,	//テクスチャ管理クラスの参照
 		MeshManager& meshManager		//メッシュ管理クラスの参照

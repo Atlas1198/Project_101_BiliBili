@@ -5,18 +5,19 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "SharedStruct.h"
+#include "RenderData.h"
 
 using namespace DirectX;
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 FieldManager::FieldManager()
 {
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 FieldManager::~FieldManager()
 {
-	//•ÇƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//å£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& wall : m_pWalls)
 	{
 		delete wall;
@@ -24,7 +25,7 @@ FieldManager::~FieldManager()
 	}
 	m_pWalls.clear();
 
-	//’eŠÑ’Ê•ÇƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//å¼¾è²«é€šå£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& wallpass : m_pWallPasses)
 	{
 		delete wallpass;
@@ -32,7 +33,7 @@ FieldManager::~FieldManager()
 	}
 	m_pWallPasses.clear();
 
-	//’n–ÊƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//åœ°é¢ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& ground : m_pGrounds)
 	{
 		delete ground;
@@ -41,65 +42,65 @@ FieldManager::~FieldManager()
 	m_pGrounds.clear();
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
-	std::random_device rd;               
-	std::mt19937 gen(rd());              
-	std::uniform_int_distribution<> dist(1, 3); 
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dist(1, 4);
 
 	int Stagenum = dist(gen);
-		
+
 	m_pWalls.push_back(
 		new Wall(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(-15.0f, 0.0f, 5.0f),	//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-			XMFLOAT3(2.0f, 10.0f, 30.0f),	//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-			true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			XMFLOAT3(2.1f, 10.1f, 30.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-			false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+			XMFLOAT3(-15.0f, 0.0f, 5.0f),//ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(2.0f, 10.0f, 30.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			XMFLOAT3(2.1f, 10.1f, 30.1f),//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+			false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+		)
+	);
+	m_pWalls.push_back(
+		new Wall(
+      MESH_TYPE::CUBE,
+			XMFLOAT3(15.0f, 0.0f, 5.0f), //ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(2.0f, 10.0f, 30.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			XMFLOAT3(2.1f, 10.1f, 30.1f),//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+			false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 		)
 	);
 	m_pWalls.push_back(
 		new Wall(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(15.0f, 0.0f, 5.0f),	//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-			XMFLOAT3(2.0f, 10.0f, 30.0f),	//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-			true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			XMFLOAT3(2.1f, 10.1f, 30.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-			false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+			XMFLOAT3(0.0f, 0.0f, 20.0f), //ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(54.0f, 10.0f, 2.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			XMFLOAT3(54.1f, 10.1f, 2.1f),//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+			false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 		)
 	);
 	m_pWalls.push_back(
 		new Wall(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(0.0f, 0.0f, 20.0f),	//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-			XMFLOAT3(30.0f, 10.0f, 2.0f),	//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-			true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			XMFLOAT3(30.1f, 10.1f, 2.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-			false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-		)
-	);
-	m_pWalls.push_back(
-		new Wall(
-			MESH_TYPE::CUBE,
-			XMFLOAT3(0.0f, 0.0f, -10.0f),	//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-			XMFLOAT3(30.0f, 10.0f, 2.0f),	//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-			true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			XMFLOAT3(30.1f, 10.1f, 2.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-			false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+			XMFLOAT3(0.0f, 0.0f, -10.0f),//ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(54.0f, 10.0f, 2.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			XMFLOAT3(54.1f, 10.1f, 2.1f),//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+			false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 		)
 	);
 
@@ -110,423 +111,646 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 	m_pGrounds.push_back(
 		new Ground(
-			MESH_TYPE::QUAD,
-			XMFLOAT3(0.0f, -5.0f, 5.0f),	//ˆÊ’u
-			XMFLOAT3(90.0f, 0.0f, 0.0f),	//‰ñ“]
-			XMFLOAT3(30.0f, 30.0f, 1.0f),	//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),		//ˆÚ“®‘¬“x
-			true,							//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX,				//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			XMFLOAT3(30.0f, 30.0f, 1.0f),		//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-			false							//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+		  MESH_TYPE::QUAD,
+			XMFLOAT3(0.0f, -5.0f, 5.0f), //ä½ç½®
+			XMFLOAT3(90.0f, 0.0f, 0.0f), //å›è»¢
+			XMFLOAT3(53.3f, 30.0f, 1.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			XMFLOAT3(53.0f, 30.0f, 1.0f),//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+			false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 		)
 	);
 
 	switch (Stagenum)
 	{
-		case 1:	//ƒXƒe[ƒW1
-			//-------------
-			//¶‘¤
-			//-------------
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-6.0f, -4.0f, 15.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(5.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(5.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-11.0f, -4.0f, 3.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(2.0f, 3.0f, 6.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(2.1f, 3.1f, 6.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-3.0f, -4.0f, 7.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 6.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 6.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-8.0f, -4.0f, -4.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(2.0f, 3.0f, 2.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(2.1f, 3.1f, 2.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			m_pWallPasses.push_back(
-				new WallPass(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-4.0f, -4.0f, -4.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(6.0f, 3.0f, 2.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(6.1f, 3.1f, 2.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+	case 1:	//ã‚¹ãƒ†ãƒ¼ã‚¸1
+		//-------------
+		//å·¦å´
+		//-------------
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-6.0f, -3.0f, 15.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(5.0f, 3.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(5.1f, 3.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-11.0f, -3.0f, 3.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(2.0f, 3.0f, 6.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(2.1f, 3.1f, 6.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-3.0f, -3.0f, 7.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 6.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 6.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-8.0f, -3.0f, -4.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(2.0f, 3.0f, 2.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(2.1f, 3.1f, 2.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-4.0f, -4.5f, -4.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(6.0f, 0.0f, 2.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(6.1f, 6.1f, 2.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
 
-			//-------------
-			//‰E‘¤
-			//-------------
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(3.0f, -4.0f, 3.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 6.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 6.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(8.0f, -4.0f, 14.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(2.0f, 3.0f, 2.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(2.1f, 3.1f, 2.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			m_pWallPasses.push_back(
-				new WallPass(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(4.0f, -4.0f, 14.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(6.0f, 3.0f, 2.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(6.1f, 3.1f, 2.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		//-------------
+		//å³å´
+		//-------------
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(3.0f, -3.0f, 3.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 6.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+				true,						//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 6.1f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(8.0f, -3.0f, 14.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(2.0f, 3.0f, 2.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(2.1f, 3.1f, 2.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(4.0f, -4.5f, 14.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(6.0f, 0.0f, 2.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(6.1f, 6.1f, 2.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(11.0f, -4.0f, 7.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(2.0f, 3.0f, 6.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(2.1f, 3.1f, 6.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(11.0f, -3.0f, 7.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(2.0f, 3.0f, 6.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(2.1f, 3.1f, 6.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(6.0f, -4.0f, -5.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(5.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(5.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			
-			break;
-		case 2:	//ƒXƒe[ƒW2
-			//-------------
-			//¶‘¤
-			//-------------
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-10.0f, -3.0f, 8.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(3.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(3.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(6.0f, -3.0f, -5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(5.0f, 3.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(5.1f, 3.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-9.0f, -3.0f, 5.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 5.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 5.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		break;
+	case 2:	//ã‚¹ãƒ†ãƒ¼ã‚¸2
+		//-------------
+		//å·¦å´
+		//-------------
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-10.0f, -3.0f, 8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 3.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-10.0f, -3.0f, 2.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(3.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(3.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-9.0f, -3.0f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 5.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 5.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-5.0f, -3.0f, 13.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(7.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(7.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-10.0f, -3.0f, 2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 3.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-5.0f, -3.0f, 10.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 5.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 5.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -3.0f, 13.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(7.0f, 3.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(7.1f, 3.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWallPasses.push_back(
-				new WallPass(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-5.0f, -3.0f, -5.5f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 7.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 7.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -3.0f, 10.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 5.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 5.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			//-------------
-			//‰E‘¤
-			//-------------
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(10.0f, -3.0f, 8.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(3.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(3.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -4.5f, -5.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 7.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 6.1f, 7.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(9.0f, -3.0f, 5.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 5.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 5.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		//-------------
+		//å³å´
+		//-------------
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(10.0f, -3.0f, 8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 3.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(10.0f, -3.0f, 2.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(3.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(3.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(9.0f, -3.0f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 5.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+				true,						//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 5.1f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(5.0f, -3.0f, -3.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(7.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(7.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(10.0f, -3.0f, 2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 3.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(5.0f, -3.0f, 0.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 5.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 5.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			m_pWallPasses.push_back(
-				new WallPass(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(5.0f, -3.0f, 15.5f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 7.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 7.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			break;
-		case 3: //ƒXƒe[ƒW3
-			//-------------
-			//¶‘¤
-			//-------------
-			m_pWallPasses.push_back(
-				new WallPass(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-8.0f, -3.0f, -4.5f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 9.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 9.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -3.0f, -3.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(7.0f, 3.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(7.1f, 3.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(-5.0f, -3.0f, 17.5f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 3.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 3.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -3.0f, 0.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 5.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+				true,						//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 5.1f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -4.5f, 15.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 7.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 6.1f, 7.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		break;
+	case 3: //ã‚¹ãƒ†ãƒ¼ã‚¸3
+		//-------------
+		//å·¦å´
+		//-------------
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-8.0f, -4.5f, -4.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 9.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 6.1f, 9.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			//-------------
-			//^‚ñ’†
-			//-------------
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -3.0f, 17.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 3.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 3.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(0.0f, -3.0f, 5.0f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(8.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(8.1f, 3.1f, 1.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		//-------------
+		//çœŸã‚“ä¸­
+		//-------------
 
-			//-------------
-			//‰E‘¤
-			//-------------
-			m_pWallPasses.push_back(
-				new WallPass(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(8.0f, -3.0f, 14.5f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 9.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 9.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(0.0f, -3.0f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//å›è»¢
+				XMFLOAT3(8.0f, 3.0f, 1.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+				true,						//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(8.1f, 3.1f, 1.1f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false,						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+				1.0f,						//å›è»¢é€Ÿåº¦
+				true,						//å›è»¢ãƒ•ãƒ©ã‚°
+				4.0f,						//å›è»¢åŠå¾„
+				XMFLOAT3(0.0f, 0.0f, 5.0f)	//å›è»¢ä¸­å¿ƒåº§æ¨™
+			)
+		);
 
-			m_pWalls.push_back(
-				new Wall(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(5.0f, -3.0f, -7.5f),	//ˆÊ’u
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-					XMFLOAT3(1.0f, 3.0f, 3.0f),	//ƒXƒP[ƒ‹
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-					true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-					ColliderType::BOX,		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-					XMFLOAT3(1.1f, 3.1f, 3.1f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-					false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				)
-			);
-			break;
+		//-------------
+		//å³å´
+		//-------------
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(8.0f, -4.5f, 14.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 9.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 6.1f, 9.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -3.0f, -7.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 3.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 3.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		break;
+	case 4: //ã‚¹ãƒ†ãƒ¼ã‚¸4
+		//-------------
+		//å·¦å´
+		//-------------
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-6.0f, -4.5f, 12.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 2.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 6.1f, 2.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-6.5f, -4.5f, 11.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(2.0f, 0.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(2.1f, 6.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-8.0f, -3.0f, 9.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 4.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 4.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-4.0f, -3.0f, 13.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 3.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -3.0f, -6.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 5.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 5.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+		//-------------
+		//çœŸã‚“ä¸­
+		//-------------
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-2.0f, -4.5f, 2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 45.0f, 0.0f), //å›è»¢
+				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 6.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false,						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+				1.0f,						 //å›è»¢é€Ÿåº¦	
+				true,						 //å›è»¢ãƒ•ãƒ©ã‚°
+				3.5f,						 //å›è»¢åŠå¾„
+				XMFLOAT3(0.0f, -3.0f, 5.0f)  //å›è»¢ä¸­å¿ƒåº§æ¨™
+			)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(2.0f, -4.5f, 8.0f), //ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f), //å›è»¢
+				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 6.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false,						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+				1.0f,						 //å›è»¢é€Ÿåº¦	
+				true,						 //å›è»¢ãƒ•ãƒ©ã‚°
+				3.5f,						 //å›è»¢åŠå¾„
+				XMFLOAT3(0.0f, -3.0f, 5.0f)  //å›è»¢ä¸­å¿ƒåº§æ¨™
+			)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-4.0f, -4.5f, 8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f), //å›è»¢
+				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 6.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false,						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+				1.0f,						 //å›è»¢é€Ÿåº¦	
+				true,						 //å›è»¢ãƒ•ãƒ©ã‚°
+				3.5f,						 //å›è»¢åŠå¾„
+				XMFLOAT3(0.0f, -3.0f, 5.0f)  //å›è»¢ä¸­å¿ƒåº§æ¨™
+			)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(4.0f, -4.5f, 2.0f), //ä½ç½®
+				XMFLOAT3(0.0f, 45.0f, 0.0f), //å›è»¢
+				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 6.1f, 1.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false,						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+				1.0f,						 //å›è»¢é€Ÿåº¦	
+				true,						 //å›è»¢ãƒ•ãƒ©ã‚°
+				3.5f,						 //å›è»¢åŠå¾„
+				XMFLOAT3(0.0f, -3.0f, 5.0f)  //å›è»¢ä¸­å¿ƒåº§æ¨™
+			)
+		);
+
+		//-------------
+		//å³å´
+		//-------------
+		m_pWalls.push_back(
+			new Wall(
+		    MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -3.0f, 16.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 5.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 5.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(6.0f, -3.0f, -2.5f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 3.0f, 2.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 3.1f, 2.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(7.0f, -3.0f, -1.0f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 3.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(8.0f, -4.5f, 0.5f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 2.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(1.1f, 6.1f, 2.1f),	 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)	
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(4.0f, -4.5f, -3.0f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(3.0f, 0.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(3.1f, 6.1f, 1.1f),	  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+			)
+		);
 	}
-	
 
-	
+
+
 
 	for (auto& wall : m_pWalls)
 	{
@@ -538,57 +762,73 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		SubmitColliders(collisionManager, wallpass->GetCollider());
 	}
 
-	for(auto& ground : m_pGrounds)
+	for (auto& ground : m_pGrounds)
 	{
 		SubmitColliders(collisionManager, ground->GetCollider());
 	}
 }
 
-//XV
+//æ›´æ–°
 void FieldManager::UpdateOverride()
 {
+	//å£æ›´æ–°	
+	for (auto& i : m_pWalls)
+	{
+		if (i->IsActive())
+		{
+			i->Update();
+		}
+	}
+	//å¼¾è²«é€šå£æ›´æ–°
+	for (auto& i : m_pWallPasses)
+	{
+		if (i->IsActive())
+		{
+			i->Update();
+		}
+	}
 }
 
-//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 void FieldManager::SubmitDrawsOverride(Renderer& renderer)
 {
-	//•Ç•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//å£æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& wall : m_pWalls)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*wall,			//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_wallInfo		//•Ç•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*wall,			//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_wallInfo		//å£æç”»æƒ…å ±
 		);
 	}
 
-	//’eŠÑ’Ê•Ç•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//å¼¾è²«é€šå£æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& wallpass : m_pWallPasses)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*wallpass,			//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_wallPassInfo		//’eŠÑ’Ê•Ç•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*wallpass,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_wallPassInfo	//å¼¾è²«é€šå£æç”»æƒ…å ±
 		);
 	}
 
-	//’n–Ê•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//åœ°é¢æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& ground : m_pGrounds)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*ground,		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_groundInfo	//’n–Ê•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*ground,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_groundInfo	//åœ°é¢æç”»æƒ…å ±
 		);
 	}
 }
 
-//Õ“ËŒãˆ—
+//è¡çªå¾Œå‡¦ç†
 void FieldManager::ResolveCollisionsOverride()
 {
 }
 
-//I—¹
+//çµ‚äº†
 void FieldManager::FinalizeOverride()
 {
 	m_pWalls.clear();
@@ -600,35 +840,35 @@ void FieldManager::FinalizeOverride()
 	m_groundInfo.clear();
 }
 
-//ƒIƒuƒWƒFƒNƒg‚Ì•`‰æî•ñ¶¬
+//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æç”»æƒ…å ±ç”Ÿæˆ
 void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-	//•`‰æî•ñ¶¬ŠÖ”‚ğŒÄ‚Ño‚µA•`‰æî•ñ‚ğì¬
+	//æç”»æƒ…å ±ç”Ÿæˆé–¢æ•°ã‚’å‘¼ã³å‡ºã—ã€æç”»æƒ…å ±ã‚’ä½œæˆ
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_wallInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pWalls[0]->GetMeshType(),	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_OPAQUE,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		wallTexPath							//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_wallInfo,					//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		m_pWalls[0]->GetMeshType(),		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_MODE::BLEND_OPAQUE,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		wallTexPath						//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	);
 
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_wallPassInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pWallPasses[0]->GetMeshType(),	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_OPAQUE,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		wallPassTexPath							//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_wallPassInfo,				//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		m_pWallPasses[0]->GetMeshType(),//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_MODE::BLEND_OPAQUE,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		wallPassTexPath					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	);
 
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_groundInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pGrounds[0]->GetMeshType(),	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_MASKED,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		groundTexPath					//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_groundInfo,					//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		m_pGrounds[0]->GetMeshType(),	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_MODE::BLEND_MASKED,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		groundTexPath					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	);
 
 }

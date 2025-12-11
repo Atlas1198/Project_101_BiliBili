@@ -11,6 +11,16 @@ void BulletManager::FireBullet(
     uint32_t ownerID
     )
 {
+    if (teamBulletCount[ownerTeam] <= 0)
+    {
+        return; // 弾が撃てない場合は何もしない
+	}
+
+	teamBulletCount[ownerTeam]--;
+
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>
+        (EventType::UPDATE_BULLET_UI, { ownerTeam, teamBulletCount[ownerTeam] });
+
     auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
@@ -28,15 +38,6 @@ void BulletManager::InitializeOverride(
     )
 {
     m_pCollisionManager = &collisionManager;
-
-	//TODO: 汚いコードなので直す
-    FireBullet(
-        DirectX::XMFLOAT3(100.0f, 0.0f, 0.0f),
-        DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f),
-        0.0f,
-        0,
-        0
-    );
 }
 
 
@@ -64,9 +65,23 @@ void BulletManager::UpdateOverride()
 
     m_bulletRestoreElapsed += m_bulletRestoreTimer.Mark();
 
-    if (m_bulletRestoreElapsed >= BULLET_RECOVERY)
+	m_restoreModifier = 1.0f + m_totalTimer.Peek() / 60.0f; // ゲーム経過時間に応じて回復速度を上げる
+
+
+    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_restoreModifier)
     {
-		EventManager::GetInstance()->AddBullets(1);
+        for (int team = 0; team < 2; ++team)
+        {
+            if (teamBulletCount[team] < MAX_BULLETS_PER_TEAM)
+            {
+                teamBulletCount[team]++;
+
+                EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>
+                    (EventType::UPDATE_BULLET_UI, { team, teamBulletCount[team] });
+            }
+
+        }
+
         m_bulletRestoreElapsed = 0.0f;
     }
 }
@@ -103,16 +118,13 @@ void BulletManager::FinalizeOverride()
 
 void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-    for (auto &bullet : m_bullets)
-    {
-        //描画情報生成関数を呼び出し、描画情報を作成
-        CreateRenderInfo(
-            textureManager,					//テクスチャマネージャへの参照
-            meshManager,					//メッシュマネージャへの参照
-            &m_bulletInfo,					//描画情報構造体配列へのポインタ
-            m_bullets[0]->GetMeshType(),	//メッシュタイプ
-            BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-            texPath							//テクスチャのファイル名
-        );
-    }
+    //描画情報生成関数を呼び出し、描画情報を作成
+    CreateRenderInfo(
+        textureManager,					//テクスチャマネージャへの参照
+        meshManager,					//メッシュマネージャへの参照
+        &m_bulletInfo,					//描画情報構造体配列へのポインタ
+        MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
+        BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+        texPath							//テクスチャのファイル名
+    );
 }

@@ -4,13 +4,14 @@
 #include "Engine.h"
 #include "TextureManager.h"
 #include "Collider.h"
+#include "EventManager.h"
 
 using namespace DirectX;
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 PlayerManager::~PlayerManager()
 {
-	//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& player : m_pPlayer)
 	{
 		delete player;
@@ -19,29 +20,39 @@ PlayerManager::~PlayerManager()
 	m_pPlayer.clear();
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void PlayerManager::InitializeOverride(
-	InputManager* pInputManager,		//“ü—Íƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
-	TextureManager& textureManager,		//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-	MeshManager& meshManager,			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-	CollisionManager& collisionManager	//Õ“ËŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	InputManager* pInputManager,		//å…¥åŠ›ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
+	TextureManager& textureManager,		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	MeshManager& meshManager,			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	CollisionManager& collisionManager	//è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 )
 {
-	//ƒvƒŒƒCƒ„[•`‰æî•ñ¶¬
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±ç”Ÿæˆ
 	PrepareRenderInfo(textureManager, meshManager);
 
 	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
 	{
-		//ƒRƒ‰ƒCƒ_[î•ñ‚ğƒV[ƒ“‚É’ño
+		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitColliders(collisionManager, (*it)->GetCollider());
 	}
+
+	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
+		EventType::TAKE_DAMAGE,
+		[this](std::shared_ptr<std::pair<int, float>> data)
+		{
+			int teamID = data->first;
+			float damage = data->second;
+			OnTakeDamage(teamID, damage);
+		}
+	);
 }
 
 Player* PlayerManager::AddPlayer(
 	uint32_t id,						//ID
-	InputManager *pInputManager,		//“ü—Íƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
-	CollisionManager &collisionManager,	//Õ“ËŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-	BulletManager *pBulletManager	//’eŠÛŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	InputManager *pInputManager,		//å…¥åŠ›ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
+	CollisionManager &collisionManager,	//è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	BulletManager *pBulletManager	//å¼¾ä¸¸ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 )
 {
 	//Vec3 spawnPos = App::GetInstance()->spawnPos[m_pPlayer.size()];
@@ -58,18 +69,18 @@ Player* PlayerManager::AddPlayer(
 	Player *newPlayer = new Player
 	(
 		MESH_TYPE::QUAD,
-		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//ˆÊ’u
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-		XMFLOAT3(2.0f, 2.0f, 2.0f),	//ƒXƒP[ƒ‹
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
+		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//ä½ç½®
+		XMFLOAT3(0.0f, 0.0f, 0.0f),	//å›è»¢
+		XMFLOAT3(2.0f, 2.0f, 2.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+		XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
 		id,							//ID
-		true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-		ColliderType::SPHERE,			//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv	
-		XMFLOAT3(1.0f, 1.0f, 1.0f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-		false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+		true,						//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+		ColliderType::SPHERE,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—	
+		XMFLOAT3(1.0f, 1.0f, 1.0f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+		false						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 	);
 
-	//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì¶¬
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
 	m_pPlayer.push_back(
 		newPlayer
 	);
@@ -79,16 +90,16 @@ Player* PlayerManager::AddPlayer(
 	{
 		uint32_t selfID = App::GetInstance()->descPlayer.uniqueID;
 
-		//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì‰Šú‰»
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
 		if (id == selfID)
 		{
-			m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //“ü—Íî•ñ\‘¢‘Ì‚Ìæ“¾
+			m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //å…¥åŠ›æƒ…å ±æ§‹é€ ä½“ã®å–å¾—
 		}
 	}
 	else
 	{
-		//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì‰Šú‰»
-		m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //“ü—Íî•ñ\‘¢‘Ì‚Ìæ“¾
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
+		m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //å…¥åŠ›æƒ…å ±æ§‹é€ ä½“ã®å–å¾—
 	}
 
 	return newPlayer;
@@ -107,7 +118,23 @@ void PlayerManager::RemovePlayer(uint32_t id)
 	}
 }
 
-//XV
+void PlayerManager::OnTakeDamage(int teamID, float damage)
+{
+	teamHP[teamID] -= damage;
+	if (teamHP[teamID] < 0.0f)
+	{
+		teamHP[teamID] = 0.0f;
+	}
+
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(EventType::UPDATE_HP_UI, std::make_pair(teamID, teamHP[teamID]));
+
+	if (teamHP[teamID] <= 0.0f)
+	{
+		App::GetInstance()->isGameOver = true;
+	}
+}
+
+//æ›´æ–°
 void PlayerManager::UpdateOverride()
 {
 	for (auto player : m_pPlayer)
@@ -116,7 +143,7 @@ void PlayerManager::UpdateOverride()
 	}
 }
 
-//Õ“ËŒãˆ—
+//è¡çªå¾Œå‡¦ç†
 void PlayerManager::ResolveCollisionsOverride()
 {
 	for(auto& player : m_pPlayer)
@@ -125,45 +152,45 @@ void PlayerManager::ResolveCollisionsOverride()
 	}
 }
 
-//I—¹
+//çµ‚äº†
 void PlayerManager::FinalizeOverride()
 {
 }
 
-//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
 std::vector<Player*>& PlayerManager::GetPlayers()
 {
 	return m_pPlayer;
 }
 
-//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 {
 	for (auto& player : m_pPlayer)
 	{
-		//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+		//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		ObjectManagerBase::SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*player,		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_playerInfo	//ƒvƒŒƒCƒ„[•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*player,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_playerInfo	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±
 		);
 	}
 }
 
-//ƒvƒŒƒCƒ„[•`‰æî•ñ¶¬
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±ç”Ÿæˆ
 void PlayerManager::PrepareRenderInfo(
-	TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-	MeshManager& meshManager		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	MeshManager& meshManager		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 	)
 {
-	//•`‰æî•ñ¶¬ŠÖ”‚ğŒÄ‚Ño‚µA•`‰æî•ñ‚ğì¬
+	//æç”»æƒ…å ±ç”Ÿæˆé–¢æ•°ã‚’å‘¼ã³å‡ºã—ã€æç”»æƒ…å ±ã‚’ä½œæˆ
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_playerInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pPlayer[0]->GetMeshType(),	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_MASKED,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		texPath,							//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_playerInfo,					//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		m_pPlayer[0]->GetMeshType(),	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_MODE::BLEND_MASKED,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		texPath,							//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
 	);
 }

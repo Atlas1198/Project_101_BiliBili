@@ -96,8 +96,16 @@ void Bullet::ResolveCollisionsOverride()
             else if (otherPlayer->GetTeamID() != m_ownerTeam)
             {
 				//m_pGameUIManager->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
-                EventManager::GetInstance()->TakeDamage(otherPlayer->GetTeamID(), m_damage);
+                //EventManager::GetInstance()->TakeDamage(otherPlayer->GetTeamID(), m_damage);
+                EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(
+                    EventType::TAKE_DAMAGE,
+                    std::make_pair(otherPlayer->GetTeamID(), m_damage)
+				);
             }
+        }
+        else
+        {
+
         }
 
         // “¯‚¶ƒ`[ƒ€’e‚Í–³‹

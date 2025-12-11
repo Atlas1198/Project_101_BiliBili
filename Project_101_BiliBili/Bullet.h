@@ -31,4 +31,5 @@ private:
     float m_traveled = 0.0f;        //ˆÚ“®‚µ‚½‹——£
 	float m_damage;                 //ƒ_ƒ[ƒW—Ê
     bool m_deleteFlag = false;
+	int m_ricochetCount = 0;        //’µ‚Ë•Ô‚è‰ñ”
 };

@@ -40,6 +40,7 @@ private:
 
 	void UpdateGageImage();	//ゲージ画像更新関数
 
+
 public:
 	void SetHealth(float health);
 
