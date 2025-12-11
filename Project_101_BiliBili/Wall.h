@@ -3,39 +3,40 @@
 #include <DirectXMath.h>
 #include "ObjectBase.h"
 #include <cmath>
+#include "RenderData.h"
 
-// •ÇƒNƒ‰ƒX
+// å£ã‚¯ãƒ©ã‚¹
 class Wall : public ObjectBase
 {
 public:
-    Wall(    // ƒRƒ“ƒXƒgƒ‰ƒNƒ^(ˆø”‚ ‚è)
-        MeshData::MESH_TYPE meshType,           // ƒƒbƒVƒ…ƒ^ƒCƒv
-        DirectX::XMFLOAT3 position,             // À•W
-        DirectX::XMFLOAT3 rotation,             // ‰ñ“]i“xj
-        DirectX::XMFLOAT3 scale,                // ƒXƒP[ƒ‹
-        DirectX::XMFLOAT3 velocity,             // ˆÚ“®‘¬“x
-        bool isActive = true,                   // ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-        ColliderType colliderType =             // ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+    Wall(    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿(å¼•æ•°ã‚ã‚Š)
+        MESH_TYPE meshType,           // ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+        DirectX::XMFLOAT3 position,             // åº§æ¨™
+        DirectX::XMFLOAT3 rotation,             // å›è»¢ï¼ˆåº¦ï¼‰
+        DirectX::XMFLOAT3 scale,                // ã‚¹ã‚±ãƒ¼ãƒ«
+        DirectX::XMFLOAT3 velocity,             // ç§»å‹•é€Ÿåº¦
+        bool isActive = true,                   // ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+        ColliderType colliderType =             // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
         ColliderType::BOX,
-        DirectX::XMFLOAT3 collisionBoxSize =    // ƒRƒ‰ƒCƒ_[‚Ìƒ{ƒbƒNƒXƒTƒCƒY
+        DirectX::XMFLOAT3 collisionBoxSize =    // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
         DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-        bool collisionIsTrigger = false,        // ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-        float rotationSpeed = 0.0f,             // ‰ñ“]‘¬“xi“x^ƒtƒŒ[ƒ€j
-        bool orbit = false,                     // orbit: true‚È‚ç’†Sü‚è‚ğ‰ñ‚éiˆÊ’u‚ª“®‚­j
-        float orbitRadius = 0.0f,               // orbit ‚Ì”¼Œaiƒ[ƒ‹ƒh’PˆÊjB0‚È‚ç‰ŠúˆÊ’u‚©‚çŒvZ
+        bool collisionIsTrigger = false,        // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+        float rotationSpeed = 0.0f,             // å›è»¢é€Ÿåº¦ï¼ˆåº¦ï¼ãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰
+        bool orbit = false,                     // orbit: trueãªã‚‰ä¸­å¿ƒå‘¨ã‚Šã‚’å›ã‚‹ï¼ˆä½ç½®ãŒå‹•ãï¼‰
+        float orbitRadius = 0.0f,               // orbit ã®åŠå¾„ï¼ˆãƒ¯ãƒ¼ãƒ«ãƒ‰å˜ä½ï¼‰ã€‚0ãªã‚‰åˆæœŸä½ç½®ã‹ã‚‰è¨ˆç®—
         DirectX::XMFLOAT3 orbitCenter = 
-        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)     // ‰ñ“]’†Siƒ[ƒ‹ƒhÀ•Wj
+        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)     // å›è»¢ä¸­å¿ƒï¼ˆãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ï¼‰
     );
-    ~Wall() {};    // ƒfƒXƒgƒ‰ƒNƒ^
+    ~Wall() {};    // ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-    void UpdateOverride() override;                // XV
-    void ResolveCollisionsOverride() override;     // Õ“Ë‰ğŒˆ
+    void UpdateOverride() override;                // æ›´æ–°
+    void ResolveCollisionsOverride() override;     // è¡çªè§£æ±º
 
 private:
-    float m_rotationSpeed = 0.0f;                 // ‰ñ“]‘¬“xi“x^ƒtƒŒ[ƒ€j
-    bool m_orbit = false;                         // orbit ‚·‚é‚©‚Ç‚¤‚©
-    float m_orbitRadius = 0.0f;                   // orbit ”¼Œa
+    float m_rotationSpeed = 0.0f;                 // å›è»¢é€Ÿåº¦ï¼ˆåº¦ï¼ãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰
+    bool m_orbit = false;                         // orbit ã™ã‚‹ã‹ã©ã†ã‹
+    float m_orbitRadius = 0.0f;                   // orbit åŠå¾„
     DirectX::XMFLOAT3 m_orbitCenter = 
-        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);      // orbit ’†S
-    float m_currentOrbitAngleDeg = 0.0f;          // Œ»İ‚Ì orbit Šp“xi“xj
+        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);      // orbit ä¸­å¿ƒ
+    float m_currentOrbitAngleDeg = 0.0f;          // ç¾åœ¨ã® orbit è§’åº¦ï¼ˆåº¦ï¼‰
 };

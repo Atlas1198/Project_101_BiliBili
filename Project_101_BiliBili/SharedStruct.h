@@ -17,6 +17,11 @@
 #include "IndexBuffer.h"
 #include "TextureManager.h"
 
+//前方宣言
+class TextureManager;
+class MeshManager;
+class MeshGPU;
+
 // 頂点データ構造体
 struct Vertex
 {
@@ -33,23 +38,42 @@ private:
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputLayoutCount];	//入力要素の配列
 };
 
-//UV??`?\????
+//UV矩形構造体
 struct UVRect
 {
-	float u = 0.0f;		//UV??`?????X???W
-	float v = 0.0f;		//UV??`?????Y???W
-	float su = 1.0f;	//UV??`???
-	float sv = 1.0f;	//UV??`?????
+	float u = 0.0f;		//UV矩形の左上X
+	float v = 0.0f;		//UV矩形の左上Y
+	float su = 1.0f;	//UV矩形の幅
+	float sv = 1.0f;	//UV矩形の高さ
 };
 
-//????s??\????(256?o?C?g?A???C?????g)
-struct alignas(256) Transform
+//変換用定数バッファ構造体
+struct alignas(256) TransformCB
 {
-	DirectX::XMMATRIX worldMatrix;	//???[???h?s??
-	DirectX::XMMATRIX viewMatrix;	//?r???[?s??
-	DirectX::XMMATRIX projMatrix;	//?v???W?F?N?V?????s??
-	DirectX::XMFLOAT4 objectColor;	//?I?u?W?F?N?g??FRGBA
-	DirectX::XMFLOAT4 uvRect;		//UV??`
+	DirectX::XMMATRIX worldMatrix;	//ワールド行列
+	DirectX::XMMATRIX viewMatrix;	//ビュー行列
+	DirectX::XMMATRIX projMatrix;	//プロジェクション行列
+	DirectX::XMFLOAT4 objectColor;	//オブジェクトカラーRGBA
+	DirectX::XMFLOAT4 uvRect;		//UV矩形
+};
+
+//エフェクト用定数バッファ構造体
+struct EffectCB
+{
+	//カメラ関連データ
+	DirectX::XMMATRIX viewProj;
+	DirectX::XMFLOAT3 camRight;
+	float _pad0;
+	DirectX::XMFLOAT3 camUp;
+	float _pad1;
+
+	//エフェクト関連データ
+	DirectX::XMFLOAT3 center;
+	float _pad2;
+	DirectX::XMFLOAT2 size;
+	DirectX::XMFLOAT2 _padSize;
+	DirectX::XMFLOAT4 color;
+	DirectX::XMFLOAT4 uvRect;
 };
 
 //3D変換情報構造体
@@ -66,19 +90,11 @@ struct CameraInfo
 	DirectX::XMFLOAT3 position;	//カメラの位置
 	DirectX::XMFLOAT3 target;	//カメラの注視点
 	DirectX::XMFLOAT3 up;		//カメラの上方向ベクトル
+	DirectX::XMFLOAT3 right;	//カメラの右方向ベクトル
 	float fov;					//垂直視野角
 	float aspectRatio;			//アスペクト比
 	float nearZ;				//ニアクリップ距離
 	float farZ;					//ファークリップ距離
-};
-
-//ブレンドモード列挙体
-enum BLEND_MODE
-{
-	BLEND_OPAQUE,		//不透明
-	BLEND_MASKED,		//マスク
-	BLEND_TRANSPARENT,	//透明
-	BLEND_MAX			//最大数
 };
 
 //タグ列挙体
@@ -96,253 +112,6 @@ enum class OBJECT_TAG
 	MAX					//最大数
 };
 
-//描画情報用名前空間
-//MeshData内で使用するため分離
-
-//前方宣言
-class TextureManager;
-class MeshManager;
-class MeshGPU;
-
-namespace RenderData
-{
-	//ビルボードタイプ
-	enum BILLBOARD_TYPE
-	{
-		BILLBOARD_NONE,			//ビルボードなし
-		BILLBOARD_SPHERICAL,	//全軸ビルボード
-		BILLBOARD_CYLINDRICAL	//Y軸のみ
-	};
-
-	//描画情報構造体
-	struct RenderInfo
-	{
-		MeshGPU* pMeshGPU = nullptr;						//メッシュデータ
-		DirectX::XMMATRIX world = {};						//ワールド行列
-		UINT startIndex = 0;								//開始インデックス
-		INT  baseVertex = 0;								//基準インデックス
-		uint32_t srvIndex = UINT32_MAX;						//SRVインデックス(テクスチャ)
-		DirectX::XMFLOAT4 color = { 1,1,1,1 };				//表示色
-		BLEND_MODE blendMode = BLEND_OPAQUE;				//ブレンドモード
-		DirectX::XMFLOAT3 position{};						//座標
-		DirectX::XMFLOAT3 scale{};							//スケール
-		DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UV矩形
-		BILLBOARD_TYPE billboardType = BILLBOARD_NONE;		//ビルボードタイプ
-	};
-}
-
-//メッシュデータ用名前空間
-namespace MeshData
-{
-	//メッシュデータ構造体
-	struct Mesh
-	{
-		std::vector<Vertex> vertices;	//頂点データ配列
-		size_t vertexCount = 0;			//頂点数
-		std::vector<uint32_t> indices;	//インデックスデータ配列
-		size_t indexCount = 0;			//インデックス数
-		std::wstring texPath;			//テクスチャのファイル名
-	};
-
-	//モデルデータ構造体
-	struct Model
-	{
-		std::vector<Mesh> meshes;	//メッシュデータ配列
-	};
-
-	//メッシュタイプ列挙体
-	enum MESH_TYPE
-	{
-		IMPORT,		//インポートモデル
-		QUAD,		//四角平面
-		CUBE,		//立方体
-		SPHERE,		//球体
-		CAPSULE,	//カプセル
-		CYLINDER,	//円柱
-	};
-
-	//=======================
-	//四角平面
-	//=======================
-	//四角平面の頂点データ
-	inline constexpr Vertex QuadVertices[4] = 
-	{
-		{{-0.5f,  0.5f, 0.f},{0,0,1},{0,0},{1,0,0},{1,1,1,1}},	//頂点0
-		{{ 0.5f,  0.5f, 0.f},{0,0,1},{1,0},{1,0,0},{1,1,1,1}},	//頂点1
-		{{ 0.5f, -0.5f, 0.f},{0,0,1},{1,1},{1,0,0},{1,1,1,1}},	//頂点2
-		{{-0.5f, -0.5f, 0.f},{0,0,1},{0,1},{1,0,0},{1,1,1,1}},	//頂点3
-	};
-
-	//四角平面のインデックスデータ
-	inline constexpr uint32_t QuadIndices[6] = 
-	{ 
-		0,1,2,	//三角形1
-		0,2,3	//三角形2
-	};
-
-	//四角平面のメッシュデータ作成関数
-	Model MakeQuadModel();
-
-	//=======================
-	//立方体
-	//=======================
-	//立方体の頂点データ(24頂点)
-	inline constexpr Vertex CubeVertices[24]=
-	{
-		// +Z
-		{{-0.5,  0.5,  0.5}, {0,0,1}, {0,0}, {1,0,0}, {1,1,1,1}},		//頂点0
-		{{ 0.5,  0.5,  0.5}, {0,0,1}, {1,0}, {1,0,0}, {1,1,1,1}},		//頂点1
-		{{ 0.5, -0.5,  0.5}, {0,0,1}, {1,1}, {1,0,0}, {1,1,1,1}},		//頂点2
-		{{-0.5, -0.5,  0.5}, {0,0,1}, {0,1}, {1,0,0}, {1,1,1,1}},		//頂点3
-
-		// -Z
-		{{ 0.5,  0.5, -0.5}, {0,0,-1}, {0,0}, {-1,0,0}, {1,1,1,1}},	//頂点4
-		{{-0.5,  0.5, -0.5}, {0,0,-1}, {1,0}, {-1,0,0}, {1,1,1,1}},	//頂点5
-		{{-0.5, -0.5, -0.5}, {0,0,-1}, {1,1}, {-1,0,0}, {1,1,1,1}},	//頂点6
-		{{ 0.5, -0.5, -0.5}, {0,0,-1}, {0,1}, {-1,0,0}, {1,1,1,1}},	//頂点7
-
-		// +X
-		{{ 0.5,  0.5,  0.5}, {1,0,0}, {0,0}, {0,0,-1}, {1,1,1,1}},	//頂点1
-		{{ 0.5,  0.5, -0.5}, {1,0,0}, {1,0}, {0,0,-1}, {1,1,1,1}},	//頂点5
-		{{ 0.5, -0.5, -0.5}, {1,0,0}, {1,1}, {0,0,-1}, {1,1,1,1}},	//頂点6
-		{{ 0.5, -0.5,  0.5}, {1,0,0}, {0,1}, {0,0,-1}, {1,1,1,1}},	//頂点2
-
-		// -X
-		{{-0.5,  0.5, -0.5}, {-1,0,0}, {0,0}, {0,0,1}, {1,1,1,1}},	//頂点4
-		{{-0.5,  0.5,  0.5}, {-1,0,0}, {1,0}, {0,0,1}, {1,1,1,1}},	//頂点0
-		{{-0.5, -0.5,  0.5}, {-1,0,0}, {1,1}, {0,0,1}, {1,1,1,1}},	//頂点3
-		{{-0.5, -0.5, -0.5}, {-1,0,0}, {0,1}, {0,0,1}, {1,1,1,1}},	//頂点7
-
-		// +Y
-		{{-0.5,  0.5, -0.5}, {0,1,0}, {0,0}, {1,0,0}, {1,1,1,1}},		//頂点4
-		{{ 0.5,  0.5, -0.5}, {0,1,0}, {1,0}, {1,0,0}, {1,1,1,1}},		//頂点5
-		{{ 0.5,  0.5,  0.5}, {0,1,0}, {1,1}, {1,0,0}, {1,1,1,1}},		//頂点1
-		{{-0.5,  0.5,  0.5}, {0,1,0}, {0,1}, {1,0,0}, {1,1,1,1}},		//頂点0
-
-		// -Y
-		{{-0.5, -0.5,  0.5}, {0,-1,0}, {0,0}, {1,0,0}, {1,1,1,1}},	//頂点3
-		{{ 0.5, -0.5,  0.5}, {0,-1,0}, {1,0}, {1,0,0}, {1,1,1,1}},	//頂点2
-		{{ 0.5, -0.5, -0.5}, {0,-1,0}, {1,1}, {1,0,0}, {1,1,1,1}},	//頂点6
-		{{-0.5, -0.5, -0.5}, {0,-1,0}, {0,1}, {1,0,0}, {1,1,1,1}},	//頂点7
-	};
-
-	//立方体のインデックスデータ
-	inline constexpr uint32_t CubeIndices[36] = 
-	{
-		// +Z
-		0,1,2,  0,2,3,			//三角形1、2
-		// -Z
-		4,6,5,  4,7,6,			//三角形3、4
-		// +X
-		8,9,10,  8,10,11,		//三角形5、6
-		// -X
-		12,13,14,  12,14,15,	//三角形7、8
-		// +Y
-		16,17,18,  16,18,19,	//三角形9、10
-	};
-
-	//立方体のメッシュデータ作成関数
-	Model MakeCubeModel();
-
-	//=======================
-	//球体
-	//=======================
-	//球体のメッシュデータ作成関数
-	Model MakeSphereModel(int slice = 32, int stacks = 16);
-
-	//=======================
-	//カプセル
-	//=======================
-	//カプセルのメッシュデータ作成関数
-	Model MakeCapsuleModel(int slice = 32, int stacks = 16);
-
-	//カプセルのビジュアル記述構造体
-	struct CapsuleVisualDesc
-	{
-		float baseRadius = 0.5f;		//底面半径
-		float basehalfHeight = 0.5f;	//半分の高さ
-	};
-
-	//カプセルの描画情報追加関数
-	void AppendCapsuleRenderInfos(
-		const CapsuleVisualDesc& desc,				//カプセル描画情報記述子
-		const DirectX::XMFLOAT3& position,			//位置
-		const DirectX::XMFLOAT3& scale,				//スケール
-		const DirectX::XMFLOAT3& rotEuler,			//回転Euler角
-		const DirectX::XMFLOAT4& color,				//色
-		std::vector<RenderData::RenderInfo>& infos,	//入力元描画情報配列
-		std::vector<RenderData::RenderInfo>& out	//出力先描画情報配列
-		);
-
-	//=======================
-	//円柱
-	//=======================
-	//円柱のメッシュデータ作成関数
-	Model MakeCylinderModel(int slice = 32, int stacks = 16);
-
-	//メッシュデータ取得関数
-	inline Model GetModel(MESH_TYPE type)
-	{
-		//メッシュタイプに応じたメッシュデータを返す
-		switch (type) 
-		{
-		case QUAD: return MakeQuadModel();			//四角平面
-		case CUBE: return MakeCubeModel();			//立方体
-		case SPHERE: return MakeSphereModel();		//球体
-		case CAPSULE: return MakeCapsuleModel();	//カプセル
-		case CYLINDER: return MakeCylinderModel();	//円柱
-		default:   return {};						//その他
-		}
-	}
-}
-
-namespace RenderData
-{
-	//モデルデータ又はテクスチャファイルから描画情報を作成する関数
-	void CreateRenderInfo(
-		TextureManager& textureManager,			//テクスチャマネージャへの参照
-		MeshManager& meshManager,				//メッシュマネージャへの参照
-		std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE mType,				//メッシュタイプ
-		BLEND_MODE mode,						//ブレンドモード
-		const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
-		BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
-		bool inverseU = false,					//Uを反転するかどうか(モデルデータの場合のみ有効)
-		bool inverseV = false					//Vを反転するかどうか(モデルデータの場合のみ有効)
-	);
-
-	//FBXファイルから描画情報を作成する関数
-	void CreateRenderInfoFromFBX(
-		TextureManager& textureManager,			//テクスチャマネージャへの参照
-		MeshManager& meshManager,				//メッシュマネージャへの参照
-		std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
-		BLEND_MODE mode,						//ブレンドモード
-		const wchar_t* path,					//モデルファイルのパス
-		BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
-		bool inverseU = false,					//Uを反転するかどうか
-		bool inverseV = false					//Vを反転するかどうか
-	);
-
-	//デフォルトのメッシュデータから描画情報を作成する関数
-	void CreateRenderInfoFromDefaultMesh(
-		TextureManager& textureManager,			//テクスチャマネージャへの参照
-		MeshManager& meshManager,				//メッシュマネージャへの参照
-		std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE type,				//メッシュタイプ
-		BLEND_MODE mode,						//ブレンドモード
-		const wchar_t* path,					//テクスチャのファイル名
-		BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
-	);
-
-	//メッシュデータから描画情報を構築する関数
-	RenderInfo CreateRenderInfoFromMeshData(
-		TextureManager& textureManager,			//テクスチャマネージャへの参照
-		MeshManager& meshManager,				//メッシュマネージャへの参照
-		MeshData::Mesh& mesh,					//メッシュデータ構造体への参照
-		BLEND_MODE mode,						//ブレンドモード
-		BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
-	);
-}
 
 //前方宣言
 class Collider;
@@ -475,6 +244,16 @@ inline static float Dot(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+//外積を計算する関数
+inline static DirectX::XMFLOAT3 Cross(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+	return DirectX::XMFLOAT3{
+		a.y * b.z - a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x
+	};
+}
+
 //線形補間を行う関数(XMFLOAT3版)
 inline static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, float t)
 {
@@ -554,29 +333,29 @@ inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& tran
 	return scaleMatrix * rotMatrix * transMatrix;
 }
 
-//?e?N?X?`?????????\????
+//テクスチャ分割情報構造体
 struct TexSplitInfo
 {
-	int index = 0;			//?????C???f?b?N?X
-	int cols = 1;			//??????
-	int rows = 1;			//?????s??
-	int total = 1;			//????????(???C???f?b?N?X??+1)
-	int frameCount = 0;		//?t???[???J?E???g
-	int updateRate = 0;		//?X?V?p?x(?t???[????)
+	int index = 0;			//現在のスプライトのインデックス
+	int cols = 1;			//スプライトシートの列数
+	int rows = 1;			//スプライトシートの行数
+	int total = 1;			//スプライトの総数(= cols * rows)
+	int frameCount = 0;		//経過フレーム数
+	int updateRate = 0;		//更新頻度(経過フレーム数がこの値に達したら更新)
 };
 
-//?X?v???C?g?????????????????????
+//テクスチャ分割情報を取得する関数
 inline static DirectX::XMFLOAT4 SplitSprite(TexSplitInfo info)
 {
-	//?C???f?b?N?X??????????????v?Z
+	//現在のスプライトの列と行を計算
 	float col = info.index % info.cols;
 	float row = info.index / info.cols;
 
-	//???????`??T?C?Y???v?Z
+	//スプライトの幅と高さを計算
 	float su = 1.0f / info.cols;
 	float sv = 1.0f / info.rows;
 
-	//???????`????W???v?Z
+	//スプライトのUV座標を計算
 	float u = col * su;
 	float v = row * sv;
 

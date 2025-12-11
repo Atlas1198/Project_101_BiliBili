@@ -47,7 +47,7 @@ protected:
 private:
     std::vector<std::unique_ptr<Bullet>> m_bullets;
     CollisionManager* m_pCollisionManager = nullptr;
-    std::vector<RenderData::RenderInfo> m_bulletInfo;
+    std::vector<::RenderInfo> m_bulletInfo;
 	GameUIManager *m_pGameUIManager = nullptr;
     FrameTimer m_bulletRestoreTimer;
     FrameTimer m_totalTimer;

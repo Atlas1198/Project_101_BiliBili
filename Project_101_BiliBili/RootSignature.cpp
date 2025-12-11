@@ -12,7 +12,7 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 	flag |= D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS; // ジオメトリシェーダーのルートシグネチャへんアクセスを拒否する
 
 	//b0の定数バッファを設定
-	CD3DX12_ROOT_PARAMETER rootParam[2] = {};	//ルートパラメータ
+	CD3DX12_ROOT_PARAMETER rootParam[3] = {};	//ルートパラメータ
 	rootParam[0].InitAsConstantBufferView(
 		0,							//シェーダーレジスタb0
 		0,							//レジスタスペース0
@@ -29,11 +29,16 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 		0									//シェーダーレジスタt0
 	);
 
-	//ルートパラメータにディスクリプタテーブルを設定
+	//ディスクリプタテーブルを設定
 	rootParam[1].InitAsDescriptorTable(
 		std::size(tableRange),		//ディスクリプタレンジの数
 		tableRange,					//ディスクリプタレンジ
 		D3D12_SHADER_VISIBILITY_ALL	//全てのシェーダーステージから見える
+	);
+
+	//b1の定数バッファを設定
+	rootParam[2].InitAsConstantBufferView(
+		1							//シェーダーレジスタb1
 	);
 
 	//スタティックサンプラーの設定
@@ -61,7 +66,7 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 		&pError							//エラー
 	);
 
-	if(FAILED(result))
+	if (FAILED(result))
 	{
 		//シリアライズに失敗した場合はエラー内容を表示して終了
 		if (pError)

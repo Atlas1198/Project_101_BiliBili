@@ -7,7 +7,7 @@
 #include <filesystem>
 
 namespace fs = std::filesystem;
-using namespace MeshData;
+
 
 //ディレクトリパス取得関数
 std::wstring GetDirectoryPath(const std::wstring& origin)
@@ -19,30 +19,30 @@ std::wstring GetDirectoryPath(const std::wstring& origin)
 //std::wstring(ワイド文字列)からstd::string(マルチバイト文字列)を得る
 std::string ToUTF8(const std::wstring& value)
 {
-    auto length = WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, nullptr, 0, nullptr, nullptr);
-    auto buffer = new char[length];
+	auto length = WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, nullptr, 0, nullptr, nullptr);
+	auto buffer = new char[length];
 
-    WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, buffer, length, nullptr, nullptr);
+	WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, buffer, length, nullptr, nullptr);
 
-    std::string result(buffer);
-    delete[] buffer;
-    buffer = nullptr;
+	std::string result(buffer);
+	delete[] buffer;
+	buffer = nullptr;
 
-    return result;
+	return result;
 }
 
 //std::string(マルチバイト文字列)からstd::wstring(ワイド文字列)を得る
 std::wstring ToWideString(const std::string& str)
 {
-    auto num1 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, nullptr, 0);
+	auto num1 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, nullptr, 0);
 
-    std::wstring wstr;
-    wstr.resize(num1);
+	std::wstring wstr;
+	wstr.resize(num1);
 
-    auto num2 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, &wstr[0], num1);
+	auto num2 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, &wstr[0], num1);
 
-    assert(num1 == num2);
-    return wstr;
+	assert(num1 == num2);
+	return wstr;
 }
 
 //モデル読み込み関数

@@ -4,11 +4,8 @@
 #include "Renderer.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
-#include "SharedStruct.h"
 
 using namespace DirectX;
-using namespace RenderData;
-using namespace MeshData;
 using namespace CollisionData;
 
 //コンストラクタ
@@ -92,7 +89,7 @@ void CollisionManager::CheckColliders()
 	);
 
 	//所有者オブジェクトが非アクティブの場合、コライダーも非アクティブに設定
-	for(auto& c : m_pCollidersList)
+	for (auto& c : m_pCollidersList)
 	{
 		if (!c->GetOwner()->IsActive())
 		{
@@ -115,7 +112,7 @@ void CollisionManager::CheckColliders()
 void CollisionManager::SubmitDraw(
 	Renderer& renderer,							//シーンの参照
 	Collider& collider,					//コライダー配列
-	std::vector<RenderData::RenderInfo>& info	//描画情報構造体
+	std::vector<RenderInfo>& info	//描画情報構造体
 )
 {
 	std::vector<RenderInfo> submitInfos;		//Rendererへの提出用描画情報構造体配列
@@ -166,7 +163,7 @@ void CollisionManager::SubmitDraw(
 		for (auto& i : submitInfos)
 		{
 			i.world = collider.GetWorldMatrix();
-			i.color = color;
+			i.common.color = color;
 		}
 	}
 
@@ -175,7 +172,7 @@ void CollisionManager::SubmitDraw(
 	{
 		submitInfos[i].position = object.GetPosition();
 		submitInfos[i].scale = object.GetScale();
-		submitInfos[i].blendMode = BLEND_TRANSPARENT;
+		submitInfos[i].common.blendMode = BLEND_TRANSPARENT;
 	}
 
 	//描画要求をシーンに提出
@@ -386,7 +383,7 @@ ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collid
 
 //レイヤーチェック
 bool CollisionManager::CheckLayer(
-	Collider* colliderA, 
+	Collider* colliderA,
 	Collider* colliderB
 )
 {
@@ -482,7 +479,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		textureManager,				//テクスチャ管理クラスの参照
 		meshManager,				//メッシュ管理クラスの参照
 		&m_colliderRenderInfoBox,	//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::CUBE,	//メッシュタイプ
+		MESH_TYPE::CUBE,	//メッシュタイプ
 		BLEND_TRANSPARENT,			//ブレンドモード
 		texPath						//テクスチャのファイル名
 	);
@@ -493,7 +490,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		textureManager,					//テクスチャ管理クラスの参照
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoSphere,	//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::SPHERE,	//メッシュタイプ
+		MESH_TYPE::SPHERE,	//メッシュタイプ
 		BLEND_TRANSPARENT,				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
@@ -504,7 +501,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		textureManager,					//テクスチャ管理クラスの参照
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoCapsule,	//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::CAPSULE,	//メッシュタイプ
+		MESH_TYPE::CAPSULE,	//メッシュタイプ
 		BLEND_TRANSPARENT,				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
@@ -517,11 +514,11 @@ void CollisionManager::RaycastSegmentQuery(
 {
 	ray.hitInfos.clear();	//ヒット情報配列クリア
 
-	for(auto& collider : m_pCollidersList)
+	for (auto& collider : m_pCollidersList)
 	{
 		//非アクティブなコライダーはスキップ
 		if (!collider->isActive()) continue;
-		
+
 		//レイヤーチェック
 		if (!(CheckLayerRaycast(ray, collider))) continue;
 
@@ -559,7 +556,7 @@ void CollisionManager::RaycastSegmentQuery(
 			break;
 		}
 
-		if(hit) ray.hitInfos.push_back(info);	//ヒット時にヒット情報配列に追加
+		if (hit) ray.hitInfos.push_back(info);	//ヒット時にヒット情報配列に追加
 	}
 
 	//ヒット情報配列を距離でソート
@@ -1905,12 +1902,12 @@ bool CollisionManager::RaycastBox(const CollisionData::RaycastSegment& ray, Coll
 	);
 
 	//レイの始点をOBBのローカル座標系に変換
-	XMVECTOR relativeOrigin = XMVectorSubtract(rayOrigin, obb.center); 
+	XMVECTOR relativeOrigin = XMVectorSubtract(rayOrigin, obb.center);
 
 	//レイの始点からOBBの中心へのベクトル
 	float originLocal[3];		//レイの始点のOBBローカル座標系での位置
 	float directionLocal[3];	//レイの方向ベクトルのOBBローカル座標系での成分
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		originLocal[i] = XMVectorGetX(XMVector3Dot(relativeOrigin, obb.axis[i]));
 		directionLocal[i] = XMVectorGetX(XMVector3Dot(directionNorm, obb.axis[i]));
@@ -1932,7 +1929,7 @@ bool CollisionManager::RaycastBox(const CollisionData::RaycastSegment& ray, Coll
 		if (fabs(direction) < EPSILON)
 		{
 			//レイがスラブに平行な場合、始点がスラブの範囲内にあるかチェック
-			if(origin < -halfSize || origin > halfSize) return false;
+			if (origin < -halfSize || origin > halfSize) return false;
 		}
 		else
 		{
@@ -1963,7 +1960,7 @@ bool CollisionManager::RaycastBox(const CollisionData::RaycastSegment& ray, Coll
 
 	//法線の計算
 	float hitNormalLocal[3] = { 0.0f, 0.0f, 0.0f }; //衝突面の法線ベクトル(OBBローカル座標系)
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		hitNormalLocal[i] = originLocal[i] + directionLocal[i] * tHit;	//衝突点のOBBローカル座標系での位置
 	}
@@ -2094,7 +2091,7 @@ bool CollisionManager::RaycastCapsule(const CollisionData::RaycastSegment& ray, 
 	float lenSq = XMVectorGetX(XMVector3LengthSq(diff));	//最短距離の二乗
 
 	XMVECTOR hitNormal;
-	if(lenSq > EPSILON * EPSILON)
+	if (lenSq > EPSILON * EPSILON)
 	{//最短距離がほぼ0でない場合
 		hitNormal = XMVector3Normalize(diff); //法線ベクトルの計算
 	}

@@ -3,8 +3,9 @@
 using namespace DirectX;
 using namespace CollisionData;
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-WallPass::WallPass(MeshData::MESH_TYPE meshType,
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+WallPass::WallPass(
+    MESH_TYPE meshType,
     DirectX::XMFLOAT3 position,
     DirectX::XMFLOAT3 rotation,
     DirectX::XMFLOAT3 scale,
@@ -25,7 +26,7 @@ WallPass::WallPass(MeshData::MESH_TYPE meshType,
 {
     m_isDrawn = true;
 
-    // orbit ”¼Œa‚ª 0 ‚Ìê‡‚ÍA‰ŠúˆÊ’u‚Æ orbitCenter ‚©‚ç”¼Œa‚ğŒvZ‚·‚é
+    // orbit åŠå¾„ãŒ 0 ã®å ´åˆã¯ã€åˆæœŸä½ç½®ã¨ orbitCenter ã‹ã‚‰åŠå¾„ã‚’è¨ˆç®—ã™ã‚‹
     if (m_orbit)
     {
         // offset = position - orbitCenter
@@ -33,7 +34,7 @@ WallPass::WallPass(MeshData::MESH_TYPE meshType,
         XMVECTOR centerVec = XMLoadFloat3(&m_orbitCenter);
         XMVECTOR offset = XMVectorSubtract(posVec, centerVec);
 
-        // XZ•½–Ê‚Ì‹——£‚ğ”¼Œa‚Æ‚·‚é
+        // XZå¹³é¢ã®è·é›¢ã‚’åŠå¾„ã¨ã™ã‚‹
         XMFLOAT3 offsetF;
         XMStoreFloat3(&offsetF, offset);
         float dx = offsetF.x;
@@ -45,8 +46,8 @@ WallPass::WallPass(MeshData::MESH_TYPE meshType,
             m_orbitRadius = computedRadius;
         }
 
-        // ‰ŠúŠp“xi“xj‚ğŒvZ‚µ‚Ä•Û‚µ‚Ä‚¨‚­iatan2 ‚Ì‡‚É’ˆÓj
-        // atan2(y, x) -> ‚±‚±‚Å‚Í atan2(dx, dz) ‚É‚µ‚ÄAŠp“x=0 ‚Ì‚É z ‚ª³‚Ì•ûŒü‚É‚È‚é‚æ‚¤‚É‚·‚é
+        // åˆæœŸè§’åº¦ï¼ˆåº¦ï¼‰ã‚’è¨ˆç®—ã—ã¦ä¿æŒã—ã¦ãŠãï¼ˆatan2 ã®é †ã«æ³¨æ„ï¼‰
+        // atan2(y, x) -> ã“ã“ã§ã¯ atan2(dx, dz) ã«ã—ã¦ã€è§’åº¦=0 ã®æ™‚ã« z ãŒæ­£ã®æ–¹å‘ã«ãªã‚‹ã‚ˆã†ã«ã™ã‚‹
         float angleRad = 0.0f;
         if (computedRadius > 0.0001f)
         {
@@ -56,16 +57,16 @@ WallPass::WallPass(MeshData::MESH_TYPE meshType,
     }
 }
 
-// XV
+// æ›´æ–°
 void WallPass::UpdateOverride()
 {
-    // orbit ƒ‚[ƒh
+    // orbit ãƒ¢ãƒ¼ãƒ‰
     if (m_orbit)
     {
-        // ‰ñ“]Šp‚ği‚ß‚éideg/framej
+        // å›è»¢è§’ã‚’é€²ã‚ã‚‹ï¼ˆdeg/frameï¼‰
         m_currentOrbitAngleDeg += m_rotationSpeed;
 
-        // ƒ‰ƒbƒv
+        // ãƒ©ãƒƒãƒ—
         if (m_currentOrbitAngleDeg >= 360.0f)
         {
             m_currentOrbitAngleDeg -= 360.0f;
@@ -75,19 +76,19 @@ void WallPass::UpdateOverride()
             m_currentOrbitAngleDeg += 360.0f;
         }
 
-        // Šp“x‚ğƒ‰ƒWƒAƒ“‚É•ÏŠ·
+        // è§’åº¦ã‚’ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›
         float angleRad = XMConvertToRadians(m_currentOrbitAngleDeg);
 
-        // Y²ü‚è‚É orbitRadius ‚ÅˆÊ’u‚ğŒvZix,zj
+        // Yè»¸å‘¨ã‚Šã« orbitRadius ã§ä½ç½®ã‚’è¨ˆç®—ï¼ˆx,zï¼‰
         float x = m_orbitCenter.x + sinf(angleRad) * m_orbitRadius;
         float z = m_orbitCenter.z + cosf(angleRad) * m_orbitRadius;
-        float y = m_position.y; // Y ‚ÍŒ³‚Ì‚‚³‚ğˆÛ
+        float y = m_position.y; // Y ã¯å…ƒã®é«˜ã•ã‚’ç¶­æŒ
 
         m_position.x = x;
         m_position.z = z;
         m_position.y = y;
 
-        //// ƒIƒuƒWƒFƒNƒg©‘Ì‚ÌŒü‚«iŒ©‚½–Ú‚Ì‰ñ“]j‚à•Ï‚¦‚½‚¢ê‡‚Í‚±‚±‚Å•ÏX
+        //// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè‡ªä½“ã®å‘ãï¼ˆè¦‹ãŸç›®ã®å›è»¢ï¼‰ã‚‚å¤‰ãˆãŸã„å ´åˆã¯ã“ã“ã§å¤‰æ›´
         //if (m_rotationSpeed != 0.0f)
         //{
         //    m_rotation.y += m_rotationSpeed;
@@ -102,7 +103,7 @@ void WallPass::UpdateOverride()
         //}
         
 
-		// orbit ‚µ‚Ä‚¢‚é•ûŒü‚ğŒü‚­‚æ‚¤‚É‚·‚é
+		// orbit ã—ã¦ã„ã‚‹æ–¹å‘ã‚’å‘ãã‚ˆã†ã«ã™ã‚‹
         float dx = m_orbitCenter.x - m_position.x;
         float dz = m_orbitCenter.z - m_position.z;
 
@@ -113,12 +114,12 @@ void WallPass::UpdateOverride()
     }
     else
     {
-        // orbit ‚Å‚È‚¢ -> ]—ˆ‚Ç‚¨‚è‚Ì©ŒÈ‰ñ“]
+        // orbit ã§ãªã„ -> å¾“æ¥ã©ãŠã‚Šã®è‡ªå·±å›è»¢
         if (m_rotationSpeed != 0.0f)
         {
-            m_rotation.y += m_rotationSpeed;    // Y²‰ñ“]
+            m_rotation.y += m_rotationSpeed;    // Yè»¸å›è»¢
 
-            // ‰ñ“]Šp“x‚Ì•â³
+            // å›è»¢è§’åº¦ã®è£œæ­£
             if (m_rotation.y > 360.0f)
             {
                 m_rotation.y -= 360.0f;
@@ -131,7 +132,7 @@ void WallPass::UpdateOverride()
     }
 }
 
-// Õ“Ë‰ğŒˆ
+// è¡çªè§£æ±º
 void WallPass::ResolveCollisionsOverride()
 {
 }

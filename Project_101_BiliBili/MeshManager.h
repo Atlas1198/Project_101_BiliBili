@@ -14,7 +14,7 @@ public:
 
 	void Initialize(ID3D12Device* pDevice);	//初期化
 
-	MeshGPU* CreateMesh(MeshData::Mesh& src);	//メッシュを作成してリストに追加、メッシュへのポインタを返す
+	MeshGPU* CreateMesh(Mesh& src);	//メッシュを作成してリストに追加、メッシュへのポインタを返す
 
 private:
 	std::vector<MeshGPU*> m_Meshes;	//メッシュのリスト
