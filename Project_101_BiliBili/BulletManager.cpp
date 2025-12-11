@@ -123,7 +123,7 @@ void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManage
         textureManager,					//テクスチャマネージャへの参照
         meshManager,					//メッシュマネージャへの参照
         &m_bulletInfo,					//描画情報構造体配列へのポインタ
-        MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
+        MESH_TYPE::QUAD,	//メッシュタイプ
         BLEND_MODE::BLEND_MASKED,		//ブレンドモード
         texPath							//テクスチャのファイル名
     );
