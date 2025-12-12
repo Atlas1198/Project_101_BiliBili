@@ -5,7 +5,6 @@
 #include "ConstantBuffer.h"
 #include "RootSignature.h"
 #include "SharedStruct.h"
-#include "RenderData.h"
 #include "PipelineState.h"
 #include "IndexBuffer.h"
 #include "TextureManager.h"
@@ -19,11 +18,11 @@ public:	//公開関数
 
 	//メイン処理関数	
 	void Initialize(											//初期化
-		ID3D12Device* pDevice,
-		CameraInfo* pInfo);
+		ID3D12Device* pDevice, 
+		CameraInfo* pInfo);		
 	void Update(UINT currentBackBufferIndex, CameraInfo& info);	//更新
 	void Draw(													//描画
-		UINT index,
+		UINT index, 
 		ID3D12GraphicsCommandList* commandList,
 		TextureManager& textureManager
 	);
@@ -32,28 +31,24 @@ public:	//公開関数
 	void BeginFrame(UINT backIndex);
 
 	//描画リストに描画情報を追加
-	void SubmitToWorldList(const struct RenderInfo& item);			//ワールド座標用
-	void SubmitToEffectList(const struct EffectRenderInfo& item);	//エフェクト用
-	void SubmitToScreenList(const struct RenderInfo& item);			//スクリーン座標用
+	void SubmitToWorldList(const struct RenderData::RenderInfo& item);	//ワールド座標用
+	void SubmitToScreenList(const struct RenderData::RenderInfo& item);	//スクリーン座標用
 
 private:	//非公開メンバ変数
-	RootSignature* m_pRootSignature = nullptr;			//ルートシグネチャ
-	PipelineState* m_pPipelineStateWorld[BLEND_MAX]{};	//ワールド座標用パイプラインステートオブジェクト
-	PipelineState* m_pPipelineStateEffect[BLEND_MAX]{};	//エフェクト用パイプラインステートオブジェクト
-	PipelineState* m_pPipelineStateScreen[BLEND_MAX]{};	//スクリーン座標用パイプラインステートオブジェクト
+	RootSignature* m_pRootSignature = nullptr;							//ルートシグネチャ
+	PipelineState* m_pPipelineStateWorld[BLEND_MAX]{};					//ワールド座標用パイプラインステートオブジェクト
+	PipelineState* m_pPipelineStateScreen[BLEND_MAX]{};					//スクリーン座標用パイプラインステートオブジェクト
 
 	ID3D12Device* m_pDevice = nullptr;	//デバイス
 	CameraInfo* m_cameraInfo = nullptr;	//カメラ情報構造体
 
-	std::vector<RenderInfo> m_drawListWorld[BLEND_MAX]{};			//描画リスト(ワールド座標)
-	std::vector<RenderInfo> m_drawListScreen[BLEND_MAX]{};			//描画リスト(スクリーン座標)
-	std::vector<EffectRenderInfo> m_drawListEffect[BLEND_MAX]{};	//描画リスト(エフェクト用)
+	std::vector<RenderData::RenderInfo> m_drawListWorld[BLEND_MAX]{};	//描画リスト(ワールド座標)
+	std::vector<RenderData::RenderInfo> m_drawListScreen[BLEND_MAX]{};	//描画リスト(スクリーン座標)
 
-	//フレームごとのCBVプール（1オブジェクト＝1定数バッファ）
+	//フレームごとのオブジェクト用CBVプール（1オブジェクト＝1定数バッファ）
 	std::vector<ConstantBuffer*> m_objectCBWorld[Engine::FRAME_BUFFER_COUNT];	//ワールド座標用
-	std::vector<ConstantBuffer*> m_objectCBEffect[Engine::FRAME_BUFFER_COUNT];	//エフェクト用
 	std::vector<ConstantBuffer*> m_objectCBScreen[Engine::FRAME_BUFFER_COUNT];	//スクリーン座標用
-	UINT m_currBackIndex = 0;													//現在のバックバッファインデックス
+	UINT m_currBackIndex = 0;
 
 	//カメラ行列
 	DirectX::XMMATRIX m_worldView{};	//ワールド座標用ビュー行列
@@ -66,19 +61,19 @@ private:	//非公開関数
 	//描画リストの描画関数
 	void DrawRenderListWorld(	//ワールド座標用描画リストの描画
 		ID3D12GraphicsCommandList* p_commandList,	//コマンドリスト
-		TextureManager& textureManager				//テクスチャ管理クラス
-	);
-	void DrawRenderListEffect(	//エフェクト用描画リストの描画
-		ID3D12GraphicsCommandList* p_commandList,	//コマンドリスト
-		TextureManager& textureManager				//テクスチャ管理クラス
+		TextureManager& textureManager,				//テクスチャ管理クラス
+		size_t objIndex								//オブジェクト用定数バッファのインデックス
 	);
 	void DrawRenderListScreen(	//スクリーン座標用描画リストの描画
 		ID3D12GraphicsCommandList* p_commandList,	//コマンドリスト
-		TextureManager& textureManager				//テクスチャ管理クラス
+		TextureManager& textureManager,				//テクスチャ管理クラス
+		size_t objIndex								//オブジェクト用定数バッファのインデックス
 	);
 
 	//描画リストソート関数
 	void SortDrawList();			//描画リストのソート
 	void SortDrawListOpaque();		//不透明オブジェクトの描画リストソート
 	void SortDrawListTransparent();	//透明オブジェクトの描画リストソート
+
+	DirectX::XMMATRIX CalcBillBoard(const RenderData::RenderInfo& info);	//ビルボード計算
 };

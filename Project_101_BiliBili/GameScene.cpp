@@ -1,10 +1,12 @@
-#include "App.h"
 #include "GameScene.h"
 #include "TitleScene.h"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
+#include "App.h"
+
+using namespace RenderData;
 
 //コンストラクタ
 GameScene::GameScene(float window_width, float window_height)

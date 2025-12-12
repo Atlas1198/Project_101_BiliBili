@@ -1,17 +1,19 @@
-#include "App.h"
 #include "PlayerManager.h"
 #include "AssimpLoader.h"
 #include "Engine.h"
 #include "TextureManager.h"
 #include "Collider.h"
+#include "App.h"
 #include "EventManager.h"
 
 using namespace DirectX;
+using namespace RenderData;
+using namespace MeshData;
 
-//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+//ƒfƒXƒgƒ‰ƒNƒ^
 PlayerManager::~PlayerManager()
 {
-	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
+	//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
 	for (auto& player : m_pPlayer)
 	{
 		delete player;
@@ -20,20 +22,20 @@ PlayerManager::~PlayerManager()
 	m_pPlayer.clear();
 }
 
-//åˆæœŸåŒ–
+//‰Šú‰»
 void PlayerManager::InitializeOverride(
-	InputManager* pInputManager,		//å…¥åŠ›ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
-	TextureManager& textureManager,		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
-	MeshManager& meshManager,			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
-	CollisionManager& collisionManager	//è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	InputManager* pInputManager,		//“ü—Íƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
+	TextureManager& textureManager,		//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	MeshManager& meshManager,			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	CollisionManager& collisionManager	//Õ“ËŠÇ—ƒNƒ‰ƒX‚ÌQÆ
 )
 {
-	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±ç”Ÿæˆ
+	//ƒvƒŒƒCƒ„[•`‰æî•ñ¶¬
 	PrepareRenderInfo(textureManager, meshManager);
 
 	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
 	{
-		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
+		//ƒRƒ‰ƒCƒ_[î•ñ‚ğƒV[ƒ“‚É’ño
 		SubmitColliders(collisionManager, (*it)->GetCollider());
 	}
 
@@ -50,9 +52,9 @@ void PlayerManager::InitializeOverride(
 
 Player* PlayerManager::AddPlayer(
 	uint32_t id,						//ID
-	InputManager *pInputManager,		//å…¥åŠ›ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
-	CollisionManager &collisionManager,	//è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
-	BulletManager *pBulletManager	//å¼¾ä¸¸ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	InputManager *pInputManager,		//“ü—Íƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
+	CollisionManager &collisionManager,	//Õ“ËŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	BulletManager *pBulletManager	//’eŠÛŠÇ—ƒNƒ‰ƒX‚ÌQÆ
 )
 {
 	//Vec3 spawnPos = App::GetInstance()->spawnPos[m_pPlayer.size()];
@@ -68,19 +70,19 @@ Player* PlayerManager::AddPlayer(
 
 	Player *newPlayer = new Player
 	(
-		MESH_TYPE::QUAD,
-		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//ä½ç½®
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//å›è»¢
-		XMFLOAT3(2.0f, 2.0f, 2.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+		MeshData::MESH_TYPE::QUAD,
+		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//ˆÊ’u
+		XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
+		XMFLOAT3(2.0f, 2.0f, 2.0f),	//ƒXƒP[ƒ‹
+		XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
 		id,							//ID
-		true,						//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
-		ColliderType::SPHERE,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—	
-		XMFLOAT3(1.0f, 1.0f, 1.0f),	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
-		false						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+		true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
+		ColliderType::SPHERE,			//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv	
+		XMFLOAT3(1.0f, 1.0f, 1.0f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
+		false						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
 	);
 
-	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
+	//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì¶¬
 	m_pPlayer.push_back(
 		newPlayer
 	);
@@ -90,16 +92,16 @@ Player* PlayerManager::AddPlayer(
 	{
 		uint32_t selfID = App::GetInstance()->descPlayer.uniqueID;
 
-		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
+		//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì‰Šú‰»
 		if (id == selfID)
 		{
-			m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //å…¥åŠ›æƒ…å ±æ§‹é€ ä½“ã®å–å¾—
+			m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //“ü—Íî•ñ\‘¢‘Ì‚Ìæ“¾
 		}
 	}
 	else
 	{
-		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
-		m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //å…¥åŠ›æƒ…å ±æ§‹é€ ä½“ã®å–å¾—
+		//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚Ì‰Šú‰»
+		m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //“ü—Íî•ñ\‘¢‘Ì‚Ìæ“¾
 	}
 
 	return newPlayer;
@@ -134,7 +136,7 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 	}
 }
 
-//æ›´æ–°
+//XV
 void PlayerManager::UpdateOverride()
 {
 	for (auto player : m_pPlayer)
@@ -143,7 +145,7 @@ void PlayerManager::UpdateOverride()
 	}
 }
 
-//è¡çªå¾Œå‡¦ç†
+//Õ“ËŒãˆ—
 void PlayerManager::ResolveCollisionsOverride()
 {
 	for(auto& player : m_pPlayer)
@@ -152,45 +154,45 @@ void PlayerManager::ResolveCollisionsOverride()
 	}
 }
 
-//çµ‚äº†
+//I—¹
 void PlayerManager::FinalizeOverride()
 {
 }
 
-//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
+//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg‚ğæ“¾
 std::vector<Player*>& PlayerManager::GetPlayers()
 {
 	return m_pPlayer;
 }
 
-//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
+//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
 void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 {
 	for (auto& player : m_pPlayer)
 	{
-		//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
+		//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
 		ObjectManagerBase::SubmitRenderInfo(
-			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
-			*player,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
-			m_playerInfo	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±
+			renderer,		//ƒV[ƒ“‚ÌQÆ
+			*player,		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
+			m_playerInfo	//ƒvƒŒƒCƒ„[•`‰æî•ñ
 		);
 	}
 }
 
-//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±ç”Ÿæˆ
+//ƒvƒŒƒCƒ„[•`‰æî•ñ¶¬
 void PlayerManager::PrepareRenderInfo(
-	TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
-	MeshManager& meshManager		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	MeshManager& meshManager		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
 	)
 {
-	//æç”»æƒ…å ±ç”Ÿæˆé–¢æ•°ã‚’å‘¼ã³å‡ºã—ã€æç”»æƒ…å ±ã‚’ä½œæˆ
+	//•`‰æî•ñ¶¬ŠÖ”‚ğŒÄ‚Ño‚µA•`‰æî•ñ‚ğì¬
 	CreateRenderInfo(
-		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
-		&m_playerInfo,					//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
-		m_pPlayer[0]->GetMeshType(),	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
-		BLEND_MODE::BLEND_MASKED,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
-		texPath,							//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
+		&m_playerInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
+		m_pPlayer[0]->GetMeshType(),	//ƒƒbƒVƒ…ƒ^ƒCƒv
+		BLEND_MODE::BLEND_MASKED,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
+		texPath,							//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
 	);
 }

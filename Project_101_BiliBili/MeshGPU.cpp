@@ -1,7 +1,7 @@
 #include "MeshGPU.h"
 
 //コンストラクタ
-MeshGPU::MeshGPU(ID3D12Device* pDevice, Mesh& src)
+MeshGPU::MeshGPU(ID3D12Device* pDevice, MeshData::Mesh& src)
 {
 	//頂点バッファの生成
 	const size_t vbsize = sizeof(Vertex) * src.vertexCount;	//頂点バッファサイズ

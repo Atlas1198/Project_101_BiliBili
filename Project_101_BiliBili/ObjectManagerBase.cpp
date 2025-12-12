@@ -5,6 +5,8 @@
 #include "Collider.h"
 
 using namespace DirectX;
+using namespace RenderData;
+using namespace MeshData;
 
 //初期化
 void ObjectManagerBase::Initialize(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
@@ -84,7 +86,7 @@ void ObjectManagerBase::SubmitRenderInfo(
 			for(auto& i : submitInfos)
 			{
 				i.world = object.GetWorldMatrix();
-				i.common.color = object.GetColor();
+				i.color = object.GetColor();
 			}
 		}
 
@@ -93,8 +95,8 @@ void ObjectManagerBase::SubmitRenderInfo(
 		{
 			submitInfos[i].position = object.GetPosition();
 			submitInfos[i].scale = object.GetScale();
-			submitInfos[i].common.blendMode = info[i].common.blendMode;
-			submitInfos[i].common.uvRect = SplitSprite(object.GetTexSplitInfo());
+			submitInfos[i].blendMode = info[i].blendMode;
+			submitInfos[i].uvRect = SplitSprite(object.GetTexSplitInfo());
 		}
 
 		//描画要求をシーンに提出

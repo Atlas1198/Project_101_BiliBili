@@ -5,7 +5,6 @@
 #include <vector>
 #include "Collider.h"
 #include "SharedStruct.h"
-#include "RenderData.h"
 
 //前方宣言
 class Renderer;
@@ -75,7 +74,7 @@ public:
 	void SubmitDraw(
 		Renderer& renderer,							//シーンの参照
 		Collider& collider,					//コライダー配列
-		std::vector <RenderInfo>& info	//描画情報構造体
+		std::vector <RenderData::RenderInfo>& info	//描画情報構造体
 	);
 
 	//衝突判定処理
@@ -102,9 +101,9 @@ private:
 	std::vector<CollisionPair> m_currentCollisionPairs;		//今回の衝突ペア配列
 	std::vector<CollisionPair> m_previousCollisionPairs;	//前回の衝突ペア配列
 
-	std::vector<RenderInfo> m_colliderRenderInfoBox;		//ボックスコライダー描画情報
-	std::vector<RenderInfo> m_colliderRenderInfoSphere;		//球コライダー描画情報
-	std::vector<RenderInfo> m_colliderRenderInfoCapsule;	//カプセルコライダー描画情報
+	std::vector<RenderData::RenderInfo> m_colliderRenderInfoBox;		//ボックスコライダー描画情報
+	std::vector<RenderData::RenderInfo> m_colliderRenderInfoSphere;		//球コライダー描画情報
+	std::vector<RenderData::RenderInfo> m_colliderRenderInfoCapsule;	//カプセルコライダー描画情報
 
 private:
 	//ChackCollisions()の補助関数

@@ -7,7 +7,7 @@ class Ground : public ObjectBase
 {
 public:
 	Ground(			//コンストラクタ(引数あり)
-		MESH_TYPE meshType,		//メッシュタイプ
+		MeshData::MESH_TYPE meshType,		//メッシュタイプ
 		DirectX::XMFLOAT3 position,				//座標
 		DirectX::XMFLOAT3 rotation,				//回転
 		DirectX::XMFLOAT3 scale,				//スケール

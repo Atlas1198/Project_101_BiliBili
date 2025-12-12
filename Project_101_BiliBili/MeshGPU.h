@@ -1,10 +1,9 @@
 #pragma once
-#include <d3d12.h>
+//#include <d3d12.h>
 #include "d3dx12.h"
 #include"VertexBuffer.h"
 #include"IndexBuffer.h"
 #include "SharedStruct.h"
-#include "RenderData.h"
 
 //メッシュ情報をGPU上に保持するクラス
 class MeshGPU
@@ -12,7 +11,7 @@ class MeshGPU
 public:
 	MeshGPU(	//コンストラクタ
 		ID3D12Device* pDevice,	//デバイス
-		Mesh& src		//メッシュデータ
+		MeshData::Mesh& src		//メッシュデータ
 	);
 	~MeshGPU();	//デストラクタ
 
@@ -27,7 +26,7 @@ private:
 	VertexBuffer* m_pVertexBuffer = nullptr;	//頂点バッファ
 	IndexBuffer* m_pIndexBuffer = nullptr;		//インデックスバッファ
 	UINT m_IndexCount = 0;						//インデックス数
-	D3D12_PRIMITIVE_TOPOLOGY m_Topology =
+	D3D12_PRIMITIVE_TOPOLOGY m_Topology = 
 		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;	//プリミティブトポロジ
 
 	float m_sortRadius = 0.0f;	//ソート用の半径

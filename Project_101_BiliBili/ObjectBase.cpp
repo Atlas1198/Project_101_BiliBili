@@ -7,6 +7,8 @@
 #include "CollisionManager.h"
 
 using namespace DirectX;
+using namespace RenderData;
+using namespace MeshData;
 using namespace CollisionData;
 
 //コンストラクタ
@@ -197,7 +199,7 @@ Collider* ObjectBase::GetCollider() const
 }
 
 //メッシュタイプの取得
-MESH_TYPE ObjectBase::GetMeshType() const
+MeshData::MESH_TYPE ObjectBase::GetMeshType() const
 {
 	return m_meshType;
 }

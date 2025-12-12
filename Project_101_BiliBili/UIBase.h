@@ -5,7 +5,6 @@
 #include <vector>
 #include <utility>
 #include "SharedStruct.h"
-#include "RenderData.h"
 
 // UI基底クラス
 class UIBase
@@ -34,7 +33,7 @@ public:	//公開関数
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	);
-	void CollectRenderInfos(std::vector<RenderInfo>& out) const;	//描画情報構造体配列収集
+	void CollectRenderInfos(std::vector<RenderData::RenderInfo>& out) const;	//描画情報構造体配列収集
 
 	//ゲッター
 	const Transform3D& GetWorldTransform() const;	//ワールド変換情報の取得
@@ -78,7 +77,7 @@ protected:
 	Transform3D m_world{};	//ワールド変換情報
 	Transform3D m_local{};	//ローカル変換情報
 
-	DirectX::XMFLOAT4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };	//色
+	DirectX::XMFLOAT4 m_color{1.0f, 1.0f, 1.0f, 1.0f};	//色
 	bool m_isActive = true;	//アクティブフラグ
 
 	//UI親子関係
@@ -87,7 +86,7 @@ protected:
 
 	UINT m_order = 0;	//描画順
 
-	std::vector<RenderInfo> m_renderInfos;	//描画情報構造体配列
+	std::vector<RenderData::RenderInfo> m_renderInfos;	//描画情報構造体配列
 
 	UVRect m_uvRect{};	//UV矩形
 };

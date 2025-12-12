@@ -45,7 +45,7 @@ private:	//非公開メンバ変数
 	std::vector<Wall*> m_pWalls;						//壁オブジェクト配列
 	std::vector<WallPass*> m_pWallPasses;						//壁オブジェクト配列
 	std::vector<Ground*> m_pGrounds;					//地面オブジェクト配列
-	std::vector<::RenderInfo> m_wallInfo;		//壁描画情報
-	std::vector<::RenderInfo> m_wallPassInfo;		//壁描画情報
-	std::vector<::RenderInfo> m_groundInfo;	//地面描画情報
+	std::vector<RenderData::RenderInfo> m_wallInfo;		//壁描画情報
+	std::vector<RenderData::RenderInfo> m_wallPassInfo;		//壁描画情報
+	std::vector<RenderData::RenderInfo> m_groundInfo;	//地面描画情報
 };

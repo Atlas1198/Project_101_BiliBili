@@ -1,4 +1,4 @@
-#include "WinInclude.h"
+#include "App.h"
 #include "Controller.h"
 #include <cmath>	//デッドゾーン処理などで使用する
 #include <cassert>

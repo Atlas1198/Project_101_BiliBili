@@ -1,6 +1,6 @@
-#include "App.h"
 #include "Player.h"
 #include <DirectXMath.h>
+#include "App.h"
 #include "EventManager.h"
 
 using namespace DirectX;

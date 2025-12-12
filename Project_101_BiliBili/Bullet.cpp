@@ -14,7 +14,7 @@ Bullet::Bullet(
                float maxDistance)
 
     : ObjectBase(
-        MESH_TYPE::QUAD,
+        MeshData::MESH_TYPE::QUAD,
         pos,
         {0,0,0},
         {1.0f,1.0f,1.0f}, 

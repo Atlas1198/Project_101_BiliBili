@@ -3,7 +3,7 @@
 
 TransformItem::TransformItem(DirectX::XMFLOAT3 pos)
     : ObjectBase(
-        MESH_TYPE::CUBE,                          //メッシュタイプ
+        MeshData::MESH_TYPE::CUBE,                          //メッシュタイプ
         pos,                                                //座標
         { 0,0,0 },                                          //回転
         { 1,1,1 },                                          //スケール

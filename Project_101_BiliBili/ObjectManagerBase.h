@@ -49,7 +49,7 @@ protected:
 	void SubmitRenderInfo(	//描画情報をシーンに提出
 		Renderer& renderer,							//シーンの参照
 		const ObjectBase& objects,					//ゲームオブジェクト
-		std::vector <::RenderInfo>& info	//描画情報構造体
+		std::vector <RenderData::RenderInfo>& info	//描画情報構造体
 	);
 
 	void SubmitColliders(	//コライダー描画要求をシーンに提出
