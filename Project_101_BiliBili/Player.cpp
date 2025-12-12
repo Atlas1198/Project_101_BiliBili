@@ -245,17 +245,6 @@ void Player::Shoot()
 			teamID,
 			id
 		);
-
-		EventManager::GetInstance()->TriggerEvent<EffectCommand>(
-			EventType::ADD_EFFECT,
-			EffectCommand{
-				EFFECT_TYPE::FIRE_FLASH,
-				m_position,
-				XMFLOAT2{ 2.0f,2.0f },
-				true,
-				&m_position
-			}
-		);
 	}
 }
 

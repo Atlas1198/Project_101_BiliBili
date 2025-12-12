@@ -118,9 +118,14 @@ void Bullet::ResolveCollisionsOverride()
         //}
 
         // Õ“Ë ¨ Á–Å
-		EventManager::GetInstance()->TriggerEvent<EffectCommand>(
-			EventType::ADD_EFFECT,{EFFECT_TYPE::PARTICLE_POINT, GetPosition(), XMFLOAT2(1.0f, 1.0f)}
-		);
+        EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+            EventType::ADD_EFFECT,
+            EffectCommand{
+                EFFECT_TYPE::FIRE_FLASH,
+                m_position,
+                XMFLOAT2{ 2.0f,2.0f },
+            }
+        );
         m_deleteFlag = true;
         SetActive(false);
         break;
