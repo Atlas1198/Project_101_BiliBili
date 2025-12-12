@@ -6,7 +6,7 @@
 #include "MeshManager.h"
 #include "App.h"
 
-using namespace RenderData;
+
 
 //コンストラクタ
 GameScene::GameScene(float window_width, float window_height)

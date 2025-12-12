@@ -7,7 +7,7 @@
 #include <filesystem>
 
 namespace fs = std::filesystem;
-using namespace MeshData;
+
 
 //ディレクトリパス取得関数
 std::wstring GetDirectoryPath(const std::wstring& origin)

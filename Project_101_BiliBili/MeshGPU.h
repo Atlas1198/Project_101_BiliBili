@@ -4,6 +4,7 @@
 #include"VertexBuffer.h"
 #include"IndexBuffer.h"
 #include "SharedStruct.h"
+#include "RenderData.h"
 
 //メッシュ情報をGPU上に保持するクラス
 class MeshGPU
@@ -11,7 +12,7 @@ class MeshGPU
 public:
 	MeshGPU(	//コンストラクタ
 		ID3D12Device* pDevice,	//デバイス
-		MeshData::Mesh& src		//メッシュデータ
+		Mesh& src		//メッシュデータ
 	);
 	~MeshGPU();	//デストラクタ
 

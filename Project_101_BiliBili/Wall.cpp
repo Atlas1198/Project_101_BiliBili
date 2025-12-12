@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace CollisionData;
 
 // コンストラクタ
-Wall::Wall(MeshData::MESH_TYPE meshType,
+Wall::Wall(MESH_TYPE meshType,
     DirectX::XMFLOAT3 position,
     DirectX::XMFLOAT3 rotation,
     DirectX::XMFLOAT3 scale,

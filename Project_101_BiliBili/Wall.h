@@ -9,7 +9,7 @@ class Wall : public ObjectBase
 {
 public:
     Wall(    // コンストラクタ(引数あり)
-        MeshData::MESH_TYPE meshType,           // メッシュタイプ
+        MESH_TYPE meshType,           // メッシュタイプ
         DirectX::XMFLOAT3 position,             // 座標
         DirectX::XMFLOAT3 rotation,             // 回転（度）
         DirectX::XMFLOAT3 scale,                // スケール
