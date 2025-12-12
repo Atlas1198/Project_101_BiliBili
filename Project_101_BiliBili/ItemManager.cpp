@@ -7,7 +7,7 @@
 #include <random>
 
 using namespace DirectX;
-using namespace RenderData;
+
 
 //コンストラクタ
 ItemManager::ItemManager()
@@ -45,7 +45,7 @@ void ItemManager::SpawnItem()
 
 	m_pItems.push_back(
 		new Item(
-			MeshData::MESH_TYPE::QUAD,
+			MESH_TYPE::QUAD,
 			XMFLOAT3(xDist(gen), -4.0f, zDist(gen)),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
@@ -112,7 +112,7 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_itemInfo,					//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
+		MESH_TYPE::QUAD,	//メッシュタイプ
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		itemTexPath					//テクスチャのファイル名
 	);

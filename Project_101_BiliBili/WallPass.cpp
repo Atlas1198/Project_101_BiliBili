@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace CollisionData;
 
 // コンストラクタ
-WallPass::WallPass(MeshData::MESH_TYPE meshType,
+WallPass::WallPass(MESH_TYPE meshType,
     DirectX::XMFLOAT3 position,
     DirectX::XMFLOAT3 rotation,
     DirectX::XMFLOAT3 scale,

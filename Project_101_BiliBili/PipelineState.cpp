@@ -87,6 +87,31 @@ void PipelineState::SetVertexShader(const std::wstring& filename)
 	m_desc.VS = CD3DX12_SHADER_BYTECODE(m_vsBlob.Get());
 }
 
+//頂点シェーダーを設定（エントリーポイント指定版）
+void PipelineState::SetVertexShader(const std::wstring& filename, const std::string& entryPoint)
+{
+	//頂点シェーダーのコンパイル
+	result = D3DCompileFromFile(
+		filename.c_str(),									//シェーダーコードのファイル名
+		nullptr,											//マクロ定義
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,					//インクルード可能にする
+		entryPoint.c_str(),									//エントリーポイント関数名
+		"vs_5_0",											//シェーダーモデル指定(今回はバージョン5.0の頂点シェーダー)
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,	//デバッグ用設定
+		0,													//追加オプション
+		&m_vsBlob,											//コンパイル後のバイナリ格納先
+		&m_pErrorBlob										//エラーメッセージ格納先
+	);
+
+	if (FAILED(result))
+	{
+		return;
+	}
+
+	//頂点シェーダーの設定
+	m_desc.VS = CD3DX12_SHADER_BYTECODE(m_vsBlob.Get());
+}
+
 //ピクセルシェーダーを設定
 void PipelineState::SetPixelShader(const std::wstring& filename)
 {

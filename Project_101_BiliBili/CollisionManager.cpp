@@ -7,8 +7,8 @@
 #include "SharedStruct.h"
 
 using namespace DirectX;
-using namespace RenderData;
-using namespace MeshData;
+
+
 using namespace CollisionData;
 
 //コンストラクタ
@@ -115,7 +115,7 @@ void CollisionManager::CheckColliders()
 void CollisionManager::SubmitDraw(
 	Renderer& renderer,							//シーンの参照
 	Collider& collider,					//コライダー配列
-	std::vector<RenderData::RenderInfo>& info	//描画情報構造体
+	std::vector<RenderInfo>& info	//描画情報構造体
 )
 {
 	std::vector<RenderInfo> submitInfos;		//Rendererへの提出用描画情報構造体配列
@@ -166,7 +166,7 @@ void CollisionManager::SubmitDraw(
 		for (auto& i : submitInfos)
 		{
 			i.world = collider.GetWorldMatrix();
-			i.color = color;
+			i.common.color = color;
 		}
 	}
 
@@ -175,7 +175,7 @@ void CollisionManager::SubmitDraw(
 	{
 		submitInfos[i].position = object.GetPosition();
 		submitInfos[i].scale = object.GetScale();
-		submitInfos[i].blendMode = BLEND_TRANSPARENT;
+		submitInfos[i].common.blendMode = BLEND_TRANSPARENT;
 	}
 
 	//描画要求をシーンに提出
@@ -482,7 +482,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		textureManager,				//テクスチャ管理クラスの参照
 		meshManager,				//メッシュ管理クラスの参照
 		&m_colliderRenderInfoBox,	//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::CUBE,	//メッシュタイプ
+		MESH_TYPE::CUBE,	//メッシュタイプ
 		BLEND_TRANSPARENT,			//ブレンドモード
 		texPath						//テクスチャのファイル名
 	);
@@ -493,7 +493,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		textureManager,					//テクスチャ管理クラスの参照
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoSphere,	//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::SPHERE,	//メッシュタイプ
+		MESH_TYPE::SPHERE,	//メッシュタイプ
 		BLEND_TRANSPARENT,				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
@@ -504,7 +504,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		textureManager,					//テクスチャ管理クラスの参照
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoCapsule,	//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::CAPSULE,	//メッシュタイプ
+		MESH_TYPE::CAPSULE,	//メッシュタイプ
 		BLEND_TRANSPARENT,				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);

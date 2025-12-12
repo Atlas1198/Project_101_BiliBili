@@ -7,7 +7,7 @@
 #include "SharedStruct.h"
 
 using namespace DirectX;
-using namespace RenderData;
+
 
 //コンストラクタ
 FieldManager::FieldManager()
@@ -54,7 +54,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 	m_pWalls.push_back(
 		new Wall(
-			MeshData::MESH_TYPE::CUBE,
+			MESH_TYPE::CUBE,
 			XMFLOAT3(-15.0f, 0.0f, 5.0f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 			XMFLOAT3(2.0f, 10.0f, 30.0f),//スケール
@@ -67,7 +67,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	);
 	m_pWalls.push_back(
 		new Wall(
-			MeshData::MESH_TYPE::CUBE,
+			MESH_TYPE::CUBE,
 			XMFLOAT3(15.0f, 0.0f, 5.0f), //位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 			XMFLOAT3(2.0f, 10.0f, 30.0f),//スケール
@@ -80,7 +80,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	);
 	m_pWalls.push_back(
 		new Wall(
-			MeshData::MESH_TYPE::CUBE,
+			MESH_TYPE::CUBE,
 			XMFLOAT3(0.0f, 0.0f, 20.0f), //位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 			XMFLOAT3(54.0f, 10.0f, 2.0f),//スケール
@@ -93,7 +93,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	);
 	m_pWalls.push_back(
 		new Wall(
-			MeshData::MESH_TYPE::CUBE,
+			MESH_TYPE::CUBE,
 			XMFLOAT3(0.0f, 0.0f, -10.0f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 			XMFLOAT3(54.0f, 10.0f, 2.0f),//スケール
@@ -112,7 +112,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 	m_pGrounds.push_back(
 		new Ground(
-			MeshData::MESH_TYPE::QUAD,
+			MESH_TYPE::QUAD,
 			XMFLOAT3(0.0f, -5.0f, 5.0f), //位置
 			XMFLOAT3(90.0f, 0.0f, 0.0f), //回転
 			XMFLOAT3(53.3f, 30.0f, 1.0f),//スケール
@@ -132,7 +132,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-6.0f, -3.0f, 15.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(5.0f, 3.0f, 1.0f),	  //スケール
@@ -145,7 +145,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-11.0f, -3.0f, 3.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(2.0f, 3.0f, 6.0f),	  //スケール
@@ -158,7 +158,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-3.0f, -3.0f, 7.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 3.0f, 6.0f),	 //スケール
@@ -171,7 +171,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-8.0f, -3.0f, -4.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(2.0f, 3.0f, 2.0f),	  //スケール
@@ -184,7 +184,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-4.0f, -4.5f, -4.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(6.0f, 0.0f, 2.0f),	  //スケール
@@ -202,7 +202,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(3.0f, -3.0f, 3.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 				XMFLOAT3(1.0f, 3.0f, 6.0f),	//スケール
@@ -215,7 +215,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(8.0f, -3.0f, 14.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(2.0f, 3.0f, 2.0f),	 //スケール
@@ -228,7 +228,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(4.0f, -4.5f, 14.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(6.0f, 0.0f, 2.0f),	 //スケール
@@ -242,7 +242,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(11.0f, -3.0f, 7.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(2.0f, 3.0f, 6.0f),	 //スケール
@@ -256,7 +256,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(6.0f, -3.0f, -5.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(5.0f, 3.0f, 1.0f),	 //スケール
@@ -275,7 +275,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-10.0f, -3.0f, 8.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //スケール
@@ -289,7 +289,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-9.0f, -3.0f, 5.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	 //スケール
@@ -303,7 +303,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-10.0f, -3.0f, 2.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //スケール
@@ -317,7 +317,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-5.0f, -3.0f, 13.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(7.0f, 3.0f, 1.0f),	  //スケール
@@ -331,7 +331,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-5.0f, -3.0f, 10.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	  //スケール
@@ -345,7 +345,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-5.0f, -4.5f, -5.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 0.0f, 7.0f),	  //スケール
@@ -362,7 +362,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(10.0f, -3.0f, 8.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(3.0f, 3.0f, 1.0f),	 //スケール
@@ -376,7 +376,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(9.0f, -3.0f, 5.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	//スケール
@@ -390,7 +390,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(10.0f, -3.0f, 2.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(3.0f, 3.0f, 1.0f),	 //スケール
@@ -404,7 +404,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(5.0f, -3.0f, -3.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(7.0f, 3.0f, 1.0f),	 //スケール
@@ -418,7 +418,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(5.0f, -3.0f, 0.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	//スケール
@@ -431,7 +431,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(5.0f, -4.5f, 15.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 0.0f, 7.0f),	 //スケール
@@ -449,7 +449,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-8.0f, -4.5f, -4.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 0.0f, 9.0f),	  //スケール
@@ -463,7 +463,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-5.0f, -3.0f, 17.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 3.0f, 3.0f),	  //スケール
@@ -481,7 +481,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(0.0f, -3.0f, 5.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 				XMFLOAT3(8.0f, 3.0f, 1.0f),	//スケール
@@ -502,7 +502,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(8.0f, -4.5f, 14.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 0.0f, 9.0f),	 //スケール
@@ -516,7 +516,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(5.0f, -3.0f, -7.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 3.0f, 3.0f),	 //スケール
@@ -534,7 +534,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-6.0f, -4.5f, 12.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 0.0f, 2.0f),	  //スケール
@@ -548,7 +548,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-6.5f, -4.5f, 11.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(2.0f, 0.0f, 1.0f),	  //スケール
@@ -562,7 +562,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-8.0f, -3.0f, 9.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 3.0f, 4.0f),	 //スケール
@@ -576,7 +576,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-4.0f, -3.0f, 13.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //スケール
@@ -590,7 +590,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-5.0f, -3.0f, -6.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	  //スケール
@@ -606,7 +606,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-2.0f, -4.5f, 2.0f),//位置
 				XMFLOAT3(0.0f, 45.0f, 0.0f), //回転
 				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //スケール
@@ -624,7 +624,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(2.0f, -4.5f, 8.0f), //位置
 				XMFLOAT3(0.0f, 90.0f, 0.0f), //回転
 				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //スケール
@@ -642,7 +642,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(-4.0f, -4.5f, 8.0f),//位置
 				XMFLOAT3(0.0f, 90.0f, 0.0f), //回転
 				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //スケール
@@ -660,7 +660,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(4.0f, -4.5f, 2.0f), //位置
 				XMFLOAT3(0.0f, 45.0f, 0.0f), //回転
 				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //スケール
@@ -681,7 +681,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//-------------
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(5.0f, -3.0f, 16.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	 //スケール
@@ -695,7 +695,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(6.0f, -3.0f, -2.5f), //位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 3.0f, 2.0f),	  //スケール
@@ -709,7 +709,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWalls.push_back(
 			new Wall(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(7.0f, -3.0f, -1.0f), //位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //スケール
@@ -723,7 +723,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(8.0f, -4.5f, 0.5f), //位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 0.0f, 2.0f),	 //スケール
@@ -737,7 +737,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 		m_pWallPasses.push_back(
 			new WallPass(
-				MeshData::MESH_TYPE::CUBE,
+				MESH_TYPE::CUBE,
 				XMFLOAT3(4.0f, -4.5f, -3.0f), //位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(3.0f, 0.0f, 1.0f),	  //スケール

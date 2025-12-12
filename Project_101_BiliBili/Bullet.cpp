@@ -2,10 +2,13 @@
 #include <cmath>
 #include "Player.h"
 #include "EventManager.h"
+#include "EffectData.h"
+
+using namespace DirectX;
 
 Bullet::Bullet(
-               const DirectX::XMFLOAT3& pos,
-               const DirectX::XMFLOAT3& dir,
+               const XMFLOAT3& pos,
+               const XMFLOAT3& dir,
                float speed,
                int ownerTeam,
 	           uint32_t ownerID,
@@ -14,7 +17,7 @@ Bullet::Bullet(
                float maxDistance)
 
     : ObjectBase(
-        MeshData::MESH_TYPE::QUAD,
+        MESH_TYPE::QUAD,
         pos,
         {0,0,0},
         {1.0f,1.0f,1.0f}, 
@@ -115,6 +118,10 @@ void Bullet::ResolveCollisionsOverride()
         //}
 
         // Õ“Ë ¨ Á–Å
+		EventManager::GetInstance()->TriggerEvent<std::tuple<EFFECT_TYPE, XMFLOAT3, XMFLOAT2>>(
+			EventType::ADD_EFFECT,
+			std::make_tuple(EFFECT_TYPE::PARTICLE_POINT, GetPosition(), XMFLOAT2(1.0f, 1.0f))
+		);
         m_deleteFlag = true;
         SetActive(false);
         break;
