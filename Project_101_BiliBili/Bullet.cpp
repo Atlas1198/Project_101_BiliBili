@@ -118,9 +118,8 @@ void Bullet::ResolveCollisionsOverride()
         //}
 
         // Õ“Ë ¨ Á–Å
-		EventManager::GetInstance()->TriggerEvent<std::tuple<EFFECT_TYPE, XMFLOAT3, XMFLOAT2>>(
-			EventType::ADD_EFFECT,
-			std::make_tuple(EFFECT_TYPE::PARTICLE_POINT, GetPosition(), XMFLOAT2(1.0f, 1.0f))
+		EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+			EventType::ADD_EFFECT,{EFFECT_TYPE::PARTICLE_POINT, GetPosition(), XMFLOAT2(1.0f, 1.0f)}
 		);
         m_deleteFlag = true;
         SetActive(false);

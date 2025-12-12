@@ -71,12 +71,13 @@ void SceneBase::Draw(Renderer& pRenderer)
 	//シーン固有の描画呼び出し
 	DrawOverride(pRenderer);
 
+	m_pEffectManager->SubmitDraws(pRenderer);
+
 #ifdef _DEBUG
 	if (m_drawColliders)
 	{
 		//衝突管理クラス描画
 		m_pCollisionManager->Draw(pRenderer);
-		m_pEffectManager->SubmitDraws(pRenderer);
 	}
 #endif // _DEBUG
 }

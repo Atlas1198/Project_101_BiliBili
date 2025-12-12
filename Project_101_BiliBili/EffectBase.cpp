@@ -14,6 +14,9 @@ void EffectBase::Update()
 
 	//アニメーション更新
 	UpdateAnimation();
+
+	//位置追従更新
+	UpdatePositionChase();
 }
 
 //リセット
@@ -28,6 +31,8 @@ void EffectBase::Destroy()
 {
 	m_elapsedTime = 0.0f;
 	m_isActive = false;
+	m_isChase = false;
+	m_chaseTarget = nullptr;
 }
 
 //寿命更新
@@ -62,5 +67,14 @@ void EffectBase::UpdateAnimation()
 		{
 			m_texSplitInfo.index = 0;
 		}
+	}
+}
+
+//位置追従更新
+void EffectBase::UpdatePositionChase()
+{
+	if (m_isChase && m_chaseTarget)
+	{
+		m_center = *m_chaseTarget;
 	}
 }

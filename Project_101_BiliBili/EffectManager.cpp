@@ -27,12 +27,12 @@ void EffectManager::Initialize(TextureManager& textureManager, MeshManager& mesh
 	PrepareRenderInfo(textureManager, meshManager);
 
 	//テスト用エフェクトコマンド追加
-	using args = std::tuple<EFFECT_TYPE, XMFLOAT3, XMFLOAT2>;
+	using args = EffectCommand;
 	EventManager::GetInstance()->Subscribe<args>(
 		EventType::ADD_EFFECT,
 		[this](std::shared_ptr<args> data)
 		{
-			AddEffectCommand({ std::get<0>(*data), std::get<1>(*data), std::get<2>(*data) });
+			AddEffectCommand(*data);
 		}
 	);
 }
@@ -136,6 +136,15 @@ void EffectManager::PushEffectFromQueue()
 			};
 			freeEffect->SetSize(size);
 			freeEffect->SetActive(true);
+
+			if(command.isChase && command.chaseTarget)
+			{
+				freeEffect->SetChase(true, command.chaseTarget);
+			}
+			else
+			{
+				freeEffect->SetChase(false);
+			}
 		}
 	}
 

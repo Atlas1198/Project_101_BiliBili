@@ -33,7 +33,9 @@ void Camera::Update()
 
 	viewDir = Normalize(viewDir); //正規化
 
-	m_right = Normalize(Cross(viewDir, m_up));	//右方向ベクトルを計算
+	m_right = Normalize(Cross(DEFAULT_UP, viewDir));	//右方向ベクトルを計算
+
+	m_up = Normalize(Cross(viewDir, m_right));	//上方向ベクトルを計算
 
 	UpdateCameraInfo(); //カメラ情報構造体を更新
 }

@@ -11,6 +11,7 @@ cbuffer Transform : register(b0)
     float4x4 view; //ビュー行列
     float4x4 proj; //プロジェクション行列
     float4 objColor; //全体の色
+    float4 uvRect; //uv矩形情報(x:左, y:上, z:右, w:下)
 }
 
 //ビルボード用定数バッファ
@@ -28,8 +29,8 @@ cbuffer BillboardObject : register(b1)
     float _pad2; //パディング
     float2 size; //ビルボードのサイズ
     float2 _padSize; //パディング
-    float4 color; //ビルボードの色
-    float4 uvRect; //uv矩形情報(x:左, y:上, z:右, w:下)
+    float4 colorBil; //ビルボードの色
+    float4 uvRectBil; //uv矩形情報(x:左, y:上, z:右, w:下)
 };
 
 //頂点シェーダー入力データ構造体
@@ -81,7 +82,7 @@ VSOutPut BillboardVS(
     
     //uv座標の計算
     float2 uv = input.uv;
-    output.uv = uvRect.xy + uv * uvRect.zw;
+    output.uv = uvRectBil.xy + uv * uvRectBil.zw;
     
     //頂点カラーの設定
     output.color = input.color;

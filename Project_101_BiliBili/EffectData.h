@@ -8,15 +8,18 @@ enum class EFFECT_TYPE
 	NONE = 0,		//なし
 	PARTICLE_POINT,	//パーティクルポイント
 	PARTICLE_SPREAD,//パーティクルスプレッド
+	FIRE_FLASH,		//火花
 	MAX				//最大数
 };
 
 //エフェクト呼び出し構造体
 struct EffectCommand
 {
-	EFFECT_TYPE type = EFFECT_TYPE::NONE;	//エフェクトタイプ
-	DirectX::XMFLOAT3 position{};			//座標
-	DirectX::XMFLOAT2 size{};				//サイズ
+	EFFECT_TYPE type = EFFECT_TYPE::NONE;		//エフェクトタイプ
+	DirectX::XMFLOAT3 position{};				//座標
+	DirectX::XMFLOAT2 size{};					//サイズ
+	bool isChase = false;						//追従フラグ
+	DirectX::XMFLOAT3* chaseTarget = nullptr;	//追従ターゲット座標
 };
 
 //エフェクトテンプレート構造体
@@ -37,7 +40,7 @@ struct EffectTemplate
 };
 
 //シーン別エフェクトテンプレートリスト
-extern const EffectTemplate g_effectTemplateList[];
+extern const EffectTemplate g_effectTemplateListGame[];
 
 //エフェクトテンプレートセット構造体
 struct EffectTemplateSet

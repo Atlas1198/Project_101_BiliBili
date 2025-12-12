@@ -2,6 +2,9 @@
 #include "CollisionManager.h"
 #include "Renderer.h"
 #include "EventManager.h"
+#include "EffectData.h"
+
+using namespace DirectX;
 
 void BulletManager::FireBullet(
     const DirectX::XMFLOAT3& position,
