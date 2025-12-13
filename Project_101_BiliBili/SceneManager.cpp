@@ -9,6 +9,7 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 {
 	m_pGameScene = new GameScene(windowWidth, windowHeight);	//ゲームシーンクラスの生成
 	m_pTitleScene = new TitleScene(windowWidth, windowHeight);	//タイトルシーンクラスの生成
+	m_pSelectionScene = new SelectionScene(windowWidth, windowHeight);
 
 	m_pCurrentScene = m_pTitleScene;	//最初のシーンをタイトルシーンに設定
 }
@@ -18,6 +19,7 @@ SceneManager::~SceneManager()
 {
 	delete m_pGameScene;
 	delete m_pTitleScene;
+	delete m_pSelectionScene;
 }
 
 //初期化
@@ -44,7 +46,20 @@ void SceneManager::Update()
 	if(m_pCurrentScene == m_pTitleScene && 
 	   m_pInputManager != nullptr &&
 	   m_pInputManager->GetInputInfo() != nullptr &&
-	   m_pInputManager->GetInputInfo()->key.space.trigger)
+		(
+			m_pInputManager->GetInputInfo()->key.any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[0].any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[1].any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[2].any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[3].any.trigger
+		))
+	{
+		ChangeScene(SCENE_SELECTION);	//シーン変更
+	}
+	else if (m_pCurrentScene == m_pSelectionScene &&
+		m_pInputManager != nullptr &&
+		m_pInputManager->GetInputInfo() != nullptr &&
+		m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
 		ChangeScene(SCENE_GAME);	//シーン変更
 	}
@@ -71,6 +86,9 @@ void SceneManager::ChangeScene(SCENE next)
 	{
 	case SCENE_TITLE:
 		m_pCurrentScene = m_pTitleScene;
+		break;
+	case SCENE_SELECTION:
+		m_pCurrentScene = m_pSelectionScene;
 		break;
 	case SCENE_GAME:
 		m_pCurrentScene = m_pGameScene;

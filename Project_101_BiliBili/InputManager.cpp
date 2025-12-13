@@ -59,6 +59,31 @@ void InputManager::UpdateTriggerKeyInfo()
 	m_inputInfo.key.c.trigger = Keyboard_IsKeyDownTrigger(KK_C);
 	m_inputInfo.key.n.trigger = Keyboard_IsKeyDownTrigger(KK_N);
 	m_inputInfo.key.rightCtrl.trigger = Keyboard_IsKeyDownTrigger(KK_RIGHTCONTROL);
+
+	m_inputInfo.key.any.trigger =
+		m_inputInfo.key.a.trigger ||
+		m_inputInfo.key.s.trigger ||
+		m_inputInfo.key.d.trigger ||
+		m_inputInfo.key.w.trigger ||
+		m_inputInfo.key.t.trigger ||
+		m_inputInfo.key.f.trigger ||
+		m_inputInfo.key.g.trigger ||
+		m_inputInfo.key.h.trigger ||
+		m_inputInfo.key.i.trigger ||
+		m_inputInfo.key.j.trigger ||
+		m_inputInfo.key.k.trigger ||
+		m_inputInfo.key.l.trigger ||
+		m_inputInfo.key.up.trigger ||
+		m_inputInfo.key.down.trigger ||
+		m_inputInfo.key.left.trigger ||
+		m_inputInfo.key.right.trigger ||
+		m_inputInfo.key.space.trigger ||
+		m_inputInfo.key.enter.trigger ||
+		m_inputInfo.key.p.trigger ||
+		m_inputInfo.key.z.trigger ||
+		m_inputInfo.key.c.trigger ||
+		m_inputInfo.key.n.trigger ||
+		m_inputInfo.key.rightCtrl.trigger;
 }
 
 //押下情報更新
@@ -87,6 +112,31 @@ void InputManager::UpdateDownKeyInfo()
 	m_inputInfo.key.c.down = Keyboard_IsKeyDown(KK_C);
 	m_inputInfo.key.n.down = Keyboard_IsKeyDown(KK_N);
 	m_inputInfo.key.rightCtrl.down = Keyboard_IsKeyDown(KK_RIGHTCONTROL);
+
+	m_inputInfo.key.any.down =
+		m_inputInfo.key.a.down ||
+		m_inputInfo.key.s.down ||
+		m_inputInfo.key.d.down ||
+		m_inputInfo.key.w.down ||
+		m_inputInfo.key.t.down ||
+		m_inputInfo.key.f.down ||
+		m_inputInfo.key.g.down ||
+		m_inputInfo.key.h.down ||
+		m_inputInfo.key.i.down ||
+		m_inputInfo.key.j.down ||
+		m_inputInfo.key.k.down ||
+		m_inputInfo.key.l.down ||
+		m_inputInfo.key.up.down ||
+		m_inputInfo.key.down.down ||
+		m_inputInfo.key.left.down ||
+		m_inputInfo.key.right.down ||
+		m_inputInfo.key.space.down ||
+		m_inputInfo.key.enter.down ||
+		m_inputInfo.key.p.down ||
+		m_inputInfo.key.z.down ||
+		m_inputInfo.key.c.down ||
+		m_inputInfo.key.n.down ||
+		m_inputInfo.key.rightCtrl.down;
 }
 
 //離上情報更新
@@ -115,4 +165,29 @@ void InputManager::UpdateUpKeyInfo()
 	m_inputInfo.key.c.up = Keyboard_IsKeyUp(KK_C);
 	m_inputInfo.key.n.up = Keyboard_IsKeyUp(KK_N);
 	m_inputInfo.key.rightCtrl.up = Keyboard_IsKeyUp(KK_RIGHTCONTROL);
+
+	m_inputInfo.key.any.up =
+		m_inputInfo.key.a.up ||
+		m_inputInfo.key.s.up ||
+		m_inputInfo.key.d.up ||
+		m_inputInfo.key.w.up ||
+		m_inputInfo.key.t.up ||
+		m_inputInfo.key.f.up ||
+		m_inputInfo.key.g.up ||
+		m_inputInfo.key.h.up ||
+		m_inputInfo.key.i.up ||
+		m_inputInfo.key.j.up ||
+		m_inputInfo.key.k.up ||
+		m_inputInfo.key.l.up ||
+		m_inputInfo.key.up.up ||
+		m_inputInfo.key.down.up ||
+		m_inputInfo.key.left.up ||
+		m_inputInfo.key.right.up ||
+		m_inputInfo.key.space.up ||
+		m_inputInfo.key.enter.up ||
+		m_inputInfo.key.p.up ||
+		m_inputInfo.key.z.up ||
+		m_inputInfo.key.c.up ||
+		m_inputInfo.key.n.up ||
+		m_inputInfo.key.rightCtrl.up;
 }

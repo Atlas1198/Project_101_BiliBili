@@ -174,6 +174,9 @@
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="LineBB.h" />
+    <ClInclude Include="SelectionScene.h" />
+    <ClInclude Include="TitleUI.h" />
+    <ClInclude Include="TitleUIManager.h" />
     <ClInclude Include="ToolbarControl.h" />
     <ClInclude Include="ObjectBase.h" />
     <ClInclude Include="ObjectManagerBase.h" />
@@ -248,9 +251,12 @@
     <ClCompile Include="RootSignature.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SelectionScene.cpp" />
     <ClCompile Include="SharedStruct.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="TitleUIManager.cpp" />
     <ClCompile Include="UIBase.cpp" />
     <ClCompile Include="TransformItem.cpp" />
     <ClCompile Include="TransformItemManager.cpp" />
