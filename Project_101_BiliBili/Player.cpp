@@ -67,7 +67,7 @@ void Player::UpdateOverride()
 void Player::ResolveCollisionsOverride()
 {
 	XMFLOAT3 pushVector{};	//押し出しベクトル
-	auto& infos = m_pCollider->GetCollisionInfos();
+	auto& infos = m_pColliderSet->GetCollisionInfos();
 
 	pushVector = GetPushOutVector(
 		infos,	//衝突情報配列
@@ -86,7 +86,7 @@ void Player::ResolveCollisionsOverride()
 
 	for (auto& info : infos)
 	{
-		if (info.opponent->GetOwner()->GetTag() == OBJECT_TAG::GROUND)
+		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
 			//地面に接触している場合はY座標を補正
 			m_velocity.y = 0.0f;

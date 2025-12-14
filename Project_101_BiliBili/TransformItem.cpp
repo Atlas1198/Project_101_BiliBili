@@ -10,9 +10,15 @@ TransformItem::TransformItem(DirectX::XMFLOAT3 pos)
         { 0,0,0 },                                          //移動速度
         true,                                               //アクティブフラグ
         OBJECT_TAG::ITEM_TRANSFORM,                         //オブジェクトタグ
-        ColliderType::BOX,                                  //コライダータイプ
         CollisionData::COLLISION_LAYER::ITEM_TRANSFORM)     //衝突レイヤー
 {
+    // コライダーセットの作成
+    m_pColliderSet->AddCollider(
+        ColliderType::BOX,                     //コライダータイプ
+        { 0.0f, 0.0f, 0.0f },                  //ローカル中心座標
+        { 1.0f, 1.0f, 1.0f },                  //ローカルスケール
+        { 0.0f, 0.0f, 0.0f }                   //ローカル回転
+	);
 }
 
 void TransformItem::UpdateOverride()
@@ -36,9 +42,9 @@ void TransformItem::ResolveCollisionsOverride()
         return;
     }
 
-    for (auto& c : m_pCollider->GetCollisionInfos())
+    for (auto& c : m_pColliderSet->GetCollisionInfos())
     {
-        ObjectBase* p = c.opponent->GetOwner();
+        ObjectBase* p = c.opponent;
         if (p && p->GetTag() == OBJECT_TAG::PLAYER)
         {
             Player* player = dynamic_cast<Player*>(p);
@@ -58,5 +64,5 @@ void TransformItem::ResolveCollisionsOverride()
     }
 
     // 衝突情報クリア
-    m_pCollider->ClearInfos();
+    m_pColliderSet->ClearCollisionInfos();
 }

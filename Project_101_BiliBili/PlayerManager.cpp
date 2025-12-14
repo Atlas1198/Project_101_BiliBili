@@ -34,8 +34,7 @@ void PlayerManager::InitializeOverride(
 
 	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
 	{
-		//コライダー情報をシーンに提出
-		SubmitColliders(collisionManager, (*it)->GetCollider());
+		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
 	}
 
 	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(

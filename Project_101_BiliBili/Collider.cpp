@@ -1,4 +1,5 @@
 #include "Collider.h"
+#include "ColliderSet.h"
 #include "ObjectBase.h"
 
 using namespace DirectX;
@@ -6,19 +7,31 @@ using namespace CollisionData;
 
 //コンストラクタ
 Collider::Collider(
-	ObjectBase* owner,		//所有者オブジェクト
-	ColliderType type,		//コライダータイプ
-	COLLISION_LAYER layer,	//衝突レイヤー
-	XMFLOAT3 scale,			//ボックスサイズ
-	bool isTrigger			//トリガーフラグ
+	ColliderSet* parentSet,				//親コライダーセットポインタ
+	DirectX::XMFLOAT3 localCenter,		//ローカル中心座標
+	DirectX::XMFLOAT3 localScale,		//ローカルスケール
+	DirectX::XMFLOAT3 localRotation,	//ローカル回転
+	ColliderType type,					//コライダータイプ
+	OBJECT_TAG ownerTag,				//所有者オブジェクトのタグ
+	COLLISION_LAYER layer,				//衝突レイヤー
+	bool isTrigger						//トリガーフラグ
 ) :
-	m_pOwner(owner),		//所有者オブジェクト
-	m_isTrigger(isTrigger),	//トリガーフラグ
-	m_type(type),			//コライダータイプ
-	m_layer(layer)			//衝突レイヤー
+	m_parentSet(parentSet),
+	m_localCenter(localCenter),
+	m_localScale(localScale),
+	m_localRotation(localRotation),
+	m_type(type),
+	m_layer(layer),
+	m_ownerTag(ownerTag),
+	m_isTrigger(isTrigger)
 {
-	CreateCollider(scale);	//コライダー生成
-	Update();				//更新
+	Update(
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
+	);
+
+	m_layerMask = CollisionData::GetLayerMask(m_layer); //衝突レイヤーマスク取得
 }
 
 //デストラクタ
@@ -26,27 +39,49 @@ Collider::~Collider()
 {
 }
 
-//更新
-void Collider::Update()
+//コライダー変換更新
+void Collider::Update(
+	DirectX::XMFLOAT3 ownerPosition, 
+	DirectX::XMFLOAT3 ownerScale, 
+	DirectX::XMFLOAT3 ownerRotation)
 {
-	UpdateCollider();
+	XMMATRIX ownerRotationMatrix = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(ownerRotation.x),
+		XMConvertToRadians(ownerRotation.y),
+		XMConvertToRadians(ownerRotation.z));
+
+	XMVECTOR localCenterVec = XMLoadFloat3(&m_localCenter);
+
+	XMVECTOR ownerScaleVec = XMLoadFloat3(&ownerScale);
+	XMVECTOR scaledLocal = XMVectorMultiply(localCenterVec, ownerScaleVec);
+
+	XMVECTOR rotated = XMVector3Transform(scaledLocal, ownerRotationMatrix);
+	XMVECTOR ownerPositionVec = XMLoadFloat3(&ownerPosition);
+	XMVECTOR worldCenterVec = XMVectorAdd(rotated, ownerPositionVec);
+
+	XMStoreFloat3(&m_currentCenter, worldCenterVec);
+
+	m_rotation = ownerRotation;
+
+	UpdateCollider(ownerScale);	//各種コライダー更新
+
 	UpdateAABB();
 }
 
 //コライダー更新
-void Collider::UpdateCollider()
+void Collider::UpdateCollider(DirectX::XMFLOAT3 ownerScale)
 {
 	//各種コライダー更新
 	switch (m_type)
 	{
 	case ColliderType::BOX:
-		UpdateBoxCollider();
+		UpdateBoxCollider(ownerScale);
 		break;
 	case ColliderType::SPHERE:
-		UpdateSphereCollider();
+		UpdateSphereCollider(ownerScale);
 		break;
 	case ColliderType::CAPSULE:
-		UpdateCapsuleCollider();
+		UpdateCapsuleCollider(ownerScale);
 		break;
 	default:
 		break;
@@ -87,10 +122,10 @@ void Collider::SetPreviousState()
 	m_previousScale = m_currentScale;						//前回のサイズ保存
 }
 
-//所有者オブジェクト取得
-ObjectBase* Collider::GetOwner() const
+//親コライダーセットポインタ取得
+ColliderSet* Collider::GetParentSet() const
 {
-	return m_pOwner;
+	return m_parentSet;
 }
 
 //コライダータイプ取得
@@ -171,6 +206,12 @@ const DirectX::XMMATRIX Collider::GetWorldMatrix() const
 	return S * R * T;
 }
 
+//所有者オブジェクトのタグ取得
+const OBJECT_TAG& Collider::GetOwnerTag() const
+{
+	return m_ownerTag;
+}
+
 //衝突情報配列取得
 std::vector<CollisionInfo>& Collider::GetCollisionInfos()
 {
@@ -243,207 +284,68 @@ void Collider::SetActive(bool flag)
 	m_isActive = flag;
 }
 
-//コライダー生成関数
-void Collider::CreateCollider(DirectX::XMFLOAT3 scale)
-{
-	switch (m_type)
-	{
-	case ColliderType::BOX:
-		CreateBoxCollider(scale);
-		break;
-	case ColliderType::SPHERE:
-		CreateSphereCollider(scale);
-		break;
-	case ColliderType::CAPSULE:
-		CreateCapsuleCollider(scale);
-		break;
-	default:
-		break;
-	}
-
-	m_layerMask = CollisionData::GetLayerMask(m_layer); //衝突レイヤーマスク取得
-}
-
-//コライダー生成関数
-//ボックスコライダー生成
-void Collider::CreateBoxCollider(XMFLOAT3 scale)
-{
-	m_currentBoxCollider.scale = scale;			//ボックスコライダーサイズ初期化
-	m_currentBoxCollider.defaultScale = scale;	//ボックスコライダー初期サイズ保存
-
-	const XMFLOAT3 ownerScale = m_pOwner->GetScale();
-
-	m_scaleOffset =
-	{
-		 m_currentBoxCollider.scale.x - ownerScale.x,
-		 m_currentBoxCollider.scale.y - ownerScale.y,
-		 m_currentBoxCollider.scale.z - ownerScale.z,
-	};
-}
-
-//球コライダー生成
-void Collider::CreateSphereCollider(XMFLOAT3 scale)
-{
-	//球コライダースケール
-	const float maxScale =
-		(std::max)(scale.x, (std::max)(scale.y, scale.z));	//各軸のスケールから一番大きいものを取得
-	const float diamiter = maxScale;					//最大値を直径として使用
-	const float radius = diamiter * 0.5f;				//半径
-
-	m_currentSphereCollider.radius = radius;			//球コライダー半径初期化
-	m_currentSphereCollider.defaultRadius = radius;	//球コライダー初期半径保存
-
-	//コライダースケールの反映
-	m_currentScale =
-	{
-		diamiter,
-		diamiter,
-		diamiter
-	};
-
-	//スケールオフセットの設定
-	const XMFLOAT3 ownerScale = m_pOwner->GetScale();	//オーナーオブジェクトのサイズを取得
-	const float ownerScaleMax =
-		(std::max)(ownerScale.x, (std::max)(ownerScale.y, ownerScale.z));	//各軸のスケールから一番大きいものを取得
-
-	//オーナーオブジェクトのスケール最大値と直径の差をオフセット
-	m_scaleOffset =
-	{
-		diamiter - ownerScaleMax,
-		diamiter - ownerScaleMax,
-		diamiter - ownerScaleMax
-	};
-}
-
-//カプセルコライダー生成
-void Collider::CreateCapsuleCollider(XMFLOAT3 scale)
-{
-	//サイズ取得
-	const XMFLOAT3 ownerScale = m_pOwner->GetScale();
-	const float sx = scale.x * ownerScale.x;
-	const float sy = scale.y * ownerScale.y;
-	const float sz = scale.z * ownerScale.z;
-
-	//カプセルコライダーサイズ計算
-	const float diamiter = (std::max)(sx, sz);			//直径(水平方向の最大値)
-	const float radius = diamiter / 2.0f;				//半径
-	const float capusleHeight = sy;						//カプセル高さ
-	const float cylHeight =
-		(std::max)(0.0f, capusleHeight - diamiter);		//円柱部分の高さ(負の値にならないようにする)
-
-	//カプセルサイズ初期化
-	m_currentCapsuleCollider.radius = radius;					//カプセルコライダー半径初期化
-	m_currentCapsuleCollider.defaultRadius = radius;			//カプセルコライダー初期半径保存
-	m_currentCapsuleCollider.cylHeight = cylHeight;			//カプセルコライダー高さ初期化
-	m_currentCapsuleCollider.defaultHeight = cylHeight;		//カプセルコライダー初期高さ保存
-
-	//コライダーサイズ初期化
-	m_currentScale =
-	{
-		diamiter,
-		capusleHeight,
-		diamiter
-	};
-
-	//オブジェクトとのサイズ差計算
-	const float ownerSx = m_pOwner->GetScale().x;
-	const float ownerSy = m_pOwner->GetScale().y;
-	const float ownerSz = m_pOwner->GetScale().z;
-
-	const float maxHorizontal = (std::max)(ownerSx, ownerSz);
-
-	m_scaleOffset =
-	{
-		diamiter - maxHorizontal,
-		m_currentScale.y - ownerSy,
-		diamiter - maxHorizontal
-	};
-}
-
 //コライダー更新関数
-void Collider::UpdateBoxCollider()
+void Collider::UpdateBoxCollider(DirectX::XMFLOAT3 ownerScale)
 {
-	//中心点更新
-	XMFLOAT3 position = m_pOwner->GetPosition();	//オーナーオブジェクトの位置取得
-	m_currentBoxCollider.center = position;				//ボックスコライダー中心点更新
-	m_currentCenter = position;							//コライダーの中心座標
-
 	//スケール反映
-	XMFLOAT3 ownerScale = m_pOwner->GetScale();		//オーナーオブジェクトのスケール取得
 	m_currentBoxCollider.scale =
 	{
-		ownerScale.x + m_scaleOffset.x,
-		ownerScale.y + m_scaleOffset.y,
-		ownerScale.z + m_scaleOffset.z
+		ownerScale.x * m_localScale.x,
+		ownerScale.y * m_localScale.y,
+		ownerScale.z * m_localScale.z
 	};
 
 	//コライダーサイズ更新
 	m_currentScale = m_currentBoxCollider.scale;
 
-	//回転反映
-	m_rotation = m_pOwner->GetRotation();
+	m_currentBoxCollider.center = m_currentCenter;	//ボックスコライダー中心点更新
 }
 
 //球コライダー更新
-void Collider::UpdateSphereCollider()
+void Collider::UpdateSphereCollider(DirectX::XMFLOAT3 ownerScale)
 {
 	//中心点更新
-	XMFLOAT3 position = m_pOwner->GetPosition();	//オーナーオブジェクトの位置取得
-	m_currentCenter = position;						//コライダーの中心座標
-	m_currentSphereCollider.center = position;		//球コライダー中心点更新
+	m_currentSphereCollider.center = m_currentCenter;	//球コライダー中心点更新
 
 	//スケール反映
-	XMFLOAT3 scale = m_pOwner->GetScale();			//オーナーオブジェクトのスケール取得
-	const float sx = scale.x;
-	const float sy = scale.y;
-	const float sz = scale.z;
+	XMFLOAT3 scale =
+	{
+		ownerScale.x * m_localScale.x,
+		ownerScale.y * m_localScale.y,
+		ownerScale.z * m_localScale.z
+	};
 
-	const float offsetScaleX = sx + m_scaleOffset.x;
-	const float offsetScaleY = sy + m_scaleOffset.y;
-	const float offsetScaleZ = sz + m_scaleOffset.z;
 
 	const float diamiter =
-		(std::max)(offsetScaleX, (std::max)(offsetScaleY, offsetScaleZ));	//直径(水平方向の最大値)
-	const float radius = diamiter / 2.0f;									//半径
+		(std::max)(scale.x, (std::max)(scale.y, scale.z));	//直径(水平方向の最大値)
+	const float radius = diamiter / 2.0f;					//半径
+
+	m_currentScale = { diamiter, diamiter, diamiter };
 
 	//球コライダーサイズ更新
 	m_currentSphereCollider.radius = radius;				//球コライダー半径更新
-
-	//コライダーサイズ更新
-	m_currentScale =
-	{
-		diamiter,
-		diamiter,
-		diamiter
-	};
 }
 
 //カプセルコライダー更新
-void Collider::UpdateCapsuleCollider()
+void Collider::UpdateCapsuleCollider(DirectX::XMFLOAT3 ownerScale)
 {
-	//中心点更新
-	XMFLOAT3 position = m_pOwner->GetPosition();	//オーナーオブジェクトの位置取得
-	m_currentCenter = position;							//コライダーの中心座標
-
 	//スケール反映
-	const XMFLOAT3 ownerScale = m_pOwner->GetScale();	//オーナーオブジェクトのスケール取得
-	const float sx = ownerScale.x;
-	const float sy = ownerScale.y;
-	const float sz = ownerScale.z;
-
+	const XMFLOAT3 scale = 
+	{
+		ownerScale.x * m_localScale.x,
+		ownerScale.y * m_localScale.y,
+		ownerScale.z * m_localScale.z
+	};
 	const float diamiter =
-		(std::max)(sx + m_scaleOffset.x, sz + m_scaleOffset.z);	//直径(水平方向の最大値)
-	const float radius = diamiter / 2.0f;						//半径
-	const float capusleHeight = sy + m_scaleOffset.y;			//カプセル高さ
+		(std::max)(scale.x, scale.z);		//直径(水平方向の最大値)
+	const float radius = diamiter / 2.0f;	//半径
+	const float capusleHeight = scale.y;	//カプセル高さ
 	const float cylHeight =
 		(std::max)(0.0f, capusleHeight - diamiter);				//円柱部分の高さ(負の値にならないようにする)
 
 	//カプセルサイズ更新
 	m_currentCapsuleCollider.radius = radius;					//カプセルコライダー半径更新
 	m_currentCapsuleCollider.cylHeight = cylHeight;				//カプセルコライダー高さ更新
-
-	//回転反映
-	m_rotation = m_pOwner->GetRotation();
 
 	//ローカル軸方向ベクトル取得
 	XMVECTOR dirLocal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //Y軸方向ベクトル

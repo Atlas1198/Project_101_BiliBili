@@ -17,7 +17,7 @@ Wall::Wall(MESH_TYPE meshType,
     bool orbit,
     float orbitRadius,
     DirectX::XMFLOAT3 orbitCenter)
-    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALL, colliderType, COLLISION_LAYER::WALL, collisionBoxSize, collisionIsTrigger)
+    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALL, COLLISION_LAYER::WALL)
     , m_rotationSpeed(rotationSpeed)
     , m_orbit(orbit)
     , m_orbitRadius(orbitRadius)
@@ -54,6 +54,14 @@ Wall::Wall(MESH_TYPE meshType,
         }
         m_currentOrbitAngleDeg = XMConvertToDegrees(angleRad);
     }
+
+	// コライダーセットの作成
+    m_pColliderSet->AddCollider(
+        colliderType,                          //コライダータイプ
+        { 0.0f, 0.0f, 0.0f },                  //ローカル中心座標
+        collisionBoxSize,                      //ローカルスケール
+        { 0.0f, 0.0f, 0.0f }                  //ローカル回転
+	);
 }
 
 // 更新

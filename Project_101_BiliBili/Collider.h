@@ -6,6 +6,7 @@
 
 //前方宣言
 class ObjectBase;
+class ColliderSet;
 
 //コライダータイプ列挙型
 enum class ColliderType
@@ -55,19 +56,25 @@ class Collider
 {
 public:
 	Collider(		//コンストラクタ
-		ObjectBase* owner,								//所有者オブジェクト
-		ColliderType type,								//コライダータイプ
+		ColliderSet* parentSet,					//親コライダーセットポインタ
+		DirectX::XMFLOAT3 localCenter,				//ローカル中心座標
+		DirectX::XMFLOAT3 localScale,				//ローカルスケール
+		DirectX::XMFLOAT3 localRotation,			//ローカル回転
+		ColliderType type,							//コライダータイプ
+		OBJECT_TAG ownerTag,						//所有者オブジェクトのタグ
 		CollisionData::COLLISION_LAYER layer =
 		CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
-		DirectX::XMFLOAT3 boxSize =
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),			//ボックスサイズ
-		bool isTrigger = false							//トリガーフラグ
+		bool isTrigger = false						//トリガーフラグ
 	);
 	~Collider();	//デストラクタ
 
 	//コライダー更新関数
-	void Update();				//コライダー更新
-	void UpdateCollider();		//各種コライダー更新
+	void Update(
+		DirectX::XMFLOAT3 ownerPosition,	//オブジェクト位置
+		DirectX::XMFLOAT3 ownerScale,	//オブジェクトスケール
+		DirectX::XMFLOAT3 ownerRotation	//オブジェクト回転
+	);
+	void UpdateCollider(DirectX::XMFLOAT3 ownerScale);		//各種コライダー更新
 	void UpdateAABB();			//AABB更新
 	void SetPreviousState();	//前回状態の保存
 
@@ -76,7 +83,7 @@ public:
 	void ClearInfos();													//衝突情報配列クリア
 
 	//ゲッター
-	ObjectBase* GetOwner() const;									//所有者オブジェクト取得
+	ColliderSet* GetParentSet() const;								//親コライダーセットポインタ取得
 	ColliderType GetType() const;									//コライダータイプ取得
 	CollisionData::COLLISION_LAYER GetLayer() const;				//衝突レイヤー取得
 	CollisionData::LayerMask GetLayerMask() const;					//衝突レイヤーマスク取得
@@ -89,6 +96,7 @@ public:
 	const CapsuleCollider GetCurrentCapsuleCollider();				//現在のカプセルコライダー取得
 	const CapsuleCollider GetPreviousCapsuleCollider();				//前回のカプセルコライダー取得
 	const DirectX::XMMATRIX GetWorldMatrix() const;					//ワールド行列の取得
+	const OBJECT_TAG& GetOwnerTag() const;							//所有者オブジェクトのタグ取得
 	std::vector<CollisionData::CollisionInfo>& GetCollisionInfos();	//衝突情報配列取得
 	const bool isDetected() const;									//衝突検知フラグ取得
 	const bool deleteFlag() const;									//デリートフラグ
@@ -105,7 +113,7 @@ public:
 	void SetActive(bool flag);		//アクティブフラグ設定
 
 private:
-	ObjectBase* m_pOwner = nullptr;			//所有者オブジェクト
+	ColliderSet* m_parentSet;				//親コライダーセットポインタ
 	ColliderType m_type;					//コライダータイプ
 	CollisionData::COLLISION_LAYER m_layer;	//衝突レイヤー
 	CollisionData::LayerMask m_layerMask;	//衝突レイヤーマスク
@@ -124,6 +132,11 @@ private:
 	CapsuleCollider m_currentCapsuleCollider;	//現在のカプセルコライダー
 	CapsuleCollider m_previousCapsuleCollider;	//前回のカプセルコライダー
 
+	//ローカル情報
+	DirectX::XMFLOAT3 m_localCenter;	//ローカル中心座標
+	DirectX::XMFLOAT3 m_localScale;		//ローカルサイズ
+	DirectX::XMFLOAT3 m_localRotation;	//ローカル回転
+
 	//ワールド情報
 	DirectX::XMFLOAT3 m_currentCenter;	//現在の中心座標
 	DirectX::XMFLOAT3 m_previousCenter;	//前回の中心座標
@@ -132,6 +145,7 @@ private:
 	DirectX::XMFLOAT3 m_rotation;		//回転
 	DirectX::XMFLOAT3 m_scaleOffset;	//オブジェクトとのサイズ差
 
+	OBJECT_TAG m_ownerTag;		//所有者オブジェクトのタグ
 	std::vector<CollisionData::CollisionInfo> m_collisionInfos; //衝突情報配列(所有者オブジェクト用)
 
 	bool m_isDetected = false;	//衝突検知フラグ（描画用）
@@ -139,16 +153,10 @@ private:
 	bool m_isActive = true;		//アクティブフラグ
 
 private:
-	//コライダー生成関数
-	void CreateCollider(DirectX::XMFLOAT3 scale);			//コライダー生成
-	void CreateBoxCollider(DirectX::XMFLOAT3 scale);		//ボックスコライダー生成
-	void CreateSphereCollider(DirectX::XMFLOAT3 scale);		//球コライダー生成
-	void CreateCapsuleCollider(DirectX::XMFLOAT3 scale);	//カプセルコライダー生成
-
 	//コライダー更新関数
-	void UpdateBoxCollider();		//ボックスコライダー更新
-	void UpdateSphereCollider();	//球コライダー更新
-	void UpdateCapsuleCollider();	//カプセルコライダー更新
+	void UpdateBoxCollider(DirectX::XMFLOAT3 ownerScale);		//ボックスコライダー更新
+	void UpdateSphereCollider(DirectX::XMFLOAT3 ownerScale);	//球コライダー更新
+	void UpdateCapsuleCollider(DirectX::XMFLOAT3 ownerScale);	//カプセルコライダー更新
 
 	//AABB更新関数
 	void UpdateAABBBox();			//AABB更新(ボックスコライダー用)

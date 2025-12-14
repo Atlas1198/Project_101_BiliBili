@@ -14,9 +14,9 @@ void ElectricityBB::UpdateOverride()
 //衝突解決
 void ElectricityBB::ResolveCollisionsOverride()
 {
-	for(auto& info : m_pCollider->GetCollisionInfos())
+	for(auto& info : m_pColliderSet->GetCollisionInfos())
 	{
-		auto opponentOwner = info.opponent->GetOwner();	//衝突相手のオブジェクト取得
+		auto opponentOwner = info.opponent;	//衝突相手のオブジェクト取得
 		OBJECT_TAG tag = opponentOwner->GetTag();		//衝突相手のタグ取得
 
 		//衝突相手がプレイヤーの場合

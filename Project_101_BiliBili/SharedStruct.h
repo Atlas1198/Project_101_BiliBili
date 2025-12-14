@@ -7,7 +7,6 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 //#include <d3d12.h>
-#include "d3dx12.h"
 #include <DirectXMath.h>
 #include "DirectXTex.h"
 #include <vector>
@@ -109,6 +108,8 @@ enum class OBJECT_TAG
 
 //前方宣言
 class Collider;
+class ObjectBase;
+
 //衝突データ用名前空間
 namespace CollisionData
 {
@@ -148,6 +149,16 @@ namespace CollisionData
 		CollisionData::COLLISION_STATE state;	//衝突状態
 	};
 
+	//オブジェクト衝突情報構造体
+	struct ObjectCollisionInfo
+	{
+		ObjectBase* opponent;					//衝突相手のオブジェクト
+		DirectX::XMFLOAT3 contactPoint;			//衝突点
+		DirectX::XMFLOAT3 contactNormal;		//衝突法線
+		DirectX::XMFLOAT3 penetrationDepth;		//貫入深さ
+		CollisionData::COLLISION_STATE state;	//衝突状態
+	};
+
 	//レイキャストヒット情報構造体
 	struct RaycastHitInfo
 	{
@@ -178,7 +189,7 @@ namespace CollisionData
 
 	//貫入深さから押し出しベクトルを取得する関数
 	DirectX::XMFLOAT3 GetPushOutVector(
-		std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
+		std::vector<CollisionData::ObjectCollisionInfo>& infos,	//衝突情報配列
 		const std::initializer_list<OBJECT_TAG>& tagList	//対象タグリスト
 	);
 }

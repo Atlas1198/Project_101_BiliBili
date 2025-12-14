@@ -3,7 +3,7 @@
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <vector>
-#include "Collider.h"
+#include "ColliderSet.h"
 #include "SharedStruct.h"
 #include "RenderData.h"
 
@@ -20,13 +20,8 @@ public:	//公開関数
 		DirectX::XMFLOAT3 velocity,						//移動速度
 		bool isActive = true,							//アクティブフラグ
 		OBJECT_TAG tag = OBJECT_TAG::NONE,				//オブジェクトタグ
-		ColliderType colliderType =						//コライダータイプ
-			ColliderType::BOX,	
 		CollisionData::COLLISION_LAYER layer =
-			CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
-		DirectX::XMFLOAT3 collisionBoxSize =			//コライダーのボックスサイズ
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool collisionIsTrigger = false					//コライダーのトリガーフラグ
+			CollisionData::COLLISION_LAYER::DEFAULT		//衝突レイヤー
 	);
 	~ObjectBase();	//デストラクタ
 
@@ -45,8 +40,8 @@ public:	//公開関数
 	const DirectX::XMFLOAT4 GetColor() const;		//色RGBAの取得
 	const bool IsActive() const;					//アクティブかどうかを取得
 	const bool IsDrawn() const;						//描画フラグの取得
-	Collider* GetCollider() const;					//コライダーの取得
-	MESH_TYPE GetMeshType() const;		//メッシュタイプの取得
+	ColliderSet* GetColliderSet() const;			//コライダーの取得
+	MESH_TYPE GetMeshType() const;					//メッシュタイプの取得
 	OBJECT_TAG GetTag() const;						//オブジェクトタグの取得
 	const TexSplitInfo& GetTexSplitInfo() const;	//テクスチャ分割情報構造体取得関数
 
@@ -69,7 +64,7 @@ protected:	//非公開メンバ変数
 	MESH_TYPE m_meshType = MESH_TYPE::QUAD;	//メッシュタイプ
 	bool m_isDrawn = true;			//描画フラグ
 
-	Collider* m_pCollider = nullptr;	//コライダー
+	ColliderSet* m_pColliderSet = nullptr;	//コライダーセットへのポインタ
 	OBJECT_TAG m_tag = OBJECT_TAG::NONE; //オブジェクトタグ
 	TexSplitInfo m_texSplitInfo{}; //テクスチャ分割情報構造体
 

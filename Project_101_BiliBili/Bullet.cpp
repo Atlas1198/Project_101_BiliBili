@@ -24,9 +24,7 @@ Bullet::Bullet(
         {0,0,0},
         true,
         OBJECT_TAG::BULLET,
-        ColliderType::BOX,
-        CollisionData::COLLISION_LAYER::BULLET,
-        { 0.2f,0.2f,0.2f }
+        CollisionData::COLLISION_LAYER::BULLET
 	), m_direction(dir), m_speed(speed), m_ownerTeam(ownerTeam), m_ownerID(ownerID),
 	m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance), m_damage(damage)
 {
@@ -74,17 +72,12 @@ void Bullet::ResolveCollisionsOverride()
         return;
     }
 
-    auto& infos = GetCollider()->GetCollisionInfos();
+    auto& infos = m_pColliderSet->GetCollisionInfos();
 
     for (const auto& info : infos)
     {
-        Collider* other = info.opponent;
-        if (!other) 
-        {
-            continue;
-        }
+        ObjectBase* otherOwner = info.opponent;
 
-        ObjectBase* otherOwner = other->GetOwner();
         if (!otherOwner) 
         {
             continue;
@@ -130,5 +123,6 @@ void Bullet::ResolveCollisionsOverride()
         SetActive(false);
         break;
     }
-    GetCollider()->ClearInfos();
+
+    GetColliderSet()->ClearCollisionInfos();
 }

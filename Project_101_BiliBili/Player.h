@@ -44,10 +44,8 @@ public:	//公開関数
 			velocity, 
 			isActive, 
 			OBJECT_TAG::PLAYER,
-			colliderType, 
-			CollisionData::COLLISION_LAYER::PLAYER,
-			collisionBoxSize, 
-			collisionIsTrigger), 
+			CollisionData::COLLISION_LAYER::PLAYER
+		), 
 		id(id) {}
 	~Player() {}	//デストラクタ
 

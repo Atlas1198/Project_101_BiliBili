@@ -37,7 +37,7 @@ void BB::Initialize()
 		);
 
 		m_lineBB[i]->SetCollisionManager(m_pCollisionManager);	//衝突マネージャー設定
-		m_lineBB[i]->GetCollider()->SetActive(false);			//最初はコライダーを無効化
+		m_lineBB[i]->GetColliderSet()->SetActive(false);			//最初はコライダーを無効化
 
 		m_electricityBB[i] = new ElectricityBB(
 			MESH_TYPE::QUAD,
@@ -193,7 +193,7 @@ void BB::ActivateBB()
 {
 	m_activatedBB = true;								//発動中フラグを立てる
 	m_electricityBB[0]->SetActive(true);				//片方の電流をオン
-	m_electricityBB[0]->GetCollider()->SetActive(true);	//コライダーもオン
+	m_electricityBB[0]->GetColliderSet()->SetActive(true);	//コライダーもオン
 }
 
 //ビリビリの無効化
@@ -214,7 +214,7 @@ void BB::ControlElectricity()
 	bool wallCollision = false;
 	for(auto& info : lineCollisionInfos0)
 	{
-		if (info.opponent->GetOwner()->GetTag() == OBJECT_TAG::WALL)
+		if (info.opponent->GetOwnerTag() == OBJECT_TAG::WALL)
 		{
 			wallCollision = true;
 			break;
@@ -239,7 +239,7 @@ void BB::ControlElectricity()
 		if (!m_electricityBB[1]->IsActive())
 		{
 			m_electricityBB[1]->SetActive(true);				//両方の電流をオン
-			m_electricityBB[1]->GetCollider()->SetActive(true);	//コライダーもオン
+			m_electricityBB[1]->GetColliderSet()->SetActive(true);	//コライダーもオン
 		}
 
 		//各プレイヤー座標、最も近い衝突点、回転角を受け渡し

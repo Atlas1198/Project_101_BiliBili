@@ -20,10 +20,7 @@ ObjectBase::ObjectBase(
 	XMFLOAT3 velocity,
 	bool isActive, 
 	OBJECT_TAG tag,
-	ColliderType colliderType, 
-	COLLISION_LAYER layer,
-	XMFLOAT3 collisionBoxSize, 
-	bool collisionIsTrigger
+	COLLISION_LAYER layer
 ) : 
 	m_meshType(meshType), 
 	m_position(position), 
@@ -33,13 +30,13 @@ ObjectBase::ObjectBase(
 	m_isActive(isActive), 
 	m_tag(tag)
 {
-	//コライダーの生成
-	m_pCollider = new Collider(
-		this,				//所有者オブジェクト
-		colliderType,		//コライダータイプ
-		layer,				//衝突レイヤー
-		collisionBoxSize,	//コライダーのボックスサイズ
-		collisionIsTrigger	//トリガーフラグ
+	m_pColliderSet = new ColliderSet(
+		this,
+		tag,
+		m_position,
+		m_scale,
+		m_rotation,
+		layer
 	);
 }
 
@@ -47,17 +44,17 @@ ObjectBase::ObjectBase(
 ObjectBase::~ObjectBase()
 {
 	//コライダーの破棄
-	if (m_pCollider)
+	if (m_pColliderSet)
 	{
-		m_pCollider->SetDeleteFlag(true);
-		m_pCollider = nullptr;
+		m_pColliderSet->SetDeleteFlag(true);
+		m_pColliderSet = nullptr;
 	}
 }
 
 void ObjectBase::Update()
 {
 	UpdateOverride();
-	m_pCollider->Update();
+	m_pColliderSet->Update();
 	UpdateAnimation();
 }
 
@@ -65,7 +62,7 @@ void ObjectBase::Update()
 void ObjectBase::ResolveCollisions()
 {
 	ResolveCollisionsOverride();	//衝突解決(固有処理用、派生クラスでオーバーライド)
-	m_pCollider->Update();			//コライダーの更新
+	m_pColliderSet->Update();			//コライダーの更新
 	ClearCollisionInfos();			//衝突情報のクリア
 }
 
@@ -84,7 +81,7 @@ void Collider::ClearInfos()
 //衝突情報のクリア
 void ObjectBase::ClearCollisionInfos()
 {
-	m_pCollider->ClearInfos();
+	m_pColliderSet->ClearCollisionInfos();
 }
 
 //ワールド行列の取得
@@ -193,9 +190,9 @@ void ObjectBase::UpdateAnimation()
 }
 
 //コライダーの取得
-Collider* ObjectBase::GetCollider() const
+ColliderSet* ObjectBase::GetColliderSet() const
 {
-	return m_pCollider;
+	return m_pColliderSet;
 }
 
 //メッシュタイプの取得

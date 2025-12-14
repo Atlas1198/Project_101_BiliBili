@@ -55,7 +55,7 @@ void BBManager::InitializeOverride(
 		{
 			if (electricityBB[j])
 			{
-				SubmitColliders(collisionManager, electricityBB[j]->GetCollider());
+				electricityBB[j]->GetColliderSet()->RegisterColliders(collisionManager);
 			}
 		}
 
