@@ -31,22 +31,12 @@ public:	//公開関数
 
 		bool isActive = true,					//アクティブフラグ
 		ColliderType colliderType =				//コライダータイプ
-			ColliderType::BOX,
+		ColliderType::BOX,
 		DirectX::XMFLOAT3 collisionBoxSize =	//コライダーのボックスサイズ
-			DirectX::XMFLOAT3(1.0f, 1.0f,1.0f),
+		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
 		bool collisionIsTrigger = false			//コライダーのトリガーフラグ
-	)
-		: ObjectBase(
-			meshType,
-			position, 
-			rotation, 
-			scale, 
-			velocity, 
-			isActive, 
-			OBJECT_TAG::PLAYER,
-			CollisionData::COLLISION_LAYER::PLAYER
-		), 
-		id(id) {}
+	);
+
 	~Player() {}	//デストラクタ
 
 	//メイン処理関数

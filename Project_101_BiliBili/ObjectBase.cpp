@@ -61,8 +61,9 @@ void ObjectBase::Update()
 //衝突解決
 void ObjectBase::ResolveCollisions()
 {
+	m_pColliderSet->BuildObjectCollisionInofs(); //衝突情報を収集
 	ResolveCollisionsOverride();	//衝突解決(固有処理用、派生クラスでオーバーライド)
-	m_pColliderSet->Update();			//コライダーの更新
+	m_pColliderSet->Update();		//コライダーの更新
 	ClearCollisionInfos();			//衝突情報のクリア
 }
 

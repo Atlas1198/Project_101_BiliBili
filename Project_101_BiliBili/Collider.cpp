@@ -51,17 +51,21 @@ void Collider::Update(
 		XMConvertToRadians(ownerRotation.z));
 
 	XMVECTOR localCenterVec = XMLoadFloat3(&m_localCenter);
-
 	XMVECTOR ownerScaleVec = XMLoadFloat3(&ownerScale);
 	XMVECTOR scaledLocal = XMVectorMultiply(localCenterVec, ownerScaleVec);
 
 	XMVECTOR rotated = XMVector3Transform(scaledLocal, ownerRotationMatrix);
+
 	XMVECTOR ownerPositionVec = XMLoadFloat3(&ownerPosition);
 	XMVECTOR worldCenterVec = XMVectorAdd(rotated, ownerPositionVec);
-
 	XMStoreFloat3(&m_currentCenter, worldCenterVec);
 
-	m_rotation = ownerRotation;
+	m_rotation = 
+	{
+		ownerRotation.x + m_localRotation.x,
+		ownerRotation.y + m_localRotation.y,
+		ownerRotation.z + m_localRotation.z
+	};
 
 	UpdateCollider(ownerScale);	//各種コライダー更新
 

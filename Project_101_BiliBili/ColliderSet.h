@@ -26,6 +26,7 @@ public:
 
 	void Update();
 	void RegisterColliders(CollisionManager& collisionManager); //コライダーをコリジョンマネージャーに提出
+	void BuildObjectCollisionInofs();		//衝突情報を収集
 
 	void AddCollider(	//コライダー追加
 		ColliderType type,				//コライダータイプ
@@ -35,7 +36,7 @@ public:
 	);
 
 	//ゲッター
-	const ObjectBase* GetOwner() const { return m_owner; } //所有者オブジェクト取得
+	ObjectBase* GetOwner() const { return m_owner; } //所有者オブジェクト取得
 	const std::vector<Collider*>& GetColliders() const;	//コライダー配列取得
 	std::vector<CollisionData::ObjectCollisionInfo>& GetCollisionInfos() { return m_collisionInfos; } //衝突情報配列取得
 	const DirectX::XMFLOAT3& GetBasePosition() const { return m_basePosition; }	//基準位置取得
@@ -65,7 +66,4 @@ private:
 	DirectX::XMFLOAT3 m_offsetScale{};		//オフセットスケール
 	DirectX::XMFLOAT3 m_offsetRotation{};	//オフセット回転
 
-private:
-	void UpdateCollidersTransform();	//コライダーの基準変換を更新
-	void CollectCollisionInfos();		//衝突情報を収集
 };

@@ -3,6 +3,7 @@
 #include "ObjectBase.h"
 
 using namespace DirectX;
+using namespace CollisionData;
 
 //コンストラクタ
 ColliderSet::ColliderSet(
@@ -96,14 +97,76 @@ const std::vector<Collider*>& ColliderSet::GetColliders() const
 	return m_colliders;
 }
 
-//コライダーの基準変換を更新
-void ColliderSet::UpdateCollidersTransform()
-{
-}
-
 //衝突情報を収集
-void ColliderSet::CollectCollisionInfos()
+void ColliderSet::BuildObjectCollisionInofs()
 {
+	std::unordered_map<ObjectBase*, ObjectCollisionInfo> collisionMap;	//オブジェクトごとの衝突情報を格納するマップ
+
+	//各コライダーの衝突情報を収集
+	for (auto& collider : m_colliders)
+	{
+		for(auto& info : collider->GetCollisionInfos())
+		{
+			//衝突相手のオブジェクト取得
+			Collider* opponentCollider = info.opponent;
+			if (!opponentCollider) continue; //相手コライダーがnullptrの場合スキップ
+
+			ColliderSet* opponentSet = opponentCollider->GetParentSet();
+			if (!opponentSet) continue; //相手コライダーセットがnullptrの場合スキップ
+
+			ObjectBase* opponentObject = opponentSet->GetOwner();
+			if (!opponentObject) continue; //相手オブジェクトがnullptrの場合スキップ
+
+			//オブジェクトごとの衝突情報をマップに格納
+			auto& agg = collisionMap[opponentObject];
+
+			//最初の衝突情報の場合、相手オブジェクトを設定
+			if (!agg.opponent)
+			{
+				agg.opponent = opponentObject;
+			}
+
+			//貫入深さが最大の情報を保持
+			if(LengthXMF3(info.penetrationDepth) > LengthXMF3(agg.penetrationDepth))
+			{
+				agg.contactPoint = info.contactPoint;
+				agg.contactNormal = info.contactNormal;
+				agg.penetrationDepth = info.penetrationDepth;
+			}
+
+			//衝突状態の優先度を決定するラムダ式
+			auto priority = [](COLLISION_STATE state) {
+					switch (state)
+					{
+					case COLLISION_STATE::COLLISION_STAY:
+						return 3;
+					case COLLISION_STATE::COLLISION_ENTER:
+						return 2;
+					case COLLISION_STATE::COLLISION_EXIT:
+						return 1;
+					default:
+						return 0;
+					}
+
+					return 0;
+				};
+
+			//衝突状態の優先度が高いものを保持
+			if (priority(info.state) > priority(agg.state))
+			{
+				agg.state = info.state;
+			}
+		}
+	}
+
+	//マップの内容を衝突情報配列に転送
+	m_collisionInfos.clear();						//衝突情報配列クリア
+	m_collisionInfos.reserve(collisionMap.size());	//必要な容量を確保
+	for (auto& pair : collisionMap)					//マップ内の各要素を配列に追加
+	{
+		m_collisionInfos.push_back(pair.second);
+	}
+	collisionMap.clear();						//マップクリア
 }
 
 //有効フラグ設定
@@ -129,4 +192,8 @@ void ColliderSet::SetDeleteFlag(bool flag)
 void ColliderSet::ClearCollisionInfos()
 {
 	m_collisionInfos.clear();
+	for(auto& collider : m_colliders)
+	{
+		collider->ClearInfos();
+	}
 }

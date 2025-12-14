@@ -29,6 +29,13 @@ Bullet::Bullet(
 	m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance), m_damage(damage)
 {
     SetActive(true);
+
+    m_pColliderSet->AddCollider(
+        ColliderType::SPHERE,
+        XMFLOAT3(0.0f, 0.0f, 0.0f),
+        XMFLOAT3(0.5f, 0.5f, 0.5f),
+        XMFLOAT3(0.0f, 0.0f, 0.0f)
+	);
 }
 
 
