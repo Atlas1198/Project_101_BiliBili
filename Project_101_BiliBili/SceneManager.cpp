@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
+#include "EventManager.h"
 
 //コンストラクタ
 SceneManager::SceneManager(float windowWidth, float windowHeight)
@@ -10,6 +11,7 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 	m_pGameScene = new GameScene(windowWidth, windowHeight);	//ゲームシーンクラスの生成
 	m_pTitleScene = new TitleScene(windowWidth, windowHeight);	//タイトルシーンクラスの生成
 
+	m_currentScene = SCENE_TITLE;	//最初のシーンをタイトルシーンに設定
 	m_pCurrentScene = m_pTitleScene;	//最初のシーンをタイトルシーンに設定
 }
 
@@ -31,6 +33,16 @@ void SceneManager::Initialize(
 	m_pInputManager = pInputManager;		//入力管理クラスのポインタを保存
 	m_pTextureManager = pTextureManager;	//テクスチャ管理クラスのポインタを保存
 	m_pMeshManager = pMeshManager;		//メッシュ管理クラスのポインタを保存
+
+	//シーン変更イベント登録
+	using args = SCENE;
+	EventManager::GetInstance()->Subscribe<args>(
+		EventType::CHANGE_SCENE,
+		[this](std::shared_ptr<args> data)
+		{
+			ReserveChangeScene(*data);
+		}
+	);
 
 	m_pCurrentScene->Initialize(pInputManager,*m_pTextureManager, *m_pMeshManager);
 }
@@ -55,6 +67,12 @@ void SceneManager::Update()
 	{
 		ChangeScene(SCENE_TITLE);	//シーン変更
 	}
+
+	//シーン変更予約があればシーン変更
+	if (m_sceneChangeReserved)
+	{
+		ChangeScene(m_reservedScene);
+	}
 }
 
 //終了
@@ -62,10 +80,22 @@ void SceneManager::Finalize()
 {
 }
 
+//シーン変更予約
+void SceneManager::ReserveChangeScene(SCENE newScene)
+{
+	m_sceneChangeReserved = true;	//シーン変更予約フラグを立てる
+	m_reservedScene = newScene;		//予約されたシーンを保存
+}
+
 //シーン変更
 void SceneManager::ChangeScene(SCENE next)
 {
 	m_pCurrentScene->Finalize();	//現在のシーン終了処理
+
+	//次のシーンへ変更
+	m_sceneChangeReserved = false;	//シーン変更予約フラグを下ろす
+	m_reservedScene = SCENE_NONE;	//予約されたシーンをリセット
+	m_currentScene = next;			//現在のシーンを更新
 
 	switch (next)
 	{

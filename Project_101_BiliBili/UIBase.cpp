@@ -62,7 +62,7 @@ void UIBase::PrepareRenderInfo(
 }
 
 //描画情報構造体配列収集
-void UIBase::CollectRenderInfos(std::vector<RenderInfo>& out) const
+void UIBase::CollectRenderInfos(std::vector<WorldRenderInfo>& out) const
 {
 	if (!m_isActive) return;	//非アクティブなら何もしない
 	//自身の描画情報構造体配列を収集
@@ -70,7 +70,7 @@ void UIBase::CollectRenderInfos(std::vector<RenderInfo>& out) const
 	auto worldMatrix = GetMatrixFromTransform3D(m_world);	//ワールド行列を取得
 
 	for (const auto& renderInfo : m_renderInfos) {
-		RenderInfo renderInfoCopy = renderInfo;		//描画情報構造体をコピー
+		WorldRenderInfo renderInfoCopy = renderInfo;		//描画情報構造体をコピー
 		renderInfoCopy.world = worldMatrix;						//ワールド行列を設定
 		renderInfoCopy.common.color = m_color;							//色RGBAを設定
 		renderInfoCopy.common.uvRect = 

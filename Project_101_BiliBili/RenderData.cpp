@@ -16,7 +16,7 @@ using namespace DirectX;
 void CreateRenderInfo(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
 	MESH_TYPE mType,				//メッシュタイプ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
@@ -57,7 +57,7 @@ void CreateRenderInfo(
 void CreateRenderInfoFromFBX(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
 	MeshManager& meshManager,		//メッシュマネージャへの参照
-	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	BLEND_MODE mode,				//ブレンドモード
 	const wchar_t* path,			//モデルファイルのパス
 	BILLBOARD_TYPE bType,			//ビルボードタイプ
@@ -94,7 +94,7 @@ void CreateRenderInfoFromFBX(
 			bType			//ビルボードタイプ
 		);
 
-		RenderInfo info;			//描画情報構造体
+		WorldRenderInfo info;			//描画情報構造体
 		info.common = desc;		//共通描画記述構造体の設定
 		info.billboardType = bType;	//ビルボードタイプの設定
 		info.baseVertex = 0;		//基準インデックスの設定
@@ -108,7 +108,7 @@ void CreateRenderInfoFromFBX(
 void CreateRenderInfoFromDefaultMesh(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
 	MeshManager& meshManager,		//メッシュマネージャへの参照
-	std::vector<RenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MESH_TYPE type,		//メッシュタイプ
 	BLEND_MODE mode,				//ブレンドモード
 	const wchar_t* path,				//テクスチャのファイル名
@@ -130,7 +130,7 @@ void CreateRenderInfoFromDefaultMesh(
 			bType				//ビルボードタイプ
 		);
 
-		RenderInfo info;			//描画情報構造体
+		WorldRenderInfo info;			//描画情報構造体
 		info.common = desc;		//共通描画記述構造体の設定
 		info.billboardType = bType;	//ビルボードタイプの設定
 		info.baseVertex = 0;		//基準インデックスの設定
@@ -715,8 +715,8 @@ void AppendCapsuleRenderInfos(
 	const DirectX::XMFLOAT3& scale,				//スケール
 	const DirectX::XMFLOAT3& rotEuler,			//回転Euler角
 	const DirectX::XMFLOAT4& color,				//色
-	std::vector<RenderInfo>& infos,	//カプセルの実体
-	std::vector<RenderInfo>& out	//出力先描画情報配列
+	std::vector<WorldRenderInfo>& infos,	//カプセルの実体
+	std::vector<WorldRenderInfo>& out	//出力先描画情報配列
 )
 {
 	using namespace DirectX;

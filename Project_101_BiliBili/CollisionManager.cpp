@@ -115,10 +115,10 @@ void CollisionManager::CheckColliders()
 void CollisionManager::SubmitDraw(
 	Renderer& renderer,							//シーンの参照
 	Collider& collider,					//コライダー配列
-	std::vector<RenderInfo>& info	//描画情報構造体
+	std::vector<WorldRenderInfo>& info	//描画情報構造体
 )
 {
-	std::vector<RenderInfo> submitInfos;		//Rendererへの提出用描画情報構造体配列
+	std::vector<WorldRenderInfo> submitInfos;		//Rendererへの提出用描画情報構造体配列
 	submitInfos.reserve(info.size());			//容量確保
 	ObjectBase& object = *collider.GetOwner();	//コライダー所有者オブジェクトの参照取得
 

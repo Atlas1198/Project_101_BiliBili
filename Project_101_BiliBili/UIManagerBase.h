@@ -42,7 +42,7 @@ protected:
 
 	void SubmitRenderInfo(	//描画情報をシーンに提出
 		Renderer& renderer,							//シーンの参照
-		std::vector<RenderInfo>& info	//描画情報構造体
+		std::vector<WorldRenderInfo>& info	//描画情報構造体
 	);
 
 protected:

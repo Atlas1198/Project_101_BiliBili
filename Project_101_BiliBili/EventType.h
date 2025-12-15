@@ -8,4 +8,5 @@ enum EventType
 	UPDATE_BULLET_UI, // int teamID, int newBulletCount
 	GAME_OVER, // int winningTeamID
 	ADD_EFFECT,
+	CHANGE_SCENE, // int sceneID
 };

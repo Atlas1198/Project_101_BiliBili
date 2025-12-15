@@ -50,14 +50,14 @@ void ObjectManagerBase::Finalize()
 void ObjectManagerBase::SubmitRenderInfo(
 	Renderer& renderer,				//シーンの参照
 	const ObjectBase& object,		//ゲームオブジェクト配列の参照
-	std::vector<RenderInfo>& info	//描画情報構造体
+	std::vector<WorldRenderInfo>& info	//描画情報構造体
 )
 {
 	//アクティブなオブジェクトの描画要求をシーンに提出
 	if (object.IsActive() && object.IsDrawn())
 	{//アクティブかつ描画フラグが立っている場合
 
-		std::vector<RenderInfo> submitInfos;	//Rendererへの提出用描画情報構造体配列
+		std::vector<WorldRenderInfo> submitInfos;	//Rendererへの提出用描画情報構造体配列
 		submitInfos.reserve(info.size());		//容量確保
 
 		if(object.GetMeshType() == MESH_TYPE::CAPSULE)

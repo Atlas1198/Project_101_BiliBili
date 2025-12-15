@@ -44,8 +44,8 @@ public:
 
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; //BB配列
-	std::vector<RenderInfo> m_LineBBInfo;			//BBライン描画情報
-	std::vector<RenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
+	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBライン描画情報
+	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
 
 	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
 	FrameTimer m_frameTimer[BB_NUM];

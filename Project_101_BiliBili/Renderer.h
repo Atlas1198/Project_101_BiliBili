@@ -32,9 +32,9 @@ public:	//公開関数
 	void BeginFrame(UINT backIndex);
 
 	//描画リストに描画情報を追加
-	void SubmitToWorldList(const struct RenderInfo& item);	//ワールド座標用
+	void SubmitToWorldList(const struct WorldRenderInfo& item);	//ワールド座標用
 	void SubmitToEffectList(const struct EffectRenderInfo& item);	//エフェクト用
-	void SubmitToScreenList(const struct RenderInfo& item);	//スクリーン座標用
+	void SubmitToScreenList(const struct WorldRenderInfo& item);	//スクリーン座標用
 
 private:	//非公開メンバ変数
 	RootSignature* m_pRootSignature = nullptr;			//ルートシグネチャ
@@ -45,9 +45,9 @@ private:	//非公開メンバ変数
 	ID3D12Device* m_pDevice = nullptr;	//デバイス
 	CameraInfo* m_cameraInfo = nullptr;	//カメラ情報構造体
 
-	std::vector<RenderInfo> m_drawListWorld[BLEND_MAX]{};			//描画リスト(ワールド座標)
+	std::vector<WorldRenderInfo> m_drawListWorld[BLEND_MAX]{};			//描画リスト(ワールド座標)
 	std::vector<EffectRenderInfo> m_drawListEffect[BLEND_MAX]{};	//描画リスト(エフェクト用)
-	std::vector<RenderInfo> m_drawListScreen[BLEND_MAX]{};			//描画リスト(スクリーン座標)
+	std::vector<WorldRenderInfo> m_drawListScreen[BLEND_MAX]{};			//描画リスト(スクリーン座標)
 
 	//フレームごとのオブジェクト用CBVプール（1オブジェクト＝1定数バッファ）
 	std::vector<ConstantBuffer*> m_objectCBWorld[Engine::FRAME_BUFFER_COUNT];	//ワールド座標用
@@ -82,5 +82,5 @@ private:	//非公開関数
 	void SortDrawListOpaque();		//不透明オブジェクトの描画リストソート
 	void SortDrawListTransparent();	//透明オブジェクトの描画リストソート
 
-	DirectX::XMMATRIX CalcBillBoard(const RenderInfo& info);	//ビルボード計算
+	DirectX::XMMATRIX CalcBillBoard(const WorldRenderInfo& info);	//ビルボード計算
 };

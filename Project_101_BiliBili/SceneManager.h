@@ -17,9 +17,12 @@ class SceneManager
 public:	//公開定数
 	enum SCENE
 	{
-		SCENE_TITLE,	//タイトルシーン
-		SCENE_GAME,		//ゲームシーン
-		SCENE_RESULT,	//リザルトシーン
+		SCENE_NONE = 0,		//シーン無し
+		SCENE_TITLE,		//タイトルシーン
+		SCENE_CONTROLLER,	//コントローラー設定シーン
+		SCENE_CHARACTER,	//キャラクター選択シーン
+		SCENE_GAME,			//ゲームシーン
+		SCENE_RESULT,		//リザルトシーン
 	};
 
 public:
@@ -37,7 +40,8 @@ public:
 
 	void SubmitDraws(Renderer& pRenderer);	//描画要求提出
 
-	void ChangeScene(SCENE newScene);	//シーン変更
+	void ReserveChangeScene(SCENE newScene);	//シーン変更予約
+	void ChangeScene(SCENE newScene);			//シーン変更
 
 	void AddPlayer(uint32_t id);
 	void SpawnPlayers();
@@ -46,6 +50,7 @@ public:
 	CameraInfo* GetCameraInfo();	//カメラ情報取得
 
 private:	//メンバ変数
+	SCENE m_currentScene = SCENE_NONE; //現在のシーン
 	SceneBase* m_pCurrentScene = nullptr; //現在のシーンクラスのポインタ
 
 	TitleScene* m_pTitleScene = nullptr; //タイトルシーンクラスのポインタ
@@ -54,4 +59,7 @@ private:	//メンバ変数
 	InputManager* m_pInputManager = nullptr;		//入力管理クラスのポインタ
 	TextureManager* m_pTextureManager = nullptr;	//テクスチャ管理クラスのポインタ
 	MeshManager* m_pMeshManager = nullptr;			//メッシュ管理クラスのポインタ
+
+	bool m_sceneChangeReserved = false;	//シーン変更予約フラグ
+	SCENE m_reservedScene = SCENE_NONE;	//予約されたシーン
 };

@@ -157,6 +157,7 @@
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="ControllerScene.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="DirectXTex.h" />
