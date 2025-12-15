@@ -52,9 +52,11 @@ void ColliderSet::Update()
 	ownerPosition.x += m_basePosition.x + m_offsetPosition.x;
 	ownerPosition.y += m_basePosition.y + m_offsetPosition.y;
 	ownerPosition.z += m_basePosition.z + m_offsetPosition.z;
+
 	ownerScale.x *= m_baseScale.x * m_offsetScale.x;
 	ownerScale.y *= m_baseScale.y * m_offsetScale.y;
 	ownerScale.z *= m_baseScale.z * m_offsetScale.z;
+
 	ownerRotation.x += m_baseRotation.x + m_offsetRotation.x;
 	ownerRotation.y += m_baseRotation.y + m_offsetRotation.y;
 	ownerRotation.z += m_baseRotation.z + m_offsetRotation.z;
@@ -109,7 +111,7 @@ const std::vector<Collider*>& ColliderSet::GetColliders() const
 }
 
 //衝突情報を収集
-void ColliderSet::BuildObjectCollisionInofs()
+void ColliderSet::BuildObjectCollisionInfos()
 {
 	std::unordered_map<ObjectBase*, ObjectCollisionInfo> collisionMap;	//オブジェクトごとの衝突情報を格納するマップ
 

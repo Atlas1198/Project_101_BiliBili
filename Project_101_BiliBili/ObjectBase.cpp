@@ -7,8 +7,6 @@
 #include "CollisionManager.h"
 
 using namespace DirectX;
-
-
 using namespace CollisionData;
 
 //コンストラクタ
@@ -20,7 +18,11 @@ ObjectBase::ObjectBase(
 	XMFLOAT3 velocity,
 	bool isActive, 
 	OBJECT_TAG tag,
-	COLLISION_LAYER layer
+	COLLISION_LAYER layer,
+	XMFLOAT3 colliderSetScale,
+	XMFLOAT3 colliderSetOffsetPosition,
+	XMFLOAT3 colliderSetOffsetScale,
+	XMFLOAT3 colliderSetOffsetRotation
 ) : 
 	m_meshType(meshType), 
 	m_position(position), 
@@ -34,9 +36,13 @@ ObjectBase::ObjectBase(
 		this,
 		tag,
 		m_position,
-		m_scale,
+		colliderSetScale,
 		m_rotation,
-		layer
+		layer,
+		true,
+		colliderSetOffsetPosition,
+		colliderSetOffsetScale,
+		colliderSetOffsetRotation
 	);
 }
 
@@ -61,7 +67,7 @@ void ObjectBase::Update()
 //衝突解決
 void ObjectBase::ResolveCollisions()
 {
-	m_pColliderSet->BuildObjectCollisionInofs(); //衝突情報を収集
+	m_pColliderSet->BuildObjectCollisionInfos(); //衝突情報を収集
 	ResolveCollisionsOverride();	//衝突解決(固有処理用、派生クラスでオーバーライド)
 	m_pColliderSet->Update();		//コライダーの更新
 	ClearCollisionInfos();			//衝突情報のクリア

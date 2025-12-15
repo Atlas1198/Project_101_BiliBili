@@ -13,7 +13,7 @@ class ObjectBase
 {
 public:	//公開関数
 	ObjectBase(	//コンストラクタ
-		MESH_TYPE meshType,					//メッシュタイプ
+		MESH_TYPE meshType,								//メッシュタイプ
 		DirectX::XMFLOAT3 position,						//座標
 		DirectX::XMFLOAT3 rotation,						//回転
 		DirectX::XMFLOAT3 scale,						//スケール
@@ -21,7 +21,15 @@ public:	//公開関数
 		bool isActive = true,							//アクティブフラグ
 		OBJECT_TAG tag = OBJECT_TAG::NONE,				//オブジェクトタグ
 		CollisionData::COLLISION_LAYER layer =
-			CollisionData::COLLISION_LAYER::DEFAULT		//衝突レイヤー
+			CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
+		DirectX::XMFLOAT3 colliderSetScale = 
+			{1.0f, 1.0f, 1.0f},							//コライダーセットスケール
+		DirectX::XMFLOAT3 colliderSetOffsetPosition = 
+			{ 0.0f, 0.0f, 0.0f },						//コライダーセットオフセット位置
+		DirectX::XMFLOAT3 colliderSetOffsetScale =
+			{ 0.0f, 0.0f, 0.0f },						//コライダーセットオフセットスケール
+		DirectX::XMFLOAT3 colliderSetOffsetRotation = 
+			{ 0.0f, 0.0f, 0.0f }						//コライダーセットオフセット回転
 	);
 	~ObjectBase();	//デストラクタ
 

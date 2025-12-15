@@ -54,14 +54,6 @@ Wall::Wall(MESH_TYPE meshType,
         }
         m_currentOrbitAngleDeg = XMConvertToDegrees(angleRad);
     }
-
-	// コライダーセットの作成
-    m_pColliderSet->AddCollider(
-        colliderType,                          //コライダータイプ
-        { 0.0f, 0.0f, 0.0f },                  //ローカル中心座標
-        collisionBoxSize,                      //ローカルスケール
-        { 0.0f, 0.0f, 0.0f }                  //ローカル回転
-	);
 }
 
 // 更新

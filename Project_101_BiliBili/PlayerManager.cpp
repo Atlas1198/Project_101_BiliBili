@@ -46,6 +46,8 @@ void PlayerManager::InitializeOverride(
 			OnTakeDamage(teamID, damage);
 		}
 	);
+
+
 }
 
 Player* PlayerManager::AddPlayer(

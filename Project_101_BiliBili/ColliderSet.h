@@ -26,7 +26,7 @@ public:
 
 	void Update();
 	void RegisterColliders(CollisionManager& collisionManager); //コライダーをコリジョンマネージャーに提出
-	void BuildObjectCollisionInofs();		//衝突情報を収集
+	void BuildObjectCollisionInfos();		//衝突情報を収集
 
 	void AddCollider(	//コライダー追加
 		ColliderType type,				//コライダータイプ
@@ -65,5 +65,4 @@ private:
 	DirectX::XMFLOAT3 m_offsetPosition{};	//オフセット位置
 	DirectX::XMFLOAT3 m_offsetScale{};		//オフセットスケール
 	DirectX::XMFLOAT3 m_offsetRotation{};	//オフセット回転
-
 };
