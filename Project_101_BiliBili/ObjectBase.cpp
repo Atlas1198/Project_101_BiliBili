@@ -21,7 +21,6 @@ ObjectBase::ObjectBase(
 	COLLISION_LAYER layer,
 	XMFLOAT3 colliderSetScale,
 	XMFLOAT3 colliderSetOffsetPosition,
-	XMFLOAT3 colliderSetOffsetScale,
 	XMFLOAT3 colliderSetOffsetRotation
 ) : 
 	m_meshType(meshType), 
@@ -35,13 +34,12 @@ ObjectBase::ObjectBase(
 	m_pColliderSet = new ColliderSet(
 		this,
 		tag,
-		m_position,
+		position,
 		colliderSetScale,
-		m_rotation,
+		rotation,
 		layer,
 		true,
 		colliderSetOffsetPosition,
-		colliderSetOffsetScale,
 		colliderSetOffsetRotation
 	);
 }

@@ -72,14 +72,14 @@ Player* PlayerManager::AddPlayer(
 	(
 		MESH_TYPE::QUAD,
 		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-		XMFLOAT3(2.0f, 2.0f, 2.0f),	//スケール
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-		id,							//ID
-		true,						//アクティブフラグ
-		ColliderType::SPHERE,			//コライダータイプ	
-		XMFLOAT3(1.0f, 1.0f, 1.0f),	//コライダーボックスサイズ
-		false						//コライダーのトリガーフラグ
+		XMFLOAT3(0.0f, 0.0f, 0.0f),						//回転
+		XMFLOAT3(2.0f, 2.0f, 2.0f),						//スケール
+		XMFLOAT3(0.0f, 0.0f, 0.0f),						//移動速度
+		id,												//ID
+		true,											//アクティブフラグ
+		ColliderType::BOX,								//コライダータイプ	
+		XMFLOAT3(1.0f, 1.0f, 1.0f),						//コライダーセットサイズ
+		false											//コライダーのトリガーフラグ
 	);
 
 	//プレイヤーオブジェクトの生成

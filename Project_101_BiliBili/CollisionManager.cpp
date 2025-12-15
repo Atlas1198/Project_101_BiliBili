@@ -113,8 +113,8 @@ void CollisionManager::CheckColliders()
 
 //描画要求をシーンに提出
 void CollisionManager::SubmitDraw(
-	Renderer& renderer,							//シーンの参照
-	Collider& collider,					//コライダー配列
+	Renderer& renderer,				//シーンの参照
+	Collider& collider,				//コライダー配列
 	std::vector<RenderInfo>& info	//描画情報構造体
 )
 {

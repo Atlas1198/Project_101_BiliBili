@@ -31,6 +31,7 @@ public:
 	);
 	void Update();							//更新
 	void SubmitDraws(Renderer& renderer);	//描画要求をシーンに提出
+	void Finalize();						//終了
 
 	void AddEffectCommand(EffectCommand command);	//エフェクトコマンド追加
 

@@ -18,7 +18,6 @@ public:
 		CollisionData::COLLISION_LAYER layer,
 		bool enabled = true,
 		DirectX::XMFLOAT3 offsetPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3 offsetScale = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3 offsetRotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		bool isTrigger = false
 	);
@@ -63,6 +62,7 @@ private:
 	DirectX::XMFLOAT3 m_baseRotation{};	//基準回転
 
 	DirectX::XMFLOAT3 m_offsetPosition{};	//オフセット位置
-	DirectX::XMFLOAT3 m_offsetScale{};		//オフセットスケール
 	DirectX::XMFLOAT3 m_offsetRotation{};	//オフセット回転
+
+	DirectX::XMFLOAT3 m_ownerBaseScale{};		//所有者オブジェクトの基準スケール
 };

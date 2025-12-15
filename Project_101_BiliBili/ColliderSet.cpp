@@ -12,7 +12,7 @@ ColliderSet::ColliderSet(
 	DirectX::XMFLOAT3 basePosition, DirectX::XMFLOAT3 baseScale, DirectX::XMFLOAT3 baseRotation,
 	CollisionData::COLLISION_LAYER layer,
 	bool enabled,
-	DirectX::XMFLOAT3 offsetPosition, DirectX::XMFLOAT3 offsetScale, DirectX::XMFLOAT3 offsetRotation,
+	DirectX::XMFLOAT3 offsetPosition, DirectX::XMFLOAT3 offsetRotation,
 	bool isTrigger
 	)
 	: 
@@ -21,9 +21,11 @@ ColliderSet::ColliderSet(
 	m_basePosition(basePosition), m_baseScale(baseScale), m_baseRotation(baseRotation),
 	m_layer(layer),
 	m_isActive(enabled),
-	m_offsetPosition(offsetPosition), m_offsetScale(offsetScale), m_offsetRotation(offsetRotation),
+	m_offsetPosition(offsetPosition), m_offsetRotation(offsetRotation),
 	m_isTrigger(isTrigger)
 {
+	m_ownerBaseScale = m_owner->GetScale();
+	Update();
 }
 
 //デストラクタ
@@ -49,24 +51,32 @@ void ColliderSet::Update()
 	XMFLOAT3 ownerRotation = m_owner->GetRotation();
 
 	//基準変換とオフセット変換を加算
-	ownerPosition.x += m_basePosition.x + m_offsetPosition.x;
-	ownerPosition.y += m_basePosition.y + m_offsetPosition.y;
-	ownerPosition.z += m_basePosition.z + m_offsetPosition.z;
+	ownerPosition.x +=  m_offsetPosition.x;
+	ownerPosition.y +=  m_offsetPosition.y;
+	ownerPosition.z +=  m_offsetPosition.z;
 
-	ownerScale.x *= m_baseScale.x * m_offsetScale.x;
-	ownerScale.y *= m_baseScale.y * m_offsetScale.y;
-	ownerScale.z *= m_baseScale.z * m_offsetScale.z;
+	XMFLOAT3 scaleRatio = {
+		ownerScale.x - m_ownerBaseScale.x,
+		ownerScale.y - m_ownerBaseScale.y,
+		ownerScale.z - m_ownerBaseScale.z
+	};
 
-	ownerRotation.x += m_baseRotation.x + m_offsetRotation.x;
-	ownerRotation.y += m_baseRotation.y + m_offsetRotation.y;
-	ownerRotation.z += m_baseRotation.z + m_offsetRotation.z;
+	XMFLOAT3 scale = {
+		m_baseScale.x + scaleRatio.x,
+		m_baseScale.y + scaleRatio.y,
+		m_baseScale.z + scaleRatio.z
+	};
+
+	ownerRotation.x += m_offsetRotation.x;
+	ownerRotation.y += m_offsetRotation.y;
+	ownerRotation.z += m_offsetRotation.z;
 
 	//コライダーの変換更新
 	for(auto& collider : m_colliders)
 	{
 		collider->Update(
 			ownerPosition,
-			ownerScale,
+			scale,
 			ownerRotation
 		);
 	}

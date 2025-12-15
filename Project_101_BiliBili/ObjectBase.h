@@ -26,8 +26,6 @@ public:	//公開関数
 			{1.0f, 1.0f, 1.0f},							//コライダーセットスケール
 		DirectX::XMFLOAT3 colliderSetOffsetPosition = 
 			{ 0.0f, 0.0f, 0.0f },						//コライダーセットオフセット位置
-		DirectX::XMFLOAT3 colliderSetOffsetScale =
-			{ 0.0f, 0.0f, 0.0f },						//コライダーセットオフセットスケール
 		DirectX::XMFLOAT3 colliderSetOffsetRotation = 
 			{ 0.0f, 0.0f, 0.0f }						//コライダーセットオフセット回転
 	);
@@ -62,11 +60,11 @@ public:	//公開関数
 	void SetDrawn(bool isDrawn);					//描画フラグの設定
 
 protected:	//非公開メンバ変数
-	DirectX::XMFLOAT3 m_position{};						//位置
-	DirectX::XMFLOAT3 m_rotation{};						//回転
+	DirectX::XMFLOAT3 m_position{ 0.0f, 0.0f, 0.0f };	//位置
+	DirectX::XMFLOAT3 m_rotation{ 0.0f, 0.0f, 0.0f };	//回転
 	DirectX::XMFLOAT3 m_scale{ 1.0f,1.0f,1.0f };		//スケール
 	DirectX::XMFLOAT4 m_color{ 1.0f,1.0f,1.0f,1.0f };	//色RGBA
-	DirectX::XMFLOAT3 m_velocity{};						//移動速度
+	DirectX::XMFLOAT3 m_velocity{ 0.0f, 0.0f, 0.0f };	//移動速度
 	bool m_isActive = false;		//アクティブフラグ
 
 	MESH_TYPE m_meshType = MESH_TYPE::QUAD;	//メッシュタイプ
