@@ -2,6 +2,7 @@
 #include "SceneBase.h"
 #include "GameScene.h"
 #include "TitleScene.h"
+#include "SelectionScene.h"
 #include "SharedStruct.h"
 
 //前方宣言
@@ -18,6 +19,7 @@ public:	//公開定数
 	enum SCENE
 	{
 		SCENE_TITLE,	//タイトルシーン
+		SCENE_SELECTION,	//プレイヤー選択シーン
 		SCENE_GAME,		//ゲームシーン
 		SCENE_RESULT,	//リザルトシーン
 	};
@@ -50,6 +52,7 @@ private:	//メンバ変数
 
 	TitleScene* m_pTitleScene = nullptr; //タイトルシーンクラスのポインタ
 	GameScene* m_pGameScene = nullptr; //ゲームシーンクラスのポインタ
+	SelectionScene* m_pSelectionScene = nullptr;
 
 	InputManager* m_pInputManager = nullptr;		//入力管理クラスのポインタ
 	TextureManager* m_pTextureManager = nullptr;	//テクスチャ管理クラスのポインタ
