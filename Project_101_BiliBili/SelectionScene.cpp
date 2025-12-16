@@ -4,8 +4,6 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 
-using namespace RenderData;
-
 //コンストラクタ
 SelectionScene::SelectionScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)

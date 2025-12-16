@@ -123,7 +123,7 @@ void Bullet::ResolveCollisionsOverride()
             EffectCommand{
                 EFFECT_TYPE::FIRE_FLASH,
                 m_position,
-                XMFLOAT2{ 2.0f,2.0f },
+                XMFLOAT2{ 2.5f,2.5f },
             }
         );
         m_deleteFlag = true;
