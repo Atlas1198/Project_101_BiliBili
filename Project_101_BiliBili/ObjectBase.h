@@ -58,6 +58,7 @@ public:	//公開関数
 	void SetColor(DirectX::XMFLOAT4 color);			//色RGBAの設定
 	void SetActive(bool isActive);					//アクティブフラグの設定
 	void SetDrawn(bool isDrawn);					//描画フラグの設定
+	void SetTexSplitInfo(TexSplitInfo info);	//テクスチャ分割情報構造体の設定
 
 protected:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_position{ 0.0f, 0.0f, 0.0f };	//位置

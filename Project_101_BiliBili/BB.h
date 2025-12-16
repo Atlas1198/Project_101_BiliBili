@@ -13,6 +13,7 @@ class CollisionManager;
 //BBクラス
 class BB
 {
+	static constexpr float ELECTRICITY_TEX_BASE_LENGTH = 40.0f; //電気テクスチャの基準長さ
 public:
 	static constexpr int PLAYER_NUM = 2; //プレイヤーの数
 	//static constexpr float DAMAGE = 0.001f;	//ダメージ量
@@ -52,10 +53,14 @@ private:
 
 	DirectX::XMFLOAT3 m_rotation = { 0.0f, 0.0f, 0.0f }; //回転角
 
+	float m_length = 0.0f; //ラインの長さ
+
 private:
 	void ControlElectricity();		//電流の操作
 	DirectX::XMFLOAT3 GetClosestCollisionPos(	//プレイヤー座標から最も近い座標を取得
 		DirectX::XMFLOAT3 position, 
 		std::vector<DirectX::XMFLOAT3> collisionPointList
 	);	
+
+	void ElectricityTexSplitUpdate(); //電気テクスチャ分割更新
 };

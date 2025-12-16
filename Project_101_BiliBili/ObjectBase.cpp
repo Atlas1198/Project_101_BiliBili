@@ -173,6 +173,12 @@ void ObjectBase::SetDrawn(bool isDrawn)
 	m_isDrawn = isDrawn;
 }
 
+//テクスチャ分割情報構造体の設定
+void ObjectBase::SetTexSplitInfo(TexSplitInfo info)
+{
+	m_texSplitInfo = info;
+}
+
 //アニメーション更新
 void ObjectBase::UpdateAnimation()
 {
