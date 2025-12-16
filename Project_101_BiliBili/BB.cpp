@@ -41,7 +41,7 @@ void BB::Initialize()
 			MESH_TYPE::QUAD,
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//座標
 			DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
+			DirectX::XMFLOAT3(6.0f, 1.0f, 1.0f),	//スケール
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,									//アクティブフラグ
 			ColliderType::CAPSULE					//コライダータイプ	
@@ -56,8 +56,14 @@ void BB::Initialize()
 		m_electricityBB[i]->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
 		m_electricityBB[i]->GetColliderSet()->SetActive(false);
 
-
-		m_electricityBB[i]->SetColor(XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));	//色設定(黄色)
+		m_electricityBB[i]->SetTexSplitInfo({
+				0,
+				10,
+				6,
+				60,
+				0,
+				5
+			});
 	}
 
 	m_activatedBB = true;
@@ -85,9 +91,11 @@ void BB::Update()
 
 		for (auto& eb : m_electricityBB)
 		{
-			if (eb->IsActive()) eb->Update();
+			eb->Update();
 		}
 	}
+
+	ElectricityTexSplitUpdate();
 }
 
 //衝突解決
@@ -200,6 +208,10 @@ void BB::ActivateBB()
 	m_activatedBB = true;								//発動中フラグを立てる
 	m_electricityBB[0]->SetActive(true);				//片方の電流をオン
 	m_electricityBB[0]->GetColliderSet()->SetActive(true);	//コライダーもオン
+	for(auto& line : m_lineBB)
+	{
+		line->SetDrawn(false);		//ラインの描画をオフ
+	}
 }
 
 //ビリビリの無効化
@@ -209,6 +221,10 @@ void BB::DisableBB()
 	for (auto& eb : m_electricityBB)
 	{
 		eb->SetActive(false);
+	}
+	for (auto& line : m_lineBB)
+	{
+		line->SetDrawn(true);		//ラインの描画をオン
 	}
 }
 
@@ -281,4 +297,28 @@ XMFLOAT3 BB::GetClosestCollisionPos(
 	}
 
 	return closestPos;
+}
+
+//電気テクスチャ分割更新
+void BB::ElectricityTexSplitUpdate()
+{
+	const float ELECTRICITY_TEX_BASE_LENGTH = 40.0f; //電気テクスチャの基準長さ
+
+	for(auto& eb : m_electricityBB)
+	{
+		m_length = LengthBetween(
+			eb->GetStartPos(),
+			eb->GetEndPos()
+		);
+
+		float lengthRatio = m_length / ELECTRICITY_TEX_BASE_LENGTH;
+
+		lengthRatio = std::clamp(lengthRatio, 0.0f, 1.0f);
+
+		TexSplitInfo info = eb->GetTexSplitInfo();
+		info.scaleV = lengthRatio;
+		info.offsetV = (1.0f - lengthRatio) * 0.5f;
+
+		eb->SetTexSplitInfo(info);
+	}
 }

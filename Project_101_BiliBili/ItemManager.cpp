@@ -109,12 +109,13 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 {
 	//描画情報生成関数を呼び出し、描画情報を作成
 	CreateRenderInfo(
-		textureManager,					//テクスチャマネージャへの参照
-		meshManager,					//メッシュマネージャへの参照
-		&m_itemInfo,					//描画情報構造体配列へのポインタ
-		MESH_TYPE::QUAD,	//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		itemTexPath					//テクスチャのファイル名
+		textureManager,						//テクスチャマネージャへの参照
+		meshManager,						//メッシュマネージャへの参照
+		&m_itemInfo,						//描画情報構造体配列へのポインタ
+		MESH_TYPE::QUAD,					//メッシュタイプ
+		BLEND_MODE::BLEND_MASKED,			//ブレンドモード
+		itemTexPath,						//テクスチャのファイル名
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
 	);
 
 }

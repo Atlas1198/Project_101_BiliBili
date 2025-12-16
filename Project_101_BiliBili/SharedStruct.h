@@ -341,33 +341,43 @@ inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& tran
 	return scaleMatrix * rotMatrix * transMatrix;
 }
 
-//?e?N?X?`?????????\????
+//スプライト分割情報構造体
 struct TexSplitInfo
 {
-	int index = 0;			//?????C???f?b?N?X
-	int cols = 1;			//??????
-	int rows = 1;			//?????s??
-	int total = 1;			//????????(???C???f?b?N?X??+1)
-	int frameCount = 0;		//?t???[???J?E???g
-	int updateRate = 0;		//?X?V?p?x(?t???[????)
+	int index = 0;			//スプライトのインデックス
+	int cols = 1;			//列数
+	int rows = 1;			//行数
+	int total = 1;			//総フレーム数(列数 * 行数)
+	int frameCount = 0;		//現在のフレームカウント
+	int updateRate = 0;		//更新レート(何フレームに1回進むか)
+
+	float offsetU = 0.0f;	//UVオフセットU
+	float offsetV = 0.0f;	//UVオフセットV
+
+	float scaleU = 1.0f;	//UVスケールU
+	float scaleV = 1.0f;	//UVスケールV
 };
 
-//?X?v???C?g?????????????????????
+//スプライト分割情報からUV矩形を取得する関数
 inline static DirectX::XMFLOAT4 SplitSprite(TexSplitInfo info)
 {
-	//?C???f?b?N?X??????????????v?Z
-	float col = info.index % info.cols;
-	float row = info.index / info.cols;
+	const float baseSu = 1.0f / static_cast<float>(info.cols);	//基本UVスケールU
+	const float baseSv = 1.0f / static_cast<float>(info.rows);	//基本UVスケールV
 
-	//???????`??T?C?Y???v?Z
-	float su = 1.0f / info.cols;
-	float sv = 1.0f / info.rows;
+	const int col = info.index % info.cols;	//現在の列
+	const int row = info.index / info.cols;	//現在の行
 
-	//???????`????W???v?Z
-	float u = col * su;
-	float v = row * sv;
+	const float frameU = static_cast<float>(col) * baseSu;	//フレームUVオフセットU
+	const float frameV = static_cast<float>(row) * baseSv;	//フレームUVオフセットV
 
-	return DirectX::XMFLOAT4{ u, v, su, sv };
+	const float minU = frameU + info.offsetU * baseSu;	//最小U座標
+	const float minV = frameV + info.offsetV * baseSv;	//最小V座標
+
+	const float sizeU = baseSu * info.scaleU;	//最大U座標
+	const float sizeV = baseSv * info.scaleV;	//最大V座標
+
+	//UV矩形の作成
+	return DirectX::XMFLOAT4(minU, minV, sizeU, sizeV);
 }
 
 //クオータニオンからオイラー角への変換

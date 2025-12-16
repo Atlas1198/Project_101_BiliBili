@@ -57,9 +57,9 @@ VSOutPut BasicVS(
     float4 projPos = mul(proj, viewPos); // 投影変換
     
     //出力データの設定
-    output.svpos = projPos; //変換後の頂点座標を設定
-    output.color = input.color; //頂点カラーを設定
-    output.uv = input.uv; //uv座標を設定
+    output.svpos = projPos;                         //変換後の頂点座標を設定
+    output.color = input.color;                     //頂点カラーを設定
+    output.uv = uvRect.xy + input.uv * uvRect.zw;   //uv座標を設定
 
     return output;
 }
