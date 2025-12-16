@@ -140,12 +140,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			ColliderType::BOX			 //コライダータイプ
 		)
 	);
-	m_pGrounds.back()->GetColliderSet()->AddCollider(
-		ColliderType::BOX,
-		XMFLOAT3(0.0f, 0.0f, 0.0f),
-		XMFLOAT3(53.3f, 30.0f, 1.0f),
-		XMFLOAT3(0.0f, 0.0f, 0.0f)
-	);
 
 	switch (Stagenum)
 	{
