@@ -42,6 +42,8 @@ public:
 	//ゲッター
 	bool HasHitPlayer() const;	//プレイヤーに当たったかどうか取得
 	int GetHitNum() const;		//当たった回数取得
+	DirectX::XMFLOAT3 GetStartPos() const { return m_startPos; } //開始地点取得
+	DirectX::XMFLOAT3 GetEndPos() const { return m_endPos; }     //終了地点取得
 
 	//セッター
 	void SetStartPos(DirectX::XMFLOAT3 position);

@@ -13,7 +13,6 @@ class CollisionManager;
 //BBクラス
 class BB
 {
-	static constexpr float ELECTRICITY_TEX_BASE_LENGTH = 40.0f; //電気テクスチャの基準長さ
 public:
 	static constexpr int PLAYER_NUM = 2; //プレイヤーの数
 	//static constexpr float DAMAGE = 0.001f;	//ダメージ量

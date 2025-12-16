@@ -361,20 +361,23 @@ struct TexSplitInfo
 //スプライト分割情報からUV矩形を取得する関数
 inline static DirectX::XMFLOAT4 SplitSprite(TexSplitInfo info)
 {
-	//行(row)列(col)の計算
-	float col = info.index % info.cols;
-	float row = info.index / info.cols;
+	const float baseSu = 1.0f / static_cast<float>(info.cols);	//基本UVスケールU
+	const float baseSv = 1.0f / static_cast<float>(info.rows);	//基本UVスケールV
 
-	//UVスケールの計算
-	float su = (1.0f / info.cols) * info.scaleU;
-	float sv = (1.0f / info.rows) * info.scaleV;
+	const int col = info.index % info.cols;	//現在の列
+	const int row = info.index / info.cols;	//現在の行
 
-	//UV座標の計算
-	float u = col * su + info.offsetU;
-	float v = row * sv + info.offsetV;
+	const float frameU = static_cast<float>(col) * baseSu;	//フレームUVオフセットU
+	const float frameV = static_cast<float>(row) * baseSv;	//フレームUVオフセットV
+
+	const float minU = frameU + info.offsetU * baseSu;	//最小U座標
+	const float minV = frameV + info.offsetV * baseSv;	//最小V座標
+
+	const float sizeU = baseSu * info.scaleU;	//最大U座標
+	const float sizeV = baseSv * info.scaleV;	//最大V座標
 
 	//UV矩形の作成
-	return DirectX::XMFLOAT4{ u, v, su, sv };
+	return DirectX::XMFLOAT4(minU, minV, sizeU, sizeV);
 }
 
 //クオータニオンからオイラー角への変換

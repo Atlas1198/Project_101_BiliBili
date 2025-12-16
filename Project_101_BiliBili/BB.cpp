@@ -41,7 +41,7 @@ void BB::Initialize()
 			MESH_TYPE::QUAD,
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//座標
 			DirectX::XMFLOAT3(90.0f, 0.0f, 0.0f),	//回転
-			DirectX::XMFLOAT3(4.0f, 4.8f, 1.0f),	//スケール
+			DirectX::XMFLOAT3(6.0f, 1.0f, 1.0f),	//スケール
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
 			true,									//アクティブフラグ
 			ColliderType::CAPSULE					//コライダータイプ	
@@ -91,9 +91,11 @@ void BB::Update()
 
 		for (auto& eb : m_electricityBB)
 		{
-			if (eb->IsActive()) eb->Update();
+			eb->Update();
 		}
 	}
+
+	ElectricityTexSplitUpdate();
 }
 
 //衝突解決
@@ -300,15 +302,23 @@ XMFLOAT3 BB::GetClosestCollisionPos(
 //電気テクスチャ分割更新
 void BB::ElectricityTexSplitUpdate()
 {
-	m_length = LengthBetween(
-		m_playerPos[0],
-		m_playerPos[1]
-	);
+	const float ELECTRICITY_TEX_BASE_LENGTH = 40.0f; //電気テクスチャの基準長さ
 
-	float lengthRatio = m_length / ELECTRICITY_TEX_BASE_LENGTH;
+	for(auto& eb : m_electricityBB)
+	{
+		m_length = LengthBetween(
+			eb->GetStartPos(),
+			eb->GetEndPos()
+		);
 
-	TexSplitInfo info = m_electricityBB[0]->GetTexSplitInfo();
-	info.scaleV = lengthRatio;
+		float lengthRatio = m_length / ELECTRICITY_TEX_BASE_LENGTH;
 
-	m_electricityBB[0]->SetTexSplitInfo(info);
+		lengthRatio = std::clamp(lengthRatio, 0.0f, 1.0f);
+
+		TexSplitInfo info = eb->GetTexSplitInfo();
+		info.scaleV = lengthRatio;
+		info.offsetV = (1.0f - lengthRatio) * 0.5f;
+
+		eb->SetTexSplitInfo(info);
+	}
 }
