@@ -36,7 +36,7 @@ void CollisionManager::Initialize(
 //•`‰æ
 void CollisionManager::Draw(Renderer& renderer)
 {
-	for (auto& collider : m_pCollidersList)
+ 	for (auto& collider : m_pCollidersList)
 	{
 		if (!collider->isActive()) continue;
 

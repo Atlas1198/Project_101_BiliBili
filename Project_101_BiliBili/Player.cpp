@@ -16,7 +16,8 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 		velocity,
 		isActive,
 		OBJECT_TAG::PLAYER,
-		CollisionData::COLLISION_LAYER::PLAYER
+		CollisionData::COLLISION_LAYER::PLAYER,
+		collisionBoxSize
 	),
 	id(id)
 

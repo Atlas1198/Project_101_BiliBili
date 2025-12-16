@@ -16,8 +16,8 @@ void ElectricityBB::ResolveCollisionsOverride()
 {
 	for(auto& info : m_pColliderSet->GetCollisionInfos())
 	{
-		auto opponentOwner = info.opponent;	//衝突相手のオブジェクト取得
-		OBJECT_TAG tag = opponentOwner->GetTag();		//衝突相手のタグ取得
+		auto opponentOwner = info.opponent;			//衝突相手のオブジェクト取得
+		OBJECT_TAG tag = opponentOwner->GetTag();	//衝突相手のタグ取得
 
 		//衝突相手がプレイヤーの場合
 		if(tag == OBJECT_TAG::PLAYER)
@@ -25,7 +25,6 @@ void ElectricityBB::ResolveCollisionsOverride()
 			auto player = dynamic_cast<Player*>(opponentOwner);	//プレイヤーにキャスト
 			if (player->GetTeamID() != m_teamId)
 			{
-
 				if (player->GetTeamID() != m_teamId && info.state == COLLISION_STATE::COLLISION_STAY)
 				{//チームIDが違うか、衝突開始の場合
 					m_hasHitPlayer = true;	//プレイヤーに当たったフラグを立てる
@@ -80,7 +79,6 @@ void ElectricityBB::SetHitNum(int num)
 
 void ElectricityBB::UpdateGeometry()
 {
-
 	float length = LengthBetween(m_startPos, m_endPos);
 	m_scale.y = length;
 

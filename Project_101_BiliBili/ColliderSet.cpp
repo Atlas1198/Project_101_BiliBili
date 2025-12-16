@@ -51,33 +51,29 @@ void ColliderSet::Update()
 	XMFLOAT3 ownerRotation = m_owner->GetRotation();
 
 	//基準変換とオフセット変換を加算
-	ownerPosition.x +=  m_offsetPosition.x;
-	ownerPosition.y +=  m_offsetPosition.y;
-	ownerPosition.z +=  m_offsetPosition.z;
+	m_basePosition.x = ownerPosition.x + m_offsetPosition.x;
+	m_basePosition.y = ownerPosition.y + m_offsetPosition.y;
+	m_basePosition.z = ownerPosition.z + m_offsetPosition.z;
 
-	XMFLOAT3 scaleRatio = {
-		ownerScale.x - m_ownerBaseScale.x,
-		ownerScale.y - m_ownerBaseScale.y,
-		ownerScale.z - m_ownerBaseScale.z
+
+	XMFLOAT3 newScale =
+	{
+		(ownerScale.x - m_ownerBaseScale.x) * m_baseScale.x,
+		(ownerScale.y - m_ownerBaseScale.y) * m_baseScale.y,
+		(ownerScale.z - m_ownerBaseScale.z) * m_baseScale.z
 	};
 
-	XMFLOAT3 scale = {
-		m_baseScale.x + scaleRatio.x,
-		m_baseScale.y + scaleRatio.y,
-		m_baseScale.z + scaleRatio.z
-	};
-
-	ownerRotation.x += m_offsetRotation.x;
-	ownerRotation.y += m_offsetRotation.y;
-	ownerRotation.z += m_offsetRotation.z;
+	m_baseRotation.x = ownerRotation.x + m_offsetRotation.x;
+	m_baseRotation.y = ownerRotation.y + m_offsetRotation.y;
+	m_baseRotation.z = ownerRotation.z + m_offsetRotation.z;
 
 	//コライダーの変換更新
 	for(auto& collider : m_colliders)
 	{
 		collider->Update(
-			ownerPosition,
-			scale,
-			ownerRotation
+			m_basePosition,
+			newScale,
+			m_baseRotation
 		);
 	}
 }
@@ -196,6 +192,7 @@ void ColliderSet::BuildObjectCollisionInfos()
 void ColliderSet::SetActive(bool enabled)
 {
 	m_isActive = enabled;
+
 	for(auto& collider : m_colliders)
 	{
 		collider->SetActive(enabled);

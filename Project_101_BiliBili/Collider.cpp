@@ -25,11 +25,6 @@ Collider::Collider(
 	m_ownerTag(ownerTag),
 	m_isTrigger(isTrigger)
 {
-	Update(
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
-	);
 
 	m_layerMask = CollisionData::GetLayerMask(m_layer); //衝突レイヤーマスク取得
 }
@@ -294,9 +289,9 @@ void Collider::UpdateBoxCollider(DirectX::XMFLOAT3 ownerScale)
 	//スケール反映
 	m_currentBoxCollider.scale =
 	{
-		ownerScale.x * m_localScale.x,
-		ownerScale.y * m_localScale.y,
-		ownerScale.z * m_localScale.z
+		ownerScale.x + m_localScale.x,
+		ownerScale.y + m_localScale.y,
+		ownerScale.z + m_localScale.z
 	};
 
 	//コライダーサイズ更新
@@ -314,9 +309,9 @@ void Collider::UpdateSphereCollider(DirectX::XMFLOAT3 ownerScale)
 	//スケール反映
 	XMFLOAT3 scale =
 	{
-		ownerScale.x * m_localScale.x,
-		ownerScale.y * m_localScale.y,
-		ownerScale.z * m_localScale.z
+		ownerScale.x + m_localScale.x,
+		ownerScale.y + m_localScale.y,
+		ownerScale.z + m_localScale.z
 	};
 
 
@@ -336,9 +331,9 @@ void Collider::UpdateCapsuleCollider(DirectX::XMFLOAT3 ownerScale)
 	//スケール反映
 	const XMFLOAT3 scale = 
 	{
-		ownerScale.x * m_localScale.x,
-		ownerScale.y * m_localScale.y,
-		ownerScale.z * m_localScale.z
+		ownerScale.x + m_localScale.x,
+		ownerScale.y + m_localScale.y,
+		ownerScale.z + m_localScale.z
 	};
 	const float diamiter =
 		(std::max)(scale.x, scale.z);		//直径(水平方向の最大値)

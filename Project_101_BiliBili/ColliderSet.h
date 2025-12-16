@@ -65,4 +65,5 @@ private:
 	DirectX::XMFLOAT3 m_offsetRotation{};	//オフセット回転
 
 	DirectX::XMFLOAT3 m_ownerBaseScale{};		//所有者オブジェクトの基準スケール
+	DirectX::XMFLOAT3 m_baseScaleOffset{};
 };

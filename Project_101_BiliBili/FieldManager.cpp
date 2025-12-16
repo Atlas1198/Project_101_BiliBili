@@ -140,8 +140,12 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			ColliderType::BOX			 //コライダータイプ
 		)
 	);
-
-	Stagenum = 4; //暫定でステージ1固定
+	m_pGrounds.back()->GetColliderSet()->AddCollider(
+		ColliderType::BOX,
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(53.3f, 30.0f, 1.0f),
+		XMFLOAT3(0.0f, 0.0f, 0.0f)
+	);
 
 	switch (Stagenum)
 	{
@@ -234,8 +238,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, -3.0f, 0.0f),
-			XMFLOAT3(6.1f, 3.1f, 2.1f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f),
+			XMFLOAT3(6.1f, 6.1f, 2.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
