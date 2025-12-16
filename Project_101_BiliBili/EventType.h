@@ -7,4 +7,5 @@ enum EventType
 	UPDATE_HP_UI, // int teamID, float newHP
 	UPDATE_BULLET_UI, // int teamID, int newBulletCount
 	GAME_OVER, // int winningTeamID
+	ADD_EFFECT,
 };

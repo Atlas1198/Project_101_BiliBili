@@ -3,7 +3,9 @@
 #include "TextureManager.h"
 #include "ComPtr.h"
 #include "SharedStruct.h"
+#include "RenderData.h"
 #include "CollisionManager.h"
+#include "EffectManager.h"
 
 //前方宣言
 class Renderer;
@@ -37,6 +39,7 @@ protected:	//非公開メンバ変数
 	Camera* m_pCamera = nullptr;						//カメラ
 	InputManager* m_pInputManager = nullptr;			//入力管理クラス
 	CollisionManager* m_pCollisionManager = nullptr;	//衝突管理クラス
+	EffectManager* m_pEffectManager = nullptr;			//エフェクト管理クラス
 
 	bool m_drawColliders = true; // コライダー描画フラグ
 

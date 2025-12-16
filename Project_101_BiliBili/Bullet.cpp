@@ -2,10 +2,13 @@
 #include <cmath>
 #include "Player.h"
 #include "EventManager.h"
+#include "EffectData.h"
+
+using namespace DirectX;
 
 Bullet::Bullet(
-               const DirectX::XMFLOAT3& pos,
-               const DirectX::XMFLOAT3& dir,
+               const XMFLOAT3& pos,
+               const XMFLOAT3& dir,
                float speed,
                int ownerTeam,
 	           uint32_t ownerID,
@@ -14,20 +17,25 @@ Bullet::Bullet(
                float maxDistance)
 
     : ObjectBase(
-        MeshData::MESH_TYPE::QUAD,
+        MESH_TYPE::QUAD,
         pos,
         {0,0,0},
         {1.0f,1.0f,1.0f}, 
         {0,0,0},
         true,
         OBJECT_TAG::BULLET,
-        ColliderType::BOX,
-        CollisionData::COLLISION_LAYER::BULLET,
-        { 0.2f,0.2f,0.2f }
+        CollisionData::COLLISION_LAYER::BULLET
 	), m_direction(dir), m_speed(speed), m_ownerTeam(ownerTeam), m_ownerID(ownerID),
 	m_lifeTime(lifeTimeSec), m_maxDistance(maxDistance), m_damage(damage)
 {
     SetActive(true);
+
+    m_pColliderSet->AddCollider(
+        ColliderType::SPHERE,
+        XMFLOAT3(0.0f, 0.0f, 0.0f),
+        XMFLOAT3(0.5f, 0.5f, 0.5f),
+        XMFLOAT3(0.0f, 0.0f, 0.0f)
+	);
 }
 
 
@@ -71,17 +79,12 @@ void Bullet::ResolveCollisionsOverride()
         return;
     }
 
-    auto& infos = GetCollider()->GetCollisionInfos();
+    auto& infos = m_pColliderSet->GetCollisionInfos();
 
     for (const auto& info : infos)
     {
-        Collider* other = info.opponent;
-        if (!other) 
-        {
-            continue;
-        }
+        ObjectBase* otherOwner = info.opponent;
 
-        ObjectBase* otherOwner = other->GetOwner();
         if (!otherOwner) 
         {
             continue;
@@ -115,9 +118,18 @@ void Bullet::ResolveCollisionsOverride()
         //}
 
         // Õ“Ë ¨ Á–Å
+        EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+            EventType::ADD_EFFECT,
+            EffectCommand{
+                EFFECT_TYPE::FIRE_FLASH,
+                m_position,
+                XMFLOAT2{ 2.0f,2.0f },
+            }
+        );
         m_deleteFlag = true;
         SetActive(false);
         break;
     }
-    GetCollider()->ClearInfos();
+
+    GetColliderSet()->ClearCollisionInfos();
 }

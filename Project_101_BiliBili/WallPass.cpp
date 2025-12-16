@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace CollisionData;
 
 // コンストラクタ
-WallPass::WallPass(MeshData::MESH_TYPE meshType,
+WallPass::WallPass(MESH_TYPE meshType,
     DirectX::XMFLOAT3 position,
     DirectX::XMFLOAT3 rotation,
     DirectX::XMFLOAT3 scale,
@@ -17,7 +17,7 @@ WallPass::WallPass(MeshData::MESH_TYPE meshType,
     bool orbit,
     float orbitRadius,
     DirectX::XMFLOAT3 orbitCenter)
-    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALLPASS, colliderType, COLLISION_LAYER::WALLPASS, collisionBoxSize, collisionIsTrigger)
+    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALLPASS, COLLISION_LAYER::WALLPASS)
     , m_rotationSpeed(rotationSpeed)
     , m_orbit(orbit)
     , m_orbitRadius(orbitRadius)

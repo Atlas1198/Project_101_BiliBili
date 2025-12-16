@@ -16,11 +16,11 @@ class PlayerManager : public ObjectManagerBase
 public:
 	//static constexpr int PLAYER_NUM = 2; // プレイヤーの数
 	const wchar_t* modelFile = L"asset/fbx/Dragon 2.5_fbx.fbx";
-	const wchar_t* texPath = L"asset/texture/player/Character_L.png";
+	const wchar_t* texPath = L"asset/texture/player/Character_front.png";
 
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
-	std::vector<RenderData::RenderInfo> m_playerInfo;			//プレイヤー描画情報
+	std::vector<RenderInfo> m_playerInfo;			//プレイヤー描画情報
 	InputManager* m_pInputManager = nullptr;					//入力マネージャーポインタ
 	float teamHP[2] = { 1.0f, 1.0f };							//チームの体力
 

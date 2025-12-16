@@ -55,7 +55,7 @@ void BBManager::InitializeOverride(
 		{
 			if (electricityBB[j])
 			{
-				SubmitColliders(collisionManager, electricityBB[j]->GetCollider());
+				electricityBB[j]->GetColliderSet()->RegisterColliders(collisionManager);
 			}
 		}
 
@@ -251,7 +251,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_ElectricityBBInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
-		BLEND_MODE::BLEND_OPAQUE,
+		BLEND_MODE::BLEND_MASKED,
 		electricityBBTexPath
 	);
 }

@@ -5,7 +5,7 @@
 using namespace DirectX;
 using namespace CollisionData;
 
-LineBB::LineBB(MeshData::MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
+LineBB::LineBB(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
 	:  ObjectBase(
 		meshType,
 		position,
@@ -14,13 +14,18 @@ LineBB::LineBB(MeshData::MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX
 		velocity,
 		isActive,
 		OBJECT_TAG::BB_LINE,
-		colliderType,
-		COLLISION_LAYER::BB_LINE,
-		collisionBoxSize,
-		collisionIsTrigger)
+		COLLISION_LAYER::BB_LINE
+		)
 {
 	m_raycastSegment.layer = COLLISION_LAYER::BB_LINE;
 	m_raycastSegment.layerMask = GetLayerMask(COLLISION_LAYER::BB_LINE);
+
+	m_pColliderSet->AddCollider(
+		colliderType,
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		collisionBoxSize,
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
+	);
 }
 
 //更新
@@ -68,7 +73,7 @@ void LineBB::GetClosestWallCollisionPoints()
 {
 	for(auto & hitInfo : m_raycastSegment.hitInfos)
 	{
-		if (hitInfo.opponent->GetOwner()->GetTag() == OBJECT_TAG::WALL)
+		if (hitInfo.opponent->GetOwnerTag() == OBJECT_TAG::WALL)
 		{
 			m_wallCollisionPoint = hitInfo.hitPoint;
 			return;	//近い順にソート済みなので最初の1個だけ取得して終了

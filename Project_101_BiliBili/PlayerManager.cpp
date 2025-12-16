@@ -7,8 +7,7 @@
 #include "EventManager.h"
 
 using namespace DirectX;
-using namespace RenderData;
-using namespace MeshData;
+
 
 //デストラクタ
 PlayerManager::~PlayerManager()
@@ -35,8 +34,7 @@ void PlayerManager::InitializeOverride(
 
 	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
 	{
-		//コライダー情報をシーンに提出
-		SubmitColliders(collisionManager, (*it)->GetCollider());
+		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
 	}
 
 	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
@@ -48,6 +46,8 @@ void PlayerManager::InitializeOverride(
 			OnTakeDamage(teamID, damage);
 		}
 	);
+
+
 }
 
 Player* PlayerManager::AddPlayer(
@@ -70,16 +70,16 @@ Player* PlayerManager::AddPlayer(
 
 	Player *newPlayer = new Player
 	(
-		MeshData::MESH_TYPE::QUAD,
+		MESH_TYPE::QUAD,
 		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-		XMFLOAT3(2.0f, 2.0f, 2.0f),	//スケール
-		XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-		id,							//ID
-		true,						//アクティブフラグ
-		ColliderType::SPHERE,			//コライダータイプ	
-		XMFLOAT3(1.0f, 1.0f, 1.0f),	//コライダーボックスサイズ
-		false						//コライダーのトリガーフラグ
+		XMFLOAT3(0.0f, 0.0f, 0.0f),						//回転
+		XMFLOAT3(2.0f, 2.0f, 2.0f),						//スケール
+		XMFLOAT3(0.0f, 0.0f, 0.0f),						//移動速度
+		id,												//ID
+		true,											//アクティブフラグ
+		ColliderType::BOX,								//コライダータイプ	
+		XMFLOAT3(1.0f, 1.0f, 1.0f),						//コライダーセットサイズ
+		false											//コライダーのトリガーフラグ
 	);
 
 	//プレイヤーオブジェクトの生成

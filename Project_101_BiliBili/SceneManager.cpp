@@ -68,7 +68,7 @@ void SceneManager::Update()
 		m_pInputManager->GetInputInfo() != nullptr &&
 		m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
-		ChangeScene(SCENE_TITLE);	//シーン変更
+		(SCENE_TITLE);	//シーン変更
 	}
 }
 

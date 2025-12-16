@@ -5,6 +5,7 @@
 #include "ObjectManagerBase.h"
 #include "SharedStruct.h"
 #include "FrameTimer.h"
+#include "RenderData.h"
 
 class Player;
 class GameUIManager;
@@ -16,7 +17,7 @@ class BBManager : public ObjectManagerBase
 public:
 	static constexpr int BB_NUM = 2; //BBの数
 	const wchar_t* lineBBTexPath = L"asset/texture/line.png";
-	const wchar_t* electricityBBTexPath = L"asset/texture/white.png";
+	const wchar_t* electricityBBTexPath = L"asset/texture/effect/bilibili.png";
 
 	inline static float BB_DURATION = 5.0f;
 
@@ -43,8 +44,8 @@ public:
 
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; //BB配列
-	std::vector<RenderData::RenderInfo> m_LineBBInfo;			//BBライン描画情報
-	std::vector<RenderData::RenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
+	std::vector<RenderInfo> m_LineBBInfo;			//BBライン描画情報
+	std::vector<RenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
 
 	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
 	FrameTimer m_frameTimer[BB_NUM];

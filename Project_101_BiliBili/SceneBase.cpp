@@ -4,15 +4,14 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 
-using namespace RenderData;
+
 
 //コンストラクタ
 SceneBase::SceneBase(float window_width, float window_height)
 {
 	m_pCamera = new Camera(window_width, window_height);	//カメラ生成
 	m_pCollisionManager = new CollisionManager();			//衝突管理クラス生成
-
-
+	m_pEffectManager = new EffectManager();				//エフェクト管理クラス生成
 }
 
 //初期化
@@ -30,6 +29,9 @@ void SceneBase::Initialize(
 
 	//初期化
 	m_pCollisionManager->Initialize(pTextureManager, pMeshManager);
+
+	//エフェクト管理クラス初期化
+	m_pEffectManager->Initialize(pTextureManager, pMeshManager);
 
 	//シーン固有の初期化呼び出し
 	InitializeOverride(pInputManager, pTextureManager, pMeshManager);
@@ -58,6 +60,9 @@ void SceneBase::Update()
 
 	//衝突後処理
 	ResolveCollisions();
+
+	//エフェクト管理クラス更新
+	m_pEffectManager->Update();
 }
 
 //描画
@@ -65,6 +70,8 @@ void SceneBase::Draw(Renderer& pRenderer)
 {
 	//シーン固有の描画呼び出し
 	DrawOverride(pRenderer);
+
+	m_pEffectManager->SubmitDraws(pRenderer);
 
 #ifdef _DEBUG
 	if (m_drawColliders)
@@ -81,6 +88,7 @@ void SceneBase::Finalize()
 	//シーン固有の終了呼び出し
 	FinalizeOverride();
 	m_pCollisionManager->ClearColliders();
+	m_pEffectManager->Finalize();
 }
 
 //カメラ情報取得

@@ -43,7 +43,7 @@ void UIManagerBase::SubmitDraws(Renderer& renderer)
 		root->UpdateWorldTransform(identity);	//ルートUIオブジェクトのワールド変換情報を単位変換に設定
 	}
 
-	std::vector<RenderData::RenderInfo> renderInfos;	//描画情報構造体配列
+	std::vector<RenderInfo> renderInfos;	//描画情報構造体配列
 	for(auto& root : m_roots) 
 	{
 		root->CollectRenderInfos(renderInfos);	//ルートUIオブジェクトの描画情報構造体配列を収集
@@ -63,7 +63,7 @@ void UIManagerBase::Finalize()
 }
 
 //描画情報をシーンに提出
-void UIManagerBase::SubmitRenderInfo(Renderer& renderer, std::vector<RenderData::RenderInfo>& info)
+void UIManagerBase::SubmitRenderInfo(Renderer& renderer, std::vector<RenderInfo>& info)
 {
 	for(auto& renderInfo : info) 
 	{

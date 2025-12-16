@@ -32,6 +32,10 @@ public:
 	void SetInputLayout(const D3D12_INPUT_LAYOUT_DESC& inputLayout);	//入力レイアウトを設定
 	void SetRootSignature(ID3D12RootSignature* pRootSignature);			//ルートシグネチャを設定
 	void SetVertexShader(const std::wstring& filename);					//頂点シェーダーを設定
+	void SetVertexShader(												//頂点シェーダーを設定（エントリーポイント指定版）
+		const std::wstring& filename,	//シェーダーファイル名
+		const std::string& entryPoint	//エントリーポイント名
+	);
 	void SetPixelShader(const std::wstring& filename);					//ピクセルシェーダーを設定
 	void SetPixelShader(												//ピクセルシェーダーを設定（エントリーポイント指定版）
 		const std::wstring& filename,	//シェーダーファイル名

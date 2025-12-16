@@ -9,7 +9,7 @@ class ElectricityBB : public ObjectBase
 {
 public:
 	ElectricityBB(	//コンストラクタ
-		MeshData::MESH_TYPE meshType,			//メッシュタイプ
+		MESH_TYPE meshType,			//メッシュタイプ
 		DirectX::XMFLOAT3 position,				//座標
 		DirectX::XMFLOAT3 rotation,				//回転
 		DirectX::XMFLOAT3 scale,				//スケール
@@ -29,10 +29,8 @@ public:
 			velocity,
 			isActive,
 			OBJECT_TAG::BB_ELECTRICITY,
-			colliderType,
-			CollisionData::COLLISION_LAYER::BB_ELECTRICITY,
-			collisionBoxSize,
-			collisionIsTrigger)
+			CollisionData::COLLISION_LAYER::BB_ELECTRICITY
+		)
 	{
 	}
 	~ElectricityBB() {}	//デストラクタ
@@ -44,6 +42,8 @@ public:
 	//ゲッター
 	bool HasHitPlayer() const;	//プレイヤーに当たったかどうか取得
 	int GetHitNum() const;		//当たった回数取得
+	DirectX::XMFLOAT3 GetStartPos() const { return m_startPos; } //開始地点取得
+	DirectX::XMFLOAT3 GetEndPos() const { return m_endPos; }     //終了地点取得
 
 	//セッター
 	void SetStartPos(DirectX::XMFLOAT3 position);

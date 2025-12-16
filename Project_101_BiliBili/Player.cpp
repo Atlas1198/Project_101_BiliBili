@@ -2,9 +2,33 @@
 #include <DirectXMath.h>
 #include "App.h"
 #include "EventManager.h"
+#include "EffectData.h"
 
 using namespace DirectX;
 using namespace CollisionData;
+
+Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, uint32_t id, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
+	: ObjectBase(
+		meshType,
+		position,
+		rotation,
+		scale,
+		velocity,
+		isActive,
+		OBJECT_TAG::PLAYER,
+		CollisionData::COLLISION_LAYER::PLAYER,
+		collisionBoxSize
+	),
+	id(id)
+
+{
+	m_pColliderSet->AddCollider(
+		ColliderType::SPHERE,
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
+	);
+}
 
 //èâä˙âª
 void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManager)
@@ -59,6 +83,8 @@ void Player::UpdateOverride()
 		if (m_position.z > 18.5f) m_position.z = -8.1f;
 
 		Shoot();
+		//Rotate();
+		//Scale();
 	}
 }
  
@@ -66,7 +92,7 @@ void Player::UpdateOverride()
 void Player::ResolveCollisionsOverride()
 {
 	XMFLOAT3 pushVector{};	//âüÇµèoÇµÉxÉNÉgÉã
-	auto& infos = m_pCollider->GetCollisionInfos();
+	auto& infos = m_pColliderSet->GetCollisionInfos();
 
 	pushVector = GetPushOutVector(
 		infos,	//è’ìÀèÓïÒîzóÒ
@@ -85,7 +111,7 @@ void Player::ResolveCollisionsOverride()
 
 	for (auto& info : infos)
 	{
-		if (info.opponent->GetOwner()->GetTag() == OBJECT_TAG::GROUND)
+		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
 			//ínñ Ç…ê⁄êGÇµÇƒÇ¢ÇÈèÍçáÇÕYç¿ïWÇï‚ê≥
 			m_velocity.y = 0.0f;
@@ -250,33 +276,33 @@ void Player::Shoot()
 //âÒì]
 void Player::Rotate()
 {
-	//if(m_pInputInfo->left.down)
-	//{
-	//	//ç∂âÒì]
-	//	m_rotation.y -= ROTATE_SPEED;
-	//}
-	//if(m_pInputInfo->right.down)
-	//{
-	//	//âEâÒì]
-	//	m_rotation.y += ROTATE_SPEED;
-	//}
+	if(m_pInputInfo->key.left.down)
+	{
+		//ç∂âÒì]
+		m_rotation.y -= ROTATE_SPEED;
+	}
+	if(m_pInputInfo->key.right.down)
+	{
+		//âEâÒì]
+		m_rotation.y += ROTATE_SPEED;
+	}
 }
 
 //ÉXÉPÅ[Éã
 void Player::Scale()
 {
-	//if (m_pInputInfo->up.down)
-	//{
-	//	//ägëÂ
-	//	//m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
-	//	m_scale.y = (std::min)(m_scale.y + 0.008f, 5.0f);
-	//	//m_scale.z = (std::min)(m_scale.z + 0.008f, 5.0f);
-	//}
-	//if (m_pInputInfo->down.down)
-	//{
-	//	//èkè¨
-	//	//m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
-	//	m_scale.y = (std::max)(m_scale.y - 0.008f, 0.005f);
-	//	//m_scale.z = (std::max)(m_scale.z - 0.008f, 0.005f);
-	//}
+	if (m_pInputInfo->key.up.down)
+	{
+		//ägëÂ
+		m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
+		m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
+		m_scale.z = (std::min)(m_scale.z + 0.008f, 5.0f);
+	}
+	if (m_pInputInfo->key.down.down)
+	{
+		//èkè¨
+		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
+		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
+		m_scale.z = (std::max)(m_scale.z - 0.008f, 0.005f);
+	}
 }

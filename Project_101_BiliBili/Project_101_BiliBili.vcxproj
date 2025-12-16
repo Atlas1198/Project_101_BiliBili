@@ -153,6 +153,7 @@
     <ClInclude Include="BulletManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="ColliderSet.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="ConstantBuffer.h" />
@@ -160,6 +161,9 @@
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="DirectXTex.h" />
+    <ClInclude Include="EffectBase.h" />
+    <ClInclude Include="EffectData.h" />
+    <ClInclude Include="EffectManager.h" />
     <ClInclude Include="ElectricityBB.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EventManager.h" />
@@ -177,6 +181,7 @@
     <ClInclude Include="SelectionScene.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="TitleUIManager.h" />
+    <ClInclude Include="RenderData.h" />
     <ClInclude Include="ToolbarControl.h" />
     <ClInclude Include="ObjectBase.h" />
     <ClInclude Include="ObjectManagerBase.h" />
@@ -219,10 +224,14 @@
     <ClCompile Include="BulletManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="ColliderSet.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DatabaseManager.cpp" />
+    <ClCompile Include="EffectBase.cpp" />
+    <ClCompile Include="EffectData.cpp" />
+    <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="ElectricityBB.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EventManager.cpp" />
@@ -247,6 +256,7 @@
     <ClCompile Include="PipelineState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="RenderData.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RootSignature.cpp" />
     <ClCompile Include="SceneBase.cpp" />

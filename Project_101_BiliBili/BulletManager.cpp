@@ -2,6 +2,9 @@
 #include "CollisionManager.h"
 #include "Renderer.h"
 #include "EventManager.h"
+#include "EffectData.h"
+
+using namespace DirectX;
 
 void BulletManager::FireBullet(
     const DirectX::XMFLOAT3& position,
@@ -24,7 +27,7 @@ void BulletManager::FireBullet(
     auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
-        m_pCollisionManager->RegisterCollider(bullet->GetCollider());
+		bullet->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
     }
     m_bullets.push_back(std::move(bullet));
 }
@@ -120,11 +123,12 @@ void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManage
 {
     //描画情報生成関数を呼び出し、描画情報を作成
     CreateRenderInfo(
-        textureManager,					//テクスチャマネージャへの参照
-        meshManager,					//メッシュマネージャへの参照
-        &m_bulletInfo,					//描画情報構造体配列へのポインタ
-        MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
-        BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-        texPath							//テクスチャのファイル名
+        textureManager,					    //テクスチャマネージャへの参照
+        meshManager,					    //メッシュマネージャへの参照
+        &m_bulletInfo,					    //描画情報構造体配列へのポインタ
+        MESH_TYPE::QUAD,	                //メッシュタイプ
+        BLEND_MODE::BLEND_MASKED,		    //ブレンドモード
+        texPath,						    //テクスチャのファイル名
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
     );
 }

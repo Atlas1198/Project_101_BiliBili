@@ -7,7 +7,7 @@
 #include <random>
 
 using namespace DirectX;
-using namespace RenderData;
+
 
 //コンストラクタ
 ItemManager::ItemManager()
@@ -45,7 +45,7 @@ void ItemManager::SpawnItem()
 
 	m_pItems.push_back(
 		new Item(
-			MeshData::MESH_TYPE::QUAD,
+			MESH_TYPE::QUAD,
 			XMFLOAT3(xDist(gen), -4.0f, zDist(gen)),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
@@ -57,7 +57,7 @@ void ItemManager::SpawnItem()
 		)
 	);
 
-	SubmitColliders(*m_pCollisionManager, m_pItems.back()->GetCollider());
+	m_pItems.back()->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
 }
 
 //更新
@@ -109,12 +109,13 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 {
 	//描画情報生成関数を呼び出し、描画情報を作成
 	CreateRenderInfo(
-		textureManager,					//テクスチャマネージャへの参照
-		meshManager,					//メッシュマネージャへの参照
-		&m_itemInfo,					//描画情報構造体配列へのポインタ
-		MeshData::MESH_TYPE::QUAD,	//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		itemTexPath					//テクスチャのファイル名
+		textureManager,						//テクスチャマネージャへの参照
+		meshManager,						//メッシュマネージャへの参照
+		&m_itemInfo,						//描画情報構造体配列へのポインタ
+		MESH_TYPE::QUAD,					//メッシュタイプ
+		BLEND_MODE::BLEND_MASKED,			//ブレンドモード
+		itemTexPath,						//テクスチャのファイル名
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
 	);
 
 }
