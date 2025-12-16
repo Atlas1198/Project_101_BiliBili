@@ -27,7 +27,7 @@ void BulletManager::FireBullet(
     auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
-        m_pCollisionManager->RegisterCollider(bullet->GetCollider());
+		bullet->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
     }
     m_bullets.push_back(std::move(bullet));
 }

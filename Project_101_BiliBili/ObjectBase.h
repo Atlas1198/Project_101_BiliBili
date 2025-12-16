@@ -3,7 +3,7 @@
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <vector>
-#include "Collider.h"
+#include "ColliderSet.h"
 #include "SharedStruct.h"
 #include "RenderData.h"
 
@@ -13,20 +13,21 @@ class ObjectBase
 {
 public:	//公開関数
 	ObjectBase(	//コンストラクタ
-		MESH_TYPE meshType,					//メッシュタイプ
+		MESH_TYPE meshType,								//メッシュタイプ
 		DirectX::XMFLOAT3 position,						//座標
 		DirectX::XMFLOAT3 rotation,						//回転
 		DirectX::XMFLOAT3 scale,						//スケール
 		DirectX::XMFLOAT3 velocity,						//移動速度
 		bool isActive = true,							//アクティブフラグ
 		OBJECT_TAG tag = OBJECT_TAG::NONE,				//オブジェクトタグ
-		ColliderType colliderType =						//コライダータイプ
-			ColliderType::BOX,	
 		CollisionData::COLLISION_LAYER layer =
 			CollisionData::COLLISION_LAYER::DEFAULT,	//衝突レイヤー
-		DirectX::XMFLOAT3 collisionBoxSize =			//コライダーのボックスサイズ
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool collisionIsTrigger = false					//コライダーのトリガーフラグ
+		DirectX::XMFLOAT3 colliderSetScale = 
+			{1.0f, 1.0f, 1.0f},							//コライダーセットスケール
+		DirectX::XMFLOAT3 colliderSetOffsetPosition = 
+			{ 0.0f, 0.0f, 0.0f },						//コライダーセットオフセット位置
+		DirectX::XMFLOAT3 colliderSetOffsetRotation = 
+			{ 0.0f, 0.0f, 0.0f }						//コライダーセットオフセット回転
 	);
 	~ObjectBase();	//デストラクタ
 
@@ -45,8 +46,8 @@ public:	//公開関数
 	const DirectX::XMFLOAT4 GetColor() const;		//色RGBAの取得
 	const bool IsActive() const;					//アクティブかどうかを取得
 	const bool IsDrawn() const;						//描画フラグの取得
-	Collider* GetCollider() const;					//コライダーの取得
-	MESH_TYPE GetMeshType() const;		//メッシュタイプの取得
+	ColliderSet* GetColliderSet() const;			//コライダーの取得
+	MESH_TYPE GetMeshType() const;					//メッシュタイプの取得
 	OBJECT_TAG GetTag() const;						//オブジェクトタグの取得
 	const TexSplitInfo& GetTexSplitInfo() const;	//テクスチャ分割情報構造体取得関数
 
@@ -59,17 +60,17 @@ public:	//公開関数
 	void SetDrawn(bool isDrawn);					//描画フラグの設定
 
 protected:	//非公開メンバ変数
-	DirectX::XMFLOAT3 m_position{};						//位置
-	DirectX::XMFLOAT3 m_rotation{};						//回転
+	DirectX::XMFLOAT3 m_position{ 0.0f, 0.0f, 0.0f };	//位置
+	DirectX::XMFLOAT3 m_rotation{ 0.0f, 0.0f, 0.0f };	//回転
 	DirectX::XMFLOAT3 m_scale{ 1.0f,1.0f,1.0f };		//スケール
 	DirectX::XMFLOAT4 m_color{ 1.0f,1.0f,1.0f,1.0f };	//色RGBA
-	DirectX::XMFLOAT3 m_velocity{};						//移動速度
+	DirectX::XMFLOAT3 m_velocity{ 0.0f, 0.0f, 0.0f };	//移動速度
 	bool m_isActive = false;		//アクティブフラグ
 
 	MESH_TYPE m_meshType = MESH_TYPE::QUAD;	//メッシュタイプ
 	bool m_isDrawn = true;			//描画フラグ
 
-	Collider* m_pCollider = nullptr;	//コライダー
+	ColliderSet* m_pColliderSet = nullptr;	//コライダーセットへのポインタ
 	OBJECT_TAG m_tag = OBJECT_TAG::NONE; //オブジェクトタグ
 	TexSplitInfo m_texSplitInfo{}; //テクスチャ分割情報構造体
 

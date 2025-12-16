@@ -57,7 +57,7 @@ void ItemManager::SpawnItem()
 		)
 	);
 
-	SubmitColliders(*m_pCollisionManager, m_pItems.back()->GetCollider());
+	m_pItems.back()->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
 }
 
 //XV

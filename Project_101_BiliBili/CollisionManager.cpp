@@ -36,7 +36,7 @@ void CollisionManager::Initialize(
 //描画
 void CollisionManager::Draw(Renderer& renderer)
 {
-	for (auto& collider : m_pCollidersList)
+ 	for (auto& collider : m_pCollidersList)
 	{
 		if (!collider->isActive()) continue;
 
@@ -94,7 +94,7 @@ void CollisionManager::CheckColliders()
 	//所有者オブジェクトが非アクティブの場合、コライダーも非アクティブに設定
 	for(auto& c : m_pCollidersList)
 	{
-		if (!c->GetOwner()->IsActive())
+		if (!c->GetParentSet()->GetOwner()->IsActive())
 		{
 			c->SetActive(false);
 		}
@@ -113,14 +113,13 @@ void CollisionManager::CheckColliders()
 
 //描画要求をシーンに提出
 void CollisionManager::SubmitDraw(
-	Renderer& renderer,							//シーンの参照
-	Collider& collider,					//コライダー配列
+	Renderer& renderer,				//シーンの参照
+	Collider& collider,				//コライダー配列
 	std::vector<RenderInfo>& info	//描画情報構造体
 )
 {
 	std::vector<RenderInfo> submitInfos;		//Rendererへの提出用描画情報構造体配列
 	submitInfos.reserve(info.size());			//容量確保
-	ObjectBase& object = *collider.GetOwner();	//コライダー所有者オブジェクトの参照取得
 
 	XMFLOAT4 color;	//描画色
 	if (collider.isDetected())
@@ -173,8 +172,8 @@ void CollisionManager::SubmitDraw(
 	//位置とブレンドモードを設定
 	for (int i = 0; i < submitInfos.size(); i++)
 	{
-		submitInfos[i].position = object.GetPosition();
-		submitInfos[i].scale = object.GetScale();
+		submitInfos[i].position = collider.GetCurrentCenter();
+		submitInfos[i].scale = collider.GetCurrentScale();
 		submitInfos[i].common.blendMode = BLEND_TRANSPARENT;
 	}
 
@@ -192,7 +191,7 @@ void CollisionManager::CheckCollisions()
 	for (auto& collider : m_pCollidersList)
 	{
 		//各コライダーの衝突情報クリア
-		collider->GetOwner()->ClearCollisionInfos();
+		collider->GetParentSet()->ClearCollisionInfos();
 		//衝突検知フラグOFF
 		collider->SetDetected(false);
 	}

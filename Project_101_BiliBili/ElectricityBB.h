@@ -29,10 +29,8 @@ public:
 			velocity,
 			isActive,
 			OBJECT_TAG::BB_ELECTRICITY,
-			colliderType,
-			CollisionData::COLLISION_LAYER::BB_ELECTRICITY,
-			collisionBoxSize,
-			collisionIsTrigger)
+			CollisionData::COLLISION_LAYER::BB_ELECTRICITY
+		)
 	{
 	}
 	~ElectricityBB() {}	//デストラクタ

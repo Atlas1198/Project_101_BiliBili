@@ -7,7 +7,6 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 //#include <d3d12.h>
-#include "d3dx12.h"
 #include <DirectXMath.h>
 #include "DirectXTex.h"
 #include <vector>
@@ -109,15 +108,18 @@ enum class OBJECT_TAG
 
 //前方宣言
 class Collider;
+class ObjectBase;
+
 //衝突データ用名前空間
 namespace CollisionData
 {
 	//衝突状態列挙体
 	enum COLLISION_STATE
 	{
-		COLLISION_ENTER = 0,	//衝突開始
-		COLLISION_STAY,			//衝突継続
-		COLLISION_EXIT,			//衝突終了
+		COLLISION_NONE = 0,	//衝突なし
+		COLLISION_ENTER,	//衝突開始
+		COLLISION_STAY,		//衝突継続
+		COLLISION_EXIT,		//衝突終了
 	};
 
 	//コリジョンレイヤー列挙体
@@ -141,30 +143,42 @@ namespace CollisionData
 	//衝突情報構造体
 	struct CollisionInfo
 	{
-		Collider* opponent;						//衝突相手のコライダー
-		DirectX::XMFLOAT3 contactPoint;			//衝突点
-		DirectX::XMFLOAT3 contactNormal;		//衝突法線
-		DirectX::XMFLOAT3 penetrationDepth;		//貫入深さ
-		CollisionData::COLLISION_STATE state;	//衝突状態
+		Collider* opponent = nullptr;								//衝突相手のコライダー
+		DirectX::XMFLOAT3 contactPoint = {0.0f, 0.0f, 0.0f};		//衝突点
+		DirectX::XMFLOAT3 contactNormal = {0.0f, 0.0f, 0.0f};		//衝突法線
+		DirectX::XMFLOAT3 penetrationDepth = {0.0f, 0.0f, 0.0f};	//貫入深さ
+		CollisionData::COLLISION_STATE state = 
+			CollisionData::COLLISION_STATE::COLLISION_NONE;			//衝突状態
+	};
+
+	//オブジェクト衝突情報構造体
+	struct ObjectCollisionInfo
+	{
+		ObjectBase* opponent = nullptr;								//衝突相手のオブジェクト
+		DirectX::XMFLOAT3 contactPoint = {0.0f, 0.0f, 0.0f};		//衝突点
+		DirectX::XMFLOAT3 contactNormal = {0.0f, 0.0f, 0.0f};		//衝突法線
+		DirectX::XMFLOAT3 penetrationDepth = {0.0f, 0.0f, 0.0f};	//貫入深さ
+		CollisionData::COLLISION_STATE state = 
+			CollisionData::COLLISION_STATE::COLLISION_NONE;			//衝突状態
 	};
 
 	//レイキャストヒット情報構造体
 	struct RaycastHitInfo
 	{
-		Collider* opponent;				//衝突したコライダー
-		DirectX::XMFLOAT3 hitPoint;		//衝突点
-		DirectX::XMFLOAT3 hitNormal;	//衝突法線
-		float hitDistance;				//衝突距離
+		Collider* opponent = nullptr;						//衝突したコライダー
+		DirectX::XMFLOAT3 hitPoint = {0.0f, 0.0f, 0.0f};	//衝突点
+		DirectX::XMFLOAT3 hitNormal = {0.0f, 0.0f, 0.0f};	//衝突法線
+		float hitDistance = 0.0f;							//衝突距離
 	};
 
 	//レイキャストセグメント構造体
 	struct RaycastSegment
 	{
-		DirectX::XMFLOAT3 startPoint;			//始点
-		DirectX::XMFLOAT3 endPoint;				//終点
-		LayerMask layerMask;					//レイヤーマスク
-		COLLISION_LAYER layer;					//レイヤー
-		std::vector<RaycastHitInfo> hitInfos;	//ヒット情報配列
+		DirectX::XMFLOAT3 startPoint = {0.0f, 0.0f, 0.0f};	//始点
+		DirectX::XMFLOAT3 endPoint = {0.0f, 0.0f, 0.0f};	//終点
+		LayerMask layerMask = 0;							//レイヤーマスク
+		COLLISION_LAYER layer = COLLISION_LAYER::DEFAULT;	//レイヤー
+		std::vector<RaycastHitInfo> hitInfos;				//ヒット情報配列
 	};
 
 	//レイヤーをビットに変換する関数
@@ -178,7 +192,7 @@ namespace CollisionData
 
 	//貫入深さから押し出しベクトルを取得する関数
 	DirectX::XMFLOAT3 GetPushOutVector(
-		std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
+		std::vector<CollisionData::ObjectCollisionInfo>& infos,	//衝突情報配列
 		const std::initializer_list<OBJECT_TAG>& tagList	//対象タグリスト
 	);
 }

@@ -120,7 +120,7 @@ CollisionData::LayerMask CollisionData::MakeMask(std::initializer_list<COLLISION
 
 //貫入深さから押し出しベクトルを取得する関数
 DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
-	std::vector<CollisionData::CollisionInfo>& infos,	//衝突情報配列
+	std::vector<CollisionData::ObjectCollisionInfo>& infos,	//衝突情報配列
 	const std::initializer_list<OBJECT_TAG>& tagList	//押し出しベクトルを計算する対象のタグリスト
 )
 {
@@ -129,14 +129,14 @@ DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
 	XMFLOAT3 total{ 0,0,0 };	//最大押し出しベクトル
 	float epsilon = 0.0001f;	//誤差許容値
 
-	std::vector<CollisionData::CollisionInfo*> cands;	//衝突情報配列をループ
+	std::vector<CollisionData::ObjectCollisionInfo*> cands;	//衝突情報配列をループ
 
 	for (auto& info : infos)
 	{
 		//衝突終了は無視
 		if (info.state == CollisionData::COLLISION_STATE::COLLISION_EXIT) continue;
 
-		OBJECT_TAG opponentTag = info.opponent->GetOwner()->GetTag();	//衝突相手のタグ取得
+		OBJECT_TAG opponentTag = info.opponent->GetTag();	//衝突相手のタグ取得
 
 		//衝突相手のタグがリストに含まれているか確認
 		if (std::find(tagList.begin(), tagList.end(), opponentTag) == tagList.end()) continue;
@@ -149,7 +149,7 @@ DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
 
 	//貫入深さの大きい順にソート
 	std::sort(cands.begin(), cands.end(),
-		[](const CollisionData::CollisionInfo* a, const CollisionData::CollisionInfo* b)
+		[](const CollisionData::ObjectCollisionInfo* a, const CollisionData::ObjectCollisionInfo* b)
 		{
 			return LengthXMF3(a->penetrationDepth) > LengthXMF3(b->penetrationDepth);
 		}
@@ -176,9 +176,6 @@ DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
 
 			// 押し出し方向だけ取り出す
 			XMFLOAT3 dir = Normalize(mtv);   // 単位ベクトル
-
-			//押し出しベクトルの正規化
-			dir = Normalize(dir);
 
 			float resolved = (std::max)(0.0f, Dot(total, dir));	//既に押し出された分
 			float remain = depth - resolved;					//残りの押し出し分
