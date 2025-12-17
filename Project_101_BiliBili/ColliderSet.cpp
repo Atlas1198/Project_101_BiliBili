@@ -7,16 +7,16 @@ using namespace CollisionData;
 
 //コンストラクタ
 ColliderSet::ColliderSet(
-	ObjectBase* m_owner, 
+	ObjectBase* m_owner,
 	OBJECT_TAG ownerTag,
 	DirectX::XMFLOAT3 basePosition, DirectX::XMFLOAT3 baseScale, DirectX::XMFLOAT3 baseRotation,
 	CollisionData::COLLISION_LAYER layer,
 	bool enabled,
 	DirectX::XMFLOAT3 offsetPosition, DirectX::XMFLOAT3 offsetRotation,
 	bool isTrigger
-	)
-	: 
-	m_owner(m_owner), 
+)
+	:
+	m_owner(m_owner),
 	m_ownerTag(ownerTag),
 	m_basePosition(basePosition), m_baseScale(baseScale), m_baseRotation(baseRotation),
 	m_layer(layer),
@@ -31,7 +31,7 @@ ColliderSet::ColliderSet(
 //デストラクタ
 ColliderSet::~ColliderSet()
 {
-	for(auto& collider : m_colliders)
+	for (auto& collider : m_colliders)
 	{
 		delete collider;
 		collider = nullptr;
@@ -55,12 +55,20 @@ void ColliderSet::Update()
 	m_basePosition.y = ownerPosition.y + m_offsetPosition.y;
 	m_basePosition.z = ownerPosition.z + m_offsetPosition.z;
 
+	auto safeDiv = [](float a, float b) { return (fabs(b) < 1e-6f) ? 1.0f : (a / b); };
 
-	XMFLOAT3 newScale =
+	XMFLOAT3 scaleRatio =
 	{
-		(ownerScale.x - m_ownerBaseScale.x) * m_baseScale.x,
-		(ownerScale.y - m_ownerBaseScale.y) * m_baseScale.y,
-		(ownerScale.z - m_ownerBaseScale.z) * m_baseScale.z
+		safeDiv(ownerScale.x, m_ownerBaseScale.x),
+		safeDiv(ownerScale.y, m_ownerBaseScale.y),
+		safeDiv(ownerScale.z, m_ownerBaseScale.z)
+	};
+
+	XMFLOAT3 setScale =
+	{
+		m_baseScale.x * scaleRatio.x,
+		m_baseScale.y * scaleRatio.y,
+		m_baseScale.z * scaleRatio.z,
 	};
 
 	m_baseRotation.x = ownerRotation.x + m_offsetRotation.x;
@@ -68,11 +76,11 @@ void ColliderSet::Update()
 	m_baseRotation.z = ownerRotation.z + m_offsetRotation.z;
 
 	//コライダーの変換更新
-	for(auto& collider : m_colliders)
+	for (auto& collider : m_colliders)
 	{
 		collider->Update(
 			m_basePosition,
-			newScale,
+			setScale,
 			m_baseRotation
 		);
 	}
@@ -124,7 +132,7 @@ void ColliderSet::BuildObjectCollisionInfos()
 	//各コライダーの衝突情報を収集
 	for (auto& collider : m_colliders)
 	{
-		for(auto& info : collider->GetCollisionInfos())
+		for (auto& info : collider->GetCollisionInfos())
 		{
 			//衝突相手のオブジェクト取得
 			Collider* opponentCollider = info.opponent;
@@ -146,7 +154,7 @@ void ColliderSet::BuildObjectCollisionInfos()
 			}
 
 			//貫入深さが最大の情報を保持
-			if(LengthXMF3(info.penetrationDepth) > LengthXMF3(agg.penetrationDepth))
+			if (LengthXMF3(info.penetrationDepth) > LengthXMF3(agg.penetrationDepth))
 			{
 				agg.contactPoint = info.contactPoint;
 				agg.contactNormal = info.contactNormal;
@@ -155,19 +163,19 @@ void ColliderSet::BuildObjectCollisionInfos()
 
 			//衝突状態の優先度を決定するラムダ式
 			auto priority = [](COLLISION_STATE state) {
-					switch (state)
-					{
-					case COLLISION_STATE::COLLISION_STAY:
-						return 3;
-					case COLLISION_STATE::COLLISION_ENTER:
-						return 2;
-					case COLLISION_STATE::COLLISION_EXIT:
-						return 1;
-					default:
-						return 0;
-					}
-
+				switch (state)
+				{
+				case COLLISION_STATE::COLLISION_STAY:
+					return 3;
+				case COLLISION_STATE::COLLISION_ENTER:
+					return 2;
+				case COLLISION_STATE::COLLISION_EXIT:
+					return 1;
+				default:
 					return 0;
+				}
+
+				return 0;
 				};
 
 			//衝突状態の優先度が高いものを保持
@@ -193,7 +201,7 @@ void ColliderSet::SetActive(bool enabled)
 {
 	m_isActive = enabled;
 
-	for(auto& collider : m_colliders)
+	for (auto& collider : m_colliders)
 	{
 		collider->SetActive(enabled);
 	}
@@ -212,7 +220,7 @@ void ColliderSet::SetDeleteFlag(bool flag)
 void ColliderSet::ClearCollisionInfos()
 {
 	m_collisionInfos.clear();
-	for(auto& collider : m_colliders)
+	for (auto& collider : m_colliders)
 	{
 		collider->ClearInfos();
 	}

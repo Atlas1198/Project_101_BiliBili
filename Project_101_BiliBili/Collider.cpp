@@ -36,8 +36,8 @@ Collider::~Collider()
 
 //コライダー変換更新
 void Collider::Update(
-	DirectX::XMFLOAT3 ownerPosition, 
-	DirectX::XMFLOAT3 ownerScale, 
+	DirectX::XMFLOAT3 ownerPosition,
+	DirectX::XMFLOAT3 ownerScale,
 	DirectX::XMFLOAT3 ownerRotation)
 {
 	XMMATRIX ownerRotationMatrix = XMMatrixRotationRollPitchYaw(
@@ -55,7 +55,7 @@ void Collider::Update(
 	XMVECTOR worldCenterVec = XMVectorAdd(rotated, ownerPositionVec);
 	XMStoreFloat3(&m_currentCenter, worldCenterVec);
 
-	m_rotation = 
+	m_rotation =
 	{
 		ownerRotation.x + m_localRotation.x,
 		ownerRotation.y + m_localRotation.y,
@@ -289,9 +289,9 @@ void Collider::UpdateBoxCollider(DirectX::XMFLOAT3 ownerScale)
 	//スケール反映
 	m_currentBoxCollider.scale =
 	{
-		ownerScale.x + m_localScale.x,
-		ownerScale.y + m_localScale.y,
-		ownerScale.z + m_localScale.z
+		ownerScale.x * m_localScale.x,
+		ownerScale.y * m_localScale.y,
+		ownerScale.z * m_localScale.z
 	};
 
 	//コライダーサイズ更新
@@ -309,9 +309,9 @@ void Collider::UpdateSphereCollider(DirectX::XMFLOAT3 ownerScale)
 	//スケール反映
 	XMFLOAT3 scale =
 	{
-		ownerScale.x + m_localScale.x,
-		ownerScale.y + m_localScale.y,
-		ownerScale.z + m_localScale.z
+		ownerScale.x * m_localScale.x,
+		ownerScale.y * m_localScale.y,
+		ownerScale.z * m_localScale.z
 	};
 
 
@@ -329,11 +329,11 @@ void Collider::UpdateSphereCollider(DirectX::XMFLOAT3 ownerScale)
 void Collider::UpdateCapsuleCollider(DirectX::XMFLOAT3 ownerScale)
 {
 	//スケール反映
-	const XMFLOAT3 scale = 
+	const XMFLOAT3 scale =
 	{
-		ownerScale.x + m_localScale.x,
-		ownerScale.y + m_localScale.y,
-		ownerScale.z + m_localScale.z
+		ownerScale.x * m_localScale.x,
+		ownerScale.y * m_localScale.y,
+		ownerScale.z * m_localScale.z
 	};
 	const float diamiter =
 		(std::max)(scale.x, scale.z);		//直径(水平方向の最大値)
