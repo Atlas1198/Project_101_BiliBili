@@ -105,6 +105,15 @@ void Controller::UpdateTriggerState(ControllerState& cs, ControllerInputInfo& in
 	inputInfo.LEFT.trigger= IsButtonTriggered(XINPUT_GAMEPAD_DPAD_LEFT, current, previous);
 	inputInfo.RIGHT.trigger = IsButtonTriggered(XINPUT_GAMEPAD_DPAD_RIGHT, current, previous);
 
+	// 任意のボタンが押されたかどうかを判定
+	inputInfo.anyButton.trigger =
+		inputInfo.A.trigger || inputInfo.B.trigger || inputInfo.X.trigger || inputInfo.Y.trigger ||
+		inputInfo.START.trigger || inputInfo.BACK.trigger ||
+		inputInfo.LSHOULDER.trigger || inputInfo.RSHOULDER.trigger ||
+		inputInfo.LTHUMB.trigger || inputInfo.RTHUMB.trigger ||
+		inputInfo.UP.trigger || inputInfo.DOWN.trigger ||
+		inputInfo.LEFT.trigger || inputInfo.RIGHT.trigger;
+
 	// Note: スティックとトリガーはアナログ入力のため、
 	// `trigger` (押された瞬間) の概念を適用するのは一般的ではありません。
 	// 必要であれば、デッドゾーンを超えた瞬間をトリガーとみなすなどのカスタムロジックをここに追加できます。
@@ -134,6 +143,14 @@ void Controller::UpdateDownState(ControllerState& contState, ControllerInputInfo
 	inputInfo.DOWN.down = IsButtonDown(XINPUT_GAMEPAD_DPAD_DOWN, current, previous);
 	inputInfo.LEFT.down = IsButtonDown(XINPUT_GAMEPAD_DPAD_LEFT, current, previous);
 	inputInfo.RIGHT.down = IsButtonDown(XINPUT_GAMEPAD_DPAD_RIGHT, current, previous);
+
+	inputInfo.anyButton.down =
+		inputInfo.A.down || inputInfo.B.down || inputInfo.X.down || inputInfo.Y.down ||
+		inputInfo.START.down || inputInfo.BACK.down ||
+		inputInfo.LSHOULDER.down || inputInfo.RSHOULDER.down ||
+		inputInfo.LTHUMB.down || inputInfo.RTHUMB.down ||
+		inputInfo.UP.down || inputInfo.DOWN.down ||
+		inputInfo.LEFT.down || inputInfo.RIGHT.down;
 }
 
 // Update Button Up State
@@ -159,6 +176,14 @@ void Controller::UpdateUpState(ControllerState& contState, ControllerInputInfo& 
 	inputInfo.DOWN.up = IsButtonUp(XINPUT_GAMEPAD_DPAD_DOWN, current, previous);
 	inputInfo.LEFT.up = IsButtonUp(XINPUT_GAMEPAD_DPAD_LEFT, current, previous);
 	inputInfo.RIGHT.up = IsButtonUp(XINPUT_GAMEPAD_DPAD_RIGHT, current, previous);
+
+	inputInfo.anyButton.up =
+		inputInfo.A.up || inputInfo.B.up || inputInfo.X.up || inputInfo.Y.up ||
+		inputInfo.START.up || inputInfo.BACK.up ||
+		inputInfo.LSHOULDER.up || inputInfo.RSHOULDER.up ||
+		inputInfo.LTHUMB.up || inputInfo.RTHUMB.up ||
+		inputInfo.UP.up || inputInfo.DOWN.up ||
+		inputInfo.LEFT.up || inputInfo.RIGHT.up;
 }
 
 // Update Stick State

@@ -4,14 +4,12 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 
-
-
 //コンストラクタ
 SceneBase::SceneBase(float window_width, float window_height)
 {
 	m_pCamera = new Camera(window_width, window_height);	//カメラ生成
 	m_pCollisionManager = new CollisionManager();			//衝突管理クラス生成
-	m_pEffectManager = new EffectManager();				//エフェクト管理クラス生成
+	m_pEffectManager = new EffectManager();					//エフェクト管理クラス生成
 }
 
 //初期化

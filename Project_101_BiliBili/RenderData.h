@@ -63,30 +63,6 @@ struct EffectRenderInfo
 	DirectX::XMFLOAT2 size{};	//スケール
 };
 
-//UIエフェクト種類列挙体
-enum class UI_EFFECT
-{
-	NONE,
-	GRADIENT_WAVE,	//グラデーション波エフェクト
-};
-
-struct UI_EFFECT_DESC
-{
-	UI_EFFECT type = UI_EFFECT::NONE;	//エフェクト種類
-	DirectX::XMFLOAT4 color1{};		//エフェクト色1
-	DirectX::XMFLOAT4 color2{};		//エフェクト色2
-
-};
-
-//UI描画情報構造体
-struct UIRenderInfo
-{
-	CommonRenderDesc common;				//共通描画記述構造体
-	DirectX::XMFLOAT2 position{};			//座標
-	DirectX::XMFLOAT2 scale{};				//スケール
-	UI_EFFECT effect = UI_EFFECT::NONE;		//UIエフェクト種類
-};
-
 //=======================================================================================================
 //メッシュ・モデルデータ構造体
 //=======================================================================================================

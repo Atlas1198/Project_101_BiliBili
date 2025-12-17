@@ -125,8 +125,6 @@ void GameUIManager::FinalizeOverride()
 {
 }
 
-
-
 void GameUIManager::OnHPChanged(int teamID, float newHP)
 {
 	if (teamID == 0)

@@ -8,6 +8,7 @@ class InputManager;
 class TextureManager;
 class MeshManager;
 
+//エフェクト描画情報構造体セット
 struct EffectRenderSet
 {
 	std::vector<EffectRenderInfo> renderInfo;	//描画情報

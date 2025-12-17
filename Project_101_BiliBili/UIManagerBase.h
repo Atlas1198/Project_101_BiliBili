@@ -6,6 +6,7 @@
 #include <utility>
 #include "UIBase.h"
 #include "SharedStruct.h"
+#include "RenderData.h"
 
 // 前方宣言
 class Renderer;
@@ -46,5 +47,5 @@ protected:
 	);
 
 protected:
-	std::vector<std::unique_ptr<UIBase>> m_roots;	//ルートUIオブジェクト配列
+	std::vector<std::unique_ptr<UIBase>> m_roots;		//ルートUIオブジェクト配列
 };

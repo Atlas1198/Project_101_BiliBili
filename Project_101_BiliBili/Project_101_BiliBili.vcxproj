@@ -157,7 +157,9 @@
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="ControllerConnecter.h" />
     <ClInclude Include="ControllerScene.h" />
+    <ClInclude Include="ControllerUIManager.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="DirectXTex.h" />
@@ -224,6 +226,9 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="ControllerConnecter.cpp" />
+    <ClCompile Include="ControllerScene.cpp" />
+    <ClCompile Include="ControllerUIManager.cpp" />
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="EffectBase.cpp" />
     <ClCompile Include="EffectData.cpp" />
