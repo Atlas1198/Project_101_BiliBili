@@ -11,8 +11,14 @@
 class GameUIManager : public UIManagerBase
 {
 public:	//公開関数
-	GameUIManager() {};	//コンストラクタ
+	GameUIManager(
+		float screenWidth = 0.0f,
+		float screenHeight = 0.0f
+	) 
+		: UIManagerBase(screenWidth, screenHeight)
+	{};	//コンストラクタ
 	~GameUIManager();	//デストラクタ
+
 	//メイン処理関数
 	void InitializeOverride(							//初期化
 		TextureManager& textureManager,

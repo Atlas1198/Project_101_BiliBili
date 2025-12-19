@@ -221,7 +221,7 @@ void Renderer::BeginFrame(UINT backIndex)
 }
 
 //ワールド座標用描画リストに描画要求を追加
-void Renderer::SubmitToWorldList(const RenderInfo& item)
+void Renderer::SubmitToWorldList(const WorldRenderInfo& item)
 {
 	m_drawListWorld[item.common.blendMode].push_back(item);	//描画リストに描画要求を追加
 }
@@ -233,7 +233,7 @@ void Renderer::SubmitToEffectList(const EffectRenderInfo& item)
 }
 
 //スクリーン座標用描画リストに描画要求を追加
-void Renderer::SubmitToScreenList(const RenderInfo& item)
+void Renderer::SubmitToScreenList(const WorldRenderInfo& item)
 {
 	m_drawListScreen[item.common.blendMode].push_back(item);	//描画リストに描画要求を追加
 }
@@ -499,7 +499,7 @@ void Renderer::SortDrawListOpaque()
 	std::sort(
 		m_drawListWorld[BLEND_OPAQUE].begin(),	//ソート開始位置
 		m_drawListWorld[BLEND_OPAQUE].end(),	//ソート終了位置
-		[&](const RenderInfo& a, const RenderInfo& b)
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
@@ -508,7 +508,7 @@ void Renderer::SortDrawListOpaque()
 	std::sort(
 		m_drawListWorld[BLEND_MASKED].begin(),	//ソート開始位置
 		m_drawListWorld[BLEND_MASKED].end(),	//ソート終了位置
-		[&](const RenderInfo& a, const RenderInfo& b)
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
@@ -539,7 +539,7 @@ void Renderer::SortDrawListOpaque()
 	std::sort(
 		m_drawListScreen[BLEND_OPAQUE].begin(),	//ソート開始位置
 		m_drawListScreen[BLEND_OPAQUE].end(),	//ソート終了位置
-		[&](const RenderInfo& a, const RenderInfo& b)
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
@@ -548,7 +548,7 @@ void Renderer::SortDrawListOpaque()
 	std::sort(
 		m_drawListScreen[BLEND_MASKED].begin(),	//ソート開始位置
 		m_drawListScreen[BLEND_MASKED].end(),	//ソート終了位置
-		[&](const RenderInfo& a, const RenderInfo& b)
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
 		}
@@ -589,7 +589,7 @@ void Renderer::SortDrawListTransparent()
 	std::sort(
 		m_drawListWorld[BLEND_TRANSPARENT].begin(),
 		m_drawListWorld[BLEND_TRANSPARENT].end(),
-		[&](const RenderInfo& a, const RenderInfo& b)
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return depthFar(a.position, a.common.pMeshGPU) > depthFar(b.position, b.common.pMeshGPU);
 		}
@@ -609,7 +609,7 @@ void Renderer::SortDrawListTransparent()
 	std::sort(
 		m_drawListScreen[BLEND_TRANSPARENT].begin(),
 		m_drawListScreen[BLEND_TRANSPARENT].end(),
-		[&](const RenderInfo& a, const RenderInfo& b)
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return depthFar(a.position, a.common.pMeshGPU) > depthFar(b.position, b.common.pMeshGPU);
 		}
@@ -617,7 +617,7 @@ void Renderer::SortDrawListTransparent()
 }
 
 //ビルボード計算
-XMMATRIX Renderer::CalcBillBoard(const RenderInfo& info)
+XMMATRIX Renderer::CalcBillBoard(const WorldRenderInfo& info)
 {
 	XMVECTOR objPos = XMLoadFloat3(&info.position);
 

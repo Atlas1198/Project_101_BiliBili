@@ -6,9 +6,10 @@ UIImage::UIImage(
 	DirectX::XMFLOAT3 scale,
 	DirectX::XMFLOAT3 rotation,
 	UINT order,
-	const std::wstring& texturePath
+	const std::wstring& texturePath,
+	BLEND_MODE blendMode
 	)
-	: UIBase(position, scale, rotation, order),
+	: UIBase(position, scale, rotation, order, blendMode),
 	m_texturePath(texturePath)
 {
 }
@@ -35,11 +36,11 @@ void UIImage::PrepareRenderInfoOverride(TextureManager& textureManager, MeshMana
 
 	//描画情報生成関数を呼び出し、描画情報を作成
 	CreateRenderInfo(
-		textureManager,				//テクスチャマネージャへの参照
-		meshManager,				//メッシュマネージャへの参照
-		&m_renderInfos,				//描画情報構造体配列へのポインタ
-		MESH_TYPE::QUAD,	//メッシュタイプ
-		m_blendMode,				//ブレンドモード
-		m_texturePath.c_str()		//テクスチャのファイル名
+		textureManager,			//テクスチャマネージャへの参照
+		meshManager,			//メッシュマネージャへの参照
+		&m_renderInfos,			//描画情報構造体配列へのポインタ
+		MESH_TYPE::QUAD,		//メッシュタイプ
+		m_blendMode,			//ブレンドモード
+		m_texturePath.c_str()	//テクスチャのファイル名
 	);
 }

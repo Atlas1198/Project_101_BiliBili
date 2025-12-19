@@ -75,7 +75,7 @@ public:
 	void SubmitDraw(
 		Renderer& renderer,							//シーンの参照
 		Collider& collider,					//コライダー配列
-		std::vector <RenderInfo>& info	//描画情報構造体
+		std::vector <WorldRenderInfo>& info	//描画情報構造体
 	);
 
 	//衝突判定処理
@@ -102,9 +102,9 @@ private:
 	std::vector<CollisionPair> m_currentCollisionPairs;		//今回の衝突ペア配列
 	std::vector<CollisionPair> m_previousCollisionPairs;	//前回の衝突ペア配列
 
-	std::vector<RenderInfo> m_colliderRenderInfoBox;		//ボックスコライダー描画情報
-	std::vector<RenderInfo> m_colliderRenderInfoSphere;		//球コライダー描画情報
-	std::vector<RenderInfo> m_colliderRenderInfoCapsule;	//カプセルコライダー描画情報
+	std::vector<WorldRenderInfo> m_colliderRenderInfoBox;		//ボックスコライダー描画情報
+	std::vector<WorldRenderInfo> m_colliderRenderInfoSphere;		//球コライダー描画情報
+	std::vector<WorldRenderInfo> m_colliderRenderInfoCapsule;	//カプセルコライダー描画情報
 
 private:
 	//ChackCollisions()の補助関数

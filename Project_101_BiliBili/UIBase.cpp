@@ -4,12 +4,11 @@
 using namespace DirectX;
 
 //コンストラクタ
-UIBase::UIBase(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order)
+UIBase::UIBase(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order, BLEND_MODE blendMode)
+	: m_local{ position, scale, rotation },
+	m_order(order),
+	m_blendMode(blendMode)
 {
-	m_local.position = position;
-	m_local.scale = scale;
-	m_local.rotation = rotation;
-	m_order = order;
 }
 
 // 初期化
@@ -62,7 +61,7 @@ void UIBase::PrepareRenderInfo(
 }
 
 //描画情報構造体配列収集
-void UIBase::CollectRenderInfos(std::vector<RenderInfo>& out) const
+void UIBase::CollectRenderInfos(std::vector<WorldRenderInfo>& out) const
 {
 	if (!m_isActive) return;	//非アクティブなら何もしない
 	//自身の描画情報構造体配列を収集
@@ -70,7 +69,7 @@ void UIBase::CollectRenderInfos(std::vector<RenderInfo>& out) const
 	auto worldMatrix = GetMatrixFromTransform3D(m_world);	//ワールド行列を取得
 
 	for (const auto& renderInfo : m_renderInfos) {
-		RenderInfo renderInfoCopy = renderInfo;		//描画情報構造体をコピー
+		WorldRenderInfo renderInfoCopy = renderInfo;		//描画情報構造体をコピー
 		renderInfoCopy.world = worldMatrix;						//ワールド行列を設定
 		renderInfoCopy.common.color = m_color;							//色RGBAを設定
 		renderInfoCopy.common.uvRect = 

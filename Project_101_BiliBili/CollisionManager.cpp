@@ -11,55 +11,55 @@ using namespace DirectX;
 
 using namespace CollisionData;
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 CollisionManager::CollisionManager()
 {
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 CollisionManager::~CollisionManager()
 {
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void CollisionManager::Initialize(
-	TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-	MeshManager& meshManager		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	MeshManager& meshManager		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 )
 {
-	CreateColliderRenderInfo(	//ƒRƒ‰ƒCƒ_[•`‰æî•ñì¬
-		textureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		meshManager		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	CreateColliderRenderInfo(	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æç”»æƒ…å ±ä½œæˆ
+		textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		meshManager		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 	);
 }
 
-//•`‰æ
+//æç”»
 void CollisionManager::Draw(Renderer& renderer)
 {
  	for (auto& collider : m_pCollidersList)
 	{
 		if (!collider->isActive()) continue;
 
-		ColliderType type = collider->GetType();	//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒvæ“¾
+		ColliderType type = collider->GetType();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—å–å¾—
 
 		switch (type)
 		{
-		case ColliderType::BOX:		//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[
-			SubmitDraw(				//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+		case ColliderType::BOX:		//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+			SubmitDraw(				//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 				renderer,
 				*collider,
 				m_colliderRenderInfoBox
 			);
 			break;
-		case ColliderType::SPHERE:	//‹…ƒRƒ‰ƒCƒ_[
-			SubmitDraw(				//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+		case ColliderType::SPHERE:	//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+			SubmitDraw(				//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 				renderer,
 				*collider,
 				m_colliderRenderInfoSphere
 			);
 			break;
-		case ColliderType::CAPSULE:	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[
-			SubmitDraw(				//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+		case ColliderType::CAPSULE:	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+			SubmitDraw(				//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 				renderer,
 				*collider,
 				m_colliderRenderInfoCapsule
@@ -69,10 +69,10 @@ void CollisionManager::Draw(Renderer& renderer)
 	}
 }
 
-//nullptr‚É‚È‚Á‚Ä‚¢‚éƒRƒ‰ƒCƒ_[‚ğƒŠƒXƒg‚©‚çíœ
+//nullptrã«ãªã£ã¦ã„ã‚‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
 void CollisionManager::CheckColliders()
 {
-	//ƒRƒ‰ƒCƒ_[ƒŠƒXƒg‚ğ‘–¸‚µ‚ÄƒfƒŠ[ƒgƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚éƒRƒ‰ƒCƒ_[‚ğnullptr‚Éİ’è
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒªã‚¹ãƒˆã‚’èµ°æŸ»ã—ã¦ãƒ‡ãƒªãƒ¼ãƒˆãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ã‚‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’nullptrã«è¨­å®š
 	for (auto& c : m_pCollidersList)
 	{
 		if (c->deleteFlag())
@@ -81,7 +81,7 @@ void CollisionManager::CheckColliders()
 		}
 	}
 
-	//nullptr‚É‚È‚Á‚Ä‚¢‚éƒRƒ‰ƒCƒ_[‚ğƒŠƒXƒg‚©‚çíœ
+	//nullptrã«ãªã£ã¦ã„ã‚‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
 	m_pCollidersList.erase(
 		std::remove(
 			m_pCollidersList.begin(),
@@ -91,7 +91,7 @@ void CollisionManager::CheckColliders()
 		m_pCollidersList.end()
 	);
 
-	//Š—LÒƒIƒuƒWƒFƒNƒg‚ª”ñƒAƒNƒeƒBƒu‚Ìê‡AƒRƒ‰ƒCƒ_[‚à”ñƒAƒNƒeƒBƒu‚Éİ’è
+	//æ‰€æœ‰è€…ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒéã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã®å ´åˆã€ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚‚éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«è¨­å®š
 	for(auto& c : m_pCollidersList)
 	{
 		if (!c->GetParentSet()->GetOwner()->IsActive())
@@ -100,7 +100,7 @@ void CollisionManager::CheckColliders()
 		}
 	}
 
-	//‘O‰ñ‚ÌÕ“ËƒyƒAƒŠƒXƒg‚ğ‘–¸‚µ‚ÄƒfƒŠ[ƒgƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚éƒRƒ‰ƒCƒ_[‚ğŠÜ‚ŞƒyƒA‚ğíœ
+	//å‰å›ã®è¡çªãƒšã‚¢ãƒªã‚¹ãƒˆã‚’èµ°æŸ»ã—ã¦ãƒ‡ãƒªãƒ¼ãƒˆãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ã‚‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’å«ã‚€ãƒšã‚¢ã‚’å‰Šé™¤
 	for (auto it = m_previousCollisionPairs.begin(); it != m_previousCollisionPairs.end(); ) {
 		if (it->colliderA->deleteFlag() || it->colliderB->deleteFlag()) {
 			it = m_previousCollisionPairs.erase(it);
@@ -111,29 +111,29 @@ void CollisionManager::CheckColliders()
 	}
 }
 
-//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 void CollisionManager::SubmitDraw(
-	Renderer& renderer,				//ƒV[ƒ“‚ÌQÆ
-	Collider& collider,				//ƒRƒ‰ƒCƒ_[”z—ñ
-	std::vector<RenderInfo>& info	//•`‰æî•ñ\‘¢‘Ì
+	Renderer& renderer,							//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+	Collider& collider,					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼é…åˆ—
+	std::vector<WorldRenderInfo>& info	//æç”»æƒ…å ±æ§‹é€ ä½“
 )
 {
-	std::vector<RenderInfo> submitInfos;		//Renderer‚Ö‚Ì’ño—p•`‰æî•ñ\‘¢‘Ì”z—ñ
-	submitInfos.reserve(info.size());			//—e—ÊŠm•Û
+	std::vector<WorldRenderInfo> submitInfos;		//Rendererã¸ã®æå‡ºç”¨æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—
+	submitInfos.reserve(info.size());			//å®¹é‡ç¢ºä¿
 
-	XMFLOAT4 color;	//•`‰æF
+	XMFLOAT4 color;	//æç”»è‰²
 	if (collider.isDetected())
-	{//Õ“Ë(owner‚ÉÕ“Ëî•ñ‚ª‚ ‚é‚Æ‚«)‚ÍÔ
+	{//è¡çªæ™‚(ownerã«è¡çªæƒ…å ±ãŒã‚ã‚‹ã¨ã)ã¯èµ¤
 		color = DRAW_COLOR_DETECTED;
 	}
 	else
-	{//”ñÕ“Ë‚Í—Î
+	{//éè¡çªæ™‚ã¯ç·‘
 		color = DRAW_COLOR_DEFAULT;
 	}
 
 	if (collider.GetType() == ColliderType::CAPSULE)
-	{//ƒJƒvƒZƒ‹ƒƒbƒVƒ…‚Ìê‡(•¡”ƒƒbƒVƒ…‚É•ª‚©‚ê‚Ä‚¢‚é‚½‚ßŒÂ•Ê‚Éˆ—)
-		CapsuleVisualDesc desc{};	//ƒJƒvƒZƒ‹ƒƒbƒVƒ…‚Ì‹Lqƒf[ƒ^
+	{//ã‚«ãƒ—ã‚»ãƒ«ãƒ¡ãƒƒã‚·ãƒ¥ã®å ´åˆ(è¤‡æ•°ãƒ¡ãƒƒã‚·ãƒ¥ã«åˆ†ã‹ã‚Œã¦ã„ã‚‹ãŸã‚å€‹åˆ¥ã«å‡¦ç†)
+		CapsuleVisualDesc desc{};	//ã‚«ãƒ—ã‚»ãƒ«ãƒ¡ãƒƒã‚·ãƒ¥ã®è¨˜è¿°ãƒ‡ãƒ¼ã‚¿
 		float diamiter = (std::max)(collider.GetCurrentScale().x, collider.GetCurrentScale().z);
 		XMFLOAT3 scale =
 		{
@@ -142,26 +142,26 @@ void CollisionManager::SubmitDraw(
 			diamiter
 		};
 
-		//ƒJƒvƒZƒ‹ƒƒbƒVƒ…‚Ì‹Lqƒf[ƒ^İ’è
+		//ã‚«ãƒ—ã‚»ãƒ«ãƒ¡ãƒƒã‚·ãƒ¥ã®è¨˜è¿°ãƒ‡ãƒ¼ã‚¿è¨­å®š
 		AppendCapsuleRenderInfos(
-			desc,					//ƒJƒvƒZƒ‹•`‰æî•ñ‹Lqq
-			collider.GetCurrentCenter(),	//ˆÊ’u
-			scale,					//ƒXƒP[ƒ‹
-			collider.GetRotation(),	//‰ñ“]EulerŠp
-			color,					//F
-			info,					//“ü—ÍŒ³•`‰æî•ñ”z—ñ
-			submitInfos				//o—Íæ•`‰æî•ñ”z—ñ
+			desc,					//ã‚«ãƒ—ã‚»ãƒ«æç”»æƒ…å ±è¨˜è¿°å­
+			collider.GetCurrentCenter(),	//ä½ç½®
+			scale,					//ã‚¹ã‚±ãƒ¼ãƒ«
+			collider.GetRotation(),	//å›è»¢Eulerè§’
+			color,					//è‰²
+			info,					//å…¥åŠ›å…ƒæç”»æƒ…å ±é…åˆ—
+			submitInfos				//å‡ºåŠ›å…ˆæç”»æƒ…å ±é…åˆ—
 		);
 	}
 	else
-	{//‚»‚êˆÈŠO‚ÌƒƒbƒVƒ…‚Ìê‡
-		//•`‰æî•ñ\‘¢‘Ì”z—ñ‚ğ‚»‚Ì‚Ü‚Ü’ño—p”z—ñ‚ÉƒRƒs[
+	{//ãã‚Œä»¥å¤–ã®ãƒ¡ãƒƒã‚·ãƒ¥ã®å ´åˆ
+		//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã‚’ãã®ã¾ã¾æå‡ºç”¨é…åˆ—ã«ã‚³ãƒ”ãƒ¼
 		for (auto& i : info)
 		{
 			submitInfos.push_back(i);
 		}
 
-		//ƒ[ƒ‹ƒhs—ñ‚ÆF‚ğİ’è
+		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã¨è‰²ã‚’è¨­å®š
 		for (auto& i : submitInfos)
 		{
 			i.world = collider.GetWorldMatrix();
@@ -169,7 +169,7 @@ void CollisionManager::SubmitDraw(
 		}
 	}
 
-	//ˆÊ’u‚ÆƒuƒŒƒ“ƒhƒ‚[ƒh‚ğİ’è
+	//ä½ç½®ã¨ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®š
 	for (int i = 0; i < submitInfos.size(); i++)
 	{
 		submitInfos[i].position = collider.GetCurrentCenter();
@@ -177,61 +177,61 @@ void CollisionManager::SubmitDraw(
 		submitInfos[i].common.blendMode = BLEND_TRANSPARENT;
 	}
 
-	//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& i : submitInfos)
 	{
 		renderer.SubmitToWorldList(i);
 	}
 }
 
-//Õ“Ë”»’èˆ—
+//è¡çªåˆ¤å®šå‡¦ç†
 void CollisionManager::CheckCollisions()
 {
-	//ŠeƒRƒ‰ƒCƒ_[‚Ì‰Šú‰»
+	//å„ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®åˆæœŸåŒ–
 	for (auto& collider : m_pCollidersList)
 	{
-		//ŠeƒRƒ‰ƒCƒ_[‚ÌÕ“Ëî•ñƒNƒŠƒA
+		//å„ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®è¡çªæƒ…å ±ã‚¯ãƒªã‚¢
 		collider->GetParentSet()->ClearCollisionInfos();
-		//Õ“ËŒŸ’mƒtƒ‰ƒOOFF
+		//è¡çªæ¤œçŸ¥ãƒ•ãƒ©ã‚°OFF
 		collider->SetDetected(false);
 	}
 
-	//ƒuƒ[ƒhƒtƒF[ƒY
+	//ãƒ–ãƒ­ãƒ¼ãƒ‰ãƒ•ã‚§ãƒ¼ã‚º
 	BroadPhase();
-	//ƒiƒ[ƒtƒF[ƒY
+	//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚º
 	NarrowPhase();
 
-	//ƒiƒ[ƒtƒF[ƒY—p”z—ñƒNƒŠƒA
+	//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºç”¨é…åˆ—ã‚¯ãƒªã‚¢
 	m_pNarrowPhaseColliders.clear();
 
-	//Õ“ËƒXƒe[ƒgXV
+	//è¡çªã‚¹ãƒ†ãƒ¼ãƒˆæ›´æ–°
 	UpdateCollisionState();
 
-	//ŠeƒRƒ‰ƒCƒ_[‚Ì‘O‰ñó‘Ô‚ğ•Û‘¶
+	//å„ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®å‰å›çŠ¶æ…‹ã‚’ä¿å­˜
 	for (auto collider : m_pCollidersList)
 	{
 		collider->SetPreviousState();
 	}
 }
 
-//Õ“Ëó‘Ôƒ`ƒFƒbƒN
+//è¡çªçŠ¶æ…‹ãƒã‚§ãƒƒã‚¯
 void CollisionManager::CheckCollisionStates()
 {
-	//Õ“ËƒXƒe[ƒgXV
+	//è¡çªã‚¹ãƒ†ãƒ¼ãƒˆæ›´æ–°
 	UpdateCollisionState();
 }
 
-//ƒuƒ[ƒhƒtƒF[ƒY(Õ“Ë‰Â”\«‚Ì‚ ‚éƒRƒ‰ƒCƒ_[‚ği‚è‚Şˆ—)
-//AABB“¯m‚ÌŠÈˆÕ“–‚½‚è”»’è
-//“–‚½‚Á‚Ä‚¢‚é‰Â”\«‚Ì‚ ‚éƒRƒ‰ƒCƒ_[‚ğƒiƒ[ƒtƒF[ƒY—p”z—ñ‚É’Ç‰Á
+//ãƒ–ãƒ­ãƒ¼ãƒ‰ãƒ•ã‚§ãƒ¼ã‚º(è¡çªå¯èƒ½æ€§ã®ã‚ã‚‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’çµã‚Šè¾¼ã‚€å‡¦ç†)
+//AABBåŒå£«ã®ç°¡æ˜“å½“ãŸã‚Šåˆ¤å®š
+//å½“ãŸã£ã¦ã„ã‚‹å¯èƒ½æ€§ã®ã‚ã‚‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºç”¨é…åˆ—ã«è¿½åŠ 
 void CollisionManager::BroadPhase()
 {
 	for (int i = 0; i < m_pCollidersList.size(); i++)
 	{
 		for (int j = i + 1; j < m_pCollidersList.size(); j++)
 		{
-			Collider* colliderA = m_pCollidersList[i];	//ƒRƒ‰ƒCƒ_[A
-			Collider* colliderB = m_pCollidersList[j];	//ƒRƒ‰ƒCƒ_[B
+			Collider* colliderA = m_pCollidersList[i];	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+			Collider* colliderB = m_pCollidersList[j];	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 
 			//active check
 			if (!colliderA->isActive() || !colliderB->isActive())
@@ -239,86 +239,86 @@ void CollisionManager::BroadPhase()
 				continue;	//when not active, skip
 			}
 
-			//ƒŒƒCƒ„[ƒ`ƒFƒbƒN
+			//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚§ãƒƒã‚¯
 			if (!CheckLayer(
-				colliderA,	//ƒRƒ‰ƒCƒ_[A
-				colliderB	//ƒRƒ‰ƒCƒ_[B
+				colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+				colliderB	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 			))
 			{
-				continue;	//Õ“Ë‚µ‚È‚¢ê‡‚ÍƒXƒLƒbƒv
+				continue;	//è¡çªã—ãªã„å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—
 			}
 
-			//AABB“¯m‚Ì“–‚½‚è”»’è
+			//AABBåŒå£«ã®å½“ãŸã‚Šåˆ¤å®š
 			bool isCollided = CollisionAABB(
-				colliderA,	//ƒRƒ‰ƒCƒ_[A
-				colliderB	//ƒRƒ‰ƒCƒ_[B
+				colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+				colliderB	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 			);
 
-			//Õ“Ë‚Ì‰Â”\«‚ ‚è
+			//è¡çªã®å¯èƒ½æ€§ã‚ã‚Š
 			if (isCollided)
 			{
-				SendNarrowPhase(	//ƒiƒ[ƒtƒF[ƒY—p”z—ñ‚ÉÕ“ËƒyƒA‚ğ’Ç‰Á
-					colliderA,	//ƒRƒ‰ƒCƒ_[A
-					colliderB	//ƒRƒ‰ƒCƒ_[B
+				SendNarrowPhase(	//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºç”¨é…åˆ—ã«è¡çªãƒšã‚¢ã‚’è¿½åŠ 
+					colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+					colliderB	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 				);
 			}
 		}
 	}
 }
 
-//ƒiƒ[ƒtƒF[ƒY
+//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚º
 void CollisionManager::NarrowPhase()
 {
 	for (int i = 0; i < m_pNarrowPhaseColliders.size(); i++)
 	{
-		//ƒRƒ‰ƒCƒ_[‚Ìæ“¾
+		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®å–å¾—
 		Collider* colliderA = m_pNarrowPhaseColliders[i].colliderA;
 		Collider* colliderB = m_pNarrowPhaseColliders[i].colliderB;
 
-		ContactResult result;	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+		ContactResult result;	//è¡çªçµæœæ§‹é€ ä½“
 
-		//ƒiƒ[ƒtƒF[ƒY‚ÌÕ“Ë”»’è
+		//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºã®è¡çªåˆ¤å®š
 		result = NarrowPhaseCollision(colliderA, colliderB);
 
-		//Õ“Ë‚µ‚Ä‚¢‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+		//è¡çªã—ã¦ã„ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 		if (!result.isCollided) continue;
 
-		//–@üŒü‚«‚Ìƒ`ƒFƒbƒN
+		//æ³•ç·šå‘ãã®ãƒã‚§ãƒƒã‚¯
 		OrientNormalAToB(
-			colliderA,	//ƒRƒ‰ƒCƒ_[A
-			colliderB,	//ƒRƒ‰ƒCƒ_[B
-			result		//Õ“ËŒ‹‰Ê\‘¢‘Ì
+			colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+			colliderB,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
+			result		//è¡çªçµæœæ§‹é€ ä½“
 		);
 
-		//Õ“Ëî•ñ‚Ì“o˜^
+		//è¡çªæƒ…å ±ã®ç™»éŒ²
 		PushCollisionInfo(
-			colliderA,			//ƒRƒ‰ƒCƒ_[A
-			colliderB,			//ƒRƒ‰ƒCƒ_[B
-			result				//Õ“ËŒ‹‰Ê\‘¢‘Ì
+			colliderA,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+			colliderB,			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
+			result				//è¡çªçµæœæ§‹é€ ä½“
 		);
 
-		//¡‰ñ‚ÌÕ“ËƒyƒA”z—ñ‚É’Ç‰Á
+		//ä»Šå›ã®è¡çªãƒšã‚¢é…åˆ—ã«è¿½åŠ 
 		RegisterCollisionPair(colliderA, colliderB);
 	}
 }
 
-//ƒiƒ[ƒtƒF[ƒY‚ÌÕ“Ë”»’è
+//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collider* colliderB)
 {
-	//CCD‚Ì•K—v«ƒ`ƒFƒbƒN
+	//CCDã®å¿…è¦æ€§ãƒã‚§ãƒƒã‚¯
 	bool ccd = NeedsCCD(colliderA) || NeedsCCD(colliderB);
 
-	//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv‚Ìæ“¾
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—ã®å–å¾—
 	ColliderType typeA = colliderA->GetType();
 	ColliderType typeB = colliderB->GetType();
 
-	//CCD‚ª•K—v‚Èê‡
+	//CCDãŒå¿…è¦ãªå ´åˆ
 	if (ccd)
 	{
-		//ƒ{ƒbƒNƒX‘ÎƒJƒvƒZƒ‹‚Ì‚İCCD‘Î‰
+		//ãƒœãƒƒã‚¯ã‚¹å¯¾ã‚«ãƒ—ã‚»ãƒ«ã®ã¿CCDå¯¾å¿œ
 		if ((typeA == ColliderType::BOX && typeB == ColliderType::CAPSULE) ||
 			(typeA == ColliderType::CAPSULE && typeB == ColliderType::BOX))
-		{//ƒ{ƒbƒNƒX‘ÎƒJƒvƒZƒ‹
+		{//ãƒœãƒƒã‚¯ã‚¹å¯¾ã‚«ãƒ—ã‚»ãƒ«
 			if (typeA == ColliderType::BOX)
 			{
 				return CollisionBoxToCapsuleCCD(colliderA, colliderB);
@@ -330,22 +330,22 @@ ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collid
 		}
 	}
 
-	//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv‚É‰‚¶‚½Õ“Ë”»’èŠÖ”‚ÌŒÄ‚Ño‚µ
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—ã«å¿œã˜ãŸè¡çªåˆ¤å®šé–¢æ•°ã®å‘¼ã³å‡ºã—
 	if (typeA == ColliderType::BOX && typeB == ColliderType::BOX)
-	{//ƒ{ƒbƒNƒX‘Îƒ{ƒbƒNƒX
+	{//ãƒœãƒƒã‚¯ã‚¹å¯¾ãƒœãƒƒã‚¯ã‚¹
 		return CollisionBoxToBox(colliderA, colliderB);
 	}
 	else if (typeA == ColliderType::SPHERE && typeB == ColliderType::SPHERE)
-	{//‹…‘Î‹…
+	{//çƒå¯¾çƒ
 		return CollisionSphereToSphere(colliderA, colliderB);
 	}
 	else if (typeA == ColliderType::CAPSULE && typeB == ColliderType::CAPSULE)
-	{//ƒJƒvƒZƒ‹‘ÎƒJƒvƒZƒ‹
+	{//ã‚«ãƒ—ã‚»ãƒ«å¯¾ã‚«ãƒ—ã‚»ãƒ«
 		return CollisionCapsuleToCapsule(colliderA, colliderB);
 	}
 	else if ((typeA == ColliderType::BOX && typeB == ColliderType::SPHERE) ||
 		(typeA == ColliderType::SPHERE && typeB == ColliderType::BOX))
-	{//ƒ{ƒbƒNƒX‘Î‹…
+	{//ãƒœãƒƒã‚¯ã‚¹å¯¾çƒ
 		if (typeA == ColliderType::BOX)
 		{
 			return CollisionBoxToSphere(colliderA, colliderB);
@@ -357,7 +357,7 @@ ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collid
 	}
 	else if ((typeA == ColliderType::BOX && typeB == ColliderType::CAPSULE) ||
 		(typeA == ColliderType::CAPSULE && typeB == ColliderType::BOX))
-	{//ƒ{ƒbƒNƒX‘ÎƒJƒvƒZƒ‹
+	{//ãƒœãƒƒã‚¯ã‚¹å¯¾ã‚«ãƒ—ã‚»ãƒ«
 		if (typeA == ColliderType::BOX)
 		{
 			return CollisionBoxToCapsule(colliderA, colliderB);
@@ -369,7 +369,7 @@ ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collid
 	}
 	else if ((typeA == ColliderType::SPHERE && typeB == ColliderType::CAPSULE) ||
 		(typeA == ColliderType::CAPSULE && typeB == ColliderType::SPHERE))
-	{//‹…‘ÎƒJƒvƒZƒ‹
+	{//çƒå¯¾ã‚«ãƒ—ã‚»ãƒ«
 		if (typeA == ColliderType::SPHERE)
 		{
 			return CollisionSphereToCapsule(colliderA, colliderB);
@@ -380,65 +380,65 @@ ContactResult CollisionManager::NarrowPhaseCollision(Collider* colliderA, Collid
 		}
 	}
 
-	return ContactResult{}; //Õ“Ë‚µ‚È‚¢ê‡
+	return ContactResult{}; //è¡çªã—ãªã„å ´åˆ
 }
 
-//ƒŒƒCƒ„[ƒ`ƒFƒbƒN
+//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚§ãƒƒã‚¯
 bool CollisionManager::CheckLayer(
 	Collider* colliderA, 
 	Collider* colliderB
 )
 {
-	LayerMask bitA = LayerToBit(colliderA->GetLayer());	//ƒRƒ‰ƒCƒ_[A‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
-	LayerMask bitB = LayerToBit(colliderB->GetLayer());	//ƒRƒ‰ƒCƒ_[B‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
+	LayerMask bitA = LayerToBit(colliderA->GetLayer());	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
+	LayerMask bitB = LayerToBit(colliderB->GetLayer());	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
 
-	LayerMask maskA = colliderA->GetLayerMask();	//ƒRƒ‰ƒCƒ_[A‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
-	LayerMask maskB = colliderB->GetLayerMask();	//ƒRƒ‰ƒCƒ_[B‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
+	LayerMask maskA = colliderA->GetLayerMask();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
+	LayerMask maskB = colliderB->GetLayerMask();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
 
-	bool aWantsB = (maskA & bitB) != 0;	//ƒRƒ‰ƒCƒ_[A‚ªƒRƒ‰ƒCƒ_[B‚ÆÕ“Ë‚µ‚½‚¢‚©‚Ç‚¤‚©
-	bool bWantsA = (maskB & bitA) != 0;	//ƒRƒ‰ƒCƒ_[B‚ªƒRƒ‰ƒCƒ_[A‚ÆÕ“Ë‚µ‚½‚¢‚©‚Ç‚¤‚©
+	bool aWantsB = (maskA & bitB) != 0;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼AãŒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã¨è¡çªã—ãŸã„ã‹ã©ã†ã‹
+	bool bWantsA = (maskB & bitA) != 0;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼BãŒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã¨è¡çªã—ãŸã„ã‹ã©ã†ã‹
 
-	return aWantsB && bWantsA;	//Œİ‚¢‚ÉÕ“Ë‚µ‚½‚¢ê‡‚Ítrue‚ğ•Ô‚·
+	return aWantsB && bWantsA;	//äº’ã„ã«è¡çªã—ãŸã„å ´åˆã¯trueã‚’è¿”ã™
 }
 
-//Õ“ËƒyƒA‚ğ“o˜^
+//è¡çªãƒšã‚¢ã‚’ç™»éŒ²
 void CollisionManager::RegisterCollisionPair(Collider* colliderA, Collider* colliderB)
 {
 	m_currentCollisionPairs.push_back({ colliderA, colliderB });
 }
 
-//‘O‰ñ‚ÌÕ“ËƒyƒA‚Æ”äŠr‚µ‚ÄV‹KÕ“Ë‚©Œp‘±Õ“Ë‚©‚ğƒ`ƒFƒbƒN
+//å‰å›ã®è¡çªãƒšã‚¢ã¨æ¯”è¼ƒã—ã¦æ–°è¦è¡çªã‹ç¶™ç¶šè¡çªã‹ã‚’ãƒã‚§ãƒƒã‚¯
 void CollisionManager::UpdateCollisionState()
 {
-	//¡‰ñ‚ÌÕ“ËƒyƒA”z—ñ‚ğƒ‹[ƒv
+	//ä»Šå›ã®è¡çªãƒšã‚¢é…åˆ—ã‚’ãƒ«ãƒ¼ãƒ—
 	for (auto& pair : m_currentCollisionPairs)
 	{
-		//‘O‰ñ‚ÌÕ“ËƒyƒA”z—ñ‚É‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN
+		//å‰å›ã®è¡çªãƒšã‚¢é…åˆ—ã«å­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 		bool isExist = PairExistsinList(pair, m_previousCollisionPairs);
 
-		//Õ“Ëó‘Ô‚ğİ’è
+		//è¡çªçŠ¶æ…‹ã‚’è¨­å®š
 		auto state = isExist ? COLLISION_STATE::COLLISION_STAY : COLLISION_STATE::COLLISION_ENTER;
 
 		SetCollisionState(
-			pair.colliderA,	//ƒRƒ‰ƒCƒ_[A
-			pair.colliderB,	//ƒRƒ‰ƒCƒ_[B
-			state			//Õ“Ëó‘Ô
+			pair.colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+			pair.colliderB,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
+			state			//è¡çªçŠ¶æ…‹
 		);
 		SetCollisionState(
-			pair.colliderB,	//ƒRƒ‰ƒCƒ_[A
-			pair.colliderA,	//ƒRƒ‰ƒCƒ_[B
-			state			//Õ“Ëó‘Ô
+			pair.colliderB,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+			pair.colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
+			state			//è¡çªçŠ¶æ…‹
 		);
 	}
 
-	//‘O‰ñ‚ÌÕ“ËƒyƒA”z—ñ‚ğƒ‹[ƒv
+	//å‰å›ã®è¡çªãƒšã‚¢é…åˆ—ã‚’ãƒ«ãƒ¼ãƒ—
 	for (auto& pair : m_previousCollisionPairs)
 	{
-		//¡‰ñ‚ÌÕ“ËƒyƒA”z—ñ‚É‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN
+		//ä»Šå›ã®è¡çªãƒšã‚¢é…åˆ—ã«å­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 		bool isExist = PairExistsinList(pair, m_currentCollisionPairs);
 
 		if (!isExist)
-		{//Õ“ËI—¹
+		{//è¡çªçµ‚äº†
 			CollisionInfo infoA{};
 			infoA.opponent = pair.colliderB;
 			infoA.contactPoint = { 0,0,0 };
@@ -453,104 +453,104 @@ void CollisionManager::UpdateCollisionState()
 		}
 	}
 
-	//‘O‰ñ‚ÌÕ“ËƒyƒA”z—ñ‚ğ¡‰ñ‚ÌÕ“ËƒyƒA”z—ñ‚ÅXV
+	//å‰å›ã®è¡çªãƒšã‚¢é…åˆ—ã‚’ä»Šå›ã®è¡çªãƒšã‚¢é…åˆ—ã§æ›´æ–°
 	m_previousCollisionPairs = m_currentCollisionPairs;
 
-	//¡‰ñ‚ÌÕ“ËƒyƒA”z—ñƒNƒŠƒA
+	//ä»Šå›ã®è¡çªãƒšã‚¢é…åˆ—ã‚¯ãƒªã‚¢
 	m_currentCollisionPairs.clear();
 }
 
-//ƒRƒ‰ƒCƒ_[‚Ì“o˜^
+//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ç™»éŒ²
 void CollisionManager::RegisterCollider(Collider* collider)
 {
 	m_pCollidersList.push_back(collider);
 }
 
-//ƒRƒ‰ƒCƒ_[‚ÌƒNƒŠƒA
+//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ã‚¯ãƒªã‚¢
 void CollisionManager::ClearColliders()
 {
 	m_pCollidersList.clear();
 }
 
-//ƒRƒ‰ƒCƒ_[•`‰æî•ñì¬
+//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æç”»æƒ…å ±ä½œæˆ
 void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-	//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[‚Ì•`‰æî•ñì¬
+	//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®æç”»æƒ…å ±ä½œæˆ
 	m_colliderRenderInfoBox.clear();
 	CreateRenderInfo(
-		textureManager,				//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		meshManager,				//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		&m_colliderRenderInfoBox,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		MESH_TYPE::CUBE,	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_TRANSPARENT,			//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		texPath						//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,				//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		meshManager,				//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		&m_colliderRenderInfoBox,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::CUBE,	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_TRANSPARENT,			//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		texPath						//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	);
 
-	//‹…ƒRƒ‰ƒCƒ_[‚Ì•`‰æî•ñì¬
+	//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®æç”»æƒ…å ±ä½œæˆ
 	m_colliderRenderInfoSphere.clear();
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		&m_colliderRenderInfoSphere,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		MESH_TYPE::SPHERE,	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_TRANSPARENT,				//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		texPath							//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		&m_colliderRenderInfoSphere,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::SPHERE,	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_TRANSPARENT,				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		texPath							//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	);
 
-	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚Ì•`‰æî•ñì¬
+	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®æç”»æƒ…å ±ä½œæˆ
 	m_colliderRenderInfoCapsule.clear();
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		&m_colliderRenderInfoCapsule,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		MESH_TYPE::CAPSULE,	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_TRANSPARENT,				//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		texPath							//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		&m_colliderRenderInfoCapsule,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::CAPSULE,	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_TRANSPARENT,				//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		texPath							//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	);
 }
 
-//ƒŒƒCƒLƒƒƒXƒg
+//ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆ
 void CollisionManager::RaycastSegmentQuery(
-	CollisionData::RaycastSegment& ray	//ƒŒƒCî•ñ
+	CollisionData::RaycastSegment& ray	//ãƒ¬ã‚¤æƒ…å ±
 )
 {
-	ray.hitInfos.clear();	//ƒqƒbƒgî•ñ”z—ñƒNƒŠƒA
+	ray.hitInfos.clear();	//ãƒ’ãƒƒãƒˆæƒ…å ±é…åˆ—ã‚¯ãƒªã‚¢
 
 	for(auto& collider : m_pCollidersList)
 	{
-		//”ñƒAƒNƒeƒBƒu‚ÈƒRƒ‰ƒCƒ_[‚ÍƒXƒLƒbƒv
+		//éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã¯ã‚¹ã‚­ãƒƒãƒ—
 		if (!collider->isActive()) continue;
 		
-		//ƒŒƒCƒ„[ƒ`ƒFƒbƒN
+		//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚§ãƒƒã‚¯
 		if (!(CheckLayerRaycast(ray, collider))) continue;
 
-		RaycastHitInfo info{};	//ƒŒƒCƒLƒƒƒXƒgƒqƒbƒgî•ñ\‘¢‘Ì
-		bool hit = false;		//ƒqƒbƒgƒtƒ‰ƒO
+		RaycastHitInfo info{};	//ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆãƒ’ãƒƒãƒˆæƒ…å ±æ§‹é€ ä½“
+		bool hit = false;		//ãƒ’ãƒƒãƒˆãƒ•ãƒ©ã‚°
 
-		//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv‚É‰‚¶‚½ƒŒƒCƒLƒƒƒXƒgŠÖ”‚ÌŒÄ‚Ño‚µ
+		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—ã«å¿œã˜ãŸãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆé–¢æ•°ã®å‘¼ã³å‡ºã—
 		switch (collider->GetType())
 		{
-		case ColliderType::BOX:		//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[
+		case ColliderType::BOX:		//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 			hit = RaycastBox(
-				ray,		//ƒŒƒCî•ñ
-				collider,	//ƒRƒ‰ƒCƒ_[
-				info		//ƒqƒbƒgî•ñ
+				ray,		//ãƒ¬ã‚¤æƒ…å ±
+				collider,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+				info		//ãƒ’ãƒƒãƒˆæƒ…å ±
 			);
 			break;
 
-		case ColliderType::SPHERE:	//‹…ƒRƒ‰ƒCƒ_[
+		case ColliderType::SPHERE:	//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 			hit = RaycastSphere(
-				ray,		//ƒŒƒCî•ñ
-				collider,	//ƒRƒ‰ƒCƒ_[
-				info		//ƒqƒbƒgî•ñ
+				ray,		//ãƒ¬ã‚¤æƒ…å ±
+				collider,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+				info		//ãƒ’ãƒƒãƒˆæƒ…å ±
 			);
 			break;
 
-		case ColliderType::CAPSULE:	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[
+		case ColliderType::CAPSULE:	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 			hit = RaycastCapsule(
-				ray,		//ƒŒƒCî•ñ
-				collider,	//ƒRƒ‰ƒCƒ_[
-				info		//ƒqƒbƒgî•ñ
+				ray,		//ãƒ¬ã‚¤æƒ…å ±
+				collider,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+				info		//ãƒ’ãƒƒãƒˆæƒ…å ±
 			);
 			break;
 
@@ -558,56 +558,56 @@ void CollisionManager::RaycastSegmentQuery(
 			break;
 		}
 
-		if(hit) ray.hitInfos.push_back(info);	//ƒqƒbƒg‚Éƒqƒbƒgî•ñ”z—ñ‚É’Ç‰Á
+		if(hit) ray.hitInfos.push_back(info);	//ãƒ’ãƒƒãƒˆæ™‚ã«ãƒ’ãƒƒãƒˆæƒ…å ±é…åˆ—ã«è¿½åŠ 
 	}
 
-	//ƒqƒbƒgî•ñ”z—ñ‚ğ‹——£‚Åƒ\[ƒg
+	//ãƒ’ãƒƒãƒˆæƒ…å ±é…åˆ—ã‚’è·é›¢ã§ã‚½ãƒ¼ãƒˆ
 	std::sort(
 		ray.hitInfos.begin(),
 		ray.hitInfos.end(),
 		[](const RaycastHitInfo& a, const RaycastHitInfo& b) {
-			return a.hitDistance < b.hitDistance;	//‹——£‚ª‹ß‚¢‡‚Éƒ\[ƒg
+			return a.hitDistance < b.hitDistance;	//è·é›¢ãŒè¿‘ã„é †ã«ã‚½ãƒ¼ãƒˆ
 		}
 	);
 }
 
-//AABB‚ÌÕ“Ë”»’è
+//AABBã®è¡çªåˆ¤å®š
 bool CollisionManager::CollisionAABB(
-	Collider* colliderA,	//ƒRƒ‰ƒCƒ_[A
-	Collider* colliderB		//ƒRƒ‰ƒCƒ_[B
+	Collider* colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+	Collider* colliderB		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 )
 {
-	//AABB“¯m‚Ì“–‚½‚è”»’è
-	AABB aabbA = colliderA->GetSewptAABB();	//ƒRƒ‰ƒCƒ_[A‚ÌAABBæ“¾
-	AABB aabbB = colliderB->GetSewptAABB();	//ƒRƒ‰ƒCƒ_[B‚ÌAABBæ“¾
+	//AABBåŒå£«ã®å½“ãŸã‚Šåˆ¤å®š
+	AABB aabbA = colliderA->GetSewptAABB();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®AABBå–å¾—
+	AABB aabbB = colliderB->GetSewptAABB();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®AABBå–å¾—
 
-	//Õ“ËŒŸ’m
-	if (!(aabbA.min.x <= aabbB.max.x && aabbA.max.x >= aabbB.min.x)) return false;	//X²•ûŒü
-	if (!(aabbA.min.y <= aabbB.max.y && aabbA.max.y >= aabbB.min.y)) return false;	//Y²•ûŒü
-	if (!(aabbA.min.z <= aabbB.max.z && aabbA.max.z >= aabbB.min.z)) return false;	//Z²•ûŒü
+	//è¡çªæ¤œçŸ¥
+	if (!(aabbA.min.x <= aabbB.max.x && aabbA.max.x >= aabbB.min.x)) return false;	//Xè»¸æ–¹å‘
+	if (!(aabbA.min.y <= aabbB.max.y && aabbA.max.y >= aabbB.min.y)) return false;	//Yè»¸æ–¹å‘
+	if (!(aabbA.min.z <= aabbB.max.z && aabbA.max.z >= aabbB.min.z)) return false;	//Zè»¸æ–¹å‘
 
 	return true;
 }
 
-//ƒiƒ[ƒtƒF[ƒY—p”z—ñ‚ÉÕ“ËƒyƒA‚ğ’Ç‰Á
+//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºç”¨é…åˆ—ã«è¡çªãƒšã‚¢ã‚’è¿½åŠ 
 void CollisionManager::SendNarrowPhase(Collider* colliderA, Collider* colliderB)
 {
-	//ƒiƒ[ƒtƒF[ƒY—p”z—ñ‚É’Ç‰Á
-	CollisionPair pair;							//Õ“ËƒyƒA\‘¢‘Ì
-	pair.colliderA = colliderA;					//ƒRƒ‰ƒCƒ_[A
-	pair.colliderB = colliderB;					//ƒRƒ‰ƒCƒ_[B
-	m_pNarrowPhaseColliders.push_back(pair);	//ƒiƒ[ƒtƒF[ƒY—p”z—ñ‚É’Ç‰Á
+	//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºç”¨é…åˆ—ã«è¿½åŠ 
+	CollisionPair pair;							//è¡çªãƒšã‚¢æ§‹é€ ä½“
+	pair.colliderA = colliderA;					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+	pair.colliderB = colliderB;					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
+	m_pNarrowPhaseColliders.push_back(pair);	//ãƒŠãƒ­ãƒ¼ãƒ•ã‚§ãƒ¼ã‚ºç”¨é…åˆ—ã«è¿½åŠ 
 }
 
-//ƒRƒ‰ƒCƒ_[‚©‚çOBB‚ğì¬
+//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰OBBã‚’ä½œæˆ
 OBB CollisionManager::CreateOBB(Collider* collider, float alpha)
 {
-	OBB obb{};	//OBB\‘¢‘Ì
+	OBB obb{};	//OBBæ§‹é€ ä½“
 
-	//’†S
-	XMFLOAT3 currCenter = collider->GetCurrentCenter();		//¡‰ñ‚Ì’†SÀ•W
-	XMFLOAT3 prevCenter = collider->GetPreviousCenter();	//‘O‰ñ‚Ì’†SÀ•W
-	XMFLOAT3 center = LerpXMF3(prevCenter, currCenter, alpha);	//LERP•âŠÔ‚Å’†SÀ•W‚ğ‹‚ß‚é
+	//ä¸­å¿ƒ
+	XMFLOAT3 currCenter = collider->GetCurrentCenter();		//ä»Šå›ã®ä¸­å¿ƒåº§æ¨™
+	XMFLOAT3 prevCenter = collider->GetPreviousCenter();	//å‰å›ã®ä¸­å¿ƒåº§æ¨™
+	XMFLOAT3 center = LerpXMF3(prevCenter, currCenter, alpha);	//LERPè£œé–“ã§ä¸­å¿ƒåº§æ¨™ã‚’æ±‚ã‚ã‚‹
 	obb.center = XMVectorSet(
 		center.x,
 		center.y,
@@ -615,17 +615,17 @@ OBB CollisionManager::CreateOBB(Collider* collider, float alpha)
 		0.0f
 	);
 
-	//”¼•ª‚ÌƒTƒCƒY
-	XMFLOAT3 prevScale = collider->GetPreviousScale();	//‘O‰ñ‚ÌƒXƒP[ƒ‹
-	XMFLOAT3 currScale = collider->GetCurrentScale();	//¡‰ñ‚ÌƒXƒP[ƒ‹
-	auto scale = LerpXMF3(prevScale, currScale, alpha);	//LERP•âŠÔ‚ÅƒXƒP[ƒ‹‚ğ‹‚ß‚é
+	//åŠåˆ†ã®ã‚µã‚¤ã‚º
+	XMFLOAT3 prevScale = collider->GetPreviousScale();	//å‰å›ã®ã‚¹ã‚±ãƒ¼ãƒ«
+	XMFLOAT3 currScale = collider->GetCurrentScale();	//ä»Šå›ã®ã‚¹ã‚±ãƒ¼ãƒ«
+	auto scale = LerpXMF3(prevScale, currScale, alpha);	//LERPè£œé–“ã§ã‚¹ã‚±ãƒ¼ãƒ«ã‚’æ±‚ã‚ã‚‹
 	obb.halfSizes = XMFLOAT3(
 		scale.x * 0.5f,
 		scale.y * 0.5f,
 		scale.z * 0.5f
 	);
 
-	//Še²‚Ì•ûŒüƒxƒNƒgƒ‹(ƒ[ƒJƒ‹À•WŒn‚ÌŠî’êƒxƒNƒgƒ‹‚ğ‰ñ“]‚³‚¹‚Ä‹‚ß‚é)
+	//å„è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«(ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã®åŸºåº•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å›è»¢ã•ã›ã¦æ±‚ã‚ã‚‹)
 	auto rot = collider->GetRotation();
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(
 		XMConvertToRadians(rot.x),
@@ -633,7 +633,7 @@ OBB CollisionManager::CreateOBB(Collider* collider, float alpha)
 		XMConvertToRadians(rot.z)
 	);
 
-	//ƒ[ƒJƒ‹À•WŒn‚ÌŠî’êƒxƒNƒgƒ‹‚ğ‰ñ“]‚³‚¹‚ÄŠe²‚Ì•ûŒüƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	//ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã®åŸºåº•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å›è»¢ã•ã›ã¦å„è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
 	obb.axis[0] = XMVector3Normalize(XMVector3TransformNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), R));
 	obb.axis[1] = XMVector3Normalize(XMVector3TransformNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), R));
 	obb.axis[2] = XMVector3Normalize(XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), R));
@@ -641,135 +641,135 @@ OBB CollisionManager::CreateOBB(Collider* collider, float alpha)
 	return obb;
 }
 
-//ƒRƒ‰ƒCƒ_[‚©‚çƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚ğì¬
+//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚’ä½œæˆ
 CapsuleSegment CollisionManager::CreateCapsuleSegment(Collider* collider, float alpha)
 {
-	CapsuleSegment seg{};	//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg\‘¢‘Ì
-	const CapsuleCollider currCap = collider->GetCurrentCapsuleCollider(); //Œ»İ‚ÌƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[æ“¾
-	const CapsuleCollider prevCap = collider->GetPreviousCapsuleCollider(); //‘O‰ñ‚ÌƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[æ“¾
+	CapsuleSegment seg{};	//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ§‹é€ ä½“
+	const CapsuleCollider currCap = collider->GetCurrentCapsuleCollider(); //ç¾åœ¨ã®ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å–å¾—
+	const CapsuleCollider prevCap = collider->GetPreviousCapsuleCollider(); //å‰å›ã®ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å–å¾—
 
-	seg.radius = prevCap.radius + (currCap.radius - prevCap.radius) * alpha;					//LERP•âŠÔ‚Å”¼Œa‚ğ‹‚ß‚é
-	seg.pointA = LerpXMV(XMLoadFloat3(&prevCap.pointA), XMLoadFloat3(&currCap.pointA), alpha);	//’[“_Aİ’è
-	seg.pointB = LerpXMV(XMLoadFloat3(&prevCap.pointB), XMLoadFloat3(&currCap.pointB), alpha);	//’[“_Bİ’è
+	seg.radius = prevCap.radius + (currCap.radius - prevCap.radius) * alpha;					//LERPè£œé–“ã§åŠå¾„ã‚’æ±‚ã‚ã‚‹
+	seg.pointA = LerpXMV(XMLoadFloat3(&prevCap.pointA), XMLoadFloat3(&currCap.pointA), alpha);	//ç«¯ç‚¹Aè¨­å®š
+	seg.pointB = LerpXMV(XMLoadFloat3(&prevCap.pointB), XMLoadFloat3(&currCap.pointB), alpha);	//ç«¯ç‚¹Bè¨­å®š
 
 	return seg;
 }
 
-//˜A‘±Õ“ËŒŸ’m‚ª•K—v‚©‚Ç‚¤‚©‚Ì”»’è
+//é€£ç¶šè¡çªæ¤œçŸ¥ãŒå¿…è¦ã‹ã©ã†ã‹ã®åˆ¤å®š
 bool CollisionManager::NeedsCCD(Collider* collider)
 {
-	const XMFLOAT3& prevCenter = collider->GetPreviousCenter();	//‘O‰ñ‚Ì’†SÀ•W
-	const XMFLOAT3& currCenter = collider->GetCurrentCenter();	//¡‰ñ‚Ì’†SÀ•W
-	float distSq = LengthSqBetween(prevCenter, currCenter);			//ˆÚ“®‹——£‚Ì“ñæ
+	const XMFLOAT3& prevCenter = collider->GetPreviousCenter();	//å‰å›ã®ä¸­å¿ƒåº§æ¨™
+	const XMFLOAT3& currCenter = collider->GetCurrentCenter();	//ä»Šå›ã®ä¸­å¿ƒåº§æ¨™
+	float distSq = LengthSqBetween(prevCenter, currCenter);			//ç§»å‹•è·é›¢ã®äºŒä¹—
 
-	float thresh = 0.0f;	//è‡’l
-	ColliderType type = collider->GetType();	//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒvæ“¾
+	float thresh = 0.0f;	//é–¾å€¤
+	ColliderType type = collider->GetType();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—å–å¾—
 
-	float minExtent = 0.0f; //Å¬¡–@
+	float minExtent = 0.0f; //æœ€å°å¯¸æ³•
 
-	//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv‚É‰‚¶‚Äè‡’l‚ğİ’è
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—ã«å¿œã˜ã¦é–¾å€¤ã‚’è¨­å®š
 	switch (type)
 	{
-	case ColliderType::BOX:		//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[
+	case ColliderType::BOX:		//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 		auto scale = collider->GetCurrentScale();
 		minExtent = (std::min)(scale.x, (std::min)(scale.y, scale.z));
 		thresh = minExtent * 0.25f;
 		break;
-	case ColliderType::SPHERE:	//‹…ƒRƒ‰ƒCƒ_[
+	case ColliderType::SPHERE:	//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 		thresh = collider->GetCurrentSphereCollider().radius * 0.5f;
 		break;
-	case ColliderType::CAPSULE:	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[
+	case ColliderType::CAPSULE:	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 		thresh = collider->GetCurrentCapsuleCollider().radius * 0.5f;
 		break;
 	}
 
-	return distSq > thresh * thresh;	//è‡’l‚ğ’´‚¦‚Ä‚¢‚éê‡‚Ítrue‚ğ•Ô‚·
+	return distSq > thresh * thresh;	//é–¾å€¤ã‚’è¶…ãˆã¦ã„ã‚‹å ´åˆã¯trueã‚’è¿”ã™
 }
 
-//ƒTƒuƒXƒeƒbƒv”‚ÌŒvZ
+//ã‚µãƒ–ã‚¹ãƒ†ãƒƒãƒ—æ•°ã®è¨ˆç®—
 int CollisionManager::CalculateSubsteps(Collider* colliderA, Collider* colliderB)
 {
-	//ˆÚ“®‹——£‚ğŒvZ‚·‚éƒ‰ƒ€ƒ_®
+	//ç§»å‹•è·é›¢ã‚’è¨ˆç®—ã™ã‚‹ãƒ©ãƒ ãƒ€å¼
 	auto disp = [&](Collider* collider) {
-		const XMFLOAT3& prevCenter = collider->GetPreviousCenter();	//‘O‰ñ‚Ì’†SÀ•W
-		const XMFLOAT3& currCenter = collider->GetCurrentCenter();	//¡‰ñ‚Ì’†SÀ•W
-		return LengthBetween(prevCenter, currCenter);						//ˆÚ“®‹——£
+		const XMFLOAT3& prevCenter = collider->GetPreviousCenter();	//å‰å›ã®ä¸­å¿ƒåº§æ¨™
+		const XMFLOAT3& currCenter = collider->GetCurrentCenter();	//ä»Šå›ã®ä¸­å¿ƒåº§æ¨™
+		return LengthBetween(prevCenter, currCenter);						//ç§»å‹•è·é›¢
 		};
 
-	//Å‘åˆÚ“®‹——£‚ğŒvZ
+	//æœ€å¤§ç§»å‹•è·é›¢ã‚’è¨ˆç®—
 	float maxDisp = (std::max)(disp(colliderA), disp(colliderB));
 
-	//ƒXƒeƒbƒv’·‚ğŒvZ‚·‚éƒ‰ƒ€ƒ_®
+	//ã‚¹ãƒ†ãƒƒãƒ—é•·ã‚’è¨ˆç®—ã™ã‚‹ãƒ©ãƒ ãƒ€å¼
 	auto stepLen = [&](Collider* collider) {
-		ColliderType type = collider->GetType();	//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒvæ“¾
+		ColliderType type = collider->GetType();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—å–å¾—
 		switch (type)
 		{
-		case ColliderType::BOX:		//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[
+		case ColliderType::BOX:		//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 		{
 			auto scale = collider->GetCurrentScale();
 			float minExtent = (std::min)(scale.x, (std::min)(scale.y, scale.z));
 			return minExtent * 0.25f;
 		}
-		case ColliderType::SPHERE:	//‹…ƒRƒ‰ƒCƒ_[
+		case ColliderType::SPHERE:	//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 			return collider->GetCurrentSphereCollider().radius * 0.5f;
-		case ColliderType::CAPSULE:	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[
+		case ColliderType::CAPSULE:	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 			return collider->GetCurrentCapsuleCollider().radius * 0.5f;
 		default:
 			return 0.1f;
 		}
 		};
 
-	//ƒXƒeƒbƒv’·‚ÌŒvZ
+	//ã‚¹ãƒ†ãƒƒãƒ—é•·ã®è¨ˆç®—
 	float step = (std::min)(stepLen(colliderA), stepLen(colliderB));
-	step = (std::max)(step, 0.001f); //Å¬’l‚ÅƒNƒ‰ƒ“ƒv
+	step = (std::max)(step, 0.001f); //æœ€å°å€¤ã§ã‚¯ãƒ©ãƒ³ãƒ—
 
-	//ƒTƒuƒXƒeƒbƒv”ŒvZ
+	//ã‚µãƒ–ã‚¹ãƒ†ãƒƒãƒ—æ•°è¨ˆç®—
 	int n = static_cast<int>(ceilf(maxDisp / step));
 
-	return (std::min)((std::max)(n, 1), 32);	//1‚©‚ç32‚Ì”ÍˆÍ‚ÉƒNƒ‰ƒ“ƒv‚µ‚Ä•Ô‚·
+	return (std::min)((std::max)(n, 1), 32);	//1ã‹ã‚‰32ã®ç¯„å›²ã«ã‚¯ãƒ©ãƒ³ãƒ—ã—ã¦è¿”ã™
 }
 
-//ƒ{ƒbƒNƒX“¯m‚ÌÕ“Ë”»’è
+//ãƒœãƒƒã‚¯ã‚¹åŒå£«ã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider* colliderB)
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
 
-	OBB a = CreateOBB(colliderA);	//ƒRƒ‰ƒCƒ_[A‚©‚çOBBì¬
-	OBB b = CreateOBB(colliderB);	//ƒRƒ‰ƒCƒ_[B‚©‚çOBBì¬
+	OBB a = CreateOBB(colliderA);	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã‹ã‚‰OBBä½œæˆ
+	OBB b = CreateOBB(colliderB);	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã‹ã‚‰OBBä½œæˆ
 
-	XMFLOAT3 ea = a.halfSizes;	//ƒRƒ‰ƒCƒ_[A‚ÌŠe²•ûŒü‚Ì”¼•ª‚ÌƒTƒCƒY
-	XMFLOAT3 eb = b.halfSizes;	//ƒRƒ‰ƒCƒ_[B‚ÌŠe²•ûŒü‚Ì”¼•ª‚ÌƒTƒCƒY
+	XMFLOAT3 ea = a.halfSizes;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®å„è»¸æ–¹å‘ã®åŠåˆ†ã®ã‚µã‚¤ã‚º
+	XMFLOAT3 eb = b.halfSizes;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®å„è»¸æ–¹å‘ã®åŠåˆ†ã®ã‚µã‚¤ã‚º
 
-	XMVECTOR tWorld = XMVectorSubtract(b.center, a.center); //ƒRƒ‰ƒCƒ_[A‚©‚çŒ©‚½ƒRƒ‰ƒCƒ_[B‚ÌˆÊ’uƒxƒNƒgƒ‹
+	XMVECTOR tWorld = XMVectorSubtract(b.center, a.center); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã‹ã‚‰è¦‹ãŸã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«
 
-	float minOverlap = FLT_MAX;			//Å¬ŠÑ“ü[‚³
-	XMVECTOR minAxis = XMVectorZero();	//Å¬ŠÑ“ü[‚³‚Ì²
+	float minOverlap = FLT_MAX;			//æœ€å°è²«å…¥æ·±ã•
+	XMVECTOR minAxis = XMVectorZero();	//æœ€å°è²«å…¥æ·±ã•ã®è»¸
 
-	//ƒRƒ‰ƒCƒ_[A‚Ìƒ[ƒJƒ‹À•WŒn‚ÅŒ©‚½ƒRƒ‰ƒCƒ_[B‚ÌˆÊ’uƒxƒNƒgƒ‹‚ğŒvZ
-	float t[3]; //ƒRƒ‰ƒCƒ_[A‚Ìƒ[ƒJƒ‹À•WŒn‚ÅŒ©‚½ƒRƒ‰ƒCƒ_[B‚ÌˆÊ’uƒxƒNƒgƒ‹
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§è¦‹ãŸã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—
+	float t[3]; //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§è¦‹ãŸã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«
 	for (int i = 0; i < 3; ++i)
-	{//Še²‚É‚Â‚¢‚Ä“àÏŒvZ
+	{//å„è»¸ã«ã¤ã„ã¦å†…ç©è¨ˆç®—
 		t[i] = XMVectorGetX(XMVector3Dot(tWorld, a.axis[i]));
 	}
 
-	//‰ñ“]s—ñ‚ÌŒvZ
-	float R[3][3];					//Še²‚Ì•ûŒüƒxƒNƒgƒ‹‚Ì“àÏ‚ğŠi”[‚·‚é”z—ñ
-	float absR[3][3];				//â‘Î’l‚ğŠi”[‚·‚é”z—ñ
-	const float EPSILON = 0.0001f;	//ƒ[ƒœZ–h~—p‚Ì”÷¬’l
+	//å›è»¢è¡Œåˆ—ã®è¨ˆç®—
+	float R[3][3];					//å„è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©ã‚’æ ¼ç´ã™ã‚‹é…åˆ—
+	float absR[3][3];				//çµ¶å¯¾å€¤ã‚’æ ¼ç´ã™ã‚‹é…åˆ—
+	const float EPSILON = 0.0001f;	//ã‚¼ãƒ­é™¤ç®—é˜²æ­¢ç”¨ã®å¾®å°å€¤
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
-			R[i][j] = XMVectorGetX(XMVector3Dot(a.axis[i], b.axis[j]));	//Še²‚Ì•ûŒüƒxƒNƒgƒ‹‚Ì“àÏŒvZ
-			absR[i][j] = fabsf(R[i][j]) + EPSILON;						//â‘Î’lŒvZ
+			R[i][j] = XMVectorGetX(XMVector3Dot(a.axis[i], b.axis[j]));	//å„è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©è¨ˆç®—
+			absR[i][j] = fabsf(R[i][j]) + EPSILON;						//çµ¶å¯¾å€¤è¨ˆç®—
 		}
 	}
 
-	//•ª—£²‚Ì”»’è
-	float eaArr[3] = { ea.x, ea.y, ea.z };	//ƒRƒ‰ƒCƒ_[A‚ÌŠe²
-	float ebArr[3] = { eb.x, eb.y, eb.z };	//ƒRƒ‰ƒCƒ_[B‚ÌŠe²
+	//åˆ†é›¢è»¸ã®åˆ¤å®š
+	float eaArr[3] = { ea.x, ea.y, ea.z };	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®å„è»¸
+	float ebArr[3] = { eb.x, eb.y, eb.z };	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®å„è»¸
 
-	//ƒRƒ‰ƒCƒ_[A‚ÌŠe²
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®å„è»¸
 	for (int i = 0; i < 3; ++i)
 	{
 		float ra = eaArr[i];
@@ -780,7 +780,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 
 		float overlap = ra + rb - fabsf(t[i]);
 
-		if (overlap < 0) return result; // •ª—£²‚ ‚è
+		if (overlap < 0) return result; // åˆ†é›¢è»¸ã‚ã‚Š
 
 		if (overlap < minOverlap || minOverlap == 0)
 		{
@@ -789,7 +789,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		}
 
 	}
-	//ƒRƒ‰ƒCƒ_[B‚ÌŠe²
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®å„è»¸
 	for (int i = 0; i < 3; ++i)
 	{
 		float ra =
@@ -805,7 +805,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 
 		float overlap = ra + rb - tProj;
 
-		if (overlap < 0) return result; // •ª—£²‚ ‚è
+		if (overlap < 0) return result; // åˆ†é›¢è»¸ã‚ã‚Š
 
 		if (overlap < minOverlap || minOverlap == 0)
 		{
@@ -815,25 +815,25 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 
 	}
 
-	//Œğ·²‚ÌXVƒ‰ƒ€ƒ_®
+	//äº¤å·®è»¸ã®æ›´æ–°ãƒ©ãƒ ãƒ€å¼
 	auto UpdateMinAxis = [&](XMVECTOR axis, float overlap) {
-		const float eps = 1e-6f;	//”÷¬’l
+		const float eps = 1e-6f;	//å¾®å°å€¤
 		float lenSq = XMVectorGetX(XMVector3LengthSq(axis));
-		if (lenSq < eps) return;	// ‚Ù‚Ú•½s‚Å–³Œø
+		if (lenSq < eps) return;	// ã»ã¼å¹³è¡Œã§ç„¡åŠ¹
 		if (overlap < minOverlap) {
 			minOverlap = overlap;
-			minAxis = axis;			// ‚»‚ÌAi~Bj‚ğÌ—p
+			minAxis = axis;			// ãã®AiÃ—Bjã‚’æ¡ç”¨
 		}
 		};
 
-	//Œğ·²‚Ì”»’è
+	//äº¤å·®è»¸ã®åˆ¤å®š
 	//A0 x B0
 	{
 		float ra = ea.y * absR[2][0] + ea.z * absR[1][0];
 		float rb = eb.y * absR[0][2] + eb.z * absR[0][1];
 		float tProj = fabs(t[2] * R[1][0] - t[1] * R[2][0]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[0], b.axis[0]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -843,7 +843,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.x * absR[0][2] + eb.z * absR[0][0];
 		float tProj = fabs(t[2] * R[1][1] - t[1] * R[2][1]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[0], b.axis[1]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -853,7 +853,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.x * absR[0][1] + eb.y * absR[0][0];
 		float tProj = fabs(t[2] * R[1][2] - t[1] * R[2][2]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[0], b.axis[2]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -863,7 +863,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.y * absR[1][2] + eb.z * absR[1][1];
 		float tProj = fabs(t[0] * R[2][0] - t[2] * R[0][0]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[1], b.axis[0]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -873,7 +873,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.x * absR[1][2] + eb.z * absR[1][0];
 		float tProj = fabs(t[0] * R[2][1] - t[2] * R[0][1]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[1], b.axis[1]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -883,7 +883,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.x * absR[1][1] + eb.y * absR[1][0];
 		float tProj = fabs(t[0] * R[2][2] - t[2] * R[0][2]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[1], b.axis[2]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -893,7 +893,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.y * absR[2][2] + eb.z * absR[2][1];
 		float tProj = fabs(t[1] * R[0][0] - t[0] * R[1][0]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[2], b.axis[0]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -903,7 +903,7 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.x * absR[2][2] + eb.z * absR[2][0];
 		float tProj = fabs(t[1] * R[0][1] - t[0] * R[1][1]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[2], b.axis[1]);
 		UpdateMinAxis(axis, overlap);
 	}
@@ -913,217 +913,217 @@ ContactResult CollisionManager::CollisionBoxToBox(Collider* colliderA, Collider*
 		float rb = eb.x * absR[2][1] + eb.y * absR[2][0];
 		float tProj = fabs(t[1] * R[0][2] - t[0] * R[1][2]);
 		float overlap = ra + rb - tProj;
-		if (overlap < 0) return result; //•ª—£²‚ ‚è
+		if (overlap < 0) return result; //åˆ†é›¢è»¸ã‚ã‚Š
 		XMVECTOR axis = XMVector3Cross(a.axis[2], b.axis[2]);
 		UpdateMinAxis(axis, overlap);
 	}
 
-	//Å¬²‚ÌŒü‚«‚ğ’²®
+	//æœ€å°è»¸ã®å‘ãã‚’èª¿æ•´
 	XMVECTOR centerDiff = XMVectorSubtract(b.center, a.center);
 	if (XMVectorGetX(XMVector3Dot(centerDiff, minAxis)) < 0)
 	{
 		minAxis = XMVectorNegate(minAxis);
 	}
 
-	//‚±‚±‚Ü‚Å—ˆ‚½‚çÕ“ËŒŸ’m
-	//Õ“Ëƒpƒ‰ƒ[ƒ^‚ÌŒvZ
-	XMVECTOR point;					//Õ“Ë“_
-	XMVECTOR normal;				//–@ü
-	float depth;					//ŠÑ“ü[‚³
+	//ã“ã“ã¾ã§æ¥ãŸã‚‰è¡çªæ¤œçŸ¥
+	//è¡çªæ™‚ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨ˆç®—
+	XMVECTOR point;					//è¡çªç‚¹
+	XMVECTOR normal;				//æ³•ç·š
+	float depth;					//è²«å…¥æ·±ã•
 
-	//Õ“Ë“_‚ÌŒvZ(ŠÈˆÕ“I‚ÉƒRƒ‰ƒCƒ_[A‚ÆƒRƒ‰ƒCƒ_[B‚Ì’†S“_‚Ì’†ŠÔ“_‚ğÕ“Ë“_‚Æ‚·‚é)
+	//è¡çªç‚¹ã®è¨ˆç®—(ç°¡æ˜“çš„ã«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã¨ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä¸­å¿ƒç‚¹ã®ä¸­é–“ç‚¹ã‚’è¡çªç‚¹ã¨ã™ã‚‹)
 	point = XMVectorScale(
 		XMVectorAdd(a.center, b.center),
 		0.5f
 	);
-	//–@üƒxƒNƒgƒ‹
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	normal = XMVector3Normalize(minAxis);
-	//ŠÑ“ü[‚³
+	//è²«å…¥æ·±ã•
 	depth = minOverlap;
 
-	//Õ“Ëî•ñ‚Ìì¬
-	result.isCollided = true;	//Õ“ËŒŸ’mƒtƒ‰ƒOON
-	result.point = point;		//Õ“Ë“_
-	result.normal = normal;		//–@ü
-	result.depth = depth;		//ŠÑ“ü[‚³
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	result.isCollided = true;	//è¡çªæ¤œçŸ¥ãƒ•ãƒ©ã‚°ON
+	result.point = point;		//è¡çªç‚¹
+	result.normal = normal;		//æ³•ç·š
+	result.depth = depth;		//è²«å…¥æ·±ã•
 
 	return result;
 }
 
-//‹…“¯m‚ÌÕ“Ë”»’è
+//çƒåŒå£«ã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionSphereToSphere(
-	Collider* colliderA,	//ƒRƒ‰ƒCƒ_[A
-	Collider* colliderB		//ƒRƒ‰ƒCƒ_[B
+	Collider* colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+	Collider* colliderB		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 )
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
-	XMFLOAT3 centerA = colliderA->GetCurrentSphereCollider().center; //ƒRƒ‰ƒCƒ_[A‚Ì’†SÀ•W
-	XMFLOAT3 centerB = colliderB->GetCurrentSphereCollider().center; //ƒRƒ‰ƒCƒ_[B‚Ì’†SÀ•W
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
+	XMFLOAT3 centerA = colliderA->GetCurrentSphereCollider().center; //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ä¸­å¿ƒåº§æ¨™
+	XMFLOAT3 centerB = colliderB->GetCurrentSphereCollider().center; //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä¸­å¿ƒåº§æ¨™
 
-	SphereSegment segA, segB;	//‹…ƒZƒOƒƒ“ƒg\‘¢‘Ì
-	segA.center = XMLoadFloat3(&centerA);						//ƒRƒ‰ƒCƒ_[A‚Ì’†SÀ•W
-	segA.radius = colliderA->GetCurrentSphereCollider().radius;	//ƒRƒ‰ƒCƒ_[A‚Ì”¼Œa
-	segB.center = XMLoadFloat3(&centerB);						//ƒRƒ‰ƒCƒ_[B‚Ì’†SÀ•W
-	segB.radius = colliderB->GetCurrentSphereCollider().radius;	//ƒRƒ‰ƒCƒ_[B‚Ì”¼Œa
+	SphereSegment segA, segB;	//çƒã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ§‹é€ ä½“
+	segA.center = XMLoadFloat3(&centerA);						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ä¸­å¿ƒåº§æ¨™
+	segA.radius = colliderA->GetCurrentSphereCollider().radius;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®åŠå¾„
+	segB.center = XMLoadFloat3(&centerB);						//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä¸­å¿ƒåº§æ¨™
+	segB.radius = colliderB->GetCurrentSphereCollider().radius;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®åŠå¾„
 
-	//‹…ƒZƒOƒƒ“ƒg“¯m‚ÌÕ“Ë”»’è
+	//çƒã‚»ã‚°ãƒ¡ãƒ³ãƒˆåŒå£«ã®è¡çªåˆ¤å®š
 	result = CollisionSpheresSegments(segA, segB);
 
 	return result;
 }
 
-//ƒJƒvƒZƒ‹“¯m‚ÌÕ“Ë”»’è
+//ã‚«ãƒ—ã‚»ãƒ«åŒå£«ã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionCapsuleToCapsule(
-	Collider* colliderA,	//ƒRƒ‰ƒCƒ_[A
-	Collider* colliderB		//ƒRƒ‰ƒCƒ_[B
+	Collider* colliderA,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+	Collider* colliderB		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 )
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
 
-	CapsuleSegment segA = CreateCapsuleSegment(colliderA);	//ƒRƒ‰ƒCƒ_[A‚©‚çƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgì¬
-	CapsuleSegment segB = CreateCapsuleSegment(colliderB);	//ƒRƒ‰ƒCƒ_[B‚©‚çƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgì¬
+	CapsuleSegment segA = CreateCapsuleSegment(colliderA);	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã‹ã‚‰ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä½œæˆ
+	CapsuleSegment segB = CreateCapsuleSegment(colliderB);	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã‹ã‚‰ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä½œæˆ
 
-	const float epsilon = 0.0001f;	//”÷¬’l
+	const float epsilon = 0.0001f;	//å¾®å°å€¤
 
-	DirectX::XMVECTOR axisA = XMVectorSubtract(segA.pointB, segA.pointA); //ƒRƒ‰ƒCƒ_[A‚Ì²ƒxƒNƒgƒ‹
-	DirectX::XMVECTOR axisB = XMVectorSubtract(segB.pointB, segB.pointA); //ƒRƒ‰ƒCƒ_[B‚Ì²ƒxƒNƒgƒ‹
+	DirectX::XMVECTOR axisA = XMVectorSubtract(segA.pointB, segA.pointA); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®è»¸ãƒ™ã‚¯ãƒˆãƒ«
+	DirectX::XMVECTOR axisB = XMVectorSubtract(segB.pointB, segB.pointA); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®è»¸ãƒ™ã‚¯ãƒˆãƒ«
 
-	float lenA = XMVectorGetX(XMVector3Dot(axisA, axisA)); //ƒRƒ‰ƒCƒ_[A‚Ì²ƒxƒNƒgƒ‹‚Ì’·‚³
-	float lenB = XMVectorGetX(XMVector3Dot(axisB, axisB)); //ƒRƒ‰ƒCƒ_[B‚Ì²ƒxƒNƒgƒ‹‚Ì’·‚³
+	float lenA = XMVectorGetX(XMVector3Dot(axisA, axisA)); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®è»¸ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•
+	float lenB = XMVectorGetX(XMVector3Dot(axisB, axisB)); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®è»¸ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•
 
-	//²ƒxƒNƒgƒ‹‚Ì’·‚³‚ª‹É’[‚É’Z‚¢ê‡‚Ìˆ—
+	//è»¸ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ãŒæ¥µç«¯ã«çŸ­ã„å ´åˆã®å‡¦ç†
 	if (lenA < epsilon || lenB < epsilon)
-	{//’·‚³‚ª‹É’[‚É’Z‚¢ê‡‚Í‹…‘Ì‚Æ‚µ‚Äˆµ‚¤
-		SphereSegment sphereA, sphereB;	//‹…ƒZƒOƒƒ“ƒg\‘¢‘Ì
+	{//é•·ã•ãŒæ¥µç«¯ã«çŸ­ã„å ´åˆã¯çƒä½“ã¨ã—ã¦æ‰±ã†
+		SphereSegment sphereA, sphereB;	//çƒã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ§‹é€ ä½“
 
-		sphereA.center = XMVectorScale(XMVectorAdd(segA.pointA, segA.pointB), 0.5f); //ƒRƒ‰ƒCƒ_[A‚Ì’†S“_
-		sphereA.radius = segA.radius;													//ƒRƒ‰ƒCƒ_[A‚Ì”¼Œa
-		sphereB.center = XMVectorScale(XMVectorAdd(segB.pointA, segB.pointB), 0.5f); //ƒRƒ‰ƒCƒ_[B‚Ì’†S“_
-		sphereB.radius = segB.radius;													//ƒRƒ‰ƒCƒ_[B‚Ì”¼Œa
+		sphereA.center = XMVectorScale(XMVectorAdd(segA.pointA, segA.pointB), 0.5f); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ä¸­å¿ƒç‚¹
+		sphereA.radius = segA.radius;													//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®åŠå¾„
+		sphereB.center = XMVectorScale(XMVectorAdd(segB.pointA, segB.pointB), 0.5f); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä¸­å¿ƒç‚¹
+		sphereB.radius = segB.radius;													//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®åŠå¾„
 
-		//‹…ƒZƒOƒƒ“ƒg“¯m‚ÌÕ“Ë”»’è
+		//çƒã‚»ã‚°ãƒ¡ãƒ³ãƒˆåŒå£«ã®è¡çªåˆ¤å®š
 		result = CollisionSpheresSegments(sphereA, sphereB);
 		return result;
 	}
 
-	//Å’Z‹——£‚Ì“ñæ‚ğæ“¾
-	XMVECTOR closestA, closestB;	//ƒRƒ‰ƒCƒ_[AEBã‚ÌÅ’Z“_
+	//æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’å–å¾—
+	XMVECTOR closestA, closestB;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aãƒ»Bä¸Šã®æœ€çŸ­ç‚¹
 	float distSq = CollisionManager::GetMinDistanceSquaredSegmentToSegment(
-		segA.pointA, segA.pointB,	//ƒZƒOƒƒ“ƒgA‚Ì’[“_
-		segB.pointA, segB.pointB,	//ƒZƒOƒƒ“ƒgB‚Ì’[“_
-		closestA,					//ƒZƒOƒƒ“ƒgAã‚ÌÅ’Z“_
-		closestB					//ƒZƒOƒƒ“ƒgBã‚ÌÅ’Z“_
+		segA.pointA, segA.pointB,	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆAã®ç«¯ç‚¹
+		segB.pointA, segB.pointB,	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆBã®ç«¯ç‚¹
+		closestA,					//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆAä¸Šã®æœ€çŸ­ç‚¹
+		closestB					//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆBä¸Šã®æœ€çŸ­ç‚¹
 	);
 
-	//Õ“ËŒŸ’m
-	float radiusSum = segA.radius + segB.radius;			//”¼Œa‚Ì˜a
-	if (!(distSq <= radiusSum * radiusSum)) return result;	//Õ“Ë‚È‚µ
+	//è¡çªæ¤œçŸ¥
+	float radiusSum = segA.radius + segB.radius;			//åŠå¾„ã®å’Œ
+	if (!(distSq <= radiusSum * radiusSum)) return result;	//è¡çªãªã—
 
-	//Õ“Ëƒpƒ‰ƒ[ƒ^‚ÌŒvZ
-	XMVECTOR point;		//Õ“Ë“_
-	XMVECTOR normal;	//–@ü
-	float depth;		//ŠÑ“ü[‚³
+	//è¡çªæ™‚ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨ˆç®—
+	XMVECTOR point;		//è¡çªç‚¹
+	XMVECTOR normal;	//æ³•ç·š
+	float depth;		//è²«å…¥æ·±ã•
 
-	//Õ“Ë“_‚ÌŒvZ(Å’Z“_‚Ì’†ŠÔ)
+	//è¡çªç‚¹ã®è¨ˆç®—(æœ€çŸ­ç‚¹ã®ä¸­é–“)
 	point = XMVectorScale(XMVectorAdd(closestA, closestB), 0.5f);
 
-	//–@üƒxƒNƒgƒ‹‚ÌŒvZ
-	float dist = sqrtf(distSq); //Å’Z‹——£
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
+	float dist = sqrtf(distSq); //æœ€çŸ­è·é›¢
 	if (dist < epsilon)
-	{//Å’Z‹——£‚ª‚Ù‚Ú0‚Ìê‡‚Ìˆ—
-		//’†S“_‚Ì·ƒxƒNƒgƒ‹‚ğ³‹K‰»‚µ‚Ä–@üƒxƒNƒgƒ‹‚Æ‚·‚é
-		XMVECTOR centerA = XMVectorScale(XMVectorAdd(segA.pointA, segA.pointB), 0.5f); //ƒRƒ‰ƒCƒ_[A‚Ì’†S“_
-		XMVECTOR centerB = XMVectorScale(XMVectorAdd(segB.pointA, segB.pointB), 0.5f); //ƒRƒ‰ƒCƒ_[B‚Ì’†S“_
+	{//æœ€çŸ­è·é›¢ãŒã»ã¼0ã®å ´åˆã®å‡¦ç†
+		//ä¸­å¿ƒç‚¹ã®å·®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–ã—ã¦æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã¨ã™ã‚‹
+		XMVECTOR centerA = XMVectorScale(XMVectorAdd(segA.pointA, segA.pointB), 0.5f); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã®ä¸­å¿ƒç‚¹
+		XMVECTOR centerB = XMVectorScale(XMVectorAdd(segB.pointA, segB.pointB), 0.5f); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Bã®ä¸­å¿ƒç‚¹
 		normal = XMVector3Normalize(XMVectorSubtract(centerB, centerA));
 	}
 	else if (dist == 0.0f)
-	{//Å’Z‹——£‚ªŠ®‘S‚É0‚Ìê‡‚Ìˆ—
-		//“K“–‚È–@üƒxƒNƒgƒ‹‚ğİ’è
+	{//æœ€çŸ­è·é›¢ãŒå®Œå…¨ã«0ã®å ´åˆã®å‡¦ç†
+		//é©å½“ãªæ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨­å®š
 		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else
 	{
-		//ƒxƒNƒgƒ‹‚Ìˆø‚«Z‚Æ³‹K‰»
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®å¼•ãç®—ã¨æ­£è¦åŒ–
 		normal = XMVector3Normalize(XMVectorSubtract(closestB, closestA));
 	}
 
-	//ŠÑ“ü[‚³‚ÌŒvZ
+	//è²«å…¥æ·±ã•ã®è¨ˆç®—
 	depth = radiusSum - dist;
 
-	//Õ“Ëî•ñ‚Ìì¬
-	result.isCollided = true;	//Õ“ËŒŸ’mƒtƒ‰ƒOON
-	result.point = point;		//Õ“Ë“_
-	result.normal = normal;		//–@ü
-	result.depth = depth;		//ŠÑ“ü[‚³
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	result.isCollided = true;	//è¡çªæ¤œçŸ¥ãƒ•ãƒ©ã‚°ON
+	result.point = point;		//è¡çªç‚¹
+	result.normal = normal;		//æ³•ç·š
+	result.depth = depth;		//è²«å…¥æ·±ã•
 
 	return result;
 }
 
-//ƒ{ƒbƒNƒX‚Æ‹…‚ÌÕ“Ë”»’è
+//ãƒœãƒƒã‚¯ã‚¹ã¨çƒã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionBoxToSphere(
-	Collider* box,		//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[
-	Collider* sphere	//ƒXƒtƒBƒAƒRƒ‰ƒCƒ_[
+	Collider* box,		//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+	Collider* sphere	//ã‚¹ãƒ•ã‚£ã‚¢ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 )
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
 
-	OBB obb = CreateOBB(box);	//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[‚©‚çOBBì¬
+	OBB obb = CreateOBB(box);	//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰OBBä½œæˆ
 
-	//OBBî•ñ
-	XMFLOAT3 boxCenter;		//OBB‚Ì’†S“_
-	XMFLOAT3 boxHalfSizes;	//OBB‚ÌŠe²•ûŒü‚Ì”¼•ª‚ÌƒTƒCƒY
-	XMVECTOR boxAxis[3];	//OBB‚ÌŠe²‚Ì•ûŒüƒxƒNƒgƒ‹
+	//OBBæƒ…å ±
+	XMFLOAT3 boxCenter;		//OBBã®ä¸­å¿ƒç‚¹
+	XMFLOAT3 boxHalfSizes;	//OBBã®å„è»¸æ–¹å‘ã®åŠåˆ†ã®ã‚µã‚¤ã‚º
+	XMVECTOR boxAxis[3];	//OBBã®å„è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 
-	//‹…î•ñ
-	XMFLOAT3 sphereCenter;	//‹…‚Ì’†S“_
-	float sphereRadius;		//‹…‚Ì”¼Œa
+	//çƒæƒ…å ±
+	XMFLOAT3 sphereCenter;	//çƒã®ä¸­å¿ƒç‚¹
+	float sphereRadius;		//çƒã®åŠå¾„
 
-	//OBBî•ñ‚Ìæ“¾
-	XMStoreFloat3(&boxCenter, obb.center);	//OBB‚Ì’†S“_æ“¾
-	boxHalfSizes = obb.halfSizes;			//OBB‚ÌŠe²•ûŒü‚Ì”¼•ª‚ÌƒTƒCƒYæ“¾
-	for (int i = 0; i < 3; ++i)				//OBB‚ÌŠe²‚Ì•ûŒüƒxƒNƒgƒ‹æ“¾
+	//OBBæƒ…å ±ã®å–å¾—
+	XMStoreFloat3(&boxCenter, obb.center);	//OBBã®ä¸­å¿ƒç‚¹å–å¾—
+	boxHalfSizes = obb.halfSizes;			//OBBã®å„è»¸æ–¹å‘ã®åŠåˆ†ã®ã‚µã‚¤ã‚ºå–å¾—
+	for (int i = 0; i < 3; ++i)				//OBBã®å„è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
 	{
 		boxAxis[i] = obb.axis[i];
 	}
 
-	//‹…î•ñ‚Ìæ“¾
-	sphereCenter = sphere->GetCurrentSphereCollider().center;	//‹…‚Ì’†S“_æ“¾
-	sphereRadius = sphere->GetCurrentSphereCollider().radius;	//‹…‚Ì”¼Œaæ“¾
+	//çƒæƒ…å ±ã®å–å¾—
+	sphereCenter = sphere->GetCurrentSphereCollider().center;	//çƒã®ä¸­å¿ƒç‚¹å–å¾—
+	sphereRadius = sphere->GetCurrentSphereCollider().radius;	//çƒã®åŠå¾„å–å¾—
 
-	//‹…‚Ì’†S“_‚ğOBB‚Ìƒ[ƒJƒ‹À•WŒn‚Å•\Œ»
-	XMVECTOR boxCenterV = XMLoadFloat3(&boxCenter);			//OBB‚Ì’†S“_ƒxƒNƒgƒ‹
-	XMVECTOR sphereCenterV = XMLoadFloat3(&sphereCenter);	//‹…‚Ì’†S“_ƒxƒNƒgƒ‹
+	//çƒã®ä¸­å¿ƒç‚¹ã‚’OBBã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§è¡¨ç¾
+	XMVECTOR boxCenterV = XMLoadFloat3(&boxCenter);			//OBBã®ä¸­å¿ƒç‚¹ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR sphereCenterV = XMLoadFloat3(&sphereCenter);	//çƒã®ä¸­å¿ƒç‚¹ãƒ™ã‚¯ãƒˆãƒ«
 
-	XMVECTOR d = XMVectorSubtract(sphereCenterV, boxCenterV); //OBB‚Ì’†S“_‚©‚ç‹…‚Ì’†S“_‚Ö‚ÌƒxƒNƒgƒ‹
+	XMVECTOR d = XMVectorSubtract(sphereCenterV, boxCenterV); //OBBã®ä¸­å¿ƒç‚¹ã‹ã‚‰çƒã®ä¸­å¿ƒç‚¹ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
 
-	float localX = XMVectorGetX(XMVector3Dot(d, boxAxis[0])); //OBB‚Ìƒ[ƒJƒ‹XÀ•W
-	float localY = XMVectorGetX(XMVector3Dot(d, boxAxis[1])); //OBB‚Ìƒ[ƒJƒ‹YÀ•W
-	float localZ = XMVectorGetX(XMVector3Dot(d, boxAxis[2])); //OBB‚Ìƒ[ƒJƒ‹ZÀ•W
+	float localX = XMVectorGetX(XMVector3Dot(d, boxAxis[0])); //OBBã®ãƒ­ãƒ¼ã‚«ãƒ«Xåº§æ¨™
+	float localY = XMVectorGetX(XMVector3Dot(d, boxAxis[1])); //OBBã®ãƒ­ãƒ¼ã‚«ãƒ«Yåº§æ¨™
+	float localZ = XMVectorGetX(XMVector3Dot(d, boxAxis[2])); //OBBã®ãƒ­ãƒ¼ã‚«ãƒ«Zåº§æ¨™
 
-	//Å‚à‹ß‚¢“_‚ğOBB‚Ìƒ[ƒJƒ‹À•WŒn‚ÅŒvZ
+	//æœ€ã‚‚è¿‘ã„ç‚¹ã‚’OBBã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§è¨ˆç®—
 	float closestX = (std::max)(-boxHalfSizes.x, (std::min)(boxHalfSizes.x, localX));
 	float closestY = (std::max)(-boxHalfSizes.y, (std::min)(boxHalfSizes.y, localY));
 	float closestZ = (std::max)(-boxHalfSizes.z, (std::min)(boxHalfSizes.z, localZ));
 
-	//Å‚à‹ß‚¢“_‚Æ‹…‚Ì’†S“_‚Ì·ƒxƒNƒgƒ‹‚ğŒvZ
-	float diffX = closestX - localX; //Å‚à‹ß‚¢“_‚Æ‹…‚Ì’†S“_‚ÌX¬•ª‚Ì·
-	float diffY = closestY - localY; //Å‚à‹ß‚¢“_‚Æ‹…‚Ì’†S“_‚ÌY¬•ª‚Ì·
-	float diffZ = closestZ - localZ; //Å‚à‹ß‚¢“_‚Æ‹…‚Ì’†S“_‚ÌZ¬•ª‚Ì·
+	//æœ€ã‚‚è¿‘ã„ç‚¹ã¨çƒã®ä¸­å¿ƒç‚¹ã®å·®ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—
+	float diffX = closestX - localX; //æœ€ã‚‚è¿‘ã„ç‚¹ã¨çƒã®ä¸­å¿ƒç‚¹ã®Xæˆåˆ†ã®å·®
+	float diffY = closestY - localY; //æœ€ã‚‚è¿‘ã„ç‚¹ã¨çƒã®ä¸­å¿ƒç‚¹ã®Yæˆåˆ†ã®å·®
+	float diffZ = closestZ - localZ; //æœ€ã‚‚è¿‘ã„ç‚¹ã¨çƒã®ä¸­å¿ƒç‚¹ã®Zæˆåˆ†ã®å·®
 
-	//Å’Z‹——£‚Ì“ñæ‚ğŒvZ
+	//æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’è¨ˆç®—
 	float distSq = diffX * diffX + diffY * diffY + diffZ * diffZ;
-	float radiusSq = sphereRadius * sphereRadius; //‹…‚Ì”¼Œa‚Ì“ñæ
+	float radiusSq = sphereRadius * sphereRadius; //çƒã®åŠå¾„ã®äºŒä¹—
 
-	//Õ“ËŒŸ’m
-	if (distSq > radiusSq) return result; //Õ“Ë‚È‚µ
+	//è¡çªæ¤œçŸ¥
+	if (distSq > radiusSq) return result; //è¡çªãªã—
 
-	//Õ“Ëƒpƒ‰ƒ[ƒ^‚ÌŒvZ
-	XMVECTOR point;		//Õ“Ë“_
-	XMVECTOR normal;	//–@ü
-	float depth;		//ŠÑ“ü[‚³
+	//è¡çªæ™‚ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨ˆç®—
+	XMVECTOR point;		//è¡çªç‚¹
+	XMVECTOR normal;	//æ³•ç·š
+	float depth;		//è²«å…¥æ·±ã•
 
-	//Å‚à‹ß‚¢“_‚ğƒ[ƒ‹ƒhÀ•WŒn‚ÅŒvZ
-	XMVECTOR closestWorld; //Å‚à‹ß‚¢“_‚Ìƒ[ƒ‹ƒhÀ•WŒn‚Å‚ÌˆÊ’uƒxƒNƒgƒ‹
+	//æœ€ã‚‚è¿‘ã„ç‚¹ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ç³»ã§è¨ˆç®—
+	XMVECTOR closestWorld; //æœ€ã‚‚è¿‘ã„ç‚¹ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ç³»ã§ã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«
 	closestWorld = XMVectorAdd(
 		boxCenterV,
 		XMVectorAdd(
@@ -1135,22 +1135,22 @@ ContactResult CollisionManager::CollisionBoxToSphere(
 		)
 	);
 
-	point = closestWorld; //Õ“Ë“_‚ÍÅ‚à‹ß‚¢“_‚Æ‚·‚é
+	point = closestWorld; //è¡çªç‚¹ã¯æœ€ã‚‚è¿‘ã„ç‚¹ã¨ã™ã‚‹
 
-	//–@üƒxƒNƒgƒ‹‚ÌŒvZ
-	const float epsilon = 0.0001f;	//”÷¬’l
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
+	const float epsilon = 0.0001f;	//å¾®å°å€¤
 
-	//‹…’†S‚ªOBB“à‚©‚Ç‚¤‚©‚Åê‡•ª‚¯
-	if (distSq < epsilon)	//‹…’†S‚ªOBB“àiÅ‹ß“_‚ª’†S‚Æˆê’vj
+	//çƒä¸­å¿ƒãŒOBBå†…ã‹ã©ã†ã‹ã§å ´åˆåˆ†ã‘
+	if (distSq < epsilon)	//çƒä¸­å¿ƒãŒOBBå†…ï¼ˆæœ€è¿‘ç‚¹ãŒä¸­å¿ƒã¨ä¸€è‡´ï¼‰
 	{
-		//Še–Ê‚Ü‚Å‚Ì‹——£iƒ[ƒJƒ‹‹óŠÔj
+		//å„é¢ã¾ã§ã®è·é›¢ï¼ˆãƒ­ãƒ¼ã‚«ãƒ«ç©ºé–“ï¼‰
 		float sx = boxHalfSizes.x - fabsf(localX);
 		float sy = boxHalfSizes.y - fabsf(localY);
 		float sz = boxHalfSizes.z - fabsf(localZ);
 
-		float distToFace;	//’†S¨Å‹ß–Ê‚Ü‚Å‚Ì‹——£
+		float distToFace;	//ä¸­å¿ƒâ†’æœ€è¿‘é¢ã¾ã§ã®è·é›¢
 
-		//Å‹ß–ÊiÅ¬‹——£‚Ì²j‚ğ‘I‚Ô
+		//æœ€è¿‘é¢ï¼ˆæœ€å°è·é›¢ã®è»¸ï¼‰ã‚’é¸ã¶
 		if (sx <= sy && sx <= sz)
 		{
 			normal = (localX >= 0.0f) ? boxAxis[0] : XMVectorNegate(boxAxis[0]);
@@ -1176,7 +1176,7 @@ ContactResult CollisionManager::CollisionBoxToSphere(
 			distToFace = sz;
 		}
 
-		//Å‹ß–Êã‚Ì“_‚ğƒ[ƒ‹ƒh‚ÉÄ\’z
+		//æœ€è¿‘é¢ä¸Šã®ç‚¹ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«å†æ§‹ç¯‰
 		closestWorld = XMVectorAdd(
 			boxCenterV,
 			XMVectorAdd(
@@ -1188,116 +1188,116 @@ ContactResult CollisionManager::CollisionBoxToSphere(
 			)
 		);
 
-		point = closestWorld;				//Õ“Ë“_‚Í” •\–Ê‚ÌÅ‹ß–Ê“_
-		depth = sphereRadius + distToFace;	//“à•”‰Ÿ‚µo‚µ‚ÌŠÑ“ü[‚³
+		point = closestWorld;				//è¡çªç‚¹ã¯ç®±è¡¨é¢ã®æœ€è¿‘é¢ç‚¹
+		depth = sphereRadius + distToFace;	//å†…éƒ¨æŠ¼ã—å‡ºã—ã®è²«å…¥æ·±ã•
 	}
 	else
 	{
-		point = closestWorld; //Õ“Ë“_
+		point = closestWorld; //è¡çªç‚¹
 
-		//Å’Z‹——£‚ÌŒvZ
-		float dist = sqrtf(distSq);	//Å’Z‹——£
+		//æœ€çŸ­è·é›¢ã®è¨ˆç®—
+		float dist = sqrtf(distSq);	//æœ€çŸ­è·é›¢
 
 		if (dist > epsilon)
-		{//–@üƒxƒNƒgƒ‹ŒvZ
+		{//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«è¨ˆç®—
 			normal = XMVectorScale(
 				XMVectorSubtract(sphereCenterV, closestWorld),
 				1.0f / dist
 			);
 		}
 		else
-		{//Å’Z‹——£‚ª‹É’[‚É¬‚³‚¢ê‡
-			normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //“K“–‚È–@üƒxƒNƒgƒ‹
+		{//æœ€çŸ­è·é›¢ãŒæ¥µç«¯ã«å°ã•ã„å ´åˆ
+			normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //é©å½“ãªæ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 		}
 
-		//ŠÑ“ü[‚³‚ÌŒvZ
-		depth = sphereRadius - dist; //ŠÑ“ü[‚³
+		//è²«å…¥æ·±ã•ã®è¨ˆç®—
+		depth = sphereRadius - dist; //è²«å…¥æ·±ã•
 	}
 
-	//Õ“Ëî•ñ‚Ìì¬
-	result.isCollided = true;	//Õ“ËŒŸ’mƒtƒ‰ƒOON
-	result.point = point;		//Õ“Ë“_
-	result.normal = normal;		//–@ü
-	result.depth = depth;		//ŠÑ“ü[‚³
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	result.isCollided = true;	//è¡çªæ¤œçŸ¥ãƒ•ãƒ©ã‚°ON
+	result.point = point;		//è¡çªç‚¹
+	result.normal = normal;		//æ³•ç·š
+	result.depth = depth;		//è²«å…¥æ·±ã•
 
 	return result;
 }
 
-//ƒ{ƒbƒNƒX‚ÆƒJƒvƒZƒ‹‚ÌÕ“Ë”»’è
+//ãƒœãƒƒã‚¯ã‚¹ã¨ã‚«ãƒ—ã‚»ãƒ«ã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionBoxToCapsule(
-	Collider* box,	//ƒRƒ‰ƒCƒ_[A
-	Collider* capsule		//ƒRƒ‰ƒCƒ_[B
+	Collider* box,	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼A
+	Collider* capsule		//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼B
 )
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
 
-	OBB obb = CreateOBB(box);								//ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[‚©‚çOBBì¬
-	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚©‚çƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgì¬
+	OBB obb = CreateOBB(box);								//ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰OBBä½œæˆ
+	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä½œæˆ
 
-	result = CollisonOBBtoCapsule(obb, cupSeg);	//OBB‘ÎƒJƒvƒZƒ‹‚ÌÕ“Ë”»’è
+	result = CollisonOBBtoCapsule(obb, cupSeg);	//OBBå¯¾ã‚«ãƒ—ã‚»ãƒ«ã®è¡çªåˆ¤å®š
 
 	return result;
 }
 
-//‹…‚ÆƒJƒvƒZƒ‹‚ÌÕ“Ë”»’è
+//çƒã¨ã‚«ãƒ—ã‚»ãƒ«ã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionSphereToCapsule(
-	Collider* sphere,	//‹…ƒRƒ‰ƒCƒ_[
-	Collider* capsule	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[
+	Collider* sphere,	//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+	Collider* capsule	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 )
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
 
-	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);		//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚©‚çƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgì¬
-	SphereCollider sphereCol = sphere->GetCurrentSphereCollider();		//‹…ƒRƒ‰ƒCƒ_[î•ñæ“¾
-	XMVECTOR sphereCenter = XMLoadFloat3(&sphereCol.center);	//‹…‚Ì’†S“_ƒxƒNƒgƒ‹
-	float radius = sphereCol.radius;							//‹…‚Ì”¼Œa
+	CapsuleSegment cupSeg = CreateCapsuleSegment(capsule);		//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä½œæˆ
+	SphereCollider sphereCol = sphere->GetCurrentSphereCollider();		//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æƒ…å ±å–å¾—
+	XMVECTOR sphereCenter = XMLoadFloat3(&sphereCol.center);	//çƒã®ä¸­å¿ƒç‚¹ãƒ™ã‚¯ãƒˆãƒ«
+	float radius = sphereCol.radius;							//çƒã®åŠå¾„
 
-	//Å’Z‹——£‚Ì“ñæ‚ğæ“¾
-	XMVECTOR closestPoint; //ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgã‚ÌÅ’Z“_
+	//æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’å–å¾—
+	XMVECTOR closestPoint; //ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸Šã®æœ€çŸ­ç‚¹
 	float distSq = CollisionManager::GetMinDistanceSquaredPointToSegment(
-		sphereCenter,				//“_(‹…‚Ì’†S“_)
-		cupSeg.pointA,				//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚Ì’[“_A
-		cupSeg.pointB,				//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚Ì’[“_B
-		closestPoint				//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgã‚ÌÅ’Z“_
+		sphereCenter,				//ç‚¹(çƒã®ä¸­å¿ƒç‚¹)
+		cupSeg.pointA,				//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç«¯ç‚¹A
+		cupSeg.pointB,				//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç«¯ç‚¹B
+		closestPoint				//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸Šã®æœ€çŸ­ç‚¹
 	);
 
-	float radiusSum = radius + cupSeg.radius;				//”¼Œa‚Ì˜a
-	if (!(distSq <= radiusSum * radiusSum)) return result;	//Õ“Ë‚È‚µ
+	float radiusSum = radius + cupSeg.radius;				//åŠå¾„ã®å’Œ
+	if (!(distSq <= radiusSum * radiusSum)) return result;	//è¡çªãªã—
 
-	//Õ“Ëƒpƒ‰ƒ[ƒ^‚ÌŒvZ
-	const float epsilon = 0.0001f;	//”÷¬’l
-	XMVECTOR point;					//Õ“Ë“_
-	XMVECTOR normal;				//–@ü
-	float depth;					//ŠÑ“ü[‚³
+	//è¡çªæ™‚ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨ˆç®—
+	const float epsilon = 0.0001f;	//å¾®å°å€¤
+	XMVECTOR point;					//è¡çªç‚¹
+	XMVECTOR normal;				//æ³•ç·š
+	float depth;					//è²«å…¥æ·±ã•
 
-	XMVECTOR diff;	//Å’Z“_‚Æ‹…‚Ì’†S“_‚Ì·ƒxƒNƒgƒ‹
-	float dist;		//Å’Z‹——£
+	XMVECTOR diff;	//æœ€çŸ­ç‚¹ã¨çƒã®ä¸­å¿ƒç‚¹ã®å·®ãƒ™ã‚¯ãƒˆãƒ«
+	float dist;		//æœ€çŸ­è·é›¢
 	diff = XMVectorSubtract(closestPoint, sphereCenter);
 	dist = XMVectorGetX(XMVector3Length(diff));
 
-	//–@üƒxƒNƒgƒ‹‚ÌŒvZ
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
 	if (dist > epsilon)
-	{//–@üƒxƒNƒgƒ‹ŒvZ
+	{//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«è¨ˆç®—
 		normal = XMVectorScale(
 			diff,
 			1.0f / dist
 		);
 	}
 	else
-	{//Å’Z‹——£‚ª‹É’[‚É¬‚³‚¢ê‡
-		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //“K“–‚È–@üƒxƒNƒgƒ‹
+	{//æœ€çŸ­è·é›¢ãŒæ¥µç«¯ã«å°ã•ã„å ´åˆ
+		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //é©å½“ãªæ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	}
 
-	depth = radiusSum - dist;								//ŠÑ“ü[‚³ŒvZ
+	depth = radiusSum - dist;								//è²«å…¥æ·±ã•è¨ˆç®—
 
-	//Õ“Ë“_‚ÌŒvZ(Å’Z“_‚Æ‹…‚Ì’†S“_‚Ì’†ŠÔ)
-	XMFLOAT3 surfacePoint; //‹…‚Ì•\–Êã‚Ì“_
+	//è¡çªç‚¹ã®è¨ˆç®—(æœ€çŸ­ç‚¹ã¨çƒã®ä¸­å¿ƒç‚¹ã®ä¸­é–“)
+	XMFLOAT3 surfacePoint; //çƒã®è¡¨é¢ä¸Šã®ç‚¹
 	surfacePoint = {
 		XMVectorGetX(sphereCenter) + XMVectorGetX(normal) * radius,
 		XMVectorGetY(sphereCenter) + XMVectorGetY(normal) * radius,
 		XMVectorGetZ(sphereCenter) + XMVectorGetZ(normal) * radius
 	};
-	XMFLOAT3 surfaceCapsule; //ƒJƒvƒZƒ‹‚Ì•\–Êã‚Ì“_
+	XMFLOAT3 surfaceCapsule; //ã‚«ãƒ—ã‚»ãƒ«ã®è¡¨é¢ä¸Šã®ç‚¹
 	surfaceCapsule = {
 		XMVectorGetX(closestPoint) - XMVectorGetX(normal) * cupSeg.radius,
 		XMVectorGetY(closestPoint) - XMVectorGetY(normal) * cupSeg.radius,
@@ -1311,33 +1311,33 @@ ContactResult CollisionManager::CollisionSphereToCapsule(
 		0.5f
 	);
 
-	//Õ“Ëî•ñ‚Ìì¬
-	result.isCollided = true;	//Õ“ËŒŸ’mƒtƒ‰ƒOON
-	result.point = point;		//Õ“Ë“_
-	result.normal = normal;		//–@ü
-	result.depth = depth;		//ŠÑ“ü[‚³
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	result.isCollided = true;	//è¡çªæ¤œçŸ¥ãƒ•ãƒ©ã‚°ON
+	result.point = point;		//è¡çªç‚¹
+	result.normal = normal;		//æ³•ç·š
+	result.depth = depth;		//è²«å…¥æ·±ã•
 
 	return result;
 }
 
-//ƒ{ƒbƒNƒX‚ÆƒJƒvƒZƒ‹‚ÌCCDÕ“Ë”»’è
+//ãƒœãƒƒã‚¯ã‚¹ã¨ã‚«ãƒ—ã‚»ãƒ«ã®CCDè¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionBoxToCapsuleCCD(Collider* box, Collider* capsule)
 {
-	int steps = CalculateSubsteps(box, capsule);	//ƒTƒuƒXƒeƒbƒv”ŒvZ
+	int steps = CalculateSubsteps(box, capsule);	//ã‚µãƒ–ã‚¹ãƒ†ãƒƒãƒ—æ•°è¨ˆç®—
 	ContactResult hit{};
 	float alphaHit = -1.0f;
 	float alphaPrev = 0.0f;
 
-	//ƒTƒuƒXƒeƒbƒv‚²‚Æ‚ÉÕ“Ë”»’è
+	//ã‚µãƒ–ã‚¹ãƒ†ãƒƒãƒ—ã”ã¨ã«è¡çªåˆ¤å®š
 	for (int i = 1; i <= steps; i++)
 	{
-		float alpha = static_cast<float>(i) / static_cast<float>(steps);	//•âŠÔƒpƒ‰ƒ[ƒ^
+		float alpha = static_cast<float>(i) / static_cast<float>(steps);	//è£œé–“ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 
-		OBB obb = CreateOBB(box, alpha); ;							//•âŠÔŒã‚ÌOBBì¬
-		CapsuleSegment seg = CreateCapsuleSegment(capsule, alpha);	//•âŠÔŒã‚ÌƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgì¬
+		OBB obb = CreateOBB(box, alpha); ;							//è£œé–“å¾Œã®OBBä½œæˆ
+		CapsuleSegment seg = CreateCapsuleSegment(capsule, alpha);	//è£œé–“å¾Œã®ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä½œæˆ
 
 
-		ContactResult result = CollisonOBBtoCapsule(obb, seg);	//OBB‘ÎƒJƒvƒZƒ‹‚ÌÕ“Ë”»’è
+		ContactResult result = CollisonOBBtoCapsule(obb, seg);	//OBBå¯¾ã‚«ãƒ—ã‚»ãƒ«ã®è¡çªåˆ¤å®š
 
 		if (result.isCollided)
 		{
@@ -1350,7 +1350,7 @@ ContactResult CollisionManager::CollisionBoxToCapsuleCCD(Collider* box, Collider
 
 	if (alphaHit < 0.0f) return {};
 
-	// 2) ‚¿‚å‚¢¸“xã‚°‚½‚¢‚È‚ç“ñ•ª’Tõ‚ÅTOI‚ğ‹l‚ß‚éi”CˆÓj
+	// 2) ã¡ã‚‡ã„ç²¾åº¦ä¸Šã’ãŸã„ãªã‚‰äºŒåˆ†æ¢ç´¢ã§TOIã‚’è©°ã‚ã‚‹ï¼ˆä»»æ„ï¼‰
 	float lo = alphaPrev, hi = alphaHit;
 	for (int k = 0; k < 6; k++)
 	{
@@ -1362,7 +1362,7 @@ ContactResult CollisionManager::CollisionBoxToCapsuleCCD(Collider* box, Collider
 	}
 	alphaHit = hi;
 
-	// 3) ƒqƒbƒgŒã‚É–@ü•ûŒü‚Öi‚ñ‚¾—Ê‚ğ depth ‚É”½‰f
+	// 3) ãƒ’ãƒƒãƒˆå¾Œã«æ³•ç·šæ–¹å‘ã¸é€²ã‚“ã é‡ã‚’ depth ã«åæ˜ 
 	XMVECTOR n = hit.normal;
 	XMFLOAT3 ccPrev = capsule->GetPreviousCenter();
 	XMFLOAT3 ccCurr = capsule->GetCurrentCenter();
@@ -1374,7 +1374,7 @@ ContactResult CollisionManager::CollisionBoxToCapsuleCCD(Collider* box, Collider
 	XMVECTOR bPrev = XMLoadFloat3(&bcPrev);
 	XMVECTOR bCurr = XMLoadFloat3(&bcCurr);
 
-	// ‘Š‘ÎˆÊ’u‚ÅŒ©‚éi—¼•û“®‚­‰Â”\«‚ğl—¶j
+	// ç›¸å¯¾ä½ç½®ã§è¦‹ã‚‹ï¼ˆä¸¡æ–¹å‹•ãå¯èƒ½æ€§ã‚’è€ƒæ…®ï¼‰
 	XMVECTOR relPrev = XMVectorSubtract(cPrev, bPrev);
 	XMVECTOR relCurr = XMVectorSubtract(cCurr, bCurr);
 	XMVECTOR relHit = XMVectorLerp(relPrev, relCurr, alphaHit);
@@ -1383,7 +1383,7 @@ ContactResult CollisionManager::CollisionBoxToCapsuleCCD(Collider* box, Collider
 		XMVector3Dot(XMVectorSubtract(relCurr, relHit), n)
 	);
 
-	// Œ»İp¨‚Å‚àƒI[ƒo[ƒ‰ƒbƒv‚ª‚ ‚é‚È‚ç‚»‚ê‚àŒ©‚é
+	// ç¾åœ¨å§¿å‹¢ã§ã‚‚ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—ãŒã‚ã‚‹ãªã‚‰ãã‚Œã‚‚è¦‹ã‚‹
 	ContactResult curr = CollisonOBBtoCapsule(CreateOBB(box, 1.0f),
 		CreateCapsuleSegment(capsule, 1.0f));
 	float currDepth = curr.isCollided ? curr.depth : 0.0f;
@@ -1393,51 +1393,51 @@ ContactResult CollisionManager::CollisionBoxToCapsuleCCD(Collider* box, Collider
 	return hit;
 }
 
-//OBB‘ÎƒJƒvƒZƒ‹‚ÌÕ“Ë”»’è
+//OBBå¯¾ã‚«ãƒ—ã‚»ãƒ«ã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const CapsuleSegment& capSeg)
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
 
-	const float radius = capSeg.radius; //ƒJƒvƒZƒ‹‚Ì”¼Œa
+	const float radius = capSeg.radius; //ã‚«ãƒ—ã‚»ãƒ«ã®åŠå¾„
 
-	XMVECTOR collisionPoints = XMVectorZero();	//Õ“Ë“_‚Ì‡ŒvƒxƒNƒgƒ‹
-	XMVECTOR collisionNormals = XMVectorZero();	//–@üƒxƒNƒgƒ‹‚Ì‡ŒvƒxƒNƒgƒ‹
+	XMVECTOR collisionPoints = XMVectorZero();	//è¡çªç‚¹ã®åˆè¨ˆãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR collisionNormals = XMVectorZero();	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®åˆè¨ˆãƒ™ã‚¯ãƒˆãƒ«
 
-	XMVECTOR A = capSeg.pointA;				//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚Ì’[“_A
-	XMVECTOR B = capSeg.pointB;				//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚Ì’[“_B
-	XMVECTOR AB = XMVectorSubtract(B, A);	//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚Ì•ûŒüƒxƒNƒgƒ‹
+	XMVECTOR A = capSeg.pointA;				//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç«¯ç‚¹A
+	XMVECTOR B = capSeg.pointB;				//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç«¯ç‚¹B
+	XMVECTOR AB = XMVectorSubtract(B, A);	//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 
-	float segLen = XMVectorGetX(XMVector3Length(AB));			//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚Ì’·‚³
-	int sampleCount = (int)ceilf(segLen / (radius * 0.5f));		//ƒTƒ“ƒvƒŠƒ“ƒO”‚ÌŒvZ
+	float segLen = XMVectorGetX(XMVector3Length(AB));			//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®é•·ã•
+	int sampleCount = (int)ceilf(segLen / (radius * 0.5f));		//ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°æ•°ã®è¨ˆç®—
 
-	float minDistSq = FLT_MAX;					//Å’Z‹——£‚Ì“ñæ‚ÌÅ¬’l
-	XMVECTOR  minClosestPoint = XMVectorZero();	//Å’Z‹——£‚ÌÅ¬’l‚Ì‚Æ‚«‚ÌOBBã‚ÌÅ’Z“_
-	XMVECTOR  minSamplePoint = XMVectorZero();	//Å’Z‹——£‚ÌÅ¬’l‚Ì‚Æ‚«‚ÌƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgã‚ÌƒTƒ“ƒvƒŠƒ“ƒO“_
+	float minDistSq = FLT_MAX;					//æœ€çŸ­è·é›¢ã®äºŒä¹—ã®æœ€å°å€¤
+	XMVECTOR  minClosestPoint = XMVectorZero();	//æœ€çŸ­è·é›¢ã®æœ€å°å€¤ã®ã¨ãã®OBBä¸Šã®æœ€çŸ­ç‚¹
+	XMVECTOR  minSamplePoint = XMVectorZero();	//æœ€çŸ­è·é›¢ã®æœ€å°å€¤ã®ã¨ãã®ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸Šã®ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç‚¹
 
-	//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgã‚ğƒTƒ“ƒvƒŠƒ“ƒO‚µ‚ÄOBB‚Æ‚ÌÅ’Z‹——£‚ğŒvZ
+	//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸Šã‚’ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã—ã¦OBBã¨ã®æœ€çŸ­è·é›¢ã‚’è¨ˆç®—
 	for (int i = 0; i < sampleCount; ++i)
 	{
-		float t = 0.0f;	//ƒpƒ‰ƒ[ƒ^t
+		float t = 0.0f;	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿t
 		if (sampleCount > 1)
-		{//ƒpƒ‰ƒ[ƒ^t‚ğŒvZ
-			t = static_cast<float>(i) / static_cast<float>(sampleCount - 1); //ƒpƒ‰ƒ[ƒ^t
+		{//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿tã‚’è¨ˆç®—
+			t = static_cast<float>(i) / static_cast<float>(sampleCount - 1); //ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿t
 		}
 
-		//ƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒgã‚ÌƒTƒ“ƒvƒŠƒ“ƒO“_‚ğŒvZ
+		//ã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸Šã®ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç‚¹ã‚’è¨ˆç®—
 		XMVECTOR sampleCenter = XMVectorAdd(
 			A,
 			XMVectorScale(AB, t)
 		);
 
-		//Å’Z‹——£‚Ì“ñæ‚ğæ“¾
-		XMVECTOR closestPoint; //OBBã‚ÌÅ’Z“_
+		//æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’å–å¾—
+		XMVECTOR closestPoint; //OBBä¸Šã®æœ€çŸ­ç‚¹
 		float distSq = GetMinDistanceSquaredPointToOBB(
-			sampleCenter,	//“_(ƒTƒ“ƒvƒŠƒ“ƒO“_)
+			sampleCenter,	//ç‚¹(ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç‚¹)
 			obb,			//OBB
-			closestPoint	//OBBã‚ÌÅ’Z“_
+			closestPoint	//OBBä¸Šã®æœ€çŸ­ç‚¹
 		);
 
-		//Å’Z‹——£‚ÌÅ¬’l‚ğXV
+		//æœ€çŸ­è·é›¢ã®æœ€å°å€¤ã‚’æ›´æ–°
 		if (distSq < minDistSq)
 		{
 			minDistSq = distSq;
@@ -1446,16 +1446,16 @@ ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const Capsu
 		}
 
 		if (distSq <= radius * radius)
-		{//Õ“ËŒŸ’m
+		{//è¡çªæ¤œçŸ¥
 			collisionPoints = closestPoint;
 
-			//–@üƒxƒNƒgƒ‹‚ÌŒvZ
-			XMVECTOR diff = XMVectorSubtract(sampleCenter, closestPoint); //Å’Z“_‚ÆƒTƒ“ƒvƒŠƒ“ƒO“_‚Ì·ƒxƒNƒgƒ‹
-			const float epsilon = 0.0001f;						//”÷¬’l
-			float dist = XMVectorGetX(XMVector3Length(diff));	//Å’Z‹——£
+			//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
+			XMVECTOR diff = XMVectorSubtract(sampleCenter, closestPoint); //æœ€çŸ­ç‚¹ã¨ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç‚¹ã®å·®ãƒ™ã‚¯ãƒˆãƒ«
+			const float epsilon = 0.0001f;						//å¾®å°å€¤
+			float dist = XMVectorGetX(XMVector3Length(diff));	//æœ€çŸ­è·é›¢
 
 			if (dist > epsilon)
-			{//–@üƒxƒNƒgƒ‹ŒvZ
+			{//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«è¨ˆç®—
 				collisionNormals = XMVectorScale(
 					diff,
 					1.0f / dist
@@ -1463,57 +1463,57 @@ ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const Capsu
 			}
 			else
 			{
-				collisionNormals = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //“K“–‚È–@üƒxƒNƒgƒ‹
+				collisionNormals = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //é©å½“ãªæ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 			}
 		}
 	}
 
-	if (minDistSq > radius * radius) return result; //Õ“Ë‚È‚µ
+	if (minDistSq > radius * radius) return result; //è¡çªãªã—
 
-	//Õ“Ëƒpƒ‰ƒ[ƒ^‚ÌŒvZ
-	XMVECTOR point;		//Õ“Ë“_
-	XMVECTOR normal;	//–@ü
-	float depth;		//ŠÑ“ü[‚³
+	//è¡çªæ™‚ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨ˆç®—
+	XMVECTOR point;		//è¡çªç‚¹
+	XMVECTOR normal;	//æ³•ç·š
+	float depth;		//è²«å…¥æ·±ã•
 
-	const float epsilon = 0.0001f;						//”÷¬’l
-	float dist = sqrtf((std::max)(minDistSq, epsilon));	//Å’Z‹——£
+	const float epsilon = 0.0001f;						//å¾®å°å€¤
+	float dist = sqrtf((std::max)(minDistSq, epsilon));	//æœ€çŸ­è·é›¢
 
-	// minSamplePoint ‚ğ OBBƒ[ƒJƒ‹‚Ö
+	// minSamplePoint ã‚’ OBBãƒ­ãƒ¼ã‚«ãƒ«ã¸
 	XMVECTOR dBox = XMVectorSubtract(minSamplePoint, obb.center);
 	float localX = XMVectorGetX(XMVector3Dot(dBox, obb.axis[0]));
 	float localY = XMVectorGetX(XMVector3Dot(dBox, obb.axis[1]));
 	float localZ = XMVectorGetX(XMVector3Dot(dBox, obb.axis[2]));
 
-	// š inside ”»’è‚ğ–¾¦
+	// â˜… inside åˆ¤å®šã‚’æ˜ç¤º
 	bool isInside =
 		fabsf(localX) <= obb.halfSizes.x &&
 		fabsf(localY) <= obb.halfSizes.y &&
 		fabsf(localZ) <= obb.halfSizes.z;
 
-	XMVECTOR normalVec;	//–@üƒxƒNƒgƒ‹
-	float depthScalar;		//ŠÑ“ü[‚³ƒXƒJƒ‰[’l
+	XMVECTOR normalVec;	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	float depthScalar;		//è²«å…¥æ·±ã•ã‚¹ã‚«ãƒ©ãƒ¼å€¤
 
 	if (isInside)
-	{//Å’Z‹——£‚ª‚Ù‚Ú0‚Ìê‡‚Ìˆ—iƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg‚ÌƒTƒ“ƒvƒŠƒ“ƒO“_‚ªOBB“à•”‚É‚ ‚éê‡j
-		//minSamplePoint‚ğOBB‚Ìƒ[ƒJƒ‹‹óŠÔ‚Ö“Š‰e
+	{//æœ€çŸ­è·é›¢ãŒã»ã¼0ã®å ´åˆã®å‡¦ç†ï¼ˆã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç‚¹ãŒOBBå†…éƒ¨ã«ã‚ã‚‹å ´åˆï¼‰
+		//minSamplePointã‚’OBBã®ãƒ­ãƒ¼ã‚«ãƒ«ç©ºé–“ã¸æŠ•å½±
 		XMVECTOR dBox = XMVectorSubtract(minSamplePoint, obb.center);
 
 		float localX = XMVectorGetX(XMVector3Dot(dBox, obb.axis[0]));
 		float localY = XMVectorGetX(XMVector3Dot(dBox, obb.axis[1]));
 		float localZ = XMVectorGetX(XMVector3Dot(dBox, obb.axis[2]));
 
-		// Še–Ê‚Ü‚Å‚Ì‹——£
+		// å„é¢ã¾ã§ã®è·é›¢
 		float sx = obb.halfSizes.x - fabsf(localX);
 		float sy = obb.halfSizes.y - fabsf(localY);
 		float sz = obb.halfSizes.z - fabsf(localZ);
 
-		float distToFace;	//’†S¨Å‹ß–Ê‚Ü‚Å‚Ì‹——£
-		float cx = localX, cy = localY, cz = localZ;	//Å‹ß“_‚Ìƒ[ƒJƒ‹À•W
+		float distToFace;	//ä¸­å¿ƒâ†’æœ€è¿‘é¢ã¾ã§ã®è·é›¢
+		float cx = localX, cy = localY, cz = localZ;	//æœ€è¿‘ç‚¹ã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™
 
-		//ˆê”Ô‹ß‚¢–Ê‚Ì–@ü‚ğŒˆ’èiBox-Sphere “à•”ˆ—‚Æ“¯‚¶j
+		//ä¸€ç•ªè¿‘ã„é¢ã®æ³•ç·šã‚’æ±ºå®šï¼ˆBox-Sphere å†…éƒ¨å‡¦ç†ã¨åŒã˜ï¼‰
 		if (sx <= sy && sx <= sz)
 		{
-			//}X–Ê
+			//Â±Xé¢
 			normalVec = (localX >= 0.0f) ? obb.axis[0] : XMVectorNegate(obb.axis[0]);
 			cx = (localX >= 0.0f) ? obb.halfSizes.x : -obb.halfSizes.x;
 			distToFace = sx;
@@ -1521,20 +1521,20 @@ ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const Capsu
 		}
 		else if (sy <= sz)
 		{
-			//}Y–Ê
+			//Â±Yé¢
 			normalVec = (localY >= 0.0f) ? obb.axis[1] : XMVectorNegate(obb.axis[1]);
 			cy = (localY >= 0.0f) ? obb.halfSizes.y : -obb.halfSizes.y;
 			distToFace = sy;
 		}
 		else
 		{
-			//}Z–Ê
+			//Â±Zé¢
 			normalVec = (localZ >= 0.0f) ? obb.axis[2] : XMVectorNegate(obb.axis[2]);
 			cz = (localZ >= 0.0f) ? obb.halfSizes.z : -obb.halfSizes.z;
 			distToFace = sz;
 		}
 
-		depthScalar = radius + distToFace;	//ŠÑ“ü[‚³ŒvZ
+		depthScalar = radius + distToFace;	//è²«å…¥æ·±ã•è¨ˆç®—
 
 		minClosestPoint = XMVectorAdd(
 			obb.center,
@@ -1549,22 +1549,22 @@ ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const Capsu
 	}
 	else
 	{
-		//’ÊíƒP[ƒXFÅ’Z“_‚ÆƒTƒ“ƒvƒ‹“_‚Ì·‚©‚ç–@ü‚ğŒvZ
+		//é€šå¸¸ã‚±ãƒ¼ã‚¹ï¼šæœ€çŸ­ç‚¹ã¨ã‚µãƒ³ãƒ—ãƒ«ç‚¹ã®å·®ã‹ã‚‰æ³•ç·šã‚’è¨ˆç®—
 		XMVECTOR diff = XMVectorSubtract(minSamplePoint, minClosestPoint);
 		normalVec = XMVectorScale(diff, 1.0f / dist);
 
-		depthScalar = radius - dist;	//ŠÑ“ü[‚³ŒvZ
+		depthScalar = radius - dist;	//è²«å…¥æ·±ã•è¨ˆç®—
 	}
 
-	depthScalar = (std::max)(0.0f, depthScalar);	//ŠÑ“ü[‚³ŒvZ
+	depthScalar = (std::max)(0.0f, depthScalar);	//è²«å…¥æ·±ã•è¨ˆç®—
 
-	//ƒJƒvƒZƒ‹‚Ì•\–Êã‚Ì“_
+	//ã‚«ãƒ—ã‚»ãƒ«ã®è¡¨é¢ä¸Šã®ç‚¹
 	XMVECTOR capsuleSurfacePoint = XMVectorSubtract(
 		minSamplePoint,
 		XMVectorScale(normalVec, radius)
 	);
 
-	//Õ“Ë“_‚ÌŒvZ(Å’Z“_‚ÆƒJƒvƒZƒ‹•\–Êã‚Ì“_‚Ì’†ŠÔ)
+	//è¡çªç‚¹ã®è¨ˆç®—(æœ€çŸ­ç‚¹ã¨ã‚«ãƒ—ã‚»ãƒ«è¡¨é¢ä¸Šã®ç‚¹ã®ä¸­é–“)
 	XMVECTOR contactPoint = XMVectorScale(
 		XMVectorAdd(
 			minClosestPoint,
@@ -1573,51 +1573,51 @@ ContactResult CollisionManager::CollisonOBBtoCapsule(const OBB& obb, const Capsu
 		0.5f
 	);
 
-	point = contactPoint;	//Õ“Ë“_İ’è
-	normal = normalVec;		//–@üİ’è
-	depth = depthScalar;	//ŠÑ“ü[‚³İ’è
+	point = contactPoint;	//è¡çªç‚¹è¨­å®š
+	normal = normalVec;		//æ³•ç·šè¨­å®š
+	depth = depthScalar;	//è²«å…¥æ·±ã•è¨­å®š
 
-	//Õ“Ëî•ñ‚Ìì¬
-	result.isCollided = true;	//Õ“ËŒŸ’mƒtƒ‰ƒOON
-	result.point = point;		//Õ“Ë“_
-	result.normal = normal;		//–@ü
-	result.depth = depth;		//ŠÑ“ü[‚³
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	result.isCollided = true;	//è¡çªæ¤œçŸ¥ãƒ•ãƒ©ã‚°ON
+	result.point = point;		//è¡çªç‚¹
+	result.normal = normal;		//æ³•ç·š
+	result.depth = depth;		//è²«å…¥æ·±ã•
 
 	return result;
 }
 
-//‹…ƒZƒOƒƒ“ƒgŠÔ‚ÌÕ“Ë”»’è
+//çƒã‚»ã‚°ãƒ¡ãƒ³ãƒˆé–“ã®è¡çªåˆ¤å®š
 ContactResult CollisionManager::CollisionSpheresSegments(const SphereSegment& segA, const SphereSegment& segB)
 {
-	ContactResult result{};	//Õ“ËŒ‹‰Ê\‘¢‘Ì
+	ContactResult result{};	//è¡çªçµæœæ§‹é€ ä½“
 
-	//’†S“_‚Ìæ“¾
+	//ä¸­å¿ƒç‚¹ã®å–å¾—
 	XMFLOAT3 centerA, centerB;
 	XMStoreFloat3(&centerA, segA.center);
 	XMStoreFloat3(&centerB, segB.center);
 
-	//”¼Œa‚Ìæ“¾
+	//åŠå¾„ã®å–å¾—
 	float radiusA = segA.radius;
 	float radiusB = segB.radius;
 	float radiusSum = radiusA + radiusB;
 
-	//’†S“_ŠÔ‚Ì‹——£‚ÌŒvZ
+	//ä¸­å¿ƒç‚¹é–“ã®è·é›¢ã®è¨ˆç®—
 	float dist = sqrtf(
 		(centerA.x - centerB.x) * (centerA.x - centerB.x) +
 		(centerA.y - centerB.y) * (centerA.y - centerB.y) +
 		(centerA.z - centerB.z) * (centerA.z - centerB.z)
 	);
 
-	//Õ“ËŒŸ’m
+	//è¡çªæ¤œçŸ¥
 	if (!(dist <= radiusSum)) return result;
 
-	//Õ“Ëƒpƒ‰ƒ[ƒ^‚ÌŒvZ
-	const float epsilon = 0.0001f;	//”÷¬’l
-	XMVECTOR point;					//Õ“Ë“_
-	XMVECTOR normal;				//–@ü
-	float depth;					//ŠÑ“ü[‚³
+	//è¡çªæ™‚ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨ˆç®—
+	const float epsilon = 0.0001f;	//å¾®å°å€¤
+	XMVECTOR point;					//è¡çªç‚¹
+	XMVECTOR normal;				//æ³•ç·š
+	float depth;					//è²«å…¥æ·±ã•
 
-	//Õ“Ë“_‚ÌŒvZ
+	//è¡çªç‚¹ã®è¨ˆç®—
 	point =
 	{
 		(centerA.x + centerB.x) / 2.0f,
@@ -1625,10 +1625,10 @@ ContactResult CollisionManager::CollisionSpheresSegments(const SphereSegment& se
 		(centerA.z + centerB.z) / 2.0f
 	};
 
-	//–@üƒxƒNƒgƒ‹
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	if (dist < epsilon)
-	{//’†S“_‚ª‚Ù‚Ú“¯‚¶ˆÊ’u‚É‚ ‚éê‡‚Ìˆ—
-		//“K“–‚È–@üƒxƒNƒgƒ‹‚ğİ’è
+	{//ä¸­å¿ƒç‚¹ãŒã»ã¼åŒã˜ä½ç½®ã«ã‚ã‚‹å ´åˆã®å‡¦ç†
+		//é©å½“ãªæ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨­å®š
 		normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else
@@ -1641,119 +1641,119 @@ ContactResult CollisionManager::CollisionSpheresSegments(const SphereSegment& se
 		);
 	}
 
-	//ŠÑ“ü[‚³
+	//è²«å…¥æ·±ã•
 	depth = radiusSum - dist;
 
-	//Õ“Ëî•ñ‚Ìì¬
-	result.isCollided = true;	//Õ“ËŒŸ’mƒtƒ‰ƒOON
-	result.point = point;		//Õ“Ë“_
-	result.normal = normal;		//–@ü
-	result.depth = depth;		//ŠÑ“ü[‚³
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	result.isCollided = true;	//è¡çªæ¤œçŸ¥ãƒ•ãƒ©ã‚°ON
+	result.point = point;		//è¡çªç‚¹
+	result.normal = normal;		//æ³•ç·š
+	result.depth = depth;		//è²«å…¥æ·±ã•
 
 	return result;
 }
 
-//ƒZƒOƒƒ“ƒgŠÔ‚ÌÅ¬‹——£‚Ì“ñæ‚ğæ“¾
+//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆé–“ã®æœ€å°è·é›¢ã®äºŒä¹—ã‚’å–å¾—
 float CollisionManager::GetMinDistanceSquaredSegmentToSegment(
-	const DirectX::FXMVECTOR& p0, const DirectX::FXMVECTOR& p1,	//ƒZƒOƒƒ“ƒgP‚Ì’[“_
-	const DirectX::FXMVECTOR& q0, const DirectX::FXMVECTOR& q1,	//ƒZƒOƒƒ“ƒgQ‚Ì’[“_
-	DirectX::XMVECTOR& outP,									//ƒZƒOƒƒ“ƒgPã‚ÌÅ’Z“_
-	DirectX::XMVECTOR& outQ										//ƒZƒOƒƒ“ƒgQã‚ÌÅ’Z“_
+	const DirectX::FXMVECTOR& p0, const DirectX::FXMVECTOR& p1,	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPã®ç«¯ç‚¹
+	const DirectX::FXMVECTOR& q0, const DirectX::FXMVECTOR& q1,	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQã®ç«¯ç‚¹
+	DirectX::XMVECTOR& outP,									//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPä¸Šã®æœ€çŸ­ç‚¹
+	DirectX::XMVECTOR& outQ										//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQä¸Šã®æœ€çŸ­ç‚¹
 )
 {
-	//ƒZƒOƒƒ“ƒgP‚ÆƒZƒOƒƒ“ƒgQ‚ÌŠeíƒxƒNƒgƒ‹ŒvZ
-	XMVECTOR dP = XMVectorSubtract(p1, p0);	//ƒZƒOƒƒ“ƒgP‚Ì•ûŒüƒxƒNƒgƒ‹
-	XMVECTOR dQ = XMVectorSubtract(q1, q0);	//ƒZƒOƒƒ“ƒgQ‚Ì•ûŒüƒxƒNƒgƒ‹
-	XMVECTOR W = XMVectorSubtract(p0, q0);	//ƒZƒOƒƒ“ƒgP‚Ì’[“_p0‚©‚çŒ©‚½ƒZƒOƒƒ“ƒgQ‚Ì’[“_q0‚Ö‚ÌƒxƒNƒgƒ‹
+	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPã¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQã®å„ç¨®ãƒ™ã‚¯ãƒˆãƒ«è¨ˆç®—
+	XMVECTOR dP = XMVectorSubtract(p1, p0);	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR dQ = XMVectorSubtract(q1, q0);	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR W = XMVectorSubtract(p0, q0);	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPã®ç«¯ç‚¹p0ã‹ã‚‰è¦‹ãŸã‚»ã‚°ãƒ¡ãƒ³ãƒˆQã®ç«¯ç‚¹q0ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
 
-	//Šeí“àÏŒvZ
-	float a = XMVectorGetX(XMVector3Dot(dP, dP));	//ƒZƒOƒƒ“ƒgP‚Ì•ûŒüƒxƒNƒgƒ‹‚Ì’·‚³‚Ì“ñæ
-	float b = XMVectorGetX(XMVector3Dot(dP, dQ));	//ƒZƒOƒƒ“ƒgP‚ÆƒZƒOƒƒ“ƒgQ‚Ì•ûŒüƒxƒNƒgƒ‹‚Ì“àÏ
-	float c = XMVectorGetX(XMVector3Dot(dQ, dQ));	//ƒZƒOƒƒ“ƒgQ‚Ì•ûŒüƒxƒNƒgƒ‹‚Ì’·‚³‚Ì“ñæ
-	float d = XMVectorGetX(XMVector3Dot(dP, W));	//ƒZƒOƒƒ“ƒgP‚Ì•ûŒüƒxƒNƒgƒ‹‚ÆƒxƒNƒgƒ‹W‚Ì“àÏ
-	float e = XMVectorGetX(XMVector3Dot(dQ, W));	//ƒZƒOƒƒ“ƒgQ‚Ì•ûŒüƒxƒNƒgƒ‹‚ÆƒxƒNƒgƒ‹W‚Ì“àÏ
+	//å„ç¨®å†…ç©è¨ˆç®—
+	float a = XMVectorGetX(XMVector3Dot(dP, dP));	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã®äºŒä¹—
+	float b = XMVectorGetX(XMVector3Dot(dP, dQ));	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPã¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©
+	float c = XMVectorGetX(XMVector3Dot(dQ, dQ));	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã®äºŒä¹—
+	float d = XMVectorGetX(XMVector3Dot(dP, W));	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã¨ãƒ™ã‚¯ãƒˆãƒ«Wã®å†…ç©
+	float e = XMVectorGetX(XMVector3Dot(dQ, W));	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã¨ãƒ™ã‚¯ãƒˆãƒ«Wã®å†…ç©
 
-	const float EPSILON = 0.0001f;	//ƒ[ƒœZ–h~—p‚Ì”÷¬’l
-	float denom = a * c - b * b;	//•ª•ê
+	const float EPSILON = 0.0001f;	//ã‚¼ãƒ­é™¤ç®—é˜²æ­¢ç”¨ã®å¾®å°å€¤
+	float denom = a * c - b * b;	//åˆ†æ¯
 
-	float s, t; //ƒpƒ‰ƒ[ƒ^s‚Æt
+	float s, t; //ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿sã¨t
 
 	if (denom < EPSILON)
-	{//•½s‚Èê‡
-		s = 0.0f;	//ƒZƒOƒƒ“ƒgPã‚Ì“_‚Íp0‚ÉŒÅ’è
-		t = e / c;	//ƒZƒOƒƒ“ƒgQã‚Ì“_‚ğŒvZ
+	{//å¹³è¡Œãªå ´åˆ
+		s = 0.0f;	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPä¸Šã®ç‚¹ã¯p0ã«å›ºå®š
+		t = e / c;	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQä¸Šã®ç‚¹ã‚’è¨ˆç®—
 	}
 	else
-	{//•½s‚Å‚È‚¢ê‡
-		s = (b * e - c * d) / denom;	 //ƒZƒOƒƒ“ƒgPã‚Ì“_‚ğŒvZ
-		t = (a * e - b * d) / denom;	 //ƒZƒOƒƒ“ƒgQã‚Ì“_‚ğŒvZ
+	{//å¹³è¡Œã§ãªã„å ´åˆ
+		s = (b * e - c * d) / denom;	 //ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPä¸Šã®ç‚¹ã‚’è¨ˆç®—
+		t = (a * e - b * d) / denom;	 //ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQä¸Šã®ç‚¹ã‚’è¨ˆç®—
 	}
 
-	//ƒpƒ‰ƒ[ƒ^s‚Æt‚ğƒZƒOƒƒ“ƒg‚Ì”ÍˆÍ“à‚ÉƒNƒ‰ƒ“ƒv
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿sã¨tã‚’ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç¯„å›²å†…ã«ã‚¯ãƒ©ãƒ³ãƒ—
 	s = (std::max)(0.0f, (std::min)(1.0f, s));
 	t = (std::max)(0.0f, (std::min)(1.0f, t));
 
-	//Å’Z“_‚ÌŒvZ
-	outP = XMVectorAdd(p0, XMVectorScale(dP, s)); //ƒZƒOƒƒ“ƒgPã‚ÌÅ’Z“_
-	outQ = XMVectorAdd(q0, XMVectorScale(dQ, t)); //ƒZƒOƒƒ“ƒgQã‚ÌÅ’Z“_
+	//æœ€çŸ­ç‚¹ã®è¨ˆç®—
+	outP = XMVectorAdd(p0, XMVectorScale(dP, s)); //ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPä¸Šã®æœ€çŸ­ç‚¹
+	outQ = XMVectorAdd(q0, XMVectorScale(dQ, t)); //ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQä¸Šã®æœ€çŸ­ç‚¹
 
-	//Å’Z‹——£‚Ì“ñæ‚ÌŒvZ
-	XMVECTOR diff = XMVectorSubtract(outP, outQ); //Å’Z“_“¯m‚Ì·ƒxƒNƒgƒ‹
-	return XMVectorGetX(XMVector3Dot(diff, diff)); //Å’Z‹——£‚Ì“ñæ‚ğ•Ô‚·
+	//æœ€çŸ­è·é›¢ã®äºŒä¹—ã®è¨ˆç®—
+	XMVECTOR diff = XMVectorSubtract(outP, outQ); //æœ€çŸ­ç‚¹åŒå£«ã®å·®ãƒ™ã‚¯ãƒˆãƒ«
+	return XMVectorGetX(XMVector3Dot(diff, diff)); //æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’è¿”ã™
 }
 
-//“_‚ÆƒZƒOƒƒ“ƒgŠÔ‚ÌÅ¬‹——£‚Ì“ñæ‚ğæ“¾
+//ç‚¹ã¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆé–“ã®æœ€å°è·é›¢ã®äºŒä¹—ã‚’å–å¾—
 float CollisionManager::GetMinDistanceSquaredPointToSegment(const DirectX::FXMVECTOR& point, const DirectX::FXMVECTOR& segA, const DirectX::FXMVECTOR& segB, DirectX::XMVECTOR& outClosest)
 {
-	XMVECTOR segDir = XMVectorSubtract(segB, segA);		//ƒZƒOƒƒ“ƒg‚Ì•ûŒüƒxƒNƒgƒ‹
-	XMVECTOR toPoint = XMVectorSubtract(point, segA);	//ƒZƒOƒƒ“ƒg‚Ì’[“_A‚©‚ç“_‚Ö‚ÌƒxƒNƒgƒ‹
+	XMVECTOR segDir = XMVectorSubtract(segB, segA);		//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR toPoint = XMVectorSubtract(point, segA);	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç«¯ç‚¹Aã‹ã‚‰ç‚¹ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
 
-	float segLengthSquared = XMVectorGetX(XMVector3Dot(segDir, segDir)); //ƒZƒOƒƒ“ƒg‚Ì’·‚³‚Ì“ñæ
+	float segLengthSquared = XMVectorGetX(XMVector3Dot(segDir, segDir)); //ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®é•·ã•ã®äºŒä¹—
 
-	//ƒZƒOƒƒ“ƒg‚Ì’·‚³‚ª‹É’[‚É’Z‚¢ê‡‚Ìˆ—
-	const float epsilon = 0.0001f; //ƒ[ƒœZ–h~—p‚Ì”÷¬’l
+	//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®é•·ã•ãŒæ¥µç«¯ã«çŸ­ã„å ´åˆã®å‡¦ç†
+	const float epsilon = 0.0001f; //ã‚¼ãƒ­é™¤ç®—é˜²æ­¢ç”¨ã®å¾®å°å€¤
 	if (segLengthSquared < epsilon)
-	{//ƒZƒOƒƒ“ƒg‚Ì’·‚³‚ª‚Ù‚Úƒ[ƒ‚Ìê‡A’[“_A‚ğÅ’Z“_‚Æ‚·‚é
+	{//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®é•·ã•ãŒã»ã¼ã‚¼ãƒ­ã®å ´åˆã€ç«¯ç‚¹Aã‚’æœ€çŸ­ç‚¹ã¨ã™ã‚‹
 		outClosest = segA;
-		XMVECTOR diff = XMVectorSubtract(point, segA);	//Å’Z“_‚Æ“_‚Ì·ƒxƒNƒgƒ‹
-		return XMVectorGetX(XMVector3Dot(diff, diff));	//Å’Z‹——£‚Ì“ñæ‚ğ•Ô‚·
+		XMVECTOR diff = XMVectorSubtract(point, segA);	//æœ€çŸ­ç‚¹ã¨ç‚¹ã®å·®ãƒ™ã‚¯ãƒˆãƒ«
+		return XMVectorGetX(XMVector3Dot(diff, diff));	//æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’è¿”ã™
 	}
 
-	float t = XMVectorGetX(XMVector3Dot(toPoint, segDir)) / segLengthSquared; //ƒpƒ‰ƒ[ƒ^t‚ÌŒvZ
+	float t = XMVectorGetX(XMVector3Dot(toPoint, segDir)) / segLengthSquared; //ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿tã®è¨ˆç®—
 
-	//ƒpƒ‰ƒ[ƒ^t‚ğƒZƒOƒƒ“ƒg‚Ì”ÍˆÍ“à‚ÉƒNƒ‰ƒ“ƒv
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿tã‚’ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç¯„å›²å†…ã«ã‚¯ãƒ©ãƒ³ãƒ—
 	t = (std::max)(0.0f, (std::min)(1.0f, t));
 
-	//Å’Z“_‚ÌŒvZ
-	outClosest = XMVectorAdd(segA, XMVectorScale(segDir, t)); //ƒZƒOƒƒ“ƒgã‚ÌÅ’Z“_
+	//æœ€çŸ­ç‚¹ã®è¨ˆç®—
+	outClosest = XMVectorAdd(segA, XMVectorScale(segDir, t)); //ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸Šã®æœ€çŸ­ç‚¹
 
-	//Å’Z‹——£‚Ì“ñæ‚ÌŒvZ
-	XMVECTOR diff = XMVectorSubtract(point, outClosest);	//Å’Z“_‚Æ“_‚Ì·ƒxƒNƒgƒ‹
-	return XMVectorGetX(XMVector3Dot(diff, diff));			//Å’Z‹——£‚Ì“ñæ‚ğ•Ô‚·
+	//æœ€çŸ­è·é›¢ã®äºŒä¹—ã®è¨ˆç®—
+	XMVECTOR diff = XMVectorSubtract(point, outClosest);	//æœ€çŸ­ç‚¹ã¨ç‚¹ã®å·®ãƒ™ã‚¯ãƒˆãƒ«
+	return XMVectorGetX(XMVector3Dot(diff, diff));			//æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’è¿”ã™
 }
 
-//“_‚ÆOBBŠÔ‚ÌÅ¬‹——£‚Ì“ñæ‚ğæ“¾
+//ç‚¹ã¨OBBé–“ã®æœ€å°è·é›¢ã®äºŒä¹—ã‚’å–å¾—
 float CollisionManager::GetMinDistanceSquaredPointToOBB(const DirectX::FXMVECTOR& point, const OBB& obb, DirectX::XMVECTOR& outClosest)
 {
-	XMVECTOR d = XMVectorSubtract(point, obb.center); //“_‚©‚çOBB‚Ì’†S‚Ö‚ÌƒxƒNƒgƒ‹
+	XMVECTOR d = XMVectorSubtract(point, obb.center); //ç‚¹ã‹ã‚‰OBBã®ä¸­å¿ƒã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
 
-	const XMFLOAT3& halfSizes = obb.halfSizes; //OBB‚ÌŠe²•ûŒü‚Ì”¼•ª‚ÌƒTƒCƒY
+	const XMFLOAT3& halfSizes = obb.halfSizes; //OBBã®å„è»¸æ–¹å‘ã®åŠåˆ†ã®ã‚µã‚¤ã‚º
 
-	//“_‚ÌOBB‚Ìƒ[ƒJƒ‹À•WŒn‚Å‚ÌˆÊ’u‚ğŒvZ
-	float local[3]; //OBB‚Ìƒ[ƒJƒ‹À•WŒn‚Å‚Ì“_‚ÌˆÊ’u
-	//Še²‚É‚Â‚¢‚Ä“àÏŒvZ
+	//ç‚¹ã®OBBã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®ä½ç½®ã‚’è¨ˆç®—
+	float local[3]; //OBBã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®ç‚¹ã®ä½ç½®
+	//å„è»¸ã«ã¤ã„ã¦å†…ç©è¨ˆç®—
 	for (int i = 0; i < 3; ++i)
 	{
 		local[i] = XMVectorGetX(XMVector3Dot(d, obb.axis[i]));
 	}
 
-	//ƒNƒ‰ƒ“ƒvˆ—
-	float clamped[3]; //Še²•ûŒü‚ÉƒNƒ‰ƒ“ƒv‚µ‚½’l
+	//ã‚¯ãƒ©ãƒ³ãƒ—å‡¦ç†
+	float clamped[3]; //å„è»¸æ–¹å‘ã«ã‚¯ãƒ©ãƒ³ãƒ—ã—ãŸå€¤
 	clamped[0] = (std::max)(-halfSizes.x, (std::min)(halfSizes.x, local[0]));
 	clamped[1] = (std::max)(-halfSizes.y, (std::min)(halfSizes.y, local[1]));
 	clamped[2] = (std::max)(-halfSizes.z, (std::min)(halfSizes.z, local[2]));
 
-	//Å’Z“_‚ÌŒvZ
+	//æœ€çŸ­ç‚¹ã®è¨ˆç®—
 	outClosest = XMVectorAdd(
 		obb.center,
 		XMVectorAdd(
@@ -1765,15 +1765,15 @@ float CollisionManager::GetMinDistanceSquaredPointToOBB(const DirectX::FXMVECTOR
 		)
 	);
 
-	//Å’Z‹——£‚Ì“ñæ‚ÌŒvZ
-	XMVECTOR diff = XMVectorSubtract(point, outClosest);	//Å’Z“_‚Æ“_‚Ì·ƒxƒNƒgƒ‹
-	return XMVectorGetX(XMVector3Dot(diff, diff));			//Å’Z‹——£‚Ì“ñæ‚ğ•Ô‚·
+	//æœ€çŸ­è·é›¢ã®äºŒä¹—ã®è¨ˆç®—
+	XMVECTOR diff = XMVectorSubtract(point, outClosest);	//æœ€çŸ­ç‚¹ã¨ç‚¹ã®å·®ãƒ™ã‚¯ãƒˆãƒ«
+	return XMVectorGetX(XMVector3Dot(diff, diff));			//æœ€çŸ­è·é›¢ã®äºŒä¹—ã‚’è¿”ã™
 }
 
-//Õ“ËƒyƒA‚ª•Û‘¶‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
+//è¡çªãƒšã‚¢ãŒä¿å­˜ã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯
 bool CollisionManager::PairExistsinList(const CollisionPair& pair, const std::vector<CollisionPair>& collisionPairs)
 {
-	//•Û‘¶‚³‚ê‚Ä‚¢‚éÕ“ËƒyƒA‚Æ”äŠr
+	//ä¿å­˜ã•ã‚Œã¦ã„ã‚‹è¡çªãƒšã‚¢ã¨æ¯”è¼ƒ
 	for (auto& p : collisionPairs)
 	{
 		if (pair.colliderA == p.colliderA && pair.colliderB == p.colliderB
@@ -1785,11 +1785,11 @@ bool CollisionManager::PairExistsinList(const CollisionPair& pair, const std::ve
 	return false;
 }
 
-//ƒRƒ‰ƒCƒ_[‚ÌÕ“Ëó‘Ô‚ğİ’è
+//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®è¡çªçŠ¶æ…‹ã‚’è¨­å®š
 void CollisionManager::SetCollisionState(Collider* self, Collider* opponent, CollisionData::COLLISION_STATE state)
 {
 	auto& infoList = self->GetCollisionInfos();
-	//Õ“Ëî•ñƒŠƒXƒg‚©‚ç‘ŠèƒRƒ‰ƒCƒ_[‚ğ’T‚µ‚Äó‘Ô‚ğİ’è
+	//è¡çªæƒ…å ±ãƒªã‚¹ãƒˆã‹ã‚‰ç›¸æ‰‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’æ¢ã—ã¦çŠ¶æ…‹ã‚’è¨­å®š
 	for (auto& info : infoList)
 	{
 		if (info.opponent == opponent)
@@ -1800,158 +1800,158 @@ void CollisionManager::SetCollisionState(Collider* self, Collider* opponent, Col
 	}
 }
 
-//ƒRƒ‰ƒCƒ_[‚ÉÕ“Ëî•ñ‚ğ’Ç‰Á
+//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã«è¡çªæƒ…å ±ã‚’è¿½åŠ 
 void CollisionManager::PushCollisionInfo(Collider* colliderA, Collider* colliderB, ContactResult& result)
 {
 	XMFLOAT3 contactP, normalF;
-	XMStoreFloat3(&contactP, result.point);	//Õ“Ë“_
-	XMStoreFloat3(&normalF, result.normal);	//–@üƒxƒNƒgƒ‹
+	XMStoreFloat3(&contactP, result.point);	//è¡çªç‚¹
+	XMStoreFloat3(&normalF, result.normal);	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 
 	XMFLOAT3 penetration =
-	{//ŠÑ“ü[‚³ƒxƒNƒgƒ‹‚ÌŒvZ
+	{//è²«å…¥æ·±ã•ãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
 		normalF.x * result.depth,
 		normalF.y * result.depth,
 		normalF.z * result.depth
 	};
 
-	//Õ“Ëî•ñ‚Ìì¬
-	CollisionInfo infoA;					//Õ“Ëî•ñ
-	infoA.opponent = colliderB;				//Õ“Ë‘Šè‚ÌƒRƒ‰ƒCƒ_[
-	infoA.contactPoint = contactP;			//Õ“Ë“_
-	infoA.contactNormal = normalF;			//–@ü
-	infoA.penetrationDepth = penetration;	//ŠÑ“ü[‚³
-	colliderA->AddCollisionInfo(infoA);		//Õ“Ëî•ñ‚ğ’Ç‰Á
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	CollisionInfo infoA;					//è¡çªæƒ…å ±
+	infoA.opponent = colliderB;				//è¡çªç›¸æ‰‹ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+	infoA.contactPoint = contactP;			//è¡çªç‚¹
+	infoA.contactNormal = normalF;			//æ³•ç·š
+	infoA.penetrationDepth = penetration;	//è²«å…¥æ·±ã•
+	colliderA->AddCollisionInfo(infoA);		//è¡çªæƒ…å ±ã‚’è¿½åŠ 
 
-	CollisionInfo infoB;					//Õ“Ëî•ñ
-	infoB.opponent = colliderA;				//Õ“Ë‘Šè‚ÌƒRƒ‰ƒCƒ_[
-	infoB.contactPoint = contactP;			//Õ“Ë“_
-	infoB.contactNormal =					//”½“]–@ü
+	CollisionInfo infoB;					//è¡çªæƒ…å ±
+	infoB.opponent = colliderA;				//è¡çªç›¸æ‰‹ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+	infoB.contactPoint = contactP;			//è¡çªç‚¹
+	infoB.contactNormal =					//åè»¢æ³•ç·š
 	{
 		-normalF.x,
 		-normalF.y,
 		-normalF.z
 	};
-	infoB.penetrationDepth =				//”½“]ŠÑ“ü[‚³
+	infoB.penetrationDepth =				//åè»¢è²«å…¥æ·±ã•
 	{
 		-penetration.x,
 		-penetration.y,
 		-penetration.z
 	};
-	colliderB->AddCollisionInfo(infoB);		//Õ“Ëî•ñ‚ğ’Ç‰Á
+	colliderB->AddCollisionInfo(infoB);		//è¡çªæƒ…å ±ã‚’è¿½åŠ 
 
 	colliderA->SetDetected(true);
 	colliderB->SetDetected(true);
 }
 
-//–@üƒxƒNƒgƒ‹‚ğƒRƒ‰ƒCƒ_[A‚©‚çB‚Ì•ûŒü‚ÉŒü‚¯‚é
+//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã‹ã‚‰Bã®æ–¹å‘ã«å‘ã‘ã‚‹
 void CollisionManager::OrientNormalAToB(Collider* colliderA, Collider* colliderB, ContactResult& result)
 {
-	XMVECTOR normal = result.normal;	//–@üƒxƒNƒgƒ‹
+	XMVECTOR normal = result.normal;	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 
 	XMFLOAT3 centerAF = colliderA->GetCurrentCenter();
 	XMFLOAT3 centerBF = colliderB->GetCurrentCenter();
 
-	//ƒRƒ‰ƒCƒ_[AEB‚Ì’†S“_ƒxƒNƒgƒ‹‚ğæ“¾
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aãƒ»Bã®ä¸­å¿ƒç‚¹ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—
 	XMVECTOR centerA = XMLoadFloat3(&centerAF);
 	XMVECTOR centerB = XMLoadFloat3(&centerBF);
 
-	//ƒRƒ‰ƒCƒ_[A‚©‚çB‚Ö‚Ì•ûŒüƒxƒNƒgƒ‹‚Æ–@üƒxƒNƒgƒ‹‚Ì“àÏ‚ğŒvZ
-	XMVECTOR dir = XMVectorSubtract(centerB, centerA);	//ƒRƒ‰ƒCƒ_[A‚©‚çB‚Ö‚Ì•ûŒüƒxƒNƒgƒ‹
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã‹ã‚‰Bã¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã¨æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©ã‚’è¨ˆç®—
+	XMVECTOR dir = XMVectorSubtract(centerB, centerA);	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã‹ã‚‰Bã¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 
-	if (XMVectorGetX(XMVector3Dot(dir, normal)) < 0.0f)	//–@üƒxƒNƒgƒ‹‚ªƒRƒ‰ƒCƒ_[A‚©‚çB‚Ì•ûŒü‚ğŒü‚¢‚Ä‚¢‚È‚¢ê‡
+	if (XMVectorGetX(XMVector3Dot(dir, normal)) < 0.0f)	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ãŒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼Aã‹ã‚‰Bã®æ–¹å‘ã‚’å‘ã„ã¦ã„ãªã„å ´åˆ
 	{
-		normal = XMVectorNegate(normal);	//–@üƒxƒNƒgƒ‹‚ğ”½“]
+		normal = XMVectorNegate(normal);	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’åè»¢
 	}
 
-	result.normal = normal;	//–@üƒxƒNƒgƒ‹‚ğXV
+	result.normal = normal;	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ›´æ–°
 }
 
-//ƒŒƒCƒ„[ƒ}ƒXƒN‚É‚æ‚éƒŒƒCƒLƒƒƒXƒg‚ÌÕ“Ë”»’è
+//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ã«ã‚ˆã‚‹ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã®è¡çªåˆ¤å®š
 bool CollisionManager::CheckLayerRaycast(const CollisionData::RaycastSegment& ray, Collider* collider)
 {
-	LayerMask rayBit = LayerToBit(ray.layer);				//ƒŒƒC‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
-	LayerMask colBit = LayerToBit(collider->GetLayer());	//ƒRƒ‰ƒCƒ_[‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
+	LayerMask rayBit = LayerToBit(ray.layer);				//ãƒ¬ã‚¤ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
+	LayerMask colBit = LayerToBit(collider->GetLayer());	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
 
-	LayerMask rayMask = ray.layerMask;				//ƒŒƒC‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
-	LayerMask colMask = collider->GetLayerMask();	//ƒRƒ‰ƒCƒ_[‚ÌƒŒƒCƒ„[ƒ}ƒXƒN
+	LayerMask rayMask = ray.layerMask;				//ãƒ¬ã‚¤ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
+	LayerMask colMask = collider->GetLayerMask();	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯
 
-	bool rayWantsCol = (rayMask & colBit) != 0;	//ƒŒƒC‚ªƒRƒ‰ƒCƒ_[‚ÆÕ“Ë‚µ‚½‚¢‚©‚Ç‚¤‚©
-	bool colWantsRay = (colMask & rayBit) != 0;	//ƒRƒ‰ƒCƒ_[‚ªƒŒƒC‚ÆÕ“Ë‚µ‚½‚¢‚©‚Ç‚¤‚©
+	bool rayWantsCol = (rayMask & colBit) != 0;	//ãƒ¬ã‚¤ãŒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã¨è¡çªã—ãŸã„ã‹ã©ã†ã‹
+	bool colWantsRay = (colMask & rayBit) != 0;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãŒãƒ¬ã‚¤ã¨è¡çªã—ãŸã„ã‹ã©ã†ã‹
 
-	return rayWantsCol && colWantsRay;	//Œİ‚¢‚ÉÕ“Ë‚µ‚½‚¢ê‡‚Ítrue‚ğ•Ô‚·
+	return rayWantsCol && colWantsRay;	//äº’ã„ã«è¡çªã—ãŸã„å ´åˆã¯trueã‚’è¿”ã™
 }
 
-//ƒŒƒCƒLƒƒƒXƒg‚Æƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[‚ÌÕ“Ë”»’è
+//ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã¨ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®è¡çªåˆ¤å®š
 bool CollisionManager::RaycastBox(const CollisionData::RaycastSegment& ray, Collider* collider, CollisionData::RaycastHitInfo& outHitInfo)
 {
-	const float EPSILON = 0.0001f; //”÷¬’l
+	const float EPSILON = 0.0001f; //å¾®å°å€¤
 
-	auto obb = CreateOBB(collider, 1.0f); //ƒRƒ‰ƒCƒ_[‚ÌOBBî•ñæ“¾
+	auto obb = CreateOBB(collider, 1.0f); //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®OBBæƒ…å ±å–å¾—
 
-	//ƒŒƒC‚Ìn“_‚Æ•ûŒüƒxƒNƒgƒ‹æ“¾
-	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//ƒŒƒC‚Ìn“_ƒxƒNƒgƒ‹
-	XMVECTOR rayDirection = XMVectorSubtract(						//ƒŒƒC‚Ì•ûŒüƒxƒNƒgƒ‹
+	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã¨æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
+	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//ãƒ¬ã‚¤ã®å§‹ç‚¹ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR rayDirection = XMVectorSubtract(						//ãƒ¬ã‚¤ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 		XMLoadFloat3(&ray.endPoint),
 		rayOrigin
 	);
-	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//ƒŒƒC‚Ì’·‚³
+	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//ãƒ¬ã‚¤ã®é•·ã•
 
-	if (rayLength < EPSILON) return false; //ƒŒƒC‚Ì’·‚³‚ª‹É’[‚É’Z‚¢ê‡AÕ“Ë‚µ‚È‚¢
+	if (rayLength < EPSILON) return false; //ãƒ¬ã‚¤ã®é•·ã•ãŒæ¥µç«¯ã«çŸ­ã„å ´åˆã€è¡çªã—ãªã„
 
-	XMVECTOR directionNorm = XMVectorScale(	//³‹K‰»‚³‚ê‚½ƒŒƒC‚Ì•ûŒüƒxƒNƒgƒ‹
+	XMVECTOR directionNorm = XMVectorScale(	//æ­£è¦åŒ–ã•ã‚ŒãŸãƒ¬ã‚¤ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 		rayDirection,
 		1.0f / rayLength
 	);
 
-	//ƒŒƒC‚Ìn“_‚ğOBB‚Ìƒ[ƒJƒ‹À•WŒn‚É•ÏŠ·
+	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã‚’OBBã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã«å¤‰æ›
 	XMVECTOR relativeOrigin = XMVectorSubtract(rayOrigin, obb.center); 
 
-	//ƒŒƒC‚Ìn“_‚©‚çOBB‚Ì’†S‚Ö‚ÌƒxƒNƒgƒ‹
-	float originLocal[3];		//ƒŒƒC‚Ìn“_‚ÌOBBƒ[ƒJƒ‹À•WŒn‚Å‚ÌˆÊ’u
-	float directionLocal[3];	//ƒŒƒC‚Ì•ûŒüƒxƒNƒgƒ‹‚ÌOBBƒ[ƒJƒ‹À•WŒn‚Å‚Ì¬•ª
+	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã‹ã‚‰OBBã®ä¸­å¿ƒã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
+	float originLocal[3];		//ãƒ¬ã‚¤ã®å§‹ç‚¹ã®OBBãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®ä½ç½®
+	float directionLocal[3];	//ãƒ¬ã‚¤ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®OBBãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®æˆåˆ†
 	for(int i = 0; i < 3; i++)
 	{
 		originLocal[i] = XMVectorGetX(XMVector3Dot(relativeOrigin, obb.axis[i]));
 		directionLocal[i] = XMVectorGetX(XMVector3Dot(directionNorm, obb.axis[i]));
 	}
 
-	//ƒXƒ‰ƒu–@‚É‚æ‚éƒŒƒC‚ÆOBB‚ÌÕ“Ë”»’è
-	const XMFLOAT3& halfSizes = obb.halfSizes; //OBB‚ÌŠe²•ûŒü‚Ì”¼•ª‚ÌƒTƒCƒY
+	//ã‚¹ãƒ©ãƒ–æ³•ã«ã‚ˆã‚‹ãƒ¬ã‚¤ã¨OBBã®è¡çªåˆ¤å®š
+	const XMFLOAT3& halfSizes = obb.halfSizes; //OBBã®å„è»¸æ–¹å‘ã®åŠåˆ†ã®ã‚µã‚¤ã‚º
 	float half[3] = { halfSizes.x, halfSizes.y, halfSizes.z };
 
-	float tEnter = 0.0f;		//ƒŒƒC‚Ì“ü‚èŒûƒpƒ‰ƒ[ƒ^
-	float tExit = rayLength;	//ƒŒƒC‚ÌoŒûƒpƒ‰ƒ[ƒ^
+	float tEnter = 0.0f;		//ãƒ¬ã‚¤ã®å…¥ã‚Šå£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	float tExit = rayLength;	//ãƒ¬ã‚¤ã®å‡ºå£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 
 	for (int i = 0; i < 3; i++)
 	{
-		float origin = originLocal[i];			//ƒŒƒC‚Ìn“_‚ÌOBBƒ[ƒJƒ‹À•WŒn‚Å‚ÌˆÊ’u
-		float direction = directionLocal[i];	//ƒŒƒC‚Ì•ûŒüƒxƒNƒgƒ‹‚ÌOBBƒ[ƒJƒ‹À•WŒn‚Å‚Ì¬•ª
-		float halfSize = half[i];				//OBB‚ÌŠe²•ûŒü‚Ì”¼•ª‚ÌƒTƒCƒY
+		float origin = originLocal[i];			//ãƒ¬ã‚¤ã®å§‹ç‚¹ã®OBBãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®ä½ç½®
+		float direction = directionLocal[i];	//ãƒ¬ã‚¤ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®OBBãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®æˆåˆ†
+		float halfSize = half[i];				//OBBã®å„è»¸æ–¹å‘ã®åŠåˆ†ã®ã‚µã‚¤ã‚º
 
 		if (fabs(direction) < EPSILON)
 		{
-			//ƒŒƒC‚ªƒXƒ‰ƒu‚É•½s‚Èê‡An“_‚ªƒXƒ‰ƒu‚Ì”ÍˆÍ“à‚É‚ ‚é‚©ƒ`ƒFƒbƒN
+			//ãƒ¬ã‚¤ãŒã‚¹ãƒ©ãƒ–ã«å¹³è¡Œãªå ´åˆã€å§‹ç‚¹ãŒã‚¹ãƒ©ãƒ–ã®ç¯„å›²å†…ã«ã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 			if(origin < -halfSize || origin > halfSize) return false;
 		}
 		else
 		{
-			float invD = 1.0f / direction;			//•ûŒü¬•ª‚Ì‹t”
-			float t1 = (-halfSize - origin) * invD;	//ƒXƒ‰ƒu‚Ì•‰‚Ì–Ê‚Æ‚ÌŒğ“_ƒpƒ‰ƒ[ƒ^
-			float t2 = (halfSize - origin) * invD;	//ƒXƒ‰ƒu‚Ì³‚Ì–Ê‚Æ‚ÌŒğ“_ƒpƒ‰ƒ[ƒ^
+			float invD = 1.0f / direction;			//æ–¹å‘æˆåˆ†ã®é€†æ•°
+			float t1 = (-halfSize - origin) * invD;	//ã‚¹ãƒ©ãƒ–ã®è² ã®é¢ã¨ã®äº¤ç‚¹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+			float t2 = (halfSize - origin) * invD;	//ã‚¹ãƒ©ãƒ–ã®æ­£ã®é¢ã¨ã®äº¤ç‚¹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 
-			if (t1 > t2) std::swap(t1, t2);	//Œğ“_ƒpƒ‰ƒ[ƒ^‚Ì“ü‚ê‘Ö‚¦
-			if (t1 > tEnter) tEnter = t1;	//“ü‚èŒûƒpƒ‰ƒ[ƒ^‚ÌXV
-			if (t2 < tExit) tExit = t2;		//oŒûƒpƒ‰ƒ[ƒ^‚ÌXV
+			if (t1 > t2) std::swap(t1, t2);	//äº¤ç‚¹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å…¥ã‚Œæ›¿ãˆ
+			if (t1 > tEnter) tEnter = t1;	//å…¥ã‚Šå£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®æ›´æ–°
+			if (t2 < tExit) tExit = t2;		//å‡ºå£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®æ›´æ–°
 
-			if (tEnter > tExit) return false;	//“ü‚èŒûƒpƒ‰ƒ[ƒ^‚ªoŒûƒpƒ‰ƒ[ƒ^‚ğ’´‚¦‚½ê‡AÕ“Ë‚µ‚È‚¢
+			if (tEnter > tExit) return false;	//å…¥ã‚Šå£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå‡ºå£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¶…ãˆãŸå ´åˆã€è¡çªã—ãªã„
 		}
 	}
 
-	float tHit = (tEnter >= 0.0f) ? tEnter : tExit;		//Õ“Ëƒpƒ‰ƒ[ƒ^
-	if (tHit < 0.0f || tHit > rayLength) return false;	//Õ“Ëƒpƒ‰ƒ[ƒ^‚ªƒŒƒC‚Ì”ÍˆÍŠO‚Ìê‡AÕ“Ë‚µ‚È‚¢
+	float tHit = (tEnter >= 0.0f) ? tEnter : tExit;		//è¡çªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	if (tHit < 0.0f || tHit > rayLength) return false;	//è¡çªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒãƒ¬ã‚¤ã®ç¯„å›²å¤–ã®å ´åˆã€è¡çªã—ãªã„
 
-	//Õ“Ëî•ñ‚Ìİ’è
-	//Õ“Ë“_‚ÌŒvZ
+	//è¡çªæƒ…å ±ã®è¨­å®š
+	//è¡çªç‚¹ã®è¨ˆç®—
 	XMVECTOR hitPoint = XMVectorAdd(
 		rayOrigin,
 		XMVectorScale(
@@ -1960,80 +1960,80 @@ bool CollisionManager::RaycastBox(const CollisionData::RaycastSegment& ray, Coll
 		)
 	);
 
-	//–@ü‚ÌŒvZ
-	float hitNormalLocal[3] = { 0.0f, 0.0f, 0.0f }; //Õ“Ë–Ê‚Ì–@üƒxƒNƒgƒ‹(OBBƒ[ƒJƒ‹À•WŒn)
+	//æ³•ç·šã®è¨ˆç®—
+	float hitNormalLocal[3] = { 0.0f, 0.0f, 0.0f }; //è¡çªé¢ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«(OBBãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»)
 	for(int i = 0; i < 3; i++)
 	{
-		hitNormalLocal[i] = originLocal[i] + directionLocal[i] * tHit;	//Õ“Ë“_‚ÌOBBƒ[ƒJƒ‹À•WŒn‚Å‚ÌˆÊ’u
+		hitNormalLocal[i] = originLocal[i] + directionLocal[i] * tHit;	//è¡çªç‚¹ã®OBBãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®ä½ç½®
 	}
 
-	float dx = half[0] - fabsf(hitNormalLocal[0]);	//X²•ûŒü‚ÌÕ“Ë–Ê‚Ü‚Å‚Ì‹——£
-	float dy = half[1] - fabsf(hitNormalLocal[1]);	//Y²•ûŒü‚ÌÕ“Ë–Ê‚Ü‚Å‚Ì‹——£
-	float dz = half[2] - fabsf(hitNormalLocal[2]);	//Z²•ûŒü‚ÌÕ“Ë–Ê‚Ü‚Å‚Ì‹——£
+	float dx = half[0] - fabsf(hitNormalLocal[0]);	//Xè»¸æ–¹å‘ã®è¡çªé¢ã¾ã§ã®è·é›¢
+	float dy = half[1] - fabsf(hitNormalLocal[1]);	//Yè»¸æ–¹å‘ã®è¡çªé¢ã¾ã§ã®è·é›¢
+	float dz = half[2] - fabsf(hitNormalLocal[2]);	//Zè»¸æ–¹å‘ã®è¡çªé¢ã¾ã§ã®è·é›¢
 
-	int axis = 0;													 //Å‚à‹ß‚¢Õ“Ë–Ê‚Ì²ƒCƒ“ƒfƒbƒNƒX
-	if (dy < dx) axis = 1;											//Y²•ûŒü‚ÌÕ“Ë–Ê‚ªÅ‚à‹ß‚¢ê‡
-	if ((axis == 1 && dz < dy) || (axis == 0 && dz < dx)) axis = 2;	//Z²•ûŒü‚ÌÕ“Ë–Ê‚ªÅ‚à‹ß‚¢ê‡
+	int axis = 0;													 //æœ€ã‚‚è¿‘ã„è¡çªé¢ã®è»¸ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	if (dy < dx) axis = 1;											//Yè»¸æ–¹å‘ã®è¡çªé¢ãŒæœ€ã‚‚è¿‘ã„å ´åˆ
+	if ((axis == 1 && dz < dy) || (axis == 0 && dz < dx)) axis = 2;	//Zè»¸æ–¹å‘ã®è¡çªé¢ãŒæœ€ã‚‚è¿‘ã„å ´åˆ
 
-	float sign = (hitNormalLocal[axis] >= 0.0f) ? 1.0f : -1.0f; //–@ü‚ÌŒü‚«
+	float sign = (hitNormalLocal[axis] >= 0.0f) ? 1.0f : -1.0f; //æ³•ç·šã®å‘ã
 
-	XMVECTOR noramalWorld = (sign > 0.0f) ? obb.axis[axis] : XMVectorNegate(obb.axis[axis]); //–@üƒxƒNƒgƒ‹(ƒ[ƒ‹ƒhÀ•WŒn)
+	XMVECTOR noramalWorld = (sign > 0.0f) ? obb.axis[axis] : XMVectorNegate(obb.axis[axis]); //æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«(ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ç³»)
 
-	//Õ“Ëî•ñ‚Ìì¬
-	outHitInfo.opponent = collider;						//Õ“Ë‚µ‚½ƒRƒ‰ƒCƒ_[
-	XMStoreFloat3(&outHitInfo.hitPoint, hitPoint);		//Õ“Ë“_
-	XMStoreFloat3(&outHitInfo.hitNormal, noramalWorld);	//–@üƒxƒNƒgƒ‹
-	outHitInfo.hitDistance = tHit;						//Õ“Ë‹——£
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	outHitInfo.opponent = collider;						//è¡çªã—ãŸã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+	XMStoreFloat3(&outHitInfo.hitPoint, hitPoint);		//è¡çªç‚¹
+	XMStoreFloat3(&outHitInfo.hitNormal, noramalWorld);	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	outHitInfo.hitDistance = tHit;						//è¡çªè·é›¢
 
 	return true;
 }
 
-//ƒŒƒCƒLƒƒƒXƒg‚Æ‹…ƒRƒ‰ƒCƒ_[‚ÌÕ“Ë”»’è
+//ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã¨çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®è¡çªåˆ¤å®š
 bool CollisionManager::RaycastSphere(const CollisionData::RaycastSegment& ray, Collider* collider, CollisionData::RaycastHitInfo& outHitInfo)
 {
-	//ƒŒƒC‚Ìn“_‚Æ•ûŒüƒxƒNƒgƒ‹æ“¾
-	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//ƒŒƒC‚Ìn“_ƒxƒNƒgƒ‹
-	XMVECTOR rayDirection = XMVectorSubtract(						//ƒŒƒC‚Ì•ûŒüƒxƒNƒgƒ‹
+	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã¨æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
+	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//ãƒ¬ã‚¤ã®å§‹ç‚¹ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR rayDirection = XMVectorSubtract(						//ãƒ¬ã‚¤ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 		XMLoadFloat3(&ray.endPoint),
 		rayOrigin
 	);
-	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//ƒŒƒC‚Ì’·‚³
+	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//ãƒ¬ã‚¤ã®é•·ã•
 
-	//‹…ƒRƒ‰ƒCƒ_[î•ñæ“¾
-	auto sphere = collider->GetCurrentSphereCollider();		//‹…ƒRƒ‰ƒCƒ_[î•ñæ“¾
-	XMVECTOR sphereCenter = XMLoadFloat3(&sphere.center);	//‹…‚Ì’†S“_ƒxƒNƒgƒ‹
-	float radius = sphere.radius;							//‹…‚Ì”¼Œa
+	//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æƒ…å ±å–å¾—
+	auto sphere = collider->GetCurrentSphereCollider();		//çƒã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æƒ…å ±å–å¾—
+	XMVECTOR sphereCenter = XMLoadFloat3(&sphere.center);	//çƒã®ä¸­å¿ƒç‚¹ãƒ™ã‚¯ãƒˆãƒ«
+	float radius = sphere.radius;							//çƒã®åŠå¾„
 
-	//ƒŒƒC‚Æ‹…‚ÌÕ“Ë”»’è
+	//ãƒ¬ã‚¤ã¨çƒã®è¡çªåˆ¤å®š
 	XMVECTOR m = XMVectorSubtract(rayOrigin, sphereCenter);
 
 	float b = XMVectorGetX(XMVector3Dot(m, rayDirection));
 	float c = XMVectorGetX(XMVector3Dot(m, m)) - radius * radius;
 
 	if (c > 0.0f && b > 0.0f)
-	{//ƒŒƒC‚Ìn“_‚ª‹…‚ÌŠO‘¤‚É‚ ‚èAƒŒƒC‚ª‹…‚©‚ç—£‚ê‚Ä‚¢‚­ê‡
+	{//ãƒ¬ã‚¤ã®å§‹ç‚¹ãŒçƒã®å¤–å´ã«ã‚ã‚Šã€ãƒ¬ã‚¤ãŒçƒã‹ã‚‰é›¢ã‚Œã¦ã„ãå ´åˆ
 		return false;
 	}
 
 	float disc = b * b - c;
 	if (disc < 0.0f)
-	{//”»•Ê®‚ª•‰‚Ìê‡AÕ“Ë‚µ‚È‚¢
+	{//åˆ¤åˆ¥å¼ãŒè² ã®å ´åˆã€è¡çªã—ãªã„
 		return false;
 	}
 
 	float t = -b - sqrtf(disc);
 	if (t < 0.0f)
-	{//ƒŒƒC‚Ìn“_‚ª‹…‚Ì“à•”‚É‚ ‚éê‡
+	{//ãƒ¬ã‚¤ã®å§‹ç‚¹ãŒçƒã®å†…éƒ¨ã«ã‚ã‚‹å ´åˆ
 		t = 0.0f;
 	}
 
 	if (t > rayLength)
-	{//ƒŒƒC‚Ì’·‚³‚ğ’´‚¦‚éê‡AÕ“Ë‚µ‚È‚¢
+	{//ãƒ¬ã‚¤ã®é•·ã•ã‚’è¶…ãˆã‚‹å ´åˆã€è¡çªã—ãªã„
 		return false;
 	}
 
-	//Õ“Ëî•ñ‚Ìİ’è
-	//Õ“Ë“_‚ÌŒvZ
+	//è¡çªæƒ…å ±ã®è¨­å®š
+	//è¡çªç‚¹ã®è¨ˆç®—
 	XMVECTOR hitPoint = XMVectorAdd(
 		rayOrigin,
 		XMVectorScale(
@@ -2042,74 +2042,74 @@ bool CollisionManager::RaycastSphere(const CollisionData::RaycastSegment& ray, C
 		)
 	);
 
-	//–@ü‚ÌŒvZ
-	XMVECTOR hitNormal = XMVectorSubtract(hitPoint, sphereCenter);	//–@üƒxƒNƒgƒ‹‚ÌŒvZ
-	hitNormal = XMVector3Normalize(hitNormal);						//–@üƒxƒNƒgƒ‹‚Ì³‹K‰»
+	//æ³•ç·šã®è¨ˆç®—
+	XMVECTOR hitNormal = XMVectorSubtract(hitPoint, sphereCenter);	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
+	hitNormal = XMVector3Normalize(hitNormal);						//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–
 
-	//Õ“Ëî•ñ‚Ìì¬
+	//è¡çªæƒ…å ±ã®ä½œæˆ
 	RaycastHitInfo hitInfo{};
-	hitInfo.opponent = collider;					//Õ“Ë‚µ‚½ƒRƒ‰ƒCƒ_[
-	XMStoreFloat3(&hitInfo.hitPoint, hitPoint);		//Õ“Ë“_
-	XMStoreFloat3(&hitInfo.hitNormal, hitNormal);	//–@üƒxƒNƒgƒ‹
-	hitInfo.hitDistance = t;						//Õ“Ë‹——£
-	outHitInfo = hitInfo;							//Õ“Ëî•ñ‚ğo—Íˆø”‚Éİ’è
+	hitInfo.opponent = collider;					//è¡çªã—ãŸã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+	XMStoreFloat3(&hitInfo.hitPoint, hitPoint);		//è¡çªç‚¹
+	XMStoreFloat3(&hitInfo.hitNormal, hitNormal);	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	hitInfo.hitDistance = t;						//è¡çªè·é›¢
+	outHitInfo = hitInfo;							//è¡çªæƒ…å ±ã‚’å‡ºåŠ›å¼•æ•°ã«è¨­å®š
 
 	return true;
 }
 
-//ƒŒƒCƒLƒƒƒXƒg‚ÆƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[‚ÌÕ“Ë”»’è
+//ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã¨ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®è¡çªåˆ¤å®š
 bool CollisionManager::RaycastCapsule(const CollisionData::RaycastSegment& ray, Collider* collider, CollisionData::RaycastHitInfo& outHitInfo)
 {
-	const float EPSILON = 0.0001f; //”÷¬’l
+	const float EPSILON = 0.0001f; //å¾®å°å€¤
 
-	//ƒŒƒC‚Ìn“_‚Æ•ûŒüƒxƒNƒgƒ‹æ“¾
-	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//ƒŒƒC‚Ìn“_ƒxƒNƒgƒ‹
-	XMVECTOR rayEnd = XMLoadFloat3(&ray.endPoint);					//ƒŒƒC‚ÌI“_ƒxƒNƒgƒ‹
-	XMVECTOR rayDirection = XMVectorSubtract(rayEnd, rayOrigin);	//ƒŒƒC‚Ì•ûŒüƒxƒNƒgƒ‹
-	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//ƒŒƒC‚Ì’·‚³
-	if (rayLength < EPSILON) return false; //ƒŒƒC‚Ì’·‚³‚ª‹É’[‚É’Z‚¢ê‡AÕ“Ë‚µ‚È‚¢
+	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã¨æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
+	XMVECTOR rayOrigin = XMLoadFloat3(&ray.startPoint);				//ãƒ¬ã‚¤ã®å§‹ç‚¹ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR rayEnd = XMLoadFloat3(&ray.endPoint);					//ãƒ¬ã‚¤ã®çµ‚ç‚¹ãƒ™ã‚¯ãƒˆãƒ«
+	XMVECTOR rayDirection = XMVectorSubtract(rayEnd, rayOrigin);	//ãƒ¬ã‚¤ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+	float rayLength = XMVectorGetX(XMVector3Length(rayDirection));	//ãƒ¬ã‚¤ã®é•·ã•
+	if (rayLength < EPSILON) return false; //ãƒ¬ã‚¤ã®é•·ã•ãŒæ¥µç«¯ã«çŸ­ã„å ´åˆã€è¡çªã—ãªã„
 
-	//ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[î•ñæ“¾
+	//ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æƒ…å ±å–å¾—
 	auto capsule = collider->GetCurrentCapsuleCollider();
 
-	XMVECTOR outP, outQ; //ƒZƒOƒƒ“ƒgPEQã‚ÌÅ’Z“_
+	XMVECTOR outP, outQ; //ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPãƒ»Qä¸Šã®æœ€çŸ­ç‚¹
 	float distSq = GetMinDistanceSquaredSegmentToSegment(
-		rayOrigin, rayEnd,						//ƒZƒOƒƒ“ƒgPFƒŒƒC
-		XMLoadFloat3(&capsule.pointA),			//ƒZƒOƒƒ“ƒgQFƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg(’[“_A)
-		XMLoadFloat3(&capsule.pointB),			//ƒZƒOƒƒ“ƒgQFƒJƒvƒZƒ‹ƒZƒOƒƒ“ƒg(’[“_B)
-		outP, outQ								//ŠeƒZƒOƒƒ“ƒgã‚ÌÅ’Z“_
+		rayOrigin, rayEnd,						//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆPï¼šãƒ¬ã‚¤
+		XMLoadFloat3(&capsule.pointA),			//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQï¼šã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ(ç«¯ç‚¹A)
+		XMLoadFloat3(&capsule.pointB),			//ã‚»ã‚°ãƒ¡ãƒ³ãƒˆQï¼šã‚«ãƒ—ã‚»ãƒ«ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ(ç«¯ç‚¹B)
+		outP, outQ								//å„ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸Šã®æœ€çŸ­ç‚¹
 	);
 
-	float radius = capsule.radius; //ƒJƒvƒZƒ‹‚Ì”¼Œa
-	if (distSq > radius * radius) return false; //Õ“Ë‚È‚µ
+	float radius = capsule.radius; //ã‚«ãƒ—ã‚»ãƒ«ã®åŠå¾„
+	if (distSq > radius * radius) return false; //è¡çªãªã—
 
-	//Õ“Ëî•ñ‚Ìİ’è
-	//Õ“Ë“_‚ÌŒvZ
+	//è¡çªæƒ…å ±ã®è¨­å®š
+	//è¡çªç‚¹ã®è¨ˆç®—
 	XMFLOAT3 hitPos;
-	XMStoreFloat3(&hitPos, outP); //ƒŒƒCã‚ÌÅ’Z“_‚ğÕ“Ë“_‚Æ‚·‚é
+	XMStoreFloat3(&hitPos, outP); //ãƒ¬ã‚¤ä¸Šã®æœ€çŸ­ç‚¹ã‚’è¡çªç‚¹ã¨ã™ã‚‹
 
-	//–@ü‚ÌŒvZ
-	XMVECTOR diff = XMVectorSubtract(outP, outQ);			//Å’Z“_“¯m‚Ì·ƒxƒNƒgƒ‹
-	float lenSq = XMVectorGetX(XMVector3LengthSq(diff));	//Å’Z‹——£‚Ì“ñæ
+	//æ³•ç·šã®è¨ˆç®—
+	XMVECTOR diff = XMVectorSubtract(outP, outQ);			//æœ€çŸ­ç‚¹åŒå£«ã®å·®ãƒ™ã‚¯ãƒˆãƒ«
+	float lenSq = XMVectorGetX(XMVector3LengthSq(diff));	//æœ€çŸ­è·é›¢ã®äºŒä¹—
 
 	XMVECTOR hitNormal;
 	if(lenSq > EPSILON * EPSILON)
-	{//Å’Z‹——£‚ª‚Ù‚Ú0‚Å‚È‚¢ê‡
-		hitNormal = XMVector3Normalize(diff); //–@üƒxƒNƒgƒ‹‚ÌŒvZ
+	{//æœ€çŸ­è·é›¢ãŒã»ã¼0ã§ãªã„å ´åˆ
+		hitNormal = XMVector3Normalize(diff); //æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
 	}
 	else
-	{//Å’Z‹——£‚ª‚Ù‚Ú0‚Ìê‡‚Ìˆ—
-		hitNormal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //“K“–‚È–@üƒxƒNƒgƒ‹
+	{//æœ€çŸ­è·é›¢ãŒã»ã¼0ã®å ´åˆã®å‡¦ç†
+		hitNormal = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //é©å½“ãªæ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	}
 
-	//Õ“Ë“_‚©‚ç–@ü•ûŒü‚É”¼Œa•ªˆÚ“®‚µ‚ÄAƒJƒvƒZƒ‹•\–Êã‚Ì“_‚ğŒvZ
-	float hitDistance = XMVectorGetX(XMVector3Length(XMVectorSubtract(outP, rayOrigin))); //Õ“Ë‹——£
+	//è¡çªç‚¹ã‹ã‚‰æ³•ç·šæ–¹å‘ã«åŠå¾„åˆ†ç§»å‹•ã—ã¦ã€ã‚«ãƒ—ã‚»ãƒ«è¡¨é¢ä¸Šã®ç‚¹ã‚’è¨ˆç®—
+	float hitDistance = XMVectorGetX(XMVector3Length(XMVectorSubtract(outP, rayOrigin))); //è¡çªè·é›¢
 
-	//Õ“Ëî•ñ‚Ìì¬
-	outHitInfo.opponent = collider;						//Õ“Ë‚µ‚½ƒRƒ‰ƒCƒ_[
-	XMStoreFloat3(&outHitInfo.hitPoint, outP);			//Õ“Ë“_
-	XMStoreFloat3(&outHitInfo.hitNormal, hitNormal);	//–@üƒxƒNƒgƒ‹
-	outHitInfo.hitDistance = hitDistance;				//Õ“Ë‹——£
+	//è¡çªæƒ…å ±ã®ä½œæˆ
+	outHitInfo.opponent = collider;						//è¡çªã—ãŸã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
+	XMStoreFloat3(&outHitInfo.hitPoint, outP);			//è¡çªç‚¹
+	XMStoreFloat3(&outHitInfo.hitNormal, hitNormal);	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	outHitInfo.hitDistance = hitDistance;				//è¡çªè·é›¢
 
 	return true;
 }

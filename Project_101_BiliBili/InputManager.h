@@ -55,6 +55,7 @@ struct ControllerInputInfo
 	InputState DOWN;		//下ボタン
 	InputState LEFT;		//左ボタン
 	InputState RIGHT;		//右ボタン
+	InputState anyButton;	//任意のボタン
 
 	InputState any;
 

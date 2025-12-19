@@ -16,7 +16,8 @@ public:	//公開関数
 		DirectX::XMFLOAT3 position = { 0,0,0 },
 		DirectX::XMFLOAT3 scale = { 1,1,1 },
 		DirectX::XMFLOAT3 rotation = { 0,0,0 },
-		UINT order = 0
+		UINT order = 0,
+		BLEND_MODE blendMode = BLEND_MODE::BLEND_TRANSPARENT
 	);
 	virtual ~UIBase() = default;	//デストラクタ
 	//メイン処理関数
@@ -34,7 +35,7 @@ public:	//公開関数
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	);
-	void CollectRenderInfos(std::vector<RenderInfo>& out) const;	//描画情報構造体配列収集
+	void CollectRenderInfos(std::vector<WorldRenderInfo>& out) const;	//描画情報構造体配列収集
 
 	//ゲッター
 	const Transform3D& GetWorldTransform() const;	//ワールド変換情報の取得
@@ -86,8 +87,7 @@ protected:
 	std::vector<std::unique_ptr<UIBase>> m_children;	//子UIオブジェクト配列
 
 	UINT m_order = 0;	//描画順
-
-	std::vector<RenderInfo> m_renderInfos;	//描画情報構造体配列
-
+	std::vector<WorldRenderInfo> m_renderInfos;	//描画情報構造体配列
+	BLEND_MODE m_blendMode = BLEND_MODE::BLEND_TRANSPARENT;	//ブレンドモード
 	UVRect m_uvRect{};	//UV矩形
 };

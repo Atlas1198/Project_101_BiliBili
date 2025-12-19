@@ -43,7 +43,7 @@ struct CommonRenderDesc
 };
 
 //描画情報構造体
-struct RenderInfo
+struct WorldRenderInfo
 {
 	CommonRenderDesc common;				//共通描画記述構造体
 	DirectX::XMMATRIX world = {};			//ワールド行列
@@ -209,8 +209,8 @@ void AppendCapsuleRenderInfos(
 	const DirectX::XMFLOAT3& scale,				//スケール
 	const DirectX::XMFLOAT3& rotEuler,			//回転Euler角
 	const DirectX::XMFLOAT4& color,				//色
-	std::vector<RenderInfo>& infos,	//入力元描画情報配列
-	std::vector<RenderInfo>& out	//出力先描画情報配列
+	std::vector<WorldRenderInfo>& infos,	//入力元描画情報配列
+	std::vector<WorldRenderInfo>& out	//出力先描画情報配列
 );
 
 //=======================
@@ -242,7 +242,7 @@ inline Model GetModel(MESH_TYPE type)
 void CreateRenderInfo(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
 	MESH_TYPE mType,				//メッシュタイプ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
@@ -255,7 +255,7 @@ void CreateRenderInfo(
 void CreateRenderInfoFromFBX(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//モデルファイルのパス
 	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
@@ -267,7 +267,7 @@ void CreateRenderInfoFromFBX(
 void CreateRenderInfoFromDefaultMesh(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<RenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
 	MESH_TYPE type,				//メッシュタイプ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//テクスチャのファイル名

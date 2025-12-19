@@ -6,6 +6,7 @@
 #include <utility>
 #include "UIBase.h"
 #include "SharedStruct.h"
+#include "RenderData.h"
 
 // 前方宣言
 class Renderer;
@@ -16,7 +17,14 @@ class MeshManager;
 class UIManagerBase
 {
 public:	//公開関数
-	UIManagerBase() {};	//コンストラクタ
+	UIManagerBase(
+		float screenWidth = 0.0f,
+		float screenHeight = 0.0f
+	) 
+		: m_screenWidth(screenWidth),
+		m_screenHeight(screenHeight)
+	{};	//コンストラクタ
+
 	~UIManagerBase();	//デストラクタ
 	//メイン処理関数
 	void Initialize(										//初期化
@@ -42,9 +50,11 @@ protected:
 
 	void SubmitRenderInfo(	//描画情報をシーンに提出
 		Renderer& renderer,							//シーンの参照
-		std::vector<RenderInfo>& info	//描画情報構造体
+		std::vector<WorldRenderInfo>& info	//描画情報構造体
 	);
 
 protected:
-	std::vector<std::unique_ptr<UIBase>> m_roots;	//ルートUIオブジェクト配列
+	std::vector<std::unique_ptr<UIBase>> m_roots;		//ルートUIオブジェクト配列
+	float m_screenWidth = 0.0f;	//画面幅
+	float m_screenHeight = 0.0f;	//画面高さ
 };

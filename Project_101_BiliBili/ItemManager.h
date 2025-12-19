@@ -42,7 +42,7 @@ private:	//非公開メンバ変数
 
 private:
 	std::vector<Item*> m_pItems;						//アイテムオブジェクト配列
-	std::vector<RenderInfo> m_itemInfo;		//アイテム描画情報
+	std::vector<WorldRenderInfo> m_itemInfo;		//アイテム描画情報
 	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
 	FrameTimer m_frameTimer;
 };

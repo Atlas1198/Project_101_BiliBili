@@ -27,5 +27,5 @@ protected:
 private:
     std::vector<std::unique_ptr<TransformItem>> m_items;
     float m_spawnTimer = 0.0f;
-    std::vector<RenderInfo> m_itemInfo;
+    std::vector<WorldRenderInfo> m_itemInfo;
 };
