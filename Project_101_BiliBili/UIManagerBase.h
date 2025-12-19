@@ -17,7 +17,14 @@ class MeshManager;
 class UIManagerBase
 {
 public:	//公開関数
-	UIManagerBase() {};	//コンストラクタ
+	UIManagerBase(
+		float screenWidth = 0.0f,
+		float screenHeight = 0.0f
+	) 
+		: m_screenWidth(screenWidth),
+		m_screenHeight(screenHeight)
+	{};	//コンストラクタ
+
 	~UIManagerBase();	//デストラクタ
 	//メイン処理関数
 	void Initialize(										//初期化
@@ -48,4 +55,6 @@ protected:
 
 protected:
 	std::vector<std::unique_ptr<UIBase>> m_roots;		//ルートUIオブジェクト配列
+	float m_screenWidth = 0.0f;	//画面幅
+	float m_screenHeight = 0.0f;	//画面高さ
 };

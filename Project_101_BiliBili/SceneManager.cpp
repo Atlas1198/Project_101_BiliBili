@@ -8,10 +8,11 @@
 //コンストラクタ
 SceneManager::SceneManager(float windowWidth, float windowHeight)
 {
-	m_pGameScene = new GameScene(windowWidth, windowHeight);	//ゲームシーンクラスの生成
-	m_pTitleScene = new TitleScene(windowWidth, windowHeight);	//タイトルシーンクラスの生成
+	m_pTitleScene = new TitleScene(windowWidth, windowHeight);				//タイトルシーンクラスの生成
+	m_pControllerScene = new ControllerScene(windowWidth, windowHeight);	//コントローラーシーンクラスの生成
+	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ゲームシーンクラスの生成
 
-	m_currentScene = SCENE_TITLE;	//最初のシーンをタイトルシーンに設定
+	m_currentScene = SCENE_TYPE::SCENE_TITLE;	//最初のシーンをタイトルシーンに設定
 	m_pCurrentScene = m_pTitleScene;	//最初のシーンをタイトルシーンに設定
 }
 
@@ -35,7 +36,7 @@ void SceneManager::Initialize(
 	m_pMeshManager = pMeshManager;		//メッシュ管理クラスのポインタを保存
 
 	//シーン変更イベント登録
-	using args = SCENE;
+	using args = SCENE_TYPE;
 	EventManager::GetInstance()->Subscribe<args>(
 		EventType::CHANGE_SCENE,
 		[this](std::shared_ptr<args> data)
@@ -58,14 +59,14 @@ void SceneManager::Update()
 	   m_pInputManager->GetInputInfo() != nullptr &&
 	   m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
-		ChangeScene(SCENE_GAME);	//シーン変更
+		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//シーン変更
 	}
 	else if (m_pCurrentScene == m_pGameScene &&
 		m_pInputManager != nullptr &&
 		m_pInputManager->GetInputInfo() != nullptr &&
 		m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
-		ChangeScene(SCENE_TITLE);	//シーン変更
+		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//シーン変更
 	}
 
 	//シーン変更予約があればシーン変更
@@ -81,31 +82,34 @@ void SceneManager::Finalize()
 }
 
 //シーン変更予約
-void SceneManager::ReserveChangeScene(SCENE newScene)
+void SceneManager::ReserveChangeScene(SCENE_TYPE newScene)
 {
 	m_sceneChangeReserved = true;	//シーン変更予約フラグを立てる
 	m_reservedScene = newScene;		//予約されたシーンを保存
 }
 
 //シーン変更
-void SceneManager::ChangeScene(SCENE next)
+void SceneManager::ChangeScene(SCENE_TYPE next)
 {
 	m_pCurrentScene->Finalize();	//現在のシーン終了処理
 
 	//次のシーンへ変更
 	m_sceneChangeReserved = false;	//シーン変更予約フラグを下ろす
-	m_reservedScene = SCENE_NONE;	//予約されたシーンをリセット
+	m_reservedScene = SCENE_TYPE::SCENE_NONE;	//予約されたシーンをリセット
 	m_currentScene = next;			//現在のシーンを更新
 
 	switch (next)
 	{
-	case SCENE_TITLE:
+	case SCENE_TYPE::SCENE_TITLE:
 		m_pCurrentScene = m_pTitleScene;
 		break;
-	case SCENE_GAME:
+	case SCENE_TYPE::SCENE_CONTROLLER:
+		m_pCurrentScene = m_pControllerScene;
+		break;
+	case SCENE_TYPE::SCENE_GAME:
 		m_pCurrentScene = m_pGameScene;
 		break;
-	case SCENE_RESULT:
+	case SCENE_TYPE::SCENE_RESULT:
 		//m_pCurrentScene = m_pResultScene;
 		break;
 	}

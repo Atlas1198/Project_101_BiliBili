@@ -14,10 +14,11 @@ GameScene::GameScene(float window_width, float window_height)
 {
 	m_pPlayerManager = new PlayerManager();	//プレイヤー管理クラスの生成
 	m_pFieldManager = new FieldManager();	//フィールド管理クラスの生成
-	m_pGameUIManager = new GameUIManager();	//ゲームUI管理クラスの生成
 	m_pBulletManager = new BulletManager(); //弾管理クラスの生成
 	m_pItemManager = new ItemManager();		//アイテム管理クラスの生成
 	m_pBBManager = new BBManager();			//BB管理クラスの生成
+
+	m_pGameUIManager = new GameUIManager(window_width, window_height);	//ゲームUI管理クラスの生成
 }
 
 //デストラクタ

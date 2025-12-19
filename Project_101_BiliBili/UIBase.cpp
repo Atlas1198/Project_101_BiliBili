@@ -4,12 +4,11 @@
 using namespace DirectX;
 
 //コンストラクタ
-UIBase::UIBase(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order)
+UIBase::UIBase(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order, BLEND_MODE blendMode)
+	: m_local{ position, scale, rotation },
+	m_order(order),
+	m_blendMode(blendMode)
 {
-	m_local.position = position;
-	m_local.scale = scale;
-	m_local.rotation = rotation;
-	m_order = order;
 }
 
 // 初期化

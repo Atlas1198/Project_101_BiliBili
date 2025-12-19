@@ -11,7 +11,8 @@ public:
 		DirectX::XMFLOAT3 scale = { 1,1,1 },
 		DirectX::XMFLOAT3 rotation = { 0,0,0 },
 		UINT order = 0,
-		const std::wstring& texturePath = L""
+		const std::wstring& texturePath = L"",
+		BLEND_MODE blendMode = BLEND_MODE::BLEND_TRANSPARENT
 	);
 	~UIImage() {};
 	void InitializeOverride(
@@ -22,11 +23,9 @@ public:
 	void FinalizeOverride() override;
 
 	void SetTexturePath(const std::wstring& texturePath) { m_texturePath = texturePath; }
-	void SetBlendMode(BLEND_MODE blendMode) { m_blendMode = blendMode; }
 
 private:
-	std::wstring m_texturePath;								//テクスチャパス
-	BLEND_MODE m_blendMode = BLEND_MODE::BLEND_TRANSPARENT;	//ブレンドモード
+	std::wstring m_texturePath;							//テクスチャパス
 
 protected:
 	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成
