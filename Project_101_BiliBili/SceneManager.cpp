@@ -21,7 +21,6 @@ SceneManager::~SceneManager()
 {
 	delete m_pGameScene;
 	delete m_pTitleScene;
-	delete m_pSelectionScene;
 }
 
 //初期化
@@ -55,32 +54,12 @@ void SceneManager::Update()
 	m_pCurrentScene->Update();	//現在のシーン更新
 
 	//シーン変更例：タイトルシーンでスペースボタンが押されたらゲームシーンへ変更
-	if(m_pCurrentScene == m_pTitleScene && 
-	   m_pInputManager != nullptr &&
-	   m_pInputManager->GetInputInfo() != nullptr &&
-		(
-			m_pInputManager->GetInputInfo()->key.any.trigger ||
-			m_pInputManager->GetInputInfo()->controller[0].any.trigger ||
-			m_pInputManager->GetInputInfo()->controller[1].any.trigger ||
-			m_pInputManager->GetInputInfo()->controller[2].any.trigger ||
-			m_pInputManager->GetInputInfo()->controller[3].any.trigger
-		))
-	{
-		ChangeScene(SCENE_SELECTION);	//シーン変更
-	}
-	else if (m_pCurrentScene == m_pSelectionScene &&
+	if (m_pCurrentScene == m_pGameScene &&
 		m_pInputManager != nullptr &&
 		m_pInputManager->GetInputInfo() != nullptr &&
 		m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
-		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//シーン変更
-	}
-	else if (m_pCurrentScene == m_pGameScene &&
-		m_pInputManager != nullptr &&
-		m_pInputManager->GetInputInfo() != nullptr &&
-		m_pInputManager->GetInputInfo()->key.space.trigger)
-	{
-		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//シーン変更
+		ReserveChangeScene(SCENE_TYPE::SCENE_TITLE);	//シーン変更
 	}
 
 	//シーン変更予約があればシーン変更

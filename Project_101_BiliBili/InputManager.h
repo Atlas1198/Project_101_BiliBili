@@ -57,8 +57,6 @@ struct ControllerInputInfo
 	InputState RIGHT;		//右ボタン
 	InputState anyButton;	//任意のボタン
 
-	InputState any;
-
 	DirectX::XMFLOAT2 leftStick;	//Left stick(normalized)
 	DirectX::XMFLOAT2 rightStick;	//Right stick(normalized)
 };

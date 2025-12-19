@@ -18,6 +18,13 @@ public:
 	const wchar_t* modelFile = L"asset/fbx/Dragon 2.5_fbx.fbx";
 	const wchar_t* texPath = L"asset/texture/player/Character_front.png";
 
+	static constexpr DirectX::XMFLOAT3 spawnPoses[4] = {
+	{-13.0f, -4.0f, 18.0f},
+	{13.0f, -4.0f, 18.0f},
+	{-13.0f, -4.0f, -8.0f},
+	{13.0f, -4.0f, -8.0f}
+	};
+
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
 	std::vector<WorldRenderInfo> m_playerInfo;			//プレイヤー描画情報

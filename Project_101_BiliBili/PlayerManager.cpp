@@ -47,7 +47,16 @@ void PlayerManager::InitializeOverride(
 		}
 	);
 
+	//チームの体力を初期化
+	for(auto& hp : teamHP)
+	{
+		hp = 1.0f;
+	}
 
+	for (int i = 0; i < 4; i++)
+	{
+		m_pPlayer[i]->SetPosition(spawnPoses[i]);
+	}
 }
 
 Player* PlayerManager::AddPlayer(
@@ -57,16 +66,7 @@ Player* PlayerManager::AddPlayer(
 	BulletManager *pBulletManager	//弾丸管理クラスの参照
 )
 {
-	//Vec3 spawnPos = App::GetInstance()->spawnPos[m_pPlayer.size()];
-
-	Vec3 spawnPoses[4] = {
-		{-13.0f, -4.0f, 18.0f},
-		{13.0f, -4.0f, 18.0f},
-		{-13.0f, -4.0f, -8.0f},
-		{13.0f, -4.0f, -8.0f}
-	};
-
-	Vec3 spawnPos = spawnPoses[m_pPlayer.size()];
+	XMFLOAT3 spawnPos = spawnPoses[m_pPlayer.size()];
 
 	Player *newPlayer = new Player
 	(
