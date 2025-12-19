@@ -17,7 +17,7 @@ WallPass::WallPass(MESH_TYPE meshType,
     bool orbit,
     float orbitRadius,
     DirectX::XMFLOAT3 orbitCenter)
-    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALLPASS, colliderType, COLLISION_LAYER::WALLPASS, collisionBoxSize, collisionIsTrigger)
+    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALLPASS, COLLISION_LAYER::WALLPASS)
     , m_rotationSpeed(rotationSpeed)
     , m_orbit(orbit)
     , m_orbitRadius(orbitRadius)

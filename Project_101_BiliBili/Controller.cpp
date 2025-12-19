@@ -1,51 +1,51 @@
 #include "App.h"
 #include "Controller.h"
-#include <cmath>	//ƒfƒbƒhƒ][ƒ“ˆ—‚È‚Ç‚Åg—p‚·‚é
+#include <cmath>	//ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³å‡¦ç†ãªã©ã§ä½¿ç”¨ã™ã‚‹
 #include <cassert>
 #include "InputManager.h"
 
 using namespace DirectX;
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 Controller::Controller() {}		
-//ƒfƒXƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 Controller::~Controller() {}	
 
 void Controller::Initialize()
 {
-	// “Á‚É‚È‚µ
+	// ç‰¹ã«ãªã—
 }
 
-// XV
+// æ›´æ–°
 void Controller::Update(ControllerInputInfo* inputInfo)
 {
-	//Å‘å‚S‚Â‚Ì‚±‚ñ‚Æ‚ë[‚ç[‚ğ‡‚ÉŠm”F‚·‚éi‚O`‚Rj
+	//æœ€å¤§ï¼”ã¤ã®ã“ã‚“ã¨ã‚ãƒ¼ã‚‰ãƒ¼ã‚’é †ã«ç¢ºèªã™ã‚‹ï¼ˆï¼ï½ï¼“ï¼‰
 	for (int i = 0; i < CONTROLLERS_MAX; ++i)
 	{
-		ControllerState& cs = m_controllers[i];	//‚O`‚R‚Ìó‘Ô‚ğæ“¾
+		ControllerState& cs = m_controllers[i];	//ï¼ï½ï¼“ã®çŠ¶æ…‹ã‚’å–å¾—
 
-		// ƒRƒ“ƒgƒ[ƒ‰[‚Ìó‘Ô‚ğæ“¾
+		// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®çŠ¶æ…‹ã‚’å–å¾—
 		DWORD dwResult = XInputGetState(i, &cs.state);
 
 		if (dwResult == ERROR_SUCCESS)
 		{
-			// Ú‘±‚³‚ê‚Ä‚¢‚é
+			// æ¥ç¶šã•ã‚Œã¦ã„ã‚‹
 			cs.isConnected = true;
 
-			// ƒgƒŠƒK[î•ñ‚ÌXV
-			UpdateTriggerState(cs, inputInfo[i]);	//Œ»İ‚Ìó‘Ô‚Æ‘O‰ñ‚Ìó‘Ô‚ğ”äŠr‚µ‚ÄƒgƒŠƒK[”»’è‚ğ‚·‚é
-			// ‰Ÿ‰ºî•ñ‚ÌXV
-			UpdateDownState(cs, inputInfo[i]);		//Œ»İ‚Ìó‘Ô‚Æ‘O‰ñ‚Ìó‘Ô‚ğ”äŠr‚µ‚Ä‰Ÿ‰º”»’è‚ğ‚·‚é
-			// —£‰ºî•ñ‚ÌXV
-			UpdateUpState(cs, inputInfo[i]);		//Œ»İ‚Ìó‘Ô‚Æ‘O‰ñ‚Ìó‘Ô‚ğ”äŠr‚µ‚Ä—£‰º”»’è‚ğ‚·‚é
-			// ƒXƒeƒBƒbƒNî•ñ‚ÌXV
-			UpdateStickState(cs, inputInfo[i]);	//ƒXƒeƒBƒbƒN‚Ìó‘Ô‚ğXV
+			// ãƒˆãƒªã‚¬ãƒ¼æƒ…å ±ã®æ›´æ–°
+			UpdateTriggerState(cs, inputInfo[i]);	//ç¾åœ¨ã®çŠ¶æ…‹ã¨å‰å›ã®çŠ¶æ…‹ã‚’æ¯”è¼ƒã—ã¦ãƒˆãƒªã‚¬ãƒ¼åˆ¤å®šã‚’ã™ã‚‹
+			// æŠ¼ä¸‹æƒ…å ±ã®æ›´æ–°
+			UpdateDownState(cs, inputInfo[i]);		//ç¾åœ¨ã®çŠ¶æ…‹ã¨å‰å›ã®çŠ¶æ…‹ã‚’æ¯”è¼ƒã—ã¦æŠ¼ä¸‹åˆ¤å®šã‚’ã™ã‚‹
+			// é›¢ä¸‹æƒ…å ±ã®æ›´æ–°
+			UpdateUpState(cs, inputInfo[i]);		//ç¾åœ¨ã®çŠ¶æ…‹ã¨å‰å›ã®çŠ¶æ…‹ã‚’æ¯”è¼ƒã—ã¦é›¢ä¸‹åˆ¤å®šã‚’ã™ã‚‹
+			// ã‚¹ãƒ†ã‚£ãƒƒã‚¯æƒ…å ±ã®æ›´æ–°
+			UpdateStickState(cs, inputInfo[i]);	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®çŠ¶æ…‹ã‚’æ›´æ–°
 		}
 		else
 		{
-			// Ú‘±‚³‚ê‚Ä‚¢‚È‚¢
+			// æ¥ç¶šã•ã‚Œã¦ã„ãªã„
 			cs.isConnected = false;
-			// ó‘Ô‚ğƒNƒŠƒA@iŒÃ‚¢ó‘Ô‚ªc‚ç‚È‚¢‚æ‚¤‰Šú‰»j
+			// çŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢ã€€ï¼ˆå¤ã„çŠ¶æ…‹ãŒæ®‹ã‚‰ãªã„ã‚ˆã†åˆæœŸåŒ–ï¼‰
 			cs.state = {};
 			cs.prevState = {};
 			inputInfo[i] = ControllerInputInfo{};
@@ -53,40 +53,40 @@ void Controller::Update(ControllerInputInfo* inputInfo)
 	}
 }
 
-// ó‘ÔƒRƒs[
+// çŠ¶æ…‹ã‚³ãƒ”ãƒ¼
 void Controller::CopyState()
-{//‚S‚Â‚ÌƒRƒ“ƒgƒ[ƒ‰[‚ğ‡‚Éˆ—‚·‚é
+{//ï¼”ã¤ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚’é †ã«å‡¦ç†ã™ã‚‹
 	for (int i = 0; i < CONTROLLERS_MAX; ++i)
 	{
 		ControllerState& cs = m_controllers[i];
-		if (cs.isConnected)	//Ú‘±‚³‚ê‚Ä‚¢‚éƒRƒ“ƒgƒ[ƒ‰[‚Ì‚İ
+		if (cs.isConnected)	//æ¥ç¶šã•ã‚Œã¦ã„ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®ã¿
 		{
-			// Œ»İ‚Ìó‘Ô‚ğ‘O‰ñ‚Ìó‘Ô‚Æ‚µ‚Ä•Û‘¶
+			// ç¾åœ¨ã®çŠ¶æ…‹ã‚’å‰å›ã®çŠ¶æ…‹ã¨ã—ã¦ä¿å­˜
 			cs.prevState = cs.state;
 		}
-		// Ú‘±‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍUpdate‚ÅƒNƒŠƒA‚³‚ê‚Ä‚¢‚é‚½‚ßˆ—‚Í•s—v
+		// æ¥ç¶šã•ã‚Œã¦ã„ãªã„å ´åˆã¯Updateã§ã‚¯ãƒªã‚¢ã•ã‚Œã¦ã„ã‚‹ãŸã‚å‡¦ç†ã¯ä¸è¦
 	}
 }
 
-// w’è‚µ‚½ƒCƒ“ƒfƒbƒNƒX‚ÌƒRƒ“ƒgƒ[ƒ‰[ó‘Ô‚ğæ“¾
+// æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼çŠ¶æ…‹ã‚’å–å¾—
 const ControllerState& Controller::GetState(int index) const
 {
-	// ”ÍˆÍƒ`ƒFƒbƒN‚ÍÈ—ª‚·‚é‚ªA’Êí‚Í‚±‚±‚ÅƒAƒT[ƒg‚È‚Ç‚ğs‚¤‚×‚«i‚¾‚»‚¤‚Å‚·j
-	// index‚Åw’è‚³‚ê‚½‚±‚ñ‚Æ‚ë[‚ç[ó‘Ô‚ğ•Ô‚·
+	// ç¯„å›²ãƒã‚§ãƒƒã‚¯ã¯çœç•¥ã™ã‚‹ãŒã€é€šå¸¸ã¯ã“ã“ã§ã‚¢ã‚µãƒ¼ãƒˆãªã©ã‚’è¡Œã†ã¹ãï¼ˆã ãã†ã§ã™ï¼‰
+	// indexã§æŒ‡å®šã•ã‚ŒãŸã“ã‚“ã¨ã‚ãƒ¼ã‚‰ãƒ¼çŠ¶æ…‹ã‚’è¿”ã™
 	assert(index >= 0 && index < CONTROLLERS_MAX);
 	return m_controllers[index];	
 }
 
-// ƒ{ƒ^ƒ“‚ÌƒgƒŠƒK[ó‘Ô‚ğXV
+// ãƒœã‚¿ãƒ³ã®ãƒˆãƒªã‚¬ãƒ¼çŠ¶æ…‹ã‚’æ›´æ–°
 void Controller::UpdateTriggerState(ControllerState& cs, ControllerInputInfo& inputInfo)
 {
 	const XINPUT_GAMEPAD& current = cs.state.Gamepad;
 	const XINPUT_GAMEPAD& previous = cs.prevState.Gamepad;
 
-	// ƒgƒŠƒK[ó‘Ô‚ÌŒvZ
-	// IsButtonTriggered(ƒ{ƒ^ƒ“‚Ìƒtƒ‰ƒO, Œ»İ‚ÌGamepad, ‘O‰ñ‚ÌGamepad)
+	// ãƒˆãƒªã‚¬ãƒ¼çŠ¶æ…‹ã®è¨ˆç®—
+	// IsButtonTriggered(ãƒœã‚¿ãƒ³ã®ãƒ•ãƒ©ã‚°, ç¾åœ¨ã®Gamepad, å‰å›ã®Gamepad)
 
-	// ƒ{ƒ^ƒ“@ABXYorZ~¢ 
+	// ãƒœã‚¿ãƒ³ã€€ABXYorã€‡Ã—â–³â–¡
 	inputInfo.A.trigger = IsButtonTriggered(XINPUT_GAMEPAD_A, current, previous);
 	inputInfo.B.trigger = IsButtonTriggered(XINPUT_GAMEPAD_B, current, previous);
 	inputInfo.X.trigger = IsButtonTriggered(XINPUT_GAMEPAD_X, current, previous);
@@ -99,13 +99,13 @@ void Controller::UpdateTriggerState(ControllerState& cs, ControllerInputInfo& in
 	inputInfo.LTHUMB.trigger = IsButtonTriggered(XINPUT_GAMEPAD_LEFT_THUMB, current, previous);
 	inputInfo.RTHUMB.trigger = IsButtonTriggered(XINPUT_GAMEPAD_RIGHT_THUMB, current, previous);
 
-	// •ûŒüƒL[‚ÌƒgƒŠƒK[”»’è
+	// æ–¹å‘ã‚­ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼åˆ¤å®š
 	inputInfo.UP.trigger= IsButtonTriggered(XINPUT_GAMEPAD_DPAD_UP, current, previous);
 	inputInfo.DOWN.trigger= IsButtonTriggered(XINPUT_GAMEPAD_DPAD_DOWN, current, previous);
 	inputInfo.LEFT.trigger= IsButtonTriggered(XINPUT_GAMEPAD_DPAD_LEFT, current, previous);
 	inputInfo.RIGHT.trigger = IsButtonTriggered(XINPUT_GAMEPAD_DPAD_RIGHT, current, previous);
 
-	// ”CˆÓ‚Ìƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚©‚Ç‚¤‚©‚ğ”»’è
+	// ä»»æ„ã®ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã‹ã©ã†ã‹ã‚’åˆ¤å®š
 	inputInfo.anyButton.trigger =
 		inputInfo.A.trigger || inputInfo.B.trigger || inputInfo.X.trigger || inputInfo.Y.trigger ||
 		inputInfo.START.trigger || inputInfo.BACK.trigger ||
@@ -114,18 +114,18 @@ void Controller::UpdateTriggerState(ControllerState& cs, ControllerInputInfo& in
 		inputInfo.UP.trigger || inputInfo.DOWN.trigger ||
 		inputInfo.LEFT.trigger || inputInfo.RIGHT.trigger;
 
-	// Note: ƒXƒeƒBƒbƒN‚ÆƒgƒŠƒK[‚ÍƒAƒiƒƒO“ü—Í‚Ì‚½‚ßA
-	// `trigger` (‰Ÿ‚³‚ê‚½uŠÔ) ‚ÌŠT”O‚ğ“K—p‚·‚é‚Ì‚Íˆê”Ê“I‚Å‚Í‚ ‚è‚Ü‚¹‚ñB
-	// •K—v‚Å‚ ‚ê‚ÎAƒfƒbƒhƒ][ƒ“‚ğ’´‚¦‚½uŠÔ‚ğƒgƒŠƒK[‚Æ‚İ‚È‚·‚È‚Ç‚ÌƒJƒXƒ^ƒ€ƒƒWƒbƒN‚ğ‚±‚±‚É’Ç‰Á‚Å‚«‚Ü‚·B
+	// Note: ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã¨ãƒˆãƒªã‚¬ãƒ¼ã¯ã‚¢ãƒŠãƒ­ã‚°å…¥åŠ›ã®ãŸã‚ã€
+	// `trigger` (æŠ¼ã•ã‚ŒãŸç¬é–“) ã®æ¦‚å¿µã‚’é©ç”¨ã™ã‚‹ã®ã¯ä¸€èˆ¬çš„ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
+	// å¿…è¦ã§ã‚ã‚Œã°ã€ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³ã‚’è¶…ãˆãŸç¬é–“ã‚’ãƒˆãƒªã‚¬ãƒ¼ã¨ã¿ãªã™ãªã©ã®ã‚«ã‚¹ã‚¿ãƒ ãƒ­ã‚¸ãƒƒã‚¯ã‚’ã“ã“ã«è¿½åŠ ã§ãã¾ã™ã€‚
 }
 
-// ƒ{ƒ^ƒ“‚Ì‰Ÿ‰ºó‘Ô‚ğXV
+// ãƒœã‚¿ãƒ³ã®æŠ¼ä¸‹çŠ¶æ…‹ã‚’æ›´æ–°
 void Controller::UpdateDownState(ControllerState& contState, ControllerInputInfo& inputInfo)
 {
 	const XINPUT_GAMEPAD& current = contState.state.Gamepad;
 	const XINPUT_GAMEPAD& previous = contState.prevState.Gamepad;
 
-	// ƒ{ƒ^ƒ“‚Ì‰Ÿ‰ºó‘Ô‚ğXV
+	// ãƒœã‚¿ãƒ³ã®æŠ¼ä¸‹çŠ¶æ…‹ã‚’æ›´æ–°
 	inputInfo.A.down = IsButtonDown(XINPUT_GAMEPAD_A, current, previous);
 	inputInfo.B.down = IsButtonDown(XINPUT_GAMEPAD_B, current, previous);
 	inputInfo.X.down = IsButtonDown(XINPUT_GAMEPAD_X, current, previous);
@@ -138,7 +138,7 @@ void Controller::UpdateDownState(ControllerState& contState, ControllerInputInfo
 	inputInfo.LTHUMB.down = IsButtonDown(XINPUT_GAMEPAD_LEFT_THUMB, current, previous);
 	inputInfo.RTHUMB.down = IsButtonDown(XINPUT_GAMEPAD_RIGHT_THUMB, current, previous);
 
-	// •ûŒüƒL[‚Ì‰Ÿ‰º”»’è
+	// æ–¹å‘ã‚­ãƒ¼ã®æŠ¼ä¸‹åˆ¤å®š
 	inputInfo.UP.down = IsButtonDown(XINPUT_GAMEPAD_DPAD_UP, current, previous);
 	inputInfo.DOWN.down = IsButtonDown(XINPUT_GAMEPAD_DPAD_DOWN, current, previous);
 	inputInfo.LEFT.down = IsButtonDown(XINPUT_GAMEPAD_DPAD_LEFT, current, previous);
@@ -159,7 +159,7 @@ void Controller::UpdateUpState(ControllerState& contState, ControllerInputInfo& 
 	const XINPUT_GAMEPAD& current = contState.state.Gamepad;
 	const XINPUT_GAMEPAD& previous = contState.prevState.Gamepad;
 
-	// ƒ{ƒ^ƒ“‚Ì—£‰ºó‘Ô‚ğXV
+	// ãƒœã‚¿ãƒ³ã®é›¢ä¸‹çŠ¶æ…‹ã‚’æ›´æ–°
 	inputInfo.A.up = IsButtonUp(XINPUT_GAMEPAD_A, current, previous);
 	inputInfo.B.up = IsButtonUp(XINPUT_GAMEPAD_B, current, previous);
 	inputInfo.X.up = IsButtonUp(XINPUT_GAMEPAD_X, current, previous);
@@ -171,7 +171,7 @@ void Controller::UpdateUpState(ControllerState& contState, ControllerInputInfo& 
 	inputInfo.LTHUMB.up = IsButtonUp(XINPUT_GAMEPAD_LEFT_THUMB, current, previous);
 	inputInfo.RTHUMB.up = IsButtonUp(XINPUT_GAMEPAD_RIGHT_THUMB, current, previous);
 
-	// •ûŒüƒL[‚Ì—£‰º”»’è
+	// æ–¹å‘ã‚­ãƒ¼ã®é›¢ä¸‹åˆ¤å®š
 	inputInfo.UP.up = IsButtonUp(XINPUT_GAMEPAD_DPAD_UP, current, previous);
 	inputInfo.DOWN.up = IsButtonUp(XINPUT_GAMEPAD_DPAD_DOWN, current, previous);
 	inputInfo.LEFT.up = IsButtonUp(XINPUT_GAMEPAD_DPAD_LEFT, current, previous);
@@ -209,12 +209,12 @@ void Controller::UpdateStickState(ControllerState& contState, ControllerInputInf
 // Check if a specific button was triggered
 bool Controller::IsButtonTriggered(WORD buttonFlag, const XINPUT_GAMEPAD& currentState, const XINPUT_GAMEPAD& previousState) const
 {
-	// Œ»İ‰Ÿ‚³‚ê‚Ä‚¢‚é **‚©‚Â** ‘O‰ñ‰Ÿ‚³‚ê‚Ä‚¢‚È‚©‚Á‚½ê‡‚Étrue
+	// ç¾åœ¨æŠ¼ã•ã‚Œã¦ã„ã‚‹ **ã‹ã¤** å‰å›æŠ¼ã•ã‚Œã¦ã„ãªã‹ã£ãŸå ´åˆã«true
 	return (currentState.wButtons & buttonFlag) && !(previousState.wButtons & buttonFlag);
-	// Œ»İ‚Ìó‘Ô‚Åƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é (currentState.wButtons & buttonFlag)
-	// ‚©‚Â
-	// ‘O‰ñ‚Ìó‘Ô‚Åƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚©‚Á‚½ (!(previousState.wButtons & buttonFlag))
-	// ‚Ì—¼•û‚ğ–‚½‚·ê‡‚ÉA‰Ÿ‚³‚ê‚½uŠÔ‚Æ‚µ‚Ätrue‚ğ•Ô‚·
+	// ç¾åœ¨ã®çŠ¶æ…‹ã§ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ (currentState.wButtons & buttonFlag)
+	// ã‹ã¤
+	// å‰å›ã®çŠ¶æ…‹ã§ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ãªã‹ã£ãŸ (!(previousState.wButtons & buttonFlag))
+	// ã®ä¸¡æ–¹ã‚’æº€ãŸã™å ´åˆã«ã€æŠ¼ã•ã‚ŒãŸç¬é–“ã¨ã—ã¦trueã‚’è¿”ã™
 
 }
 

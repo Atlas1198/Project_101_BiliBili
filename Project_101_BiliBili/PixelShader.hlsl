@@ -40,7 +40,6 @@ float4 BasicPS(
 ) : SV_TARGET //レンダーターゲットへ出力
 {
     float2 uv = input.uv;
-    uv = uvRect.xy + uv * (uvRect.zw - uvRect.xy); //uv矩形情報を適用
     float4 texColor = gTexture.Sample(gSampler, uv); //テクスチャの色を取得
     return texColor * input.color * objColor; //頂点カラーをそのまま返す
 }
@@ -51,7 +50,6 @@ float4 BasicPSMasked(
 ) : SV_TARGET
 {
     float2 uv = input.uv;
-    uv = uvRect.xy + uv * (uvRect.zw - uvRect.xy); //uv矩形情報を適用
     float4 texColor = gTexture.Sample(gSampler, uv); //テクスチャの色を取得
     //アルファテスト
     clip(texColor.a - 0.5f);

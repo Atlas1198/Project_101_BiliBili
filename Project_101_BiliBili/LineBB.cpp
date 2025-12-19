@@ -14,13 +14,18 @@ LineBB::LineBB(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 		velocity,
 		isActive,
 		OBJECT_TAG::BB_LINE,
-		colliderType,
-		COLLISION_LAYER::BB_LINE,
-		collisionBoxSize,
-		collisionIsTrigger)
+		COLLISION_LAYER::BB_LINE
+		)
 {
 	m_raycastSegment.layer = COLLISION_LAYER::BB_LINE;
 	m_raycastSegment.layerMask = GetLayerMask(COLLISION_LAYER::BB_LINE);
+
+	m_pColliderSet->AddCollider(
+		colliderType,
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		collisionBoxSize,
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
+	);
 }
 
 //更新
@@ -68,7 +73,7 @@ void LineBB::GetClosestWallCollisionPoints()
 {
 	for(auto & hitInfo : m_raycastSegment.hitInfos)
 	{
-		if (hitInfo.opponent->GetOwner()->GetTag() == OBJECT_TAG::WALL)
+		if (hitInfo.opponent->GetOwnerTag() == OBJECT_TAG::WALL)
 		{
 			m_wallCollisionPoint = hitInfo.hitPoint;
 			return;	//近い順にソート済みなので最初の1個だけ取得して終了

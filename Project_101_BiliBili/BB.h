@@ -52,10 +52,14 @@ private:
 
 	DirectX::XMFLOAT3 m_rotation = { 0.0f, 0.0f, 0.0f }; //回転角
 
+	float m_length = 0.0f; //ラインの長さ
+
 private:
 	void ControlElectricity();		//電流の操作
 	DirectX::XMFLOAT3 GetClosestCollisionPos(	//プレイヤー座標から最も近い座標を取得
 		DirectX::XMFLOAT3 position, 
 		std::vector<DirectX::XMFLOAT3> collisionPointList
 	);	
+
+	void ElectricityTexSplitUpdate(); //電気テクスチャ分割更新
 };

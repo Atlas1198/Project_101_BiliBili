@@ -97,6 +97,7 @@ void ObjectManagerBase::SubmitRenderInfo(
 			submitInfos[i].scale = object.GetScale();
 			submitInfos[i].common.blendMode = info[i].common.blendMode;
 			submitInfos[i].common.uvRect = SplitSprite(object.GetTexSplitInfo());
+			submitInfos[i].billboardType = info[i].billboardType;
 		}
 
 		//描画要求をシーンに提出

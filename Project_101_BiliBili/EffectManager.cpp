@@ -11,6 +11,7 @@ void EffectManager::Initialize(TextureManager& textureManager, MeshManager& mesh
 {
 	for(auto& ptr : m_pEffectPool)
 	{
+		if (ptr) continue;
 		ptr = new EffectBase(); //エフェクトインスタンス生成
 	}
 
@@ -18,6 +19,7 @@ void EffectManager::Initialize(TextureManager& textureManager, MeshManager& mesh
 
 	//エフェクトテンプレートリストのコピー
 	m_effectTemplates.reserve(templateSet.templateCount);
+
 	for (int i = 0; i < templateSet.templateCount; ++i)
 	{
 		m_effectTemplates.push_back(templateSet.pTemplates[i]);
@@ -63,6 +65,24 @@ void EffectManager::SubmitDraws(Renderer& renderer)
 
 		SubmitRenderInfo(renderer, *effect, *renderInfo);
 	}
+}
+
+//終了
+void EffectManager::Finalize()
+{
+	for(auto& effect : m_pEffectPool)
+	{
+		if(effect)
+		{
+			effect->Destroy();
+			delete effect;
+			effect = nullptr;
+		}
+	}
+
+	m_effectTemplates.clear();
+	m_renderInfos.clear();
+	m_pEffectQueue.clear();
 }
 
 //エフェクトコマンド追加

@@ -86,6 +86,7 @@ void SceneBase::Finalize()
 	//シーン固有の終了呼び出し
 	FinalizeOverride();
 	m_pCollisionManager->ClearColliders();
+	m_pEffectManager->Finalize();
 }
 
 //カメラ情報取得

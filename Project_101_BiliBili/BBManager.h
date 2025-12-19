@@ -17,7 +17,7 @@ class BBManager : public ObjectManagerBase
 public:
 	static constexpr int BB_NUM = 2; //BBÇÃêî
 	const wchar_t* lineBBTexPath = L"asset/texture/line.png";
-	const wchar_t* electricityBBTexPath = L"asset/texture/white.png";
+	const wchar_t* electricityBBTexPath = L"asset/texture/effect/bilibili.png";
 
 	inline static float BB_DURATION = 5.0f;
 

@@ -5,63 +5,63 @@
 #include "ControllerScene.h"
 #include "SharedStruct.h"
 
-//‘O•ûéŒ¾
-class Renderer;			//ƒŒƒ“ƒ_ƒ‰[
-class InputManager;		//“ü—ÍŠÇ—ƒNƒ‰ƒX
-class TextureManager;	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX
-class MeshManager;		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX
+//å‰æ–¹å®£è¨€
+class Renderer;			//ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼
+class InputManager;		//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹
+class TextureManager;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹
+class MeshManager;		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹
 
 enum class SCENE_TYPE
 {
-	SCENE_NONE = 0,		//ƒV[ƒ“–³‚µ
-	SCENE_TITLE,		//ƒ^ƒCƒgƒ‹ƒV[ƒ“
-	SCENE_CONTROLLER,	//ƒRƒ“ƒgƒ[ƒ‰[İ’èƒV[ƒ“
-	SCENE_CHARACTER,	//ƒLƒƒƒ‰ƒNƒ^[‘I‘ğƒV[ƒ“
-	SCENE_GAME,			//ƒQ[ƒ€ƒV[ƒ“
-	SCENE_RESULT,		//ƒŠƒUƒ‹ƒgƒV[ƒ“
+	SCENE_NONE = 0,		//ã‚·ãƒ¼ãƒ³ç„¡ã—
+	SCENE_TITLE,		//ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³
+	SCENE_CONTROLLER,	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼è¨­å®šã‚·ãƒ¼ãƒ³
+	SCENE_CHARACTER,	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼é¸æŠã‚·ãƒ¼ãƒ³
+	SCENE_GAME,			//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³
+	SCENE_RESULT,		//ãƒªã‚¶ãƒ«ãƒˆã‚·ãƒ¼ãƒ³
 };
 
-// ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX
+// ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹
 class SceneManager
 {
-public:	//ŒöŠJ’è”
+public:	//å…¬é–‹å®šæ•°
 
 public:
-	SceneManager(float windowWidth, float windowHeight);	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~SceneManager();										//ƒfƒXƒgƒ‰ƒNƒ^
+	SceneManager(float windowWidth, float windowHeight);	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~SceneManager();										//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-	//ƒƒCƒ“ˆ—ŠÖ”
+	//ãƒ¡ã‚¤ãƒ³å‡¦ç†é–¢æ•°
 	void Initialize(
-		InputManager* pInputManager,		//“ü—ÍŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-		TextureManager* pTextureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-		MeshManager* pMeshManager			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
+		InputManager* pInputManager,		//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+		TextureManager* pTextureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+		MeshManager* pMeshManager			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
 	);
 	void Update();
 	void Finalize();
 
-	void SubmitDraws(Renderer& pRenderer);	//•`‰æ—v‹’ño
+	void SubmitDraws(Renderer& pRenderer);	//æç”»è¦æ±‚æå‡º
 
-	void ReserveChangeScene(SCENE_TYPE newScene);	//ƒV[ƒ“•ÏX—\–ñ
-	void ChangeScene(SCENE_TYPE newScene);			//ƒV[ƒ“•ÏX
+	void ReserveChangeScene(SCENE_TYPE newScene);	//ã‚·ãƒ¼ãƒ³å¤‰æ›´äºˆç´„
+	void ChangeScene(SCENE_TYPE newScene);			//ã‚·ãƒ¼ãƒ³å¤‰æ›´
 
 	void AddPlayer(uint32_t id);
 	void SpawnPlayers();
 	void RemovePlayer(uint32_t id);
 
-	CameraInfo* GetCameraInfo();	//ƒJƒƒ‰î•ñæ“¾
+	CameraInfo* GetCameraInfo();	//ã‚«ãƒ¡ãƒ©æƒ…å ±å–å¾—
 
-private:	//ƒƒ“ƒo•Ï”
-	SCENE_TYPE m_currentScene = SCENE_TYPE::SCENE_NONE; //Œ»İ‚ÌƒV[ƒ“
-	SceneBase* m_pCurrentScene = nullptr; //Œ»İ‚ÌƒV[ƒ“ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
+private:	//ãƒ¡ãƒ³ãƒå¤‰æ•°
+	SCENE_TYPE m_currentScene = SCENE_TYPE::SCENE_NONE; //ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³
+	SceneBase* m_pCurrentScene = nullptr; //ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
 
-	TitleScene* m_pTitleScene = nullptr;			//ƒ^ƒCƒgƒ‹ƒV[ƒ“ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-	ControllerScene* m_pControllerScene = nullptr;	//ƒRƒ“ƒgƒ[ƒ‰[ƒV[ƒ“ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-	GameScene* m_pGameScene = nullptr;				//ƒQ[ƒ€ƒV[ƒ“ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
+	TitleScene* m_pTitleScene = nullptr;			//ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+	ControllerScene* m_pControllerScene = nullptr;	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+	GameScene* m_pGameScene = nullptr;				//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
 
-	InputManager* m_pInputManager = nullptr;		//“ü—ÍŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-	TextureManager* m_pTextureManager = nullptr;	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-	MeshManager* m_pMeshManager = nullptr;			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
+	InputManager* m_pInputManager = nullptr;		//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+	TextureManager* m_pTextureManager = nullptr;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+	MeshManager* m_pMeshManager = nullptr;			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
 
-	bool m_sceneChangeReserved = false;	//ƒV[ƒ“•ÏX—\–ñƒtƒ‰ƒO
-	SCENE_TYPE m_reservedScene = SCENE_TYPE::SCENE_NONE;	//—\–ñ‚³‚ê‚½ƒV[ƒ“
+	bool m_sceneChangeReserved = false;	//ã‚·ãƒ¼ãƒ³å¤‰æ›´äºˆç´„ãƒ•ãƒ©ã‚°
+	SCENE_TYPE m_reservedScene = SCENE_TYPE::SCENE_NONE;	//äºˆç´„ã•ã‚ŒãŸã‚·ãƒ¼ãƒ³
 };

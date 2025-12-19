@@ -66,16 +66,14 @@ void TransformItemManager::FinalizeOverride()
 
 void TransformItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-    for (auto& item : m_items)
-    {
-        //描画情報生成関数を呼び出し、描画情報を作成
-        CreateRenderInfo(
-            textureManager,					//テクスチャマネージャへの参照
-            meshManager,					//メッシュマネージャへの参照
-            &m_itemInfo,					//描画情報構造体配列へのポインタ
-            m_items[0]->GetMeshType(),	//メッシュタイプ
-            BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-            texPath							//テクスチャのファイル名
-        );
-    }
+    //描画情報生成関数を呼び出し、描画情報を作成
+    CreateRenderInfo(
+        textureManager,					            //テクスチャマネージャへの参照
+        meshManager,					            //メッシュマネージャへの参照
+        &m_itemInfo,					            //描画情報構造体配列へのポインタ
+        m_items[0]->GetMeshType(),	                //メッシュタイプ
+        BLEND_MODE::BLEND_MASKED,		            //ブレンドモード
+        texPath,						            //テクスチャのファイル名
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL			//ビルボードタイプ
+    );
 }

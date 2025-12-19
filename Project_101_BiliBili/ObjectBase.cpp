@@ -7,8 +7,6 @@
 #include "CollisionManager.h"
 
 using namespace DirectX;
-
-
 using namespace CollisionData;
 
 //コンストラクタ
@@ -20,10 +18,10 @@ ObjectBase::ObjectBase(
 	XMFLOAT3 velocity,
 	bool isActive, 
 	OBJECT_TAG tag,
-	ColliderType colliderType, 
 	COLLISION_LAYER layer,
-	XMFLOAT3 collisionBoxSize, 
-	bool collisionIsTrigger
+	XMFLOAT3 colliderSetScale,
+	XMFLOAT3 colliderSetOffsetPosition,
+	XMFLOAT3 colliderSetOffsetRotation
 ) : 
 	m_meshType(meshType), 
 	m_position(position), 
@@ -33,13 +31,16 @@ ObjectBase::ObjectBase(
 	m_isActive(isActive), 
 	m_tag(tag)
 {
-	//コライダーの生成
-	m_pCollider = new Collider(
-		this,				//所有者オブジェクト
-		colliderType,		//コライダータイプ
-		layer,				//衝突レイヤー
-		collisionBoxSize,	//コライダーのボックスサイズ
-		collisionIsTrigger	//トリガーフラグ
+	m_pColliderSet = new ColliderSet(
+		this,
+		tag,
+		position,
+		colliderSetScale,
+		rotation,
+		layer,
+		true,
+		colliderSetOffsetPosition,
+		colliderSetOffsetRotation
 	);
 }
 
@@ -47,25 +48,26 @@ ObjectBase::ObjectBase(
 ObjectBase::~ObjectBase()
 {
 	//コライダーの破棄
-	if (m_pCollider)
+	if (m_pColliderSet)
 	{
-		m_pCollider->SetDeleteFlag(true);
-		m_pCollider = nullptr;
+		m_pColliderSet->SetDeleteFlag(true);
+		m_pColliderSet = nullptr;
 	}
 }
 
 void ObjectBase::Update()
 {
 	UpdateOverride();
-	m_pCollider->Update();
+	m_pColliderSet->Update();
 	UpdateAnimation();
 }
 
 //衝突解決
 void ObjectBase::ResolveCollisions()
 {
+	m_pColliderSet->BuildObjectCollisionInfos(); //衝突情報を収集
 	ResolveCollisionsOverride();	//衝突解決(固有処理用、派生クラスでオーバーライド)
-	m_pCollider->Update();			//コライダーの更新
+	m_pColliderSet->Update();		//コライダーの更新
 	ClearCollisionInfos();			//衝突情報のクリア
 }
 
@@ -84,7 +86,7 @@ void Collider::ClearInfos()
 //衝突情報のクリア
 void ObjectBase::ClearCollisionInfos()
 {
-	m_pCollider->ClearInfos();
+	m_pColliderSet->ClearCollisionInfos();
 }
 
 //ワールド行列の取得
@@ -171,6 +173,12 @@ void ObjectBase::SetDrawn(bool isDrawn)
 	m_isDrawn = isDrawn;
 }
 
+//テクスチャ分割情報構造体の設定
+void ObjectBase::SetTexSplitInfo(TexSplitInfo info)
+{
+	m_texSplitInfo = info;
+}
+
 //アニメーション更新
 void ObjectBase::UpdateAnimation()
 {
@@ -193,9 +201,9 @@ void ObjectBase::UpdateAnimation()
 }
 
 //コライダーの取得
-Collider* ObjectBase::GetCollider() const
+ColliderSet* ObjectBase::GetColliderSet() const
 {
-	return m_pCollider;
+	return m_pColliderSet;
 }
 
 //メッシュタイプの取得

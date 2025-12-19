@@ -5,37 +5,38 @@
 #include "MeshManager.h"
 #include "EventManager.h"
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 SceneManager::SceneManager(float windowWidth, float windowHeight)
 {
-	m_pTitleScene = new TitleScene(windowWidth, windowHeight);				//ƒ^ƒCƒgƒ‹ƒV[ƒ“ƒNƒ‰ƒX‚Ì¶¬
-	m_pControllerScene = new ControllerScene(windowWidth, windowHeight);	//ƒRƒ“ƒgƒ[ƒ‰[ƒV[ƒ“ƒNƒ‰ƒX‚Ì¶¬
-	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ƒQ[ƒ€ƒV[ƒ“ƒNƒ‰ƒX‚Ì¶¬
+	m_pTitleScene = new TitleScene(windowWidth, windowHeight);				//ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
+	m_pControllerScene = new ControllerScene(windowWidth, windowHeight);	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
+	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
 
-	m_currentScene = SCENE_TYPE::SCENE_TITLE;	//Å‰‚ÌƒV[ƒ“‚ðƒ^ƒCƒgƒ‹ƒV[ƒ“‚ÉÝ’è
-	m_pCurrentScene = m_pTitleScene;	//Å‰‚ÌƒV[ƒ“‚ðƒ^ƒCƒgƒ‹ƒV[ƒ“‚ÉÝ’è
+	m_currentScene = SCENE_TYPE::SCENE_TITLE;	//æœ€åˆã®ã‚·ãƒ¼ãƒ³ã‚’ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã«è¨­å®š
+	m_pCurrentScene = m_pTitleScene;	//æœ€åˆã®ã‚·ãƒ¼ãƒ³ã‚’ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã«è¨­å®š
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 SceneManager::~SceneManager()
 {
 	delete m_pGameScene;
 	delete m_pTitleScene;
+	delete m_pSelectionScene;
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void SceneManager::Initialize(
-	InputManager* pInputManager,		//“ü—ÍŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-	TextureManager* pTextureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-	MeshManager* pMeshManager			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
+	InputManager* pInputManager,		//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+	TextureManager* pTextureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+	MeshManager* pMeshManager			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
 )
 {
-	//ƒƒ“ƒo•Ï”‚É•Û‘¶
-	m_pInputManager = pInputManager;		//“ü—ÍŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^‚ð•Û‘¶
-	m_pTextureManager = pTextureManager;	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^‚ð•Û‘¶
-	m_pMeshManager = pMeshManager;		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^‚ð•Û‘¶
+	//ãƒ¡ãƒ³ãƒå¤‰æ•°ã«ä¿å­˜
+	m_pInputManager = pInputManager;		//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ä¿å­˜
+	m_pTextureManager = pTextureManager;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ä¿å­˜
+	m_pMeshManager = pMeshManager;		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ä¿å­˜
 
-	//ƒV[ƒ“•ÏXƒCƒxƒ“ƒg“o˜^
+	//ã‚·ãƒ¼ãƒ³å¤‰æ›´ã‚¤ãƒ™ãƒ³ãƒˆç™»éŒ²
 	using args = SCENE_TYPE;
 	EventManager::GetInstance()->Subscribe<args>(
 		EventType::CHANGE_SCENE,
@@ -48,55 +49,68 @@ void SceneManager::Initialize(
 	m_pCurrentScene->Initialize(pInputManager,*m_pTextureManager, *m_pMeshManager);
 }
 
-//XV
+//æ›´æ–°
 void SceneManager::Update()
 {
-	m_pCurrentScene->Update();	//Œ»Ý‚ÌƒV[ƒ“XV
+	m_pCurrentScene->Update();	//ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³æ›´æ–°
 
-	//ƒV[ƒ“•ÏX—áFƒ^ƒCƒgƒ‹ƒV[ƒ“‚ÅƒXƒy[ƒXƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚çƒQ[ƒ€ƒV[ƒ“‚Ö•ÏX
+	//ã‚·ãƒ¼ãƒ³å¤‰æ›´ä¾‹ï¼šã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã§ã‚¹ãƒšãƒ¼ã‚¹ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸã‚‰ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã¸å¤‰æ›´
 	if(m_pCurrentScene == m_pTitleScene && 
 	   m_pInputManager != nullptr &&
 	   m_pInputManager->GetInputInfo() != nullptr &&
-	   m_pInputManager->GetInputInfo()->key.space.trigger)
+		(
+			m_pInputManager->GetInputInfo()->key.any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[0].any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[1].any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[2].any.trigger ||
+			m_pInputManager->GetInputInfo()->controller[3].any.trigger
+		))
 	{
-		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//ƒV[ƒ“•ÏX
+		ChangeScene(SCENE_SELECTION);	//ã‚·ãƒ¼ãƒ³å¤‰æ›´
+	}
+	else if (m_pCurrentScene == m_pSelectionScene &&
+		m_pInputManager != nullptr &&
+		m_pInputManager->GetInputInfo() != nullptr &&
+		m_pInputManager->GetInputInfo()->key.space.trigger)
+	{
+		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//ã‚·ãƒ¼ãƒ³å¤‰æ›´
 	}
 	else if (m_pCurrentScene == m_pGameScene &&
 		m_pInputManager != nullptr &&
 		m_pInputManager->GetInputInfo() != nullptr &&
 		m_pInputManager->GetInputInfo()->key.space.trigger)
 	{
-		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//ƒV[ƒ“•ÏX
+		ChangeScene(SCENE_TYPE::SCENE_CONTROLLER);	//ã‚·ãƒ¼ãƒ³å¤‰æ›´
 	}
 
-	//ƒV[ƒ“•ÏX—\–ñ‚ª‚ ‚ê‚ÎƒV[ƒ“•ÏX
+	//ã‚·ãƒ¼ãƒ³å¤‰æ›´äºˆç´„ãŒã‚ã‚Œã°ã‚·ãƒ¼ãƒ³å¤‰æ›´
 	if (m_sceneChangeReserved)
 	{
 		ChangeScene(m_reservedScene);
 	}
 }
 
-//I—¹
+//çµ‚äº†
 void SceneManager::Finalize()
 {
 }
 
-//ƒV[ƒ“•ÏX—\–ñ
+//ã‚·ãƒ¼ãƒ³å¤‰æ›´äºˆç´„
 void SceneManager::ReserveChangeScene(SCENE_TYPE newScene)
 {
-	m_sceneChangeReserved = true;	//ƒV[ƒ“•ÏX—\–ñƒtƒ‰ƒO‚ð—§‚Ä‚é
-	m_reservedScene = newScene;		//—\–ñ‚³‚ê‚½ƒV[ƒ“‚ð•Û‘¶
+	m_sceneChangeReserved = true;	//ã‚·ãƒ¼ãƒ³å¤‰æ›´äºˆç´„ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
+	m_reservedScene = newScene;		//äºˆç´„ã•ã‚ŒãŸã‚·ãƒ¼ãƒ³ã‚’ä¿å­˜
 }
 
-//ƒV[ƒ“•ÏX
+//ã‚·ãƒ¼ãƒ³å¤‰æ›´
 void SceneManager::ChangeScene(SCENE_TYPE next)
 {
-	m_pCurrentScene->Finalize();	//Œ»Ý‚ÌƒV[ƒ“I—¹ˆ—
+	m_pCurrentScene->Finalize();	//ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³çµ‚äº†å‡¦ç†
 
-	//ŽŸ‚ÌƒV[ƒ“‚Ö•ÏX
-	m_sceneChangeReserved = false;	//ƒV[ƒ“•ÏX—\–ñƒtƒ‰ƒO‚ð‰º‚ë‚·
-	m_reservedScene = SCENE_TYPE::SCENE_NONE;	//—\–ñ‚³‚ê‚½ƒV[ƒ“‚ðƒŠƒZƒbƒg
-	m_currentScene = next;			//Œ»Ý‚ÌƒV[ƒ“‚ðXV
+	//æ¬¡ã®ã‚·ãƒ¼ãƒ³ã¸å¤‰æ›´
+	m_sceneChangeReserved = false;	//ã‚·ãƒ¼ãƒ³å¤‰æ›´äºˆç´„ãƒ•ãƒ©ã‚°ã‚’ä¸‹ã‚ã™
+	m_reservedScene = SCENE_TYPE::SCENE_NONE;	//äºˆç´„ã•ã‚ŒãŸã‚·ãƒ¼ãƒ³ã‚’ãƒªã‚»ãƒƒãƒˆ
+	m_currentScene = next;			//ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³ã‚’æ›´æ–°
 
 	switch (next)
 	{
@@ -114,20 +128,20 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 		break;
 	}
 
-	m_pCurrentScene->Initialize(	//V‚µ‚¢ƒV[ƒ“‰Šú‰»
-		m_pInputManager,	//“ü—ÍŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-		*m_pTextureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-		*m_pMeshManager		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
+	m_pCurrentScene->Initialize(	//æ–°ã—ã„ã‚·ãƒ¼ãƒ³åˆæœŸåŒ–
+		m_pInputManager,	//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+		*m_pTextureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+		*m_pMeshManager		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
 		); 
 }
 
-//•`‰æ—v‹’ño
+//æç”»è¦æ±‚æå‡º
 void SceneManager::SubmitDraws(Renderer& pRenderer)
 {
 	m_pCurrentScene->Draw(pRenderer);
 }
 
-//ƒJƒƒ‰î•ñŽæ“¾
+//ã‚«ãƒ¡ãƒ©æƒ…å ±å–å¾—
 CameraInfo* SceneManager::GetCameraInfo()
 {
 	return m_pCurrentScene->GetCameraInfo();

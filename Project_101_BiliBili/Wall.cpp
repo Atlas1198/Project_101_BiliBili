@@ -17,7 +17,7 @@ Wall::Wall(MESH_TYPE meshType,
     bool orbit,
     float orbitRadius,
     DirectX::XMFLOAT3 orbitCenter)
-    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALL, colliderType, COLLISION_LAYER::WALL, collisionBoxSize, collisionIsTrigger)
+    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALL, COLLISION_LAYER::WALL)
     , m_rotationSpeed(rotationSpeed)
     , m_orbit(orbit)
     , m_orbitRadius(orbitRadius)

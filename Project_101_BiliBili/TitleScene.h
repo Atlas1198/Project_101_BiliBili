@@ -2,6 +2,7 @@
 #include "SceneBase.h"
 #include "ObjectBase.h"
 #include "ObjectManagerBase.h"
+#include "TitleUIManager.h"
 
 //‘O•ûéŒ¾
 class Renderer;
@@ -31,4 +32,6 @@ public:	//ŒöŠJŠÖ”
 	CameraInfo* GetCameraInfo() const;			//ƒJƒƒ‰î•ñæ“¾
 
 private:
+
+	TitleUIManager* m_pTitleUIManager = nullptr;
 };
