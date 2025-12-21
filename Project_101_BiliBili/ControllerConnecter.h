@@ -2,6 +2,7 @@
 
 class InputManager;
 
+//コントローラー接続状態構造体
 struct ConnectionStatus
 {
 	bool isConnected;		//接続状態

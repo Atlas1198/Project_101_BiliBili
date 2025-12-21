@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "TitleScene.h"
 #include "ControllerScene.h"
+#include "CharacterScene.h"
 #include "SharedStruct.h"
 
 //前方宣言
@@ -56,6 +57,7 @@ private:	//メンバ変数
 
 	TitleScene* m_pTitleScene = nullptr;			//タイトルシーンクラスのポインタ
 	ControllerScene* m_pControllerScene = nullptr;	//コントローラーシーンクラスのポインタ
+	CharacterScene* m_pCharacterScene = nullptr;	//キャラクターシーンクラスのポインタ
 	GameScene* m_pGameScene = nullptr;				//ゲームシーンクラスのポインタ
 
 	InputManager* m_pInputManager = nullptr;		//入力管理クラスのポインタ

@@ -10,6 +10,7 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 {
 	m_pTitleScene = new TitleScene(windowWidth, windowHeight);				//タイトルシーンクラスの生成
 	m_pControllerScene = new ControllerScene(windowWidth, windowHeight);	//コントローラーシーンクラスの生成
+	m_pCharacterScene = new CharacterScene(windowWidth, windowHeight);		//キャラクターシーンクラスの生成
 	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ゲームシーンクラスの生成
 
 	m_currentScene = SCENE_TYPE::SCENE_TITLE;	//最初のシーンをタイトルシーンに設定
@@ -19,8 +20,10 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 //デストラクタ
 SceneManager::~SceneManager()
 {
-	delete m_pGameScene;
 	delete m_pTitleScene;
+	delete m_pControllerScene;
+	delete m_pCharacterScene;
+	delete m_pGameScene;
 }
 
 //初期化
