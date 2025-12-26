@@ -50,7 +50,7 @@ void BB::Initialize()
 		m_electricityBB[i]->GetColliderSet()->AddCollider(
 			ColliderType::CAPSULE,
 			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.2f, 1.2f, 1.2f),
+			XMFLOAT3(2.0f, 1.0f, 2.0f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 		m_electricityBB[i]->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
