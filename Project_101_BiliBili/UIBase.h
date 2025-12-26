@@ -43,12 +43,14 @@ public:	//公開関数
 	const DirectX::XMFLOAT4 GetColor() const;		//色RGBAの取得
 	const bool IsActive() const;					//アクティブかどうかを取得
 	UVRect GetUVRect() const;						//UV矩形の取得
+	TexSplitInfo& GetTexSplitInfo();			//テクスチャ分割情報構造体の取得
 
 	//セッター
 	void SetLocalTransform(const Transform3D& local); //ローカル変換情報の設定
 	void SetColor(DirectX::XMFLOAT4 color);	//色RGBAの設定
 	void SetActive(bool isActive);			//アクティブフラグの設定
 	void SetUVRect(const UVRect& uvRect);	//UV矩形の設定
+	void SetTexSplitInfo(const TexSplitInfo& info);	//テクスチャ分割情報構造体の設定
 
 	//UI親子関係関数
 	//子UIオブジェクト追加関数(テンプレート)
@@ -81,14 +83,16 @@ protected:
 	Transform3D m_local{};	//ローカル変換情報
 
 	DirectX::XMFLOAT4 m_color{1.0f, 1.0f, 1.0f, 1.0f};	//色
-	bool m_isActive = true;	//アクティブフラグ
+	bool m_isActive = true;								//アクティブフラグ
 
 	//UI親子関係
-	UIBase* m_parent = nullptr;						//親UIオブジェクトポインタ
+	UIBase* m_parent = nullptr;							//親UIオブジェクトポインタ
 	std::vector<std::unique_ptr<UIBase>> m_children;	//子UIオブジェクト配列
 
-	UINT m_order = 0;	//描画順
-	std::vector<WorldRenderInfo> m_renderInfos;	//描画情報構造体配列
+	UINT m_order = 0;										//描画順
+	std::vector<WorldRenderInfo> m_renderInfos;				//描画情報構造体配列
 	BLEND_MODE m_blendMode = BLEND_MODE::BLEND_TRANSPARENT;	//ブレンドモード
-	UVRect m_uvRect{};	//UV矩形
+
+	UVRect m_uvRect{};				//UV矩形
+	TexSplitInfo m_texSplitInfo{};	//テクスチャ分割情報構造体
 };

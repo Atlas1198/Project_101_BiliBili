@@ -2,8 +2,16 @@
 #include "EventManager.h"
 
 //コンストラクタ
-HPBarUI::HPBarUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order)
-	: UIBase(position, scale, rotation, order)
+HPBarUI::HPBarUI(
+	DirectX::XMFLOAT3 position, 
+	DirectX::XMFLOAT3 scale, 
+	DirectX::XMFLOAT3 rotation,
+	UINT order,
+	const wchar_t* frameTexturePath,
+	const wchar_t* gageTexturePath,
+	const wchar_t* baseTexturePath
+)
+	: UIBase(position, scale, rotation, order), m_frameTexturePath(frameTexturePath), m_gageTexturePath(gageTexturePath), m_baseTexturePath(baseTexturePath)
 {
 }
 
@@ -13,26 +21,26 @@ void HPBarUI::InitializeOverride(TextureManager& textureManager, MeshManager& me
 	//背景画像UIの作成
 	m_pBaseImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },
+		DirectX::XMFLOAT3{ 488.0f, 95.0f, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order,
-		HPBarUI::BASE_TEXTURE_PATH
+		m_baseTexturePath
 	);
 	//バー画像UIの作成
 	m_pGageImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },
+		DirectX::XMFLOAT3{ 488.0f, 76.0f, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order + 1,
-		HPBarUI::GAGE_TEXTURE_PATH
+		m_gageTexturePath
 	);
 	//フレーム画像UIの作成
 	m_pFrameImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-		DirectX::XMFLOAT3{ 1.02f, 1.02f, 1.0f },
+		DirectX::XMFLOAT3{ 488.0f, 76.0f, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order + 2,
-		HPBarUI::FRAME_TEXTURE_PATH
+		m_frameTexturePath
 	);
 
 }
@@ -56,20 +64,24 @@ void HPBarUI::PrepareRenderInfoOverride(TextureManager& textureManager, MeshMana
 //ゲージ画像更新関数
 void HPBarUI::UpdateGageImage()
 {
-	auto local = m_pGageImage->GetLocalTransform();
-	local.scale.x = 1.0f * m_hpRate;
-	local.position.x = -(1.0f - local.scale.x) * 0.5f;
-	m_pGageImage->SetLocalTransform(local);
+	const float gageScaleX = 488.0f;	//ゲージ画像スケールX基準値
 
+	//ローカル変換情報更新
+	auto local = m_pGageImage->GetLocalTransform();		//ローカル変換情報取得
+	local.scale.x = gageScaleX * m_hpRate;					//スケールX更新
+	local.position.x = -(gageScaleX - local.scale.x) * 0.5f;	//位置X更新
+	m_pGageImage->SetLocalTransform(local);				//ローカル変換情報設定
+
+	//UV矩形更新
 	UVRect uvRect{};
 	uvRect.u = 0.0;
 	uvRect.v = 0.0f;
 	uvRect.su = m_hpRate;
 	uvRect.sv = 1.0f;
-
 	m_pGageImage->SetUVRect(uvRect);
 }
 
+//HP設定関数
 void HPBarUI::SetHealth(float health)
 {
 	m_hpRate = (std::max)(0.0f, health);

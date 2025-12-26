@@ -15,6 +15,13 @@ class InputManager;
 class TextureManager;
 class MeshManager;
 
+enum class GameState
+{
+	STATE_COUNTDOWN,
+	STATE_PLAY,
+	STATE_RESULT
+};
+
 //ゲームシーンクラス
 class GameScene : public SceneBase
 {
@@ -43,4 +50,6 @@ private:
 	BulletManager *m_pBulletManager = nullptr;	//弾管理クラス
 	ItemManager* m_pItemManager = nullptr;		//アイテム管理クラス
 	BBManager* m_pBBManager = nullptr;			//BB管理クラス
+
+	GameState m_gameState = GameState::STATE_COUNTDOWN; // ゲームの状態
 };

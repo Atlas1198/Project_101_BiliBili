@@ -8,7 +8,7 @@ class IconUI : public UIBase
 {
 public:
 	//テクスチャファイルパス定数(仮)
-	static constexpr const wchar_t* BULLET_TEXTURE_PATH = L"asset/texture/white.png"; // 弾数テクスチャパス
+	static constexpr const wchar_t* BULLET_TEXTURE_PATH = L"asset/texture/game_scene/UI_INGAME_L_icon.png"; // 弾数テクスチャパス
 public:
 	IconUI(
 		DirectX::XMFLOAT3 position = { 0,0,0 },
@@ -25,9 +25,6 @@ public:
 	void FinalizeOverride() override;
 private:
 	UIImage* m_pIconImage = nullptr;	//アイコン画像UIポインタ
-	UIImage* m_pBgImage = nullptr;	//背景画像UIポインタ
-	UIImage* m_pFrameImage = nullptr;	//フレーム画像UIポインタ
-
 
 private:
 	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成

@@ -55,8 +55,10 @@ void ColliderSet::Update()
 	m_basePosition.y = ownerPosition.y + m_offsetPosition.y;
 	m_basePosition.z = ownerPosition.z + m_offsetPosition.z;
 
+	//スケール比率計算用の安全な除算ラムダ式
 	auto safeDiv = [](float a, float b) { return (fabs(b) < 1e-6f) ? 1.0f : (a / b); };
 
+	//スケール比率計算
 	XMFLOAT3 scaleRatio =
 	{
 		safeDiv(ownerScale.x, m_ownerBaseScale.x),
@@ -64,6 +66,7 @@ void ColliderSet::Update()
 		safeDiv(ownerScale.z, m_ownerBaseScale.z)
 	};
 
+	//設定スケール計算
 	XMFLOAT3 setScale =
 	{
 		m_baseScale.x * scaleRatio.x,
@@ -71,6 +74,7 @@ void ColliderSet::Update()
 		m_baseScale.z * scaleRatio.z,
 	};
 
+	//回転加算
 	m_baseRotation.x = ownerRotation.x + m_offsetRotation.x;
 	m_baseRotation.y = ownerRotation.y + m_offsetRotation.y;
 	m_baseRotation.z = ownerRotation.z + m_offsetRotation.z;

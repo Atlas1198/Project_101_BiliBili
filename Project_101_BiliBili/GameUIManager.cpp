@@ -15,15 +15,21 @@ void GameUIManager::InitializeOverride(
 	//HPバーUIの作成
 	m_pHPBarUI1 = (new HPBarUI(
 		DirectX::XMFLOAT3{ -500.0f, 440.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ -488.0f, 105.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },		//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-		0											//描画順序
+		0,											//描画順序
+		L"asset/texture/game_scene/UI_INGAME_L_frame.png",	//フレームテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_L_gauge.png",	//ゲージテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_L_back.png"	//背景テクスチャパス
 	));
 	m_pHPBarUI2 = (new HPBarUI(
 		DirectX::XMFLOAT3{ 500.0f, 440.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 488.0f, 105.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-		0											//描画順序
+		0,											//描画順序
+		L"asset/texture/game_scene/UI_INGAME_R_frame.png",	//フレームテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_R_gauge.png",	//ゲージテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_R_back.png"	//背景テクスチャパス
 	));
 
 	m_pBulletCountUI1 = (new BulletCountUI(
@@ -41,13 +47,13 @@ void GameUIManager::InitializeOverride(
 
 	m_pIconUI1 = (new IconUI(
 		DirectX::XMFLOAT3{ -850.0f, 430.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 130.0f, 130.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 45.0f },		//回転
 		0											//描画順序
 	));
 	m_pIconUI2 = (new IconUI(
 		DirectX::XMFLOAT3{ 850.0f, 430.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 130.0f, 130.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 45.0f },		//回転
 		0											//描画順序
 	));
