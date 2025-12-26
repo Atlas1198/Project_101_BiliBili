@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneBase.h"
+#include "CharacterSelecter.h"
 #include "CharacterUIManager.h"
 
 //前方宣言
@@ -10,12 +11,13 @@ class MeshManager;
 //キャラクターシーンクラス
 class CharacterScene : public SceneBase
 {
-	public:	//公開関数
+public:	//公開関数
 	CharacterScene(float window_width, float window_height);	//コンストラクタ
 	~CharacterScene();											//デストラクタ
 
 private:
 	//メンバ変数
+	CharacterSelecter* m_pCharacterSelecter = nullptr;		//キャラクター選択クラス
 	CharacterUIManager* m_pCharacterUIManager = nullptr;	//キャラクターUI管理クラス
 
 private:

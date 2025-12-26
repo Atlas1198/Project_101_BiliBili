@@ -47,6 +47,9 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 		0,								//シェーダーレジスタs0
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR	//フィルタリング方法(バイリニアフィルタリング)
 	);
+	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	//ルートシグネチャの設定
 	CD3DX12_ROOT_SIGNATURE_DESC desc = {};	//設定構造体

@@ -12,21 +12,9 @@ class InputManager;		//入力管理クラス
 class TextureManager;	//テクスチャ管理クラス
 class MeshManager;		//メッシュ管理クラス
 
-enum class SCENE_TYPE
-{
-	SCENE_NONE = 0,		//シーン無し
-	SCENE_TITLE,		//タイトルシーン
-	SCENE_CONTROLLER,	//コントローラー設定シーン
-	SCENE_CHARACTER,	//キャラクター選択シーン
-	SCENE_GAME,			//ゲームシーン
-	SCENE_RESULT,		//リザルトシーン
-};
-
 // シーン管理クラス
 class SceneManager
 {
-public:	//公開定数
-
 public:
 	SceneManager(float windowWidth, float windowHeight);	//コンストラクタ
 	~SceneManager();										//デストラクタ
@@ -52,8 +40,8 @@ public:
 	CameraInfo* GetCameraInfo();	//カメラ情報取得
 
 private:	//メンバ変数
-	SCENE_TYPE m_currentScene = SCENE_TYPE::SCENE_NONE; //現在のシーン
-	SceneBase* m_pCurrentScene = nullptr; //現在のシーンクラスのポインタ
+	SCENE_TYPE m_currentScene = SCENE_TYPE::SCENE_NONE;	//現在のシーン
+	SceneBase* m_pCurrentScene = nullptr;				//現在のシーンクラスのポインタ
 
 	TitleScene* m_pTitleScene = nullptr;			//タイトルシーンクラスのポインタ
 	ControllerScene* m_pControllerScene = nullptr;	//コントローラーシーンクラスのポインタ
@@ -66,4 +54,6 @@ private:	//メンバ変数
 
 	bool m_sceneChangeReserved = false;	//シーン変更予約フラグ
 	SCENE_TYPE m_reservedScene = SCENE_TYPE::SCENE_NONE;	//予約されたシーン
+
+	SceneContext m_sceneContext;	//シーンコンテキスト
 };

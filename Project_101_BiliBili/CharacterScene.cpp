@@ -4,6 +4,7 @@
 CharacterScene::CharacterScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
 {
+	m_pCharacterSelecter = new CharacterSelecter();
 	m_pCharacterUIManager = new CharacterUIManager(window_width, window_height);
 }
 
@@ -15,6 +16,11 @@ CharacterScene::~CharacterScene()
 		delete m_pCharacterUIManager;
 		m_pCharacterUIManager = nullptr;
 	}
+	if (m_pCharacterSelecter)
+	{
+		delete m_pCharacterSelecter;
+		m_pCharacterSelecter = nullptr;
+	}
 }
 
 //シーン固有の初期化
@@ -24,12 +30,14 @@ void CharacterScene::InitializeOverride(
 	MeshManager& pMeshManager			//メッシュ管理クラスの参照
 )
 {
+	m_pCharacterSelecter->Initialize();
 	m_pCharacterUIManager->Initialize(pTextureManager, pMeshManager);
 }
 
 //シーン固有の更新
 void CharacterScene::UpdateOverride()
 {
+	m_pCharacterSelecter->Update(*m_pInputManager, *m_pSceneContext);
 	m_pCharacterUIManager->Update();
 }
 
@@ -42,5 +50,6 @@ void CharacterScene::DrawOverride(Renderer& pRenderer)
 //シーン固有の終了
 void CharacterScene::FinalizeOverride()
 {
+	m_pCharacterSelecter->Finalize(*m_pSceneContext);
 	m_pCharacterUIManager->Finalize();
 }

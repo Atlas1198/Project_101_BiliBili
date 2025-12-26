@@ -55,6 +55,7 @@ ObjectBase::~ObjectBase()
 	}
 }
 
+//更新
 void ObjectBase::Update()
 {
 	UpdateOverride();
@@ -177,6 +178,12 @@ void ObjectBase::SetDrawn(bool isDrawn)
 void ObjectBase::SetTexSplitInfo(TexSplitInfo info)
 {
 	m_texSplitInfo = info;
+}
+
+//シーンコンテキストの設定
+void ObjectBase::SetSceneContext(SceneContext* pSceneContext)
+{
+	m_pSceneContext = pSceneContext;
 }
 
 //アニメーション更新

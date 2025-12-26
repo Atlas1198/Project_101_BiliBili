@@ -23,6 +23,7 @@ public:	//公開関数
 
 	//メイン処理関数	
 	void Initialize(	//初期化
+		SceneContext* pSceneContext,
 		InputManager* pInputManager,
 		TextureManager& pTextureManager,
 		MeshManager& pMeshManager
@@ -40,6 +41,8 @@ protected:	//非公開メンバ変数
 	InputManager* m_pInputManager = nullptr;			//入力管理クラス
 	CollisionManager* m_pCollisionManager = nullptr;	//衝突管理クラス
 	EffectManager* m_pEffectManager = nullptr;			//エフェクト管理クラス
+
+	SceneContext* m_pSceneContext = nullptr;					//シーンコンテキスト構造体
 
 	bool m_drawColliders = true; // コライダー描画フラグ
 

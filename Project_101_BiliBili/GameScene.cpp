@@ -64,6 +64,7 @@ void GameScene::InitializeOverride(
 )
 {
 	m_pPlayerManager->Initialize(	//プレイヤー管理クラス初期化
+		m_pSceneContext,
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
@@ -71,6 +72,7 @@ void GameScene::InitializeOverride(
 	);
 
 	m_pFieldManager->Initialize(	//フィールド管理クラス初期化
+		m_pSceneContext,
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
@@ -83,6 +85,7 @@ void GameScene::InitializeOverride(
 	);
 
 	m_pBulletManager->Initialize( //弾管理クラス初期化
+		m_pSceneContext,
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
@@ -90,6 +93,7 @@ void GameScene::InitializeOverride(
 	);
 
 	m_pItemManager->Initialize(		//アイテム管理クラス初期化
+		m_pSceneContext,
 		pInputManager,
 		pTextureManager,
 		pMeshManager,
@@ -101,6 +105,7 @@ void GameScene::InitializeOverride(
 	m_pBBManager->SetGameUIManager(m_pGameUIManager);
 	m_pBBManager->SetCollisionManager(m_pCollisionManager);
 	m_pBBManager->Initialize(			//BB管理クラス初期化
+		m_pSceneContext,
 		pInputManager,
 		pTextureManager,
 		pMeshManager,

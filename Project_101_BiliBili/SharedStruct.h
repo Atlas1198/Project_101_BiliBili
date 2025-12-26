@@ -32,23 +32,23 @@ private:
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputLayoutCount];	//入力要素の配列
 };
 
-//UV??`?\????
+//UV矩形構造体
 struct UVRect
 {
-	float u = 0.0f;		//UV??`?????X???W
-	float v = 0.0f;		//UV??`?????Y???W
-	float su = 1.0f;	//UV??`???
-	float sv = 1.0f;	//UV??`?????
+	float u = 0.0f;		//UV矩形の左上X座標
+	float v = 0.0f;		//UV矩形の左上Y座標
+	float su = 1.0f;	//UV矩形の幅
+	float sv = 1.0f;	//UV矩形の高さ
 };
 
-//????s??\????(256?o?C?g?A???C?????g)
+//定数バッファ構造体
 struct alignas(256) Transform
 {
-	DirectX::XMMATRIX worldMatrix;	//???[???h?s??
-	DirectX::XMMATRIX viewMatrix;	//?r???[?s??
-	DirectX::XMMATRIX projMatrix;	//?v???W?F?N?V?????s??
-	DirectX::XMFLOAT4 objectColor;	//?I?u?W?F?N?g??FRGBA
-	DirectX::XMFLOAT4 uvRect;		//UV??`
+	DirectX::XMMATRIX worldMatrix;	//ワールド行列
+	DirectX::XMMATRIX viewMatrix;	//ビュー行列
+	DirectX::XMMATRIX projMatrix;	//プロジェクション行列
+	DirectX::XMFLOAT4 objectColor;	//オブジェクトの色
+	DirectX::XMFLOAT4 uvRect;		//UV矩形
 };
 
 //3D変換情報構造体
@@ -91,6 +91,19 @@ struct CameraInfo
 	float farZ;					//ファークリップ距離
 };
 
+//プレイヤー情報構造体
+struct PlayerInfo
+{
+	int controllerID = -1;	//コントローラーID
+	int characterID = -1;	//キャラクターID
+};
+
+//シーンコンテキスト構造体
+struct SceneContext
+{
+	PlayerInfo playersInfo[4];	//プレイヤー情報配列
+};
+
 //タグ列挙体
 enum class OBJECT_TAG
 {
@@ -104,6 +117,27 @@ enum class OBJECT_TAG
 	BB_LINE,			//ビリビリライン
 	BB_ELECTRICITY,		//ビリビリ電流
 	MAX					//最大数
+};
+
+//シーン列挙体
+enum class SCENE_TYPE
+{
+	SCENE_NONE = 0,		//シーン無し
+	SCENE_TITLE,		//タイトルシーン
+	SCENE_CONTROLLER,	//コントローラー設定シーン
+	SCENE_CHARACTER,	//キャラクター選択シーン
+	SCENE_GAME,			//ゲームシーン
+	SCENE_RESULT,		//リザルトシーン
+};
+
+//方向列挙体
+enum class DIRECTION
+{
+	NONE = 0,	//なし
+	UP,			//上
+	DOWN,		//下
+	LEFT,		//左
+	RIGHT,		//右
 };
 
 //前方宣言

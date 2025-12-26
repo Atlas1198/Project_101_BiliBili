@@ -39,5 +39,5 @@ void ControllerScene::DrawOverride(Renderer& pRenderer)
 void ControllerScene::FinalizeOverride()
 {
 	m_pUIManager->Finalize();
-	m_pControllerConnecter->Finalize();
+	m_pControllerConnecter->Finalize(*m_pSceneContext);
 }

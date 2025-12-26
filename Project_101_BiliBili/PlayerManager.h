@@ -27,7 +27,7 @@ public:
 
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
-	std::vector<WorldRenderInfo> m_playerInfo;			//プレイヤー描画情報
+	std::vector<WorldRenderInfo> m_playerInfo;					//プレイヤー描画情報
 	InputManager* m_pInputManager = nullptr;					//入力マネージャーポインタ
 	float teamHP[2] = { 1.0f, 1.0f };							//チームの体力
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "SharedStruct.h"
 
 class InputManager;
 
@@ -18,7 +19,7 @@ public:
 
 	void Initialize();							//初期化
 	void Update(InputManager& inputManager);	//更新
-	void Finalize();							//終了
+	void Finalize(SceneContext& sceneContext);	//終了
 
 	bool IsAllConnected() const { return m_isAllConnected; }	//全コントローラー接続判定
 

@@ -122,6 +122,19 @@ void ControllerConnecter::Update(InputManager& inputManager)
 }
 
 //終了
-void ControllerConnecter::Finalize()
+void ControllerConnecter::Finalize(SceneContext& sceneContext)
 {
+	//シーンコンテキストのプレイヤー情報を更新
+	for(int i = 0; i < 4; ++i)
+	{
+		//コントローラーIDを設定(未接続の場合は-1)
+		if (m_connectionStatuses[i].isConnected)
+		{
+			sceneContext.playersInfo[i].controllerID = m_connectionStatuses[i].controllerIndex;
+		}
+		else
+		{
+			sceneContext.playersInfo[i].controllerID = -1;
+		}
+	}
 }
