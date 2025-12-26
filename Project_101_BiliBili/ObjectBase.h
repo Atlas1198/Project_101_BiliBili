@@ -52,13 +52,14 @@ public:	//公開関数
 	const TexSplitInfo& GetTexSplitInfo() const;	//テクスチャ分割情報構造体取得関数
 
 	//セッター
-	void SetPosition(DirectX::XMFLOAT3 position);	//位置の設定
-	void SetRotation(DirectX::XMFLOAT3 rotation);	//回転の設定
-	void SetScale(DirectX::XMFLOAT3 scale);			//スケールの設定
-	void SetColor(DirectX::XMFLOAT4 color);			//色RGBAの設定
-	void SetActive(bool isActive);					//アクティブフラグの設定
-	void SetDrawn(bool isDrawn);					//描画フラグの設定
-	void SetTexSplitInfo(TexSplitInfo info);	//テクスチャ分割情報構造体の設定
+	void SetPosition(DirectX::XMFLOAT3 position);		//位置の設定
+	void SetRotation(DirectX::XMFLOAT3 rotation);		//回転の設定
+	void SetScale(DirectX::XMFLOAT3 scale);				//スケールの設定
+	void SetColor(DirectX::XMFLOAT4 color);				//色RGBAの設定
+	void SetActive(bool isActive);						//アクティブフラグの設定
+	void SetDrawn(bool isDrawn);						//描画フラグの設定
+	void SetTexSplitInfo(TexSplitInfo info);			//テクスチャ分割情報構造体の設定
+	void SetSceneContext(SceneContext* pSceneContext);	//シーンコンテキスト構造体の設定
 
 protected:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_position{ 0.0f, 0.0f, 0.0f };	//位置
@@ -74,6 +75,8 @@ protected:	//非公開メンバ変数
 	ColliderSet* m_pColliderSet = nullptr;	//コライダーセットへのポインタ
 	OBJECT_TAG m_tag = OBJECT_TAG::NONE; //オブジェクトタグ
 	TexSplitInfo m_texSplitInfo{}; //テクスチャ分割情報構造体
+
+	SceneContext* m_pSceneContext = nullptr; //シーンコンテキスト構造体
 
 protected:	//非公開メンバ変数
 	virtual void UpdateOverride() = 0;				//シーン固有の更新

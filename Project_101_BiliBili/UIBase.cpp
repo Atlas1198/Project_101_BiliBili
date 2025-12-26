@@ -102,6 +102,12 @@ const bool UIBase::IsActive() const {
 	return m_isActive;
 }
 
+//UV‹éŒ`‚Ìæ“¾
+UVRect UIBase::GetUVRect() const
+{
+	return m_uvRect;
+}
+
 //ƒ[ƒJƒ‹•ÏŠ·î•ñ‚Ìİ’è
 void UIBase::SetLocalTransform(const Transform3D& local)
 {

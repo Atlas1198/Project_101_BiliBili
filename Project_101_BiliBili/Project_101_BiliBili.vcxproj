@@ -152,6 +152,9 @@
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BulletManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CharacterScene.h" />
+    <ClInclude Include="CharacterSelecter.h" />
+    <ClInclude Include="CharacterUIManager.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ColliderSet.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -226,6 +229,9 @@
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletManager.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CharacterScene.cpp" />
+    <ClCompile Include="CharacterSelecter.cpp" />
+    <ClCompile Include="CharacterUIManager.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ColliderSet.cpp" />
     <ClCompile Include="CollisionManager.cpp" />

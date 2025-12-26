@@ -10,6 +10,7 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 {
 	m_pTitleScene = new TitleScene(windowWidth, windowHeight);				//タイトルシーンクラスの生成
 	m_pControllerScene = new ControllerScene(windowWidth, windowHeight);	//コントローラーシーンクラスの生成
+	m_pCharacterScene = new CharacterScene(windowWidth, windowHeight);		//キャラクターシーンクラスの生成
 	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ゲームシーンクラスの生成
 
 	m_currentScene = SCENE_TYPE::SCENE_TITLE;	//最初のシーンをタイトルシーンに設定
@@ -19,8 +20,10 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 //デストラクタ
 SceneManager::~SceneManager()
 {
-	delete m_pGameScene;
 	delete m_pTitleScene;
+	delete m_pControllerScene;
+	delete m_pCharacterScene;
+	delete m_pGameScene;
 }
 
 //初期化
@@ -45,7 +48,8 @@ void SceneManager::Initialize(
 		}
 	);
 
-	m_pCurrentScene->Initialize(pInputManager,*m_pTextureManager, *m_pMeshManager);
+	//最初のシーン初期化
+	m_pCurrentScene->Initialize(&m_sceneContext, pInputManager,*m_pTextureManager, *m_pMeshManager);
 }
 
 //更新
@@ -91,23 +95,33 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 	m_reservedScene = SCENE_TYPE::SCENE_NONE;	//予約されたシーンをリセット
 	m_currentScene = next;			//現在のシーンを更新
 
+	//シーンクラスのポインタを更新
 	switch (next)
 	{
 	case SCENE_TYPE::SCENE_TITLE:
 		m_pCurrentScene = m_pTitleScene;
 		break;
+
 	case SCENE_TYPE::SCENE_CONTROLLER:
 		m_pCurrentScene = m_pControllerScene;
 		break;
+
+	case SCENE_TYPE::SCENE_CHARACTER:
+		m_pCurrentScene = m_pCharacterScene;
+		break;
+
 	case SCENE_TYPE::SCENE_GAME:
 		m_pCurrentScene = m_pGameScene;
 		break;
+
 	case SCENE_TYPE::SCENE_RESULT:
 		//m_pCurrentScene = m_pResultScene;
 		break;
 	}
 
+	//シーン変更後の初期化処理
 	m_pCurrentScene->Initialize(	//新しいシーン初期化
+		&m_sceneContext,		//シーンコンテキスト構造体
 		m_pInputManager,	//入力管理クラスのポインタ
 		*m_pTextureManager,	//テクスチャ管理クラスのポインタ
 		*m_pMeshManager		//メッシュ管理クラスのポインタ

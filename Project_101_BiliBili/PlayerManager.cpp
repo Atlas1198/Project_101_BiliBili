@@ -29,9 +29,6 @@ void PlayerManager::InitializeOverride(
 	CollisionManager& collisionManager	//衝突管理クラスの参照
 )
 {
-	//プレイヤー描画情報生成
-	PrepareRenderInfo(textureManager, meshManager);
-
 	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
 	{
 		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
@@ -53,9 +50,36 @@ void PlayerManager::InitializeOverride(
 		hp = 1.0f;
 	}
 
+	//スポーン位置設定
 	for (int i = 0; i < 4; i++)
 	{
 		m_pPlayer[i]->SetPosition(spawnPoses[i]);
+	}
+
+	//キャラクターごとの色設定(テスト用)
+	for (int i = 0; i < 4; i++)
+	{
+		XMFLOAT4 color = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+		switch (m_pSceneContext->playersInfo[i].characterID)
+		{
+		case 0:
+			color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f); // 赤
+			break;
+		case 1:
+			color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f); // 青
+			break;
+		case 2:
+			color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f); // 黄
+			break;
+		case 3:
+			color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f); // 緑
+			break;
+		default:
+			break;
+		}
+
+		m_pPlayer[i]->SetColor(color);
 	}
 }
 
@@ -192,7 +216,7 @@ void PlayerManager::PrepareRenderInfo(
 		&m_playerInfo,					//描画情報構造体配列へのポインタ
 		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		texPath,							//テクスチャのファイル名
+		L"asset/texture/white.png",	//テクスチャのファイル名
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
 	);
 }

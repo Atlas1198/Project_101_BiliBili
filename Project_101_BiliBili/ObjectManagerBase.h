@@ -20,6 +20,7 @@ public:
 	~ObjectManagerBase() {};	//デストラクタ
 
 	void Initialize(	//初期化
+		SceneContext* sceneContext,		//シーンコンテキスト構造体の参照
 		InputManager* pInputManager,		//入力マネージャーのポインタ
 		TextureManager& textureManager,		//テクスチャ管理クラスの参照
 		MeshManager& meshManager,			//メッシュ管理クラスの参照
@@ -29,6 +30,9 @@ public:
 	void SubmitDraws(Renderer& renderer);	//描画要求をシーンに提出
 	void ResolveCollisions();				//衝突後処理
 	void Finalize();						//終了
+
+protected:	//非公開メンバ変数
+	SceneContext* m_pSceneContext = nullptr;	//シーンコンテキスト構造体
 
 protected:
 	virtual void InitializeOverride(	//初期化

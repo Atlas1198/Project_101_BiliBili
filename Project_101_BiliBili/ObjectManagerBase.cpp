@@ -9,8 +9,17 @@ using namespace DirectX;
 
 
 //初期化
-void ObjectManagerBase::Initialize(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
+void ObjectManagerBase::Initialize(
+	SceneContext* pSceneContext,
+	InputManager* pInputManager, 
+	TextureManager& textureManager,
+	MeshManager& meshManager, 
+	CollisionManager& collisionManager
+)
 {
+	//シーンコンテキスト構造体を保存
+	m_pSceneContext = pSceneContext;
+	
 	//派生クラスでオーバーライドされた初期化関数を呼び出し
 	InitializeOverride(pInputManager, textureManager, meshManager, collisionManager);
 

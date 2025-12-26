@@ -27,13 +27,6 @@ void ControllerScene::UpdateOverride()
 {
 	m_pControllerConnecter->Update(*m_pInputManager);
 	m_pUIManager->Update();
-
-	bool allConnected = m_pControllerConnecter->IsAllConnected();
-
-	if (allConnected)
-	{
-		//遷移条件の記述
-	}
 }
 
 //シーン固有の描画
@@ -46,5 +39,5 @@ void ControllerScene::DrawOverride(Renderer& pRenderer)
 void ControllerScene::FinalizeOverride()
 {
 	m_pUIManager->Finalize();
-	m_pControllerConnecter->Finalize();
+	m_pControllerConnecter->Finalize(*m_pSceneContext);
 }

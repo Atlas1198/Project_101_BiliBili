@@ -14,11 +14,15 @@ SceneBase::SceneBase(float window_width, float window_height)
 
 //初期化
 void SceneBase::Initialize(
+	SceneContext* pSceneContext,
 	InputManager* pInputManager,
 	TextureManager& pTextureManager,
 	MeshManager& pMeshManager
 )
 {
+	//シーンコンテキスト保存
+	m_pSceneContext = pSceneContext;
+
 	//入力管理クラス保存
 	m_pInputManager = pInputManager;
 

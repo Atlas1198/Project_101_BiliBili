@@ -88,7 +88,7 @@ void ControllerUIManager::InitializeOverride(
 	}
 
 	m_pGoToNextSceneIcon = new UIImage(
-		{ 0.0f, -350.0f, 0.0f },	//位置
+		{ 0.0f, -370.0f, 0.0f },	//位置
 		{ 878.0f, 116.0f, 1.0f },//スケール
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		4,						//描画順序
