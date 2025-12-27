@@ -77,8 +77,8 @@ void Player::UpdateOverride()
 	};
 		*/
 
-		if (m_position.x < -13.5f) m_position.x = 13.1f;
-		if (m_position.x > 13.5f) m_position.x = -13.1f;
+		if (m_position.x < -22.5f) m_position.x = 22.1f;
+		if (m_position.x > 22.5f) m_position.x = -22.1f;
 		if (m_position.z < -8.5f) m_position.z = 18.1f;
 		if (m_position.z > 18.5f) m_position.z = -8.1f;
 
@@ -100,6 +100,7 @@ void Player::ResolveCollisionsOverride()
 			OBJECT_TAG::PLAYER,		//他のプレイヤーも押し出す
 			OBJECT_TAG::WALL,		//壁
 			OBJECT_TAG::WALLPASS,	//弾貫通壁
+			OBJECT_TAG::WALLCURVE,	//カーブ壁
 			OBJECT_TAG::GROUND		//地面
 		}
 	);

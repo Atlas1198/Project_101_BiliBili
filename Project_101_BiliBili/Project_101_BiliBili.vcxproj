@@ -217,6 +217,7 @@
     <ClInclude Include="UIManagerBase.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallCurve.h" />
     <ClInclude Include="WallPass.h" />
     <ClInclude Include="WinInclude.h" />
   </ItemGroup>
@@ -287,6 +288,7 @@
     <ClCompile Include="UIManagerBase.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="WallCurve.cpp" />
     <ClCompile Include="WallPass.cpp" />
   </ItemGroup>
   <ItemGroup>

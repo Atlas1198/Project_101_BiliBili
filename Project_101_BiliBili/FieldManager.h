@@ -5,6 +5,7 @@
 #include "SharedStruct.h"
 #include "Wall.h"
 #include "WallPass.h"
+#include "WallCurve.h"
 #include "Ground.h"
 
 //前方宣言
@@ -18,6 +19,7 @@ class FieldManager : public ObjectManagerBase
 {
 	const wchar_t* wallTexPath = L"asset/texture/white.png";
 	const wchar_t* wallPassTexPath = L"asset/texture/black.png";
+	const wchar_t* wallCurveFbxPath = L"asset/fbx/CurveWall2.fbx";
 	const wchar_t* groundTexPath = L"asset/texture/tile.PNG";
 public:
 	FieldManager();		//コンストラクタ
@@ -42,10 +44,12 @@ private:	//非公開メンバ変数
 	) override;
 
 private:	//非公開メンバ変数
-	std::vector<Wall*> m_pWalls;						//壁オブジェクト配列
-	std::vector<WallPass*> m_pWallPasses;						//壁オブジェクト配列
-	std::vector<Ground*> m_pGrounds;					//地面オブジェクト配列
+	std::vector<Wall*> m_pWalls;					//壁オブジェクト配列
+	std::vector<WallPass*> m_pWallPasses;			//貫通壁オブジェクト配列
+	std::vector<WallCurve*> m_pWallCurves;			//カーブ壁オブジェクト配列
+	std::vector<Ground*> m_pGrounds;				//地面オブジェクト配列
 	std::vector<WorldRenderInfo> m_wallInfo;		//壁描画情報
-	std::vector<WorldRenderInfo> m_wallPassInfo;		//壁描画情報
-	std::vector<WorldRenderInfo> m_groundInfo;	//地面描画情報
+	std::vector<WorldRenderInfo> m_wallPassInfo;	//貫通壁描画情報
+	std::vector<WorldRenderInfo> m_wallCurveInfo;	//カーブ壁描画情報
+	std::vector<WorldRenderInfo> m_groundInfo;		//地面描画情報
 };
