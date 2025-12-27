@@ -60,8 +60,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 	int Stagenum = dist(gen);
 
-	Stagenum = 5;
-
 	m_pWalls.push_back(
 		new Wall(
 			MESH_TYPE::CUBE,
