@@ -19,10 +19,10 @@ public:
 	const wchar_t* texPath = L"asset/texture/player/Character_front.png";
 
 	static constexpr DirectX::XMFLOAT3 spawnPoses[4] = {
-	{-13.0f, -4.0f, 18.0f},
-	{13.0f, -4.0f, 18.0f},
-	{-13.0f, -4.0f, -8.0f},
-	{13.0f, -4.0f, -8.0f}
+	{-20.0f, -4.0f, 17.0f},
+	{20.0f, -4.0f, 17.0f},
+	{-20.0f, -4.0f, -7.0f},
+	{20.0f, -4.0f, -7.0f}
 	};
 
 private:
