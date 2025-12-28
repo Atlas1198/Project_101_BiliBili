@@ -8,7 +8,6 @@
 
 using namespace DirectX;
 
-
 //デストラクタ
 PlayerManager::~PlayerManager()
 {
@@ -34,7 +33,9 @@ void PlayerManager::InitializeOverride(
 		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
 	}
 
-	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
+	m_subscribedEvents.push_back(
+		EventData{ EventType::TAKE_DAMAGE,
+		EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
 		EventType::TAKE_DAMAGE,
 		[this](std::shared_ptr<std::pair<int, float>> data)
 		{
@@ -42,7 +43,9 @@ void PlayerManager::InitializeOverride(
 			float damage = data->second;
 			OnTakeDamage(teamID, damage);
 		}
-	);
+	) });
+
+	
 
 	//チームの体力を初期化
 	for(auto& hp : teamHP)
@@ -80,7 +83,10 @@ void PlayerManager::InitializeOverride(
 		}
 
 		m_pPlayer[i]->SetColor(color);
+		m_pPlayer[i]->SetCharacterID(m_pSceneContext->playersInfo[i].characterID);
 	}
+
+	m_pInputManager = pInputManager;
 }
 
 Player* PlayerManager::AddPlayer(
@@ -156,7 +162,7 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 
 	if (teamHP[teamID] <= 0.0f)
 	{
-		App::GetInstance()->isGameOver = true;
+		EventManager::GetInstance()->TriggerEvent<bool>(EventType::GAME_OVER, true);
 	}
 }
 
@@ -166,6 +172,19 @@ void PlayerManager::UpdateOverride()
 	for (auto player : m_pPlayer)
 	{
 		player->Update();
+	}
+
+	{
+		auto keyInput = m_pInputManager->GetInputInfo()->key;
+		if (keyInput.one.trigger)
+		{
+			OnTakeDamage(0, 100.0f);
+		}
+
+		if (keyInput.two.trigger)
+		{
+			OnTakeDamage(1, 100.0f);
+		}
 	}
 }
 
@@ -181,6 +200,8 @@ void PlayerManager::ResolveCollisionsOverride()
 //終了
 void PlayerManager::FinalizeOverride()
 {
+	//イベント購読解除
+	EventManager::GetInstance()->Unsubscribe(EventType::TAKE_DAMAGE, FindEventData(m_subscribedEvents, EventType::TAKE_DAMAGE).id);
 }
 
 //プレイヤーオブジェクトを取得

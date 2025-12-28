@@ -57,15 +57,6 @@ void SceneManager::Update()
 {
 	m_pCurrentScene->Update();	//現在のシーン更新
 
-	//シーン変更例：タイトルシーンでスペースボタンが押されたらゲームシーンへ変更
-	if (m_pCurrentScene == m_pGameScene &&
-		m_pInputManager != nullptr &&
-		m_pInputManager->GetInputInfo() != nullptr &&
-		m_pInputManager->GetInputInfo()->key.space.trigger)
-	{
-		ReserveChangeScene(SCENE_TYPE::SCENE_TITLE);	//シーン変更
-	}
-
 	//シーン変更予約があればシーン変更
 	if (m_sceneChangeReserved)
 	{

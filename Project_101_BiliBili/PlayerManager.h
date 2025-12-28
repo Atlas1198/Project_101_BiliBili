@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "SharedStruct.h"
 #include "BulletManager.h"
+#include "EventType.h"
 
 //前方宣言
 class Renderer;
@@ -30,6 +31,8 @@ private:
 	std::vector<WorldRenderInfo> m_playerInfo;					//プレイヤー描画情報
 	InputManager* m_pInputManager = nullptr;					//入力マネージャーポインタ
 	float teamHP[2] = { 1.0f, 1.0f };							//チームの体力
+
+	std::vector<EventData> m_subscribedEvents;	//購読しているイベント配列
 
 public:
 	PlayerManager(){};			//コンストラクタ

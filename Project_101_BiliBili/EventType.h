@@ -2,10 +2,10 @@
 
 enum EventType
 {
+	NONE = 0,
+	//ゲームプレイ関連イベント
 	ITEM_PICKUP, // int teamID
 	TAKE_DAMAGE, // int teamID, float damage
-	UPDATE_HP_UI, // int teamID, float newHP
-	UPDATE_BULLET_UI, // int teamID, int newBulletCount
 	GAME_OVER, // int winningTeamID
 	ADD_EFFECT,
 	CHANGE_SCENE, // int sceneID
@@ -23,4 +23,38 @@ enum EventType
 	SHOW_SELECTED_ICON, // int playerIndex
 	HIDE_SELECTED_ICON, // int playerIndex
 	GO_TO_GAME_SCENE, // void
+
+	//ゲームシーンUI関連イベント
+	UPDATE_HP_UI, // int teamID, float newHP
+	UPDATE_BULLET_UI, // int teamID, int newBulletCount
+	BB_CUT_IN, // int teamID
+	SHOW_COUNT_UI, // int count
+	SHOW_START_UI, // void
+	SHOW_FINISH_UI, // void
+	HIDE_COUNT_UI, // void
+	SHOW_RESULT_UI, // void
 };
+
+//イベントデータ構造体
+struct EventData
+{
+	EventType type = EventType::NONE;
+	uint64_t id = 0;
+};
+
+//イベントデータリストから特定のイベントデータを検索するヘルパー関数
+inline static EventData FindEventData(
+	const std::vector<EventData>& eventDataList,
+	EventType type
+)
+{
+	for (const auto& eventData : eventDataList)
+	{
+		if (eventData.type == type)
+		{
+			return eventData;
+		}
+	}
+
+	return EventData{ EventType::NONE, 0 };
+}

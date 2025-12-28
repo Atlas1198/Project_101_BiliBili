@@ -1,8 +1,14 @@
 #include "IconUI.h"
 
 //コンストラクタ
-IconUI::IconUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order)
-	: UIBase(position, scale, rotation, order)
+IconUI::IconUI(
+	DirectX::XMFLOAT3 position, 
+	DirectX::XMFLOAT3 scale, 
+	DirectX::XMFLOAT3 rotation, 
+	UINT order,
+	const wchar_t* texturePath
+)
+	: UIBase(position, scale, rotation, order), m_texturePath(texturePath)
 {
 }
 
@@ -15,7 +21,8 @@ void IconUI::InitializeOverride(TextureManager& textureManager, MeshManager& mes
 		DirectX::XMFLOAT3{ 196.1f, 195.1f, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order + 2,
-		IconUI::BULLET_TEXTURE_PATH
+		m_texturePath,
+		BLEND_MODE::BLEND_TRANSPARENT
 	);
 }
 

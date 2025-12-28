@@ -31,8 +31,8 @@ private:
 	UIImage* m_pBaseImage = nullptr;	//背景画像UIポインタ
 
 	const wchar_t* m_frameTexturePath = nullptr;	//テクスチャパスバッファ
-	const wchar_t* m_gageTexturePath = nullptr;	//テクスチャパスバッファ
-	const wchar_t* m_baseTexturePath = nullptr;	//テクスチャパスバッファ
+	const wchar_t* m_gageTexturePath = nullptr;		//テクスチャパスバッファ
+	const wchar_t* m_baseTexturePath = nullptr;		//テクスチャパスバッファ
 
 private:
 	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成

@@ -11,7 +11,11 @@ HPBarUI::HPBarUI(
 	const wchar_t* gageTexturePath,
 	const wchar_t* baseTexturePath
 )
-	: UIBase(position, scale, rotation, order), m_frameTexturePath(frameTexturePath), m_gageTexturePath(gageTexturePath), m_baseTexturePath(baseTexturePath)
+	: 
+	UIBase(position, scale, rotation, order),
+	m_frameTexturePath(frameTexturePath), 
+	m_gageTexturePath(gageTexturePath),
+	m_baseTexturePath(baseTexturePath) 
 {
 }
 
@@ -42,7 +46,6 @@ void HPBarUI::InitializeOverride(TextureManager& textureManager, MeshManager& me
 		m_order + 2,
 		m_frameTexturePath
 	);
-
 }
 
 //çXêV

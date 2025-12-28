@@ -296,6 +296,29 @@ inline static DirectX::XMFLOAT3 Cross(const DirectX::XMFLOAT3& a, const DirectX:
 	};
 }
 
+//0～1の範囲に値をクランプする関数
+inline static float Clamp01(float value)
+{
+	if (value < 0.0f)
+	{
+		return 0.0f;
+	}
+	else if (value > 1.0f)
+	{
+		return 1.0f;
+	}
+	else
+	{
+		return value;
+	}
+}
+
+//線形補間を行う関数(float版)
+inline static float Lerpf(float start, float end, float t)
+{
+	return start + (end - start) * t;
+}
+
 //線形補間を行う関数(XMFLOAT3版)
 inline static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, float t)
 {
@@ -310,6 +333,41 @@ inline static DirectX::XMFLOAT3 LerpXMF3(const DirectX::XMFLOAT3& start, const D
 inline static DirectX::XMVECTOR LerpXMV(const DirectX::XMVECTOR& start, const DirectX::XMVECTOR& end, float t)
 {
 	return DirectX::XMVectorLerp(start, end, t);
+}
+
+//イージング関数群
+//二次イージングイン
+inline static float EaseInQuad(float t)
+{
+	return t * t;
+}
+
+//三次イージングイン
+inline static float EaseInCubic(float t)
+{
+	return t * t * t;
+}
+
+//二次イージングアウト
+inline static float EaseOutQuad(float t)
+{
+	return 1.0f - (1.0f - t) * (1.0f - t);
+}
+
+//三次イージングアウト
+inline static float EaseOutCubic(float t)
+{
+	float p = 1.0f - t	;
+	return 1.0f - p * p * p;
+}
+
+//バックイージングアウト
+inline static float EaseOutBack(float t)
+{
+	const float c1 = 1.70158f;
+	const float c3 = c1 + 1.0f;
+	float u = t - 1.0f;
+	return 1.0f + c3 * u * u * u + c1 * u * u;
 }
 
 //3D変換情報合成関数

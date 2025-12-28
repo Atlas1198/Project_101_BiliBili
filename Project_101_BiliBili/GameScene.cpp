@@ -5,6 +5,7 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "App.h"
+#include "EventManager.h"
 
 
 
@@ -112,7 +113,19 @@ void GameScene::InitializeOverride(
 		*m_pCollisionManager
 	);
 
-	m_pItemManager->SpawnItem();
+	using args = bool;
+	EventManager::GetInstance()->Subscribe<args>(
+		EventType::GAME_OVER, 
+		[this](std::shared_ptr<args> data)
+		{
+			SetGameOver(*data);
+		}
+	);
+
+	//タイマーとゲーム状態初期化
+	m_timer = 0;								//タイマー初期化
+	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
+	m_isGameOver = false;						//ゲームオーバーフラグ初期化
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
@@ -154,36 +167,38 @@ void GameScene::RemovePlayer(uint32_t id)
 //更新
 void GameScene::UpdateOverride()
 {
-	m_pPlayerManager->Update();	//プレイヤー管理クラス更新
-	m_pFieldManager->Update();	//フィールド管理クラス更新
-	m_pGameUIManager->Update();	//ゲームUI管理クラス更新
-	m_pBulletManager->Update(); //弾管理クラス更新
-	m_pItemManager->Update();	//アイテム管理クラス更新
-	
-	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
-	m_pBBManager->Update();		//BB管理クラス更新
-
-	if (m_pInputManager->GetInputInfo()->key.enter.trigger)
+	if(m_gameState == GameState::STATE_COUNTDOWN)
 	{
-		if (m_pCamera->GetCameraInfo()->position.y == 0.0f)
-		{
-			m_pCamera->SetPosition({ 0.0f, 4.0f, -4.0f });
-		}
-		else
-		{
-			m_pCamera->SetPosition({ 0.0f, 0.0f, -10.0f });
-		}
+		//カウントダウン中の処理
+		CountdownUpdate();
 	}
+	else if(m_gameState == GameState::STATE_PLAY)
+	{
+		//プレイ中の処理
+		PlayUpdate();
+	}
+	else if(m_gameState == GameState::STATE_RESULT)
+	{
+		//ゲームオーバー時の処理
+		ResultUpdate();
+	}
+
+	m_pGameUIManager->Update();	//ゲームUI管理クラス更新
 }
 
 //衝突後処理
 void GameScene::ResolveCollisions()
 {
+	if(m_gameState != GameState::STATE_PLAY)
+	{
+		return; // プレイ中でなければ衝突処理を行わない
+	}
+
 	m_pPlayerManager->ResolveCollisions();	//プレイヤー管理クラス衝突後処理
 	m_pFieldManager->ResolveCollisions();
 	m_pBulletManager->ResolveCollisions();	//弾管理クラス衝突後処理
 	m_pItemManager->ResolveCollisions();	//アイテム管理クラス衝突後処理
-  m_pBBManager->ResolveCollisions();		//BB管理クラス衝突後処理
+	m_pBBManager->ResolveCollisions();		//BB管理クラス衝突後処理
 }
 
 //描画
@@ -206,4 +221,90 @@ void GameScene::FinalizeOverride()
 	m_pBulletManager->Finalize();	//弾管理クラス終了
 	m_pItemManager->Finalize();		//アイテム管理クラス終了
 	m_pBBManager->Finalize();		//BB管理クラス終了
+}
+
+//カウントダウン中の更新処理
+void GameScene::CountdownUpdate()
+{
+	//定数定義
+	const int COUNTDOWN_DURATION = 240;	//カウントダウンの総フレーム数（4秒間）
+	const int FRAMES_PER_SECOND = 60;	//1秒あたりのフレーム数
+	const int COUNTDOWN_START = 30;		//カウントダウン開始フレーム数（1秒間）
+
+	//カウントダウンタイマーの更新
+	m_timer++;
+
+	//カウントダウンUIの表示
+	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
+	{// 1秒ごとにUIを更新
+		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_COUNT_UI, (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND);
+	}
+
+	//カウントダウン終了後、ゲーム状態をプレイに変更
+	if (m_timer >= COUNTDOWN_DURATION + COUNTDOWN_START) // 4秒カウントダウン
+	{
+		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
+		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
+	}
+}
+
+//プレイ中の更新処理
+void GameScene::PlayUpdate()
+{
+	m_pPlayerManager->Update();	//プレイヤー管理クラス更新
+	m_pFieldManager->Update();	//フィールド管理クラス更新
+	m_pBulletManager->Update(); //弾管理クラス更新
+	m_pItemManager->Update();	//アイテム管理クラス更新
+
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();		//BB管理クラス更新
+
+	if (m_pInputManager->GetInputInfo()->key.enter.trigger)
+	{
+		if (m_pCamera->GetCameraInfo()->position.y == 0.0f)
+		{
+			m_pCamera->SetPosition({ 0.0f, 4.0f, -4.0f });
+		}
+		else
+		{
+			m_pCamera->SetPosition({ 0.0f, 0.0f, -10.0f });
+		}
+	}
+
+	//勝利条件の判定
+	if (m_isGameOver)
+	{
+		m_gameState = GameState::STATE_RESULT;
+		m_timer = 0;
+		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
+	}
+}
+
+//ゲームオーバー時の更新処理
+void GameScene::ResultUpdate()
+{
+	const int WAIT_DURATION = 150; // リザルトUI表示までの待機フレーム数（2.5秒間）
+
+	m_timer++;
+
+	if (m_timer == WAIT_DURATION)
+	{
+		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_RESULT_UI);
+		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
+	}
+	else if (m_timer > WAIT_DURATION)
+	{
+		auto& controllers = m_pInputManager->GetInputInfo()->controller;
+		auto& keyInput = m_pInputManager->GetInputInfo()->key;
+
+		for (size_t i = 0; i < 4; ++i)
+		{
+			auto controller = controllers[i];
+
+			if (controller.anyButton.trigger || keyInput.space.trigger)
+			{
+				EventManager::GetInstance()->TriggerEvent(EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE);
+			}
+		}
+	}
 }

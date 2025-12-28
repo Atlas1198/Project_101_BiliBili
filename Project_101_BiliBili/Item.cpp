@@ -31,7 +31,7 @@ void Item::ResolveCollisionsOverride()
 
 	for (auto& info : infos)
 	{
-		if (info.opponent->GetTag() == OBJECT_TAG::PLAYER)
+		if (info.opponent && info.opponent->GetTag() == OBJECT_TAG::PLAYER)
 		{
 			SetActive(false);
 			m_pColliderSet->SetDeleteFlag(true);
@@ -40,6 +40,9 @@ void Item::ResolveCollisionsOverride()
 			{
 				//EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
 				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
+
+				//アイテム取得エフェクトの発生
+				EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::BB_CUT_IN, std::make_pair(player->GetTeamID(), player->GetCharacterID()));
 			}
 		}
 	}
