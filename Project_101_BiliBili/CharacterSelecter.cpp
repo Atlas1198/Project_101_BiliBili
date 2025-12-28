@@ -11,6 +11,8 @@ void CharacterSelecter::Initialize()
 		state.isSelected = false;
 	}
 	m_isAllSelected = false;
+	m_isCalledGoToNextScene = false;
+	m_countToNextScene = 0;
 }
 
 //çXêV

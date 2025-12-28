@@ -19,6 +19,7 @@ private:	//非公開メンバ変数
 	PlayerInfo info{};			//プレイヤー情報構造体
 	Player* teammate = nullptr;
 	int teamID = -1;
+	int characterID = -1;
 	BulletManager *m_pBulletManager = nullptr;
 
 public:	//公開関数
@@ -49,7 +50,10 @@ public:	//公開関数
 	void BindTeammate(Player* teammate) { this->teammate = teammate; } //味方のセット
 	int GetTeamID() const { return teamID; } //チームID取得
 
+	void SetCharacterID(int character) { characterID = character; } //キャラクターIDセット
 	void SetPlayerInfo(const PlayerInfo& info) { this->info = info; }	//プレイヤー情報構造体セット
+
+	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
 
 private:	//非公開関数

@@ -12,55 +12,98 @@ void GameUIManager::InitializeOverride(
 	MeshManager& meshManager
 )
 {
-	//HPバーUIの作成
-	m_pHPBarUI1 = (new HPBarUI(
-		DirectX::XMFLOAT3{ -500.0f, 440.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ -488.0f, 105.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-		0											//描画順序
+	m_pTeamUI1 = (new TeamUI(
+		DirectX::XMFLOAT3{ -530.0f, 400.0f, 0.0f },			//位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },				//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
+		0,													//描画順序
+		L"asset/texture/game_scene/UI_INGAME_L_frame.png",	//フレームテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_L_gauge.png",	//ゲージテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_L_back.png",	//背景テクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_L_alert.png",	//アラートテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_L_icon.png",	//アイコンテクスチャパス
+		DIRECTION::LEFT										//オフセット方向
 	));
-	m_pHPBarUI2 = (new HPBarUI(
-		DirectX::XMFLOAT3{ 500.0f, 440.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 488.0f, 105.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-		0											//描画順序
+
+	m_pTeamUI2 = (new TeamUI(
+		DirectX::XMFLOAT3{ 530.0f, 400.0f, 0.0f },			//位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },				//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
+		0,													//描画順序
+		L"asset/texture/game_scene/UI_INGAME_R_frame.png",	//フレームテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_R_gauge.png",	//ゲージテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_R_back.png",	//背景テクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_R_alert.png",	//アラートテクスチャパス
+		L"asset/texture/game_scene/UI_INGAME_R_icon.png",	//アイコンテクスチャパス
+		DIRECTION::RIGHT									//オフセット方向
 	));
 
 	m_pBulletCountUI1 = (new BulletCountUI(
-		DirectX::XMFLOAT3{ -500.0f, 390.0f, 0.0f },	//位置
+		DirectX::XMFLOAT3{ -430.0f, 360.0f, 0.0f },	//位置
 		DirectX::XMFLOAT3{ -220.0f, 209.0f, 1.0f },	//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
 		0											//描画順序
 	));
 	m_pBulletCountUI2 = (new BulletCountUI(
-		DirectX::XMFLOAT3{ 500.0f, 390.0f, 0.0f },	//位置
+		DirectX::XMFLOAT3{ 430.0f, 360.0f, 0.0f },	//位置
 		DirectX::XMFLOAT3{ 220.0f, 209.0f, 1.0f },	//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
 		0											//描画順序
 	));
 
-	m_pIconUI1 = (new IconUI(
-		DirectX::XMFLOAT3{ -850.0f, 430.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 130.0f, 130.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 45.0f },		//回転
-		0											//描画順序
-	));
-	m_pIconUI2 = (new IconUI(
-		DirectX::XMFLOAT3{ 850.0f, 430.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 130.0f, 130.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 45.0f },		//回転
-		0											//描画順序
+	m_pCutInUI1 = (new CutInUI(
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+		0,										//描画順序
+		DIRECTION::LEFT							//カットインの方向
 	));
 
-	//HPバーUIの初期化
-	if (m_pHPBarUI1)
+	m_pCutInUI2 = (new CutInUI(
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+		0,										//描画順序
+		DIRECTION::RIGHT						//カットインの方向
+	));
+
+	const float sizeFactor = 0.75f; // サイズ調整用の係数
+	m_pOperationGuideImage = (new UIImage(
+		DirectX::XMFLOAT3{ 0.0f, 450.0f, 0.0f },				//位置
+		DirectX::XMFLOAT3{ 276.0f * sizeFactor, 128.0f * sizeFactor, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },					//回転
+		0,														//描画順序
+		L"asset/texture/game_scene/UI_INGAME_Operation.png",	//テクスチャパス
+		BLEND_MODE::BLEND_TRANSPARENT								//ブレンドモード
+	));
+
+	//カウントUIの初期化
+	m_pCountUI = (new CountUI(
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+		0										//描画順序
+	));
+
+	//リザルトUIの初期化
+	m_pResultUI = (new ResultUI(
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+		0										//描画順序
+	));
+	m_pResultUI->SetActive(false); // 初期状態では非表示にする
+
+	//チームUIの初期化
+	if(m_pTeamUI1)
 	{
-		m_pHPBarUI1->Initialize(textureManager, meshManager);
+		m_pTeamUI1->Initialize(textureManager, meshManager);
 	}
-	if (m_pHPBarUI2)
+	if(m_pTeamUI2)
 	{
-		m_pHPBarUI2->Initialize(textureManager, meshManager);
+		m_pTeamUI2->Initialize(textureManager, meshManager);
 	}
+
 	//弾数UIの初期化
 	if(m_pBulletCountUI1)
 	{
@@ -71,23 +114,23 @@ void GameUIManager::InitializeOverride(
 		m_pBulletCountUI2->Initialize(textureManager, meshManager);
 	}
 
-	//アイコンUIの初期化
-	if(m_pIconUI1)
+	//カットインUIの初期化
+	if (m_pResultUI)
 	{
-		m_pIconUI1->Initialize(textureManager, meshManager);
-	}
-	if(m_pIconUI2)
-	{
-		m_pIconUI2->Initialize(textureManager, meshManager);
+		m_pResultUI->Initialize(textureManager, meshManager);
 	}
 
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pHPBarUI1));	//ルートUIオブジェクト配列に追加
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pHPBarUI2));	//ルートUIオブジェクト配列に追加
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pBulletCountUI1)); //ルートUIオブジェクト配列に追加
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pBulletCountUI2)); //ルートUIオブジェクト配列に追加
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pIconUI1)); //ルートUIオブジェクト配列に追加
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pIconUI2)); //ルートUIオブジェクト配列に追加
-
+	//操作ガイド画像UIの初期化
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pTeamUI1));				//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pTeamUI2));				//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pBulletCountUI1));		//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pBulletCountUI2));		//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI1));			//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI2));			//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pOperationGuideImage));	//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pCountUI));				//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pResultUI));			//ルートUIオブジェクト配列に追加
+	
 	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
 		EventType::UPDATE_HP_UI,
 		[this](std::shared_ptr<std::pair<int, float>> data)
@@ -108,16 +151,59 @@ void GameUIManager::InitializeOverride(
 			OnBulletCountChanged(teamID, newCount);
 		}
 	);
+
+	EventManager::GetInstance()->Subscribe<args>(
+		EventType::BB_CUT_IN,
+		[this](std::shared_ptr<args> data)
+		{
+			CallCutIn(data->first, data->second);
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<int>(
+		EventType::SHOW_COUNT_UI,
+		[this](std::shared_ptr<int> data)
+		{
+			CountUIShow(*data);
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<void>(
+		EventType::SHOW_START_UI,
+		[this](std::shared_ptr<void> data)
+		{
+			ShowStartUI();
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<void>(
+		EventType::SHOW_FINISH_UI,
+		[this](std::shared_ptr<void> data)
+		{
+			ShowFinishUI();
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<void>(
+		EventType::HIDE_COUNT_UI,
+		[this](std::shared_ptr<void> data)
+		{
+			HideCountUI();
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<void>(
+		EventType::SHOW_RESULT_UI,
+		[this](std::shared_ptr<void> data)
+		{
+			ShowResultUI();
+		}
+	);
 }
 
 //更新
 void GameUIManager::UpdateOverride()
 {
-	//m_pHPBarUI1->SetHealth(EventManager::GetInstance()->teamHP[0]);
-	//m_pHPBarUI2->SetHealth(EventManager::GetInstance()->teamHP[1]);
-
-	//m_pBulletCountUI1->SetBulletCount(EventManager::GetInstance()->teamBulletCount[0]);
-	//m_pBulletCountUI2->SetBulletCount(EventManager::GetInstance()->teamBulletCount[1]);
 }
 
 //終了
@@ -125,18 +211,20 @@ void GameUIManager::FinalizeOverride()
 {
 }
 
+//HP変更時の処理
 void GameUIManager::OnHPChanged(int teamID, float newHP)
 {
 	if (teamID == 0)
 	{
-		m_pHPBarUI1->SetHealth(newHP);
+		m_pTeamUI1->GetDamage(newHP);
 	}
 	else if (teamID == 1)
 	{
-		m_pHPBarUI2->SetHealth(newHP);
+		m_pTeamUI2->GetDamage(newHP);
 	}
 }
 
+//弾数変更時の処理
 void GameUIManager::OnBulletCountChanged(int teamID, int newCount)
 {
 	if (teamID == 0)
@@ -149,13 +237,60 @@ void GameUIManager::OnBulletCountChanged(int teamID, int newCount)
 	}
 }
 
+//カットイン呼び出し関数
+void GameUIManager::CallCutIn(int teamID, int characterIndex)
+{
+	if (teamID == 0)
+	{
+		m_pCutInUI1->CallCutIn(characterIndex);
+	}
+	else if (teamID == 1)
+	{
+		m_pCutInUI2->CallCutIn(characterIndex);
+	}
+}
+
+//カウントUI表示関数
+void GameUIManager::CountUIShow(int count)
+{
+	m_pCountUI->ShowCountDown(count);
+}
+
+//スタートUI表示関数
+void GameUIManager::ShowStartUI()
+{
+	m_pCountUI->ShowStart();
+}
+
+//フィニッシュUI表示関数
+void GameUIManager::ShowFinishUI()
+{
+	m_pCountUI->ShowFinish();
+}
+
+//カウントUI非表示関数
+void GameUIManager::HideCountUI()
+{
+	m_pCountUI->HideAll();
+}
+
+//リザルトUI表示関数
+void GameUIManager::ShowResultUI()
+{
+	m_pResultUI->SetActive(true);
+	m_pResultUI->ShowResult();
+}
+
+//オブジェクトの描画情報生成
 void GameUIManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-	//HPバーUIの描画情報生成
-	m_pHPBarUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pHPBarUI2->PrepareRenderInfo(textureManager, meshManager);
+	m_pTeamUI1->PrepareRenderInfo(textureManager, meshManager);
+	m_pTeamUI2->PrepareRenderInfo(textureManager, meshManager);
 	m_pBulletCountUI1->PrepareRenderInfo(textureManager, meshManager);
 	m_pBulletCountUI2->PrepareRenderInfo(textureManager, meshManager);
-	m_pIconUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pIconUI2->PrepareRenderInfo(textureManager, meshManager);
+	m_pCutInUI1->PrepareRenderInfo(textureManager, meshManager);
+	m_pCutInUI2->PrepareRenderInfo(textureManager, meshManager);
+	m_pOperationGuideImage->PrepareRenderInfo(textureManager, meshManager);
+	m_pCountUI->PrepareRenderInfo(textureManager, meshManager);
+	m_pResultUI->PrepareRenderInfo(textureManager, meshManager);
 }

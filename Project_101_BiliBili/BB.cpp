@@ -141,7 +141,6 @@ void BB::ResolveCollisions()
 			eb->SetHasHitPlayer(false);
 			eb->SetHitNum(0);
 		}
-
 	}
 }
 

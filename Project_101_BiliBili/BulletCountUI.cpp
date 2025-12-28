@@ -13,8 +13,8 @@ void BulletCountUI::InitializeOverride(TextureManager& textureManager, MeshManag
 	for(int i = 0; i < m_bulletCountMax; ++i)
 	{
 		m_pBulletImage = AddChild<UIImage>(
-			DirectX::XMFLOAT3{ 1.0f - 0.16f * i, i * -0.02f, 0.5f },	//位置
-			DirectX::XMFLOAT3{ 0.13f, 0.13f, 1.0f },					//スケール
+			DirectX::XMFLOAT3{ 1.0f - 0.16f * i, i * 0.02f, 0.5f },	//位置
+			DirectX::XMFLOAT3{ -0.13f, 0.13f, 1.0f },					//スケール
 			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },						//回転
 			m_order + 1,												//描画順序
 			BulletCountUI::BULLET_TEXTURE_PATH							//テクスチャパス

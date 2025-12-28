@@ -35,6 +35,8 @@ struct KeyInputInfo
 	InputState c;
 	InputState n;
 	InputState rightCtrl;
+	InputState one;
+	InputState two;
 
 	InputState any;
 };

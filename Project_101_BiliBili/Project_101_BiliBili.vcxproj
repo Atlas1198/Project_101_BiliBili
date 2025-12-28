@@ -164,6 +164,8 @@
     <ClInclude Include="ControllerConnecter.h" />
     <ClInclude Include="ControllerScene.h" />
     <ClInclude Include="ControllerUIManager.h" />
+    <ClInclude Include="CountUI.h" />
+    <ClInclude Include="CutInUI.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="DirectXTex.h" />
@@ -184,7 +186,9 @@
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="LineBB.h" />
+    <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SelectionScene.h" />
+    <ClInclude Include="TeamUI.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="TitleUIManager.h" />
     <ClInclude Include="RenderData.h" />
@@ -241,6 +245,8 @@
     <ClCompile Include="ControllerConnecter.cpp" />
     <ClCompile Include="ControllerScene.cpp" />
     <ClCompile Include="ControllerUIManager.cpp" />
+    <ClCompile Include="CountUI.cpp" />
+    <ClCompile Include="CutInUIh.cpp" />
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="EffectBase.cpp" />
     <ClCompile Include="EffectData.cpp" />
@@ -271,11 +277,13 @@
     <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="RenderData.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResultUI.cpp" />
     <ClCompile Include="RootSignature.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SelectionScene.cpp" />
     <ClCompile Include="SharedStruct.cpp" />
+    <ClCompile Include="TeamUI.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TitleUI.cpp" />

@@ -15,6 +15,13 @@ class InputManager;
 class TextureManager;
 class MeshManager;
 
+enum class GameState
+{
+	STATE_COUNTDOWN,
+	STATE_PLAY,
+	STATE_RESULT
+};
+
 //ゲームシーンクラス
 class GameScene : public SceneBase
 {
@@ -36,6 +43,8 @@ public:	//公開関数
 	void SpawnPlayers(InputManager *pInputManager);
 	void RemovePlayer(uint32_t id);
 
+	void SetGameOver(bool flag) { m_isGameOver = flag; };
+
 private:
 	PlayerManager* m_pPlayerManager = nullptr;	//プレイヤー管理クラス
 	FieldManager* m_pFieldManager = nullptr;	//フィールド管理クラス
@@ -43,4 +52,15 @@ private:
 	BulletManager *m_pBulletManager = nullptr;	//弾管理クラス
 	ItemManager* m_pItemManager = nullptr;		//アイテム管理クラス
 	BBManager* m_pBBManager = nullptr;			//BB管理クラス
+
+	GameState m_gameState = GameState::STATE_COUNTDOWN; // ゲームの状態
+
+	int m_timer = 0; //タイマー
+
+	bool m_isGameOver = false;
+
+private:
+	void CountdownUpdate(); // カウントダウン中の更新処理
+	void PlayUpdate();      // プレイ中の更新処理
+	void ResultUpdate();    // ゲームオーバー時の更新処理
 };

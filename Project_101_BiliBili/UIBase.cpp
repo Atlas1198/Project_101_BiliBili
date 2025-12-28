@@ -108,6 +108,12 @@ UVRect UIBase::GetUVRect() const
 	return m_uvRect;
 }
 
+//テクスチャ分割情報構造体の取得
+TexSplitInfo& UIBase::GetTexSplitInfo()
+{
+	return m_texSplitInfo;
+}
+
 //ローカル変換情報の設定
 void UIBase::SetLocalTransform(const Transform3D& local)
 {
@@ -131,6 +137,12 @@ void UIBase::SetUVRect(const UVRect& uvRect)
 	m_uvRect.v = uvRect.v;
 	m_uvRect.su = uvRect.su;
 	m_uvRect.sv = uvRect.sv;
+}
+
+//テクスチャ分割情報構造体の設定
+void UIBase::SetTexSplitInfo(const TexSplitInfo& info)
+{
+	m_texSplitInfo = info;
 }
 
 // ワールド変換情報更新

@@ -77,6 +77,7 @@ void ElectricityBB::SetHitNum(int num)
 	m_hitNum = num;
 }
 
+//ジオメトリ更新
 void ElectricityBB::UpdateGeometry()
 {
 	float length = LengthBetween(m_startPos, m_endPos);

@@ -59,6 +59,8 @@ void InputManager::UpdateTriggerKeyInfo()
 	m_inputInfo.key.c.trigger = Keyboard_IsKeyDownTrigger(KK_C);
 	m_inputInfo.key.n.trigger = Keyboard_IsKeyDownTrigger(KK_N);
 	m_inputInfo.key.rightCtrl.trigger = Keyboard_IsKeyDownTrigger(KK_RIGHTCONTROL);
+	m_inputInfo.key.one.trigger = Keyboard_IsKeyDownTrigger(KK_D1);
+	m_inputInfo.key.two.trigger = Keyboard_IsKeyDownTrigger(KK_D2);
 
 	m_inputInfo.key.any.trigger =
 		m_inputInfo.key.a.trigger ||
@@ -112,6 +114,8 @@ void InputManager::UpdateDownKeyInfo()
 	m_inputInfo.key.c.down = Keyboard_IsKeyDown(KK_C);
 	m_inputInfo.key.n.down = Keyboard_IsKeyDown(KK_N);
 	m_inputInfo.key.rightCtrl.down = Keyboard_IsKeyDown(KK_RIGHTCONTROL);
+	m_inputInfo.key.one.trigger = Keyboard_IsKeyDown(KK_D1);
+	m_inputInfo.key.two.trigger = Keyboard_IsKeyDown(KK_D2);
 
 	m_inputInfo.key.any.down =
 		m_inputInfo.key.a.down ||
@@ -165,6 +169,8 @@ void InputManager::UpdateUpKeyInfo()
 	m_inputInfo.key.c.up = Keyboard_IsKeyUp(KK_C);
 	m_inputInfo.key.n.up = Keyboard_IsKeyUp(KK_N);
 	m_inputInfo.key.rightCtrl.up = Keyboard_IsKeyUp(KK_RIGHTCONTROL);
+	m_inputInfo.key.one.trigger = Keyboard_IsKeyDownTrigger(KK_D1);
+	m_inputInfo.key.two.trigger = Keyboard_IsKeyDownTrigger(KK_D2);
 
 	m_inputInfo.key.any.up =
 		m_inputInfo.key.a.up ||

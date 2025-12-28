@@ -253,6 +253,16 @@ void CharacterUIManager::InitializeOverride(
 			GoToNextScene();
 		}
 	);
+
+	//ƒƒ“ƒo•Ï”‰Šú‰»
+	m_passedFrameCount = 0.0f;
+	for(auto& selected : m_playersSelected)
+	{
+		selected = false;
+	}
+	m_isGoToNextSceneIconVisible = false;
+	m_goToNextSceneIconMoveCount = 0;
+	m_isCalledGoToNextScene = false;
 }
 
 //XV
