@@ -111,6 +111,7 @@ enum class OBJECT_TAG
 	PLAYER,				//プレイヤー
 	WALL,				//壁
 	WALLPASS,			//弾貫通壁
+	WALLCURVE,			//曲線壁
 	GROUND,				//地面
 	BULLET,				//弾
 	ITEM_TRANSFORM,		//変身アイテム
@@ -163,6 +164,7 @@ namespace CollisionData
 		PLAYER,			//プレイヤー
 		WALL,			//壁
 		WALLPASS,		//弾貫通壁
+		WALLCURVE,		//曲線壁
 		GROUND,			//地面
 		BULLET,			//弾
 		ITEM_TRANSFORM,	//変身アイテム
