@@ -6,14 +6,13 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 {
 	//背景画像UI生成
 	m_pBackgroundImage = AddChild<UIImage>(
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },			//位置
-		DirectX::XMFLOAT3{ 1920.0f, 1080.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },			//回転
-		0,												//描画順序
-		L"asset/texture/white.png",						//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT					//ブレンドモード
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//位置
+		DirectX::XMFLOAT3{ 1920.0f, 1080.0f, 1.0f },		//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
+		0,													//描画順序
+		L"asset/texture/result_scene/UI_RESULT_Back.png",	//テクスチャパス
+		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
 	);
-	m_pBackgroundImage->SetColor(DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.4f }); //白色に設定
 	m_pBackgroundImage->SetActive(false); //非アクティブに設定
 }
 
