@@ -17,7 +17,7 @@ void CharacterUIManager::InitializeOverride(
 	//背景画像UIオブジェクト生成
 	m_pBackgroundImage = new UIImage(
 		{ 0.0f, 0.0f, 0.0f },	//位置
-		{ m_screenWidth, m_screenHeight, 1.0f },//スケール
+		{ m_screenWidth, m_screenWidth / 1421.0f * m_screenHeight, 1.0f },//スケール
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		0,						//描画順序
 		L"asset/texture/character_scene/UI_CHARACTER_Back.png",

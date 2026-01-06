@@ -162,7 +162,11 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 
 	if (teamHP[teamID] <= 0.0f)
 	{
-		EventManager::GetInstance()->TriggerEvent<bool>(EventType::GAME_OVER, true);
+		int winningTeamID = (teamID == 0) ? 1 : 0;
+		int winnerCharacter1ID = m_pPlayer[winningTeamID * 2]->GetCharacterID();
+		int winnerCharacter2ID = m_pPlayer[winningTeamID * 2 + 1]->GetCharacterID();
+
+		EventManager::GetInstance()->TriggerEvent<std::tuple<bool, int, int, int>>(EventType::GAME_OVER, std::make_tuple(true, winningTeamID, winnerCharacter1ID, winnerCharacter2ID));
 	}
 }
 
