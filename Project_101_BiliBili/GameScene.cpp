@@ -113,12 +113,12 @@ void GameScene::InitializeOverride(
 		*m_pCollisionManager
 	);
 
-	using args = bool;
+	using args = std::tuple<bool, int, int, int>;
 	EventManager::GetInstance()->Subscribe<args>(
 		EventType::GAME_OVER, 
 		[this](std::shared_ptr<args> data)
 		{
-			SetGameOver(*data);
+			SetGameOver(std::get<0>(*data), std::get<1>(*data), std::get<2>(*data), std::get<3>(*data));
 		}
 	);
 
@@ -289,7 +289,7 @@ void GameScene::ResultUpdate()
 
 	if (m_timer == WAIT_DURATION)
 	{
-		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_RESULT_UI);
+		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, {m_winner, m_character1ID, m_character2ID});
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
 	}
 	else if (m_timer > WAIT_DURATION)

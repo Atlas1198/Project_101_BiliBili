@@ -43,7 +43,12 @@ public:	//公開関数
 	void SpawnPlayers(InputManager *pInputManager);
 	void RemovePlayer(uint32_t id);
 
-	void SetGameOver(bool flag) { m_isGameOver = flag; };
+	void SetGameOver(bool flag, int winner, int character1ID, int character2ID) {
+		m_isGameOver = flag;
+		m_winner = winner;
+		m_character1ID = character1ID;
+		m_character2ID = character2ID;
+	}
 
 private:
 	PlayerManager* m_pPlayerManager = nullptr;	//プレイヤー管理クラス
@@ -58,6 +63,9 @@ private:
 	int m_timer = 0; //タイマー
 
 	bool m_isGameOver = false;
+	int m_winner = -1;
+	int m_character1ID = -1;
+	int m_character2ID = -1;
 
 private:
 	void CountdownUpdate(); // カウントダウン中の更新処理
