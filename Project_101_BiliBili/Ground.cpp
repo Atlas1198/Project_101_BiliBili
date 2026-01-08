@@ -10,7 +10,7 @@ Ground::Ground(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 	m_pColliderSet->AddCollider(
 		colliderType,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		collisionBoxSize,
+		scale,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 }

@@ -66,6 +66,11 @@ void Player::UpdateOverride()
 	}
 	else
 	{
+		if (m_ignoreCollisionFrame > 0)
+		{
+			--m_ignoreCollisionFrame;
+		}
+
 		Move();		//移動
 
 		/*
@@ -77,10 +82,10 @@ void Player::UpdateOverride()
 	};
 		*/
 
-		if (m_position.x < -22.5f) m_position.x = 22.1f;
+		/*if (m_position.x < -22.5f) m_position.x = 22.1f;
 		if (m_position.x > 22.5f) m_position.x = -22.1f;
 		if (m_position.z < -8.5f) m_position.z = 18.1f;
-		if (m_position.z > 18.5f) m_position.z = -8.1f;
+		if (m_position.z > 18.5f) m_position.z = -8.1f;*/
 
 		Shoot();
 		//Rotate();
@@ -91,6 +96,11 @@ void Player::UpdateOverride()
 //衝突解決
 void Player::ResolveCollisionsOverride()
 {
+	if (m_ignoreCollisionFrame > 0)
+	{
+		return;
+	}
+
 	XMFLOAT3 pushVector{};	//押し出しベクトル
 	auto& infos = m_pColliderSet->GetCollisionInfos();
 
@@ -110,14 +120,51 @@ void Player::ResolveCollisionsOverride()
 	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
 
+	m_isGrounded = false;
+
 	for (auto& info : infos)
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
 			//地面に接触している場合はY座標を補正
+			m_isGrounded = true;
 			m_velocity.y = 0.0f;
+			m_isSpringJump = false;
 		}
 	}
+
+	for (auto& info : infos)
+	{
+		if (info.opponent->GetTag() == OBJECT_TAG::SPRING)
+		{
+			if (!m_isSpringJump)
+			{
+				XMFLOAT3 currentPos = GetPosition();
+				XMFLOAT3 centerPos(0.0f, -4.0f, 5.0f);
+
+				XMFLOAT3 dir{
+					centerPos.x - currentPos.x,
+					centerPos.y - currentPos.y,
+					centerPos.z - currentPos.z
+				};
+
+				float length = std::sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+				if (length > 0.0f)
+				{
+					dir.x /= length;
+					dir.y /= length;
+					dir.z /= length;
+				}
+
+				m_velocity.x = dir.x * 1.15f;
+				m_velocity.y = 1.0f;   // 上方向に跳ねさせたいなら
+				m_velocity.z = dir.z * 1.15f;
+
+				m_isSpringJump = true;
+			}
+		}
+	}
+
 }
 
 //移動
@@ -182,34 +229,50 @@ void Player::Move()
 		}
 	}
 
-	m_position.x += dir.x * MOVE_SPEED;
-	m_position.z += dir.y * MOVE_SPEED;
+	if (!m_isSpringJump)
+	{
+		m_position.x += dir.x * MOVE_SPEED;
+		m_position.z += dir.y * MOVE_SPEED;
 
-	if(up)
-	{
-		//前進
-		m_position.x += direction.x * MOVE_SPEED;
-		m_position.y += direction.y * MOVE_SPEED;
-		m_position.z += direction.z * MOVE_SPEED;
+		if (up)
+		{
+			//前進
+			m_position.x += direction.x * MOVE_SPEED;
+			m_position.y += direction.y * MOVE_SPEED;
+			m_position.z += direction.z * MOVE_SPEED;
+		}
+		if (down)
+		{
+			//後退
+			m_position.x -= direction.x * MOVE_SPEED;
+			m_position.y -= direction.y * MOVE_SPEED;
+			m_position.z -= direction.z * MOVE_SPEED;
+		}
+		if (left)
+		{
+			//左移動
+			m_position.x -= direction.z * MOVE_SPEED;
+			m_position.z += direction.x * MOVE_SPEED;
+		}
+		if (right)
+		{
+			//右移動
+			m_position.x += direction.z * MOVE_SPEED;
+			m_position.z -= direction.x * MOVE_SPEED;
+		}
 	}
-	if(down)
+
+	m_position.x += m_velocity.x;
+	m_position.y += m_velocity.y;
+	m_position.z += m_velocity.z;
+
+	m_velocity.x *= 0.95f;
+	m_velocity.y *= 0.95f;
+	m_velocity.z *= 0.95f;
+
+	if (!m_isGrounded)
 	{
-		//後退
-		m_position.x -= direction.x * MOVE_SPEED;
-		m_position.y -= direction.y * MOVE_SPEED;
-		m_position.z -= direction.z * MOVE_SPEED;
-	}
-	if(left)
-	{
-		//左移動
-		m_position.x -= direction.z * MOVE_SPEED;
-		m_position.z += direction.x * MOVE_SPEED;
-	}
-	if(right)
-	{
-		//右移動
-		m_position.x += direction.z * MOVE_SPEED;
-		m_position.z -= direction.x * MOVE_SPEED;
+		m_velocity.y -= GRAVITY;
 	}
 }
 
