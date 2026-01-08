@@ -182,7 +182,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(16.0f, -4.0f, 10.0f),//位置
+			XMFLOAT3(0.0f, 0.0f, 10.0f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
@@ -1404,6 +1404,15 @@ void FieldManager::UpdateOverride()
 
 	//カーブ壁更新
 	for (auto& i : m_pWallCurves)
+	{
+		if (i->IsActive())
+		{
+			i->Update();
+		}
+	}
+
+	//バネ更新
+	for(auto& i : m_pSprings)
 	{
 		if (i->IsActive())
 		{

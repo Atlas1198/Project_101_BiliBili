@@ -73,7 +73,7 @@ void CollisionManager::Draw(Renderer& renderer)
 void CollisionManager::CheckColliders()
 {
 	//コライダーリストを走査してデリートフラグが立っているコライダーをnullptrに設定
-	for (auto& c : m_pCollidersList)
+  	for (auto& c : m_pCollidersList)
 	{
 		if (c->deleteFlag())
 		{
