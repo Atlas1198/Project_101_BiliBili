@@ -255,6 +255,9 @@
     <ClInclude Include="WallCurve.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Spring.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -471,6 +474,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="WallCurve.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Spring.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

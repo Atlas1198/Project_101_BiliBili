@@ -53,6 +53,7 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 			COLLISION_LAYER::ITEM_TRANSFORM,	//アイテム変身レイヤー
 			COLLISION_LAYER::BB_LINE,			//ビリビリライン
 			COLLISION_LAYER::BB_ELECTRICITY,	//ビリビリ電流
+			COLLISION_LAYER::SPRING,			//バネ
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::WALL:
@@ -106,7 +107,12 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 			COLLISION_LAYER::WALLCURVE,		//壁レイヤー
       });
 		break;
-      case CollisionData::COLLISION_LAYER::ITEM_TRANSFORM:
+    case CollisionData::COLLISION_LAYER::ITEM_TRANSFORM:
+	return MakeMask({
+		COLLISION_LAYER::PLAYER		//プレイヤーレイヤー
+		});
+	break;
+	case CollisionData::COLLISION_LAYER::SPRING:
 		return MakeMask({
 			COLLISION_LAYER::PLAYER		//プレイヤーレイヤー
 			});

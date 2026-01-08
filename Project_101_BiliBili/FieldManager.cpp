@@ -43,12 +43,21 @@ FieldManager::~FieldManager()
 	m_pWallCurves.clear();
 
 	//地面オブジェクトの解放
+	for (auto& spring : m_pSprings)
+	{
+		delete spring;
+		spring = nullptr;
+	}
+	m_pSprings.clear();
+
+	//地面オブジェクトの解放
 	for (auto& ground : m_pGrounds)
 	{
 		delete ground;
 		ground = nullptr;
 	}
 	m_pGrounds.clear();
+
 }
 
 //初期化
@@ -59,6 +68,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	std::uniform_int_distribution<> dist(1, 5);
 
 	int Stagenum = dist(gen);
+
+	Stagenum = 1;
 
 	m_pWalls.push_back(
 		new Wall(
@@ -168,6 +179,18 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		)
 	);
 
+	m_pSprings.push_back(
+		new Spring(
+			MESH_TYPE::CUBE,
+			XMFLOAT3(16.0f, -4.0f, 10.0f),//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+			XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+			true,						  //アクティブフラグ
+			ColliderType::BOX			  //コライダータイプ
+		)
+	);
+
 	switch (Stagenum)
 	{
 	case 1:	//ステージ1
@@ -259,8 +282,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(6.1f, 6.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(6.1f, 3.1f, 2.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -1348,11 +1371,15 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		wallcurve->GetColliderSet()->RegisterColliders(collisionManager);
 	}
 
+	for (auto& spring : m_pSprings)
+	{
+		spring->GetColliderSet()->RegisterColliders(collisionManager);
+	}
+
 	for (auto& ground : m_pGrounds)
 	{
 		ground->GetColliderSet()->RegisterColliders(collisionManager);
 	}
-
 }
 
 //更新
@@ -1418,6 +1445,16 @@ void FieldManager::SubmitDrawsOverride(Renderer& renderer)
 		);
 	}
 
+	//バネ描画情報をシーンに提出
+	for (auto& spring : m_pSprings)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,			//シーンの参照
+			*spring,			//ゲームオブジェクト配列の参照
+			m_springInfo		//バネ描画情報
+		);
+	}
+
 	//地面描画情報をシーンに提出
 	for (auto& ground : m_pGrounds)
 	{//描画要求をシーンに提出
@@ -1440,11 +1477,14 @@ void FieldManager::FinalizeOverride()
 	m_pWalls.clear();
 	m_pWallPasses.clear();
 	m_pWallCurves.clear();
+	m_pSprings.clear();
 	m_pGrounds.clear();
+	
 
 	m_wallInfo.clear();
 	m_wallPassInfo.clear();
 	m_wallCurveInfo.clear();
+	m_springInfo.clear();
 	m_groundInfo.clear();
 }
 
@@ -1477,6 +1517,15 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		m_pWallCurves[0]->GetMeshType(),//メッシュタイプ
 		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
 		wallCurveFbxPath				//テクスチャのファイル名
+	);
+
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_springInfo,					//描画情報構造体配列へのポインタ
+		m_pSprings[0]->GetMeshType(),		//メッシュタイプ
+		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
+		springTexPath						//テクスチャのファイル名
 	);
 
 	CreateRenderInfo(

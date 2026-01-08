@@ -188,6 +188,7 @@
     <ClInclude Include="LineBB.h" />
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SelectionScene.h" />
+    <ClInclude Include="Spring.h" />
     <ClInclude Include="TeamUI.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="TitleUIManager.h" />
@@ -283,6 +284,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SelectionScene.cpp" />
     <ClCompile Include="SharedStruct.cpp" />
+    <ClCompile Include="Spring.cpp" />
     <ClCompile Include="TeamUI.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />

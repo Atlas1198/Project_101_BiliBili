@@ -117,6 +117,7 @@ enum class OBJECT_TAG
 	ITEM_TRANSFORM,		//変身アイテム
 	BB_LINE,			//ビリビリライン
 	BB_ELECTRICITY,		//ビリビリ電流
+	SPRING,				//バネ
 	MAX					//最大数
 };
 
@@ -170,6 +171,7 @@ namespace CollisionData
 		ITEM_TRANSFORM,	//変身アイテム
 		BB_LINE,		//ビリビリライン
 		BB_ELECTRICITY,	//ビリビリ電流
+		SPRING,			//バネ
 		MAX_LAYER		//最大数
 	};
 
