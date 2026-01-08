@@ -8,9 +8,10 @@
 class Player : public ObjectBase
 {
 public:	//公開定数
-	inline static float MOVE_SPEED = 0.2f;	//移動速度
+	inline static float MOVE_SPEED = 0.2f;		//移動速度
 	inline static float BULLET_SPEED = 0.2f;
 	static constexpr float ROTATE_SPEED = 3.0f;	//回転速度
+	static constexpr float GRAVITY = 0.02f;		//重力
 	uint32_t id;								//ID
 
 
@@ -21,6 +22,9 @@ private:	//非公開メンバ変数
 	int teamID = -1;
 	int characterID = -1;
 	BulletManager *m_pBulletManager = nullptr;
+	bool m_isGrounded = false;
+	bool m_isSpringJump = false;
+	int m_ignoreCollisionFrame = 3;
 
 public:	//公開関数
 	Player(	//コンストラクタ
