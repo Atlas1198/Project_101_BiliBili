@@ -53,8 +53,4 @@ private:
 	) override;
 	void UpdateOverride() override;						//更新
 	void FinalizeOverride() override;					//終了
-	void PrepareRenderInfo(	//オブジェクトの描画情報生成
-		TextureManager& textureManager,	//テクスチャ管理クラスの参照
-		MeshManager& meshManager		//メッシュ管理クラスの参照
-	) override;
 };

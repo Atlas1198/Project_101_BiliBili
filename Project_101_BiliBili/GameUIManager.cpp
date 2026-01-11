@@ -285,17 +285,3 @@ void GameUIManager::ShowResultUI(int winner, int character1ID, int character2ID)
 	m_pResultUI->SetActive(true);
 	m_pResultUI->ShowResult(winner, character1ID, character2ID);
 }
-
-//オブジェクトの描画情報生成
-void GameUIManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
-{
-	m_pTeamUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pTeamUI2->PrepareRenderInfo(textureManager, meshManager);
-	m_pBulletCountUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pBulletCountUI2->PrepareRenderInfo(textureManager, meshManager);
-	m_pCutInUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pCutInUI2->PrepareRenderInfo(textureManager, meshManager);
-	m_pOperationGuideImage->PrepareRenderInfo(textureManager, meshManager);
-	m_pCountUI->PrepareRenderInfo(textureManager, meshManager);
-	m_pResultUI->PrepareRenderInfo(textureManager, meshManager);
-}

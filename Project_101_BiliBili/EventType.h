@@ -33,6 +33,10 @@ enum EventType
 	SHOW_FINISH_UI, // void
 	HIDE_COUNT_UI, // void
 	SHOW_RESULT_UI, // void
+
+	//フェード関連イベント
+	START_FADE_IN, // float duration
+	START_FADE_OUT, // float duration
 };
 
 //イベントデータ構造体

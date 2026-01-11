@@ -15,7 +15,7 @@ class MeshManager;
 //フィールド管理クラス
 class ItemManager : public ObjectManagerBase
 {
-	const wchar_t* itemTexPath = L"asset/texture/change_item.png";
+	const wchar_t* itemTexPath = L"asset/texture/game_scene/change_item.png";
 public:
 	ItemManager();		//コンストラクタ
 	~ItemManager();	//デストラクタ

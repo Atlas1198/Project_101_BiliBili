@@ -42,8 +42,9 @@ public:	//公開関数
 	const Transform3D& GetLocalTransform() const;	//ローカル変換情報の取得
 	const DirectX::XMFLOAT4 GetColor() const;		//色RGBAの取得
 	const bool IsActive() const;					//アクティブかどうかを取得
+	int GetOrder() const;							//描画順の取得
 	UVRect GetUVRect() const;						//UV矩形の取得
-	TexSplitInfo& GetTexSplitInfo();			//テクスチャ分割情報構造体の取得
+	TexSplitInfo& GetTexSplitInfo();				//テクスチャ分割情報構造体の取得
 
 	//セッター
 	void SetLocalTransform(const Transform3D& local); //ローカル変換情報の設定

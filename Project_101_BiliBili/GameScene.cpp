@@ -126,6 +126,8 @@ void GameScene::InitializeOverride(
 	m_timer = 0;								//タイマー初期化
 	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
+
+	m_pGameUIManager->StartFadeIn(0.01f); // ゲームシーンフェードイン
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
