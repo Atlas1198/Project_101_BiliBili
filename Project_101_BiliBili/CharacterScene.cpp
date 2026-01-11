@@ -32,6 +32,7 @@ void CharacterScene::InitializeOverride(
 {
 	m_pCharacterSelecter->Initialize();
 	m_pCharacterUIManager->Initialize(pTextureManager, pMeshManager);
+	m_pCharacterUIManager->StartFadeIn(0.05f);
 }
 
 //シーン固有の更新

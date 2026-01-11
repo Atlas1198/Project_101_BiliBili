@@ -412,28 +412,3 @@ void CharacterUIManager::GoToNextScene()
 	m_isCalledGoToNextScene = true;
 	m_goToNextSceneIconMoveCount = 0;
 }
-
-//オブジェクトの描画情報生成
-void CharacterUIManager::PrepareRenderInfo(
-	TextureManager& textureManager,
-	MeshManager& meshManager
-)
-{
-	m_pBackgroundImage->PrepareRenderInfo(textureManager, meshManager);
-	m_pHeaderImage->PrepareRenderInfo(textureManager, meshManager);
-	for (auto& icon : m_pPlayerIcons)
-	{
-		icon->PrepareRenderInfo(textureManager, meshManager);
-	}
-	for (auto& bg : m_pPlayerBackgroundsSelected)
-	{
-		bg->PrepareRenderInfo(textureManager, meshManager);
-	}
-	for (auto& bg : m_pPlayerBackgroundsNormal)
-	{
-		bg->PrepareRenderInfo(textureManager, meshManager);
-	}
-	m_pCharacterIconBase->PrepareRenderInfo(textureManager, meshManager);
-	m_pOperation->PrepareRenderInfo(textureManager, meshManager);
-	m_pGoToNextSceneIcon->PrepareRenderInfo(textureManager, meshManager);
-}

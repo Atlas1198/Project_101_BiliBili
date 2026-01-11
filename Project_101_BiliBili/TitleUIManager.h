@@ -3,13 +3,15 @@
 #include "d3dx12.h"
 #include "TextureManager.h"
 #include "UIManagerBase.h"
-#include "TitleUI.h"
+#include "UIImage.h"
 
 class TitleUIManager : public UIManagerBase
 {
 public:	//公開関数
-	TitleUIManager() {};	//コンストラクタ
+	TitleUIManager(float screenWidth, float screenHeight)
+		: UIManagerBase(screenWidth, screenHeight) {}
 	~TitleUIManager();	//デストラクタ
+
 	//メイン処理関数
 	void InitializeOverride(							//初期化
 		TextureManager& textureManager,
@@ -19,11 +21,9 @@ public:	//公開関数
 	void FinalizeOverride() override;					//終了
 
 private:
-	void PrepareRenderInfo(	//オブジェクトの描画情報生成
-		TextureManager& textureManager,	//テクスチャ管理クラスの参照
-		MeshManager& meshManager		//メッシュ管理クラスの参照
-	) override;
+	UIImage* m_pFrameImage = nullptr;
+	UIImage* m_pButtonImage = nullptr;
+	UIImage* m_pBackImage = nullptr;
 
-private:
-	TitleUI* m_pTitleUI = nullptr;
+	int m_timer = 0;
 };

@@ -20,7 +20,7 @@ Bullet::Bullet(
         MESH_TYPE::QUAD,
         pos,
         {0,0,0},
-        {1.0f,1.0f,1.0f}, 
+        {2.5f,2.5f,2.5f}, 
         {0,0,0},
         true,
         OBJECT_TAG::BULLET,
@@ -33,9 +33,17 @@ Bullet::Bullet(
     m_pColliderSet->AddCollider(
         ColliderType::SPHERE,
         XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(0.5f, 0.5f, 0.5f),
+        XMFLOAT3(2.5f, 2.5f, 2.5f),
         XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
+
+    TexSplitInfo texInfo{};
+    texInfo.cols = 6;
+    texInfo.rows = 5;
+    texInfo.total = texInfo.cols * texInfo.rows;
+    texInfo.frameCount = 0;
+    texInfo.updateRate = 2;
+    m_texSplitInfo = texInfo;
 }
 
 

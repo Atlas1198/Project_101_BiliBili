@@ -54,10 +54,4 @@ private:
 	void ShowFinishUI();									//フィニッシュUI表示関数
 	void HideCountUI();										//カウントUI非表示関数
 	void ShowResultUI(int winner, int character1ID, int character2ID);	//リザルトUI表示関数
-
-private:
-	void PrepareRenderInfo(	//オブジェクトの描画情報生成
-		TextureManager& textureManager,	//テクスチャ管理クラスの参照
-		MeshManager& meshManager		//メッシュ管理クラスの参照
-	) override;
 };

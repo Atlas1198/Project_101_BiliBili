@@ -166,22 +166,6 @@ void ControllerUIManager::FinalizeOverride()
 {
 }
 
-//描画情報準備
-void ControllerUIManager::PrepareRenderInfo(
-	TextureManager& textureManager,
-	MeshManager& meshManager
-)
-{
-	m_pBackgroundImage->PrepareRenderInfo(textureManager, meshManager);
-	m_pHeaderImage->PrepareRenderInfo(textureManager, meshManager);
-	m_pControllerIconBase->PrepareRenderInfo(textureManager, meshManager);
-	for (auto& icon : m_pControllerIcons)
-	{
-		icon->PrepareRenderInfo(textureManager, meshManager);
-	}
-	m_pGoToNextSceneIcon->PrepareRenderInfo(textureManager, meshManager);
-}
-
 //コントローラーアイコンを接続済みに設定
 void ControllerUIManager::SetIconConnected(int index)
 {

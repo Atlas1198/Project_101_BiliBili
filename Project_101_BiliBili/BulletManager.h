@@ -13,7 +13,7 @@ public:
     BulletManager() {}
     ~BulletManager() {}
 
-    const wchar_t *texPath = L"asset/texture/bullet.png";
+    const wchar_t *texPath = L"asset/texture/game_scene/ball.png";
 
     void FireBullet(
         const DirectX::XMFLOAT3& position,
@@ -51,7 +51,7 @@ private:
 	GameUIManager *m_pGameUIManager = nullptr;
     FrameTimer m_bulletRestoreTimer;
     FrameTimer m_totalTimer;
-	float m_bulletRestoreElapsed;
+	float m_bulletRestoreElapsed = 0.0f;
 	float m_restoreModifier = 1.0f;
 
     int teamBulletCount[2] = { MAX_BULLETS_PER_TEAM, MAX_BULLETS_PER_TEAM };

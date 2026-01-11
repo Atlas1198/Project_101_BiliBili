@@ -25,10 +25,6 @@ protected:
 	) override;
 	void UpdateOverride() override;
 	void FinalizeOverride() override;
-	void PrepareRenderInfo(
-		TextureManager& textureManager,
-		MeshManager& meshManager
-	) override;
 
 private:
 	UIImage* m_pBackgroundImage = nullptr;

@@ -48,12 +48,9 @@ void ItemManager::SpawnItem()
 			MESH_TYPE::QUAD,
 			XMFLOAT3(xDist(gen), -4.0f, zDist(gen)),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(1.0f, 1.0f, 1.0f),	//スケール
+			XMFLOAT3(3.0f, 3.0f, 3.0f),	//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
-			true,						//アクティブフラグ
-			ColliderType::BOX,		//コライダータイプ
-			XMFLOAT3(1.1f, 1.1f, 1.1f),	//コライダーボックスサイズ
-			false						//コライダーのトリガーフラグ
+			true						//アクティブフラグ
 		)
 	);
 
@@ -67,6 +64,14 @@ void ItemManager::UpdateOverride()
 	{
 		SpawnItem();
 		m_frameTimer.Mark();
+	}
+
+	for(auto& i : m_pItems)
+	{
+		if (i->IsActive())
+		{
+			i->Update();
+		}
 	}
 }
 
