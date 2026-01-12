@@ -176,32 +176,6 @@ void BBManager::SetPlayerData(std::vector<Player*>& players)
 	//BBにプレイヤー位置を設定
 	m_BB[0]->SetPlayerPos(team1Pos.data());
 	m_BB[1]->SetPlayerPos(team2Pos.data());
-
-	/*/
-	//BBの有効・無効を設定
-	if(team1Transformed)
-	{
-		m_BB[0]->ActivateBB();
-	}
-	else
-	{
-		if(m_BB[0]->IsActivated())
-		{
-			m_BB[0]->DisableBB();
-		}
-	}
-	if(team2Transformed)
-	{
-		m_BB[1]->ActivateBB();
-	}
-	else
-	{
-		if(m_BB[1]->IsActivated())
-		{
-			m_BB[1]->DisableBB();
-		}
-	}
-	*/
 }
 
 void BBManager::SetBB(int teamID, bool activate)
@@ -244,7 +218,8 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		&m_LineBBInfo,
 		m_BB[0]->GetLineBB()[0]->GetMeshType(),
 		BLEND_MODE::BLEND_MASKED,
-		lineBBTexPath
+		lineBBTexPath,
+		false
 	);
 
 	//電気BB描画情報生成
@@ -254,6 +229,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		&m_ElectricityBBInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
 		BLEND_MODE::BLEND_MASKED,
-		electricityBBTexPath
+		electricityBBTexPath,
+		false
 	);
 }

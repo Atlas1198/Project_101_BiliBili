@@ -1,5 +1,6 @@
 #include "LineBB.h"
 #include <DirectXMath.h>
+#include <algorithm>
 #include "CollisionManager.h"
 
 using namespace DirectX;
@@ -90,33 +91,88 @@ void LineBB::SetCollisionManager(CollisionManager* pCollisionManager)
 //ラインの設定
 void LineBB::SetLine(DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end)
 {
-	//座標
-	XMFLOAT3 midPos{};	//中点座標
-	midPos.x = (start.x + end.x) * 0.5f;
-	midPos.y = (start.y + end.y) * 0.5f;
-	midPos.z = (start.z + end.z) * 0.5f;
-	m_position = midPos;	//位置設定
+	XMFLOAT3 dir{};	//方向ベクトル
+	dir = 
+	{
+		end.x - start.x,
+		end.y - start.y,
+		end.z - start.z
+	};
 
-	//長さ
-	m_length = sqrtf(
-		(start.x - end.x) * (start.x - end.x) +
-		(start.y - end.y) * (start.y - end.y) +
-		(start.z - end.z) * (start.z - end.z)
+	const float length = sqrtf(
+		dir.x * dir.x +
+		dir.y * dir.y +
+		dir.z * dir.z
 	);
-	m_scale.y = m_length;	//スケール設定	
+	m_length = length;
 
-	XMFLOAT3 startPosLocal{};	//ローカル座標系での開始位置
-	XMFLOAT3 endPosLocal{};		//ローカル座標系での終了位置
-	startPosLocal.x = start.x - midPos.x;
-	startPosLocal.y = start.y - midPos.y;
-	startPosLocal.z = start.z - midPos.z;
-	endPosLocal.x = end.x - midPos.x;
-	endPosLocal.y = end.y - midPos.y;
-	endPosLocal.z = end.z - midPos.z;
+	if (length < 1e-6f)
+	{
+		m_position = start;
+		m_scale.y = 0.0f;
+		m_rotation = { 0.0f, 0.0f, 0.0f };
+		return;
+	}
 
-	//Y軸回転
-	float angleY = atan2f(endPosLocal.x - startPosLocal.x, endPosLocal.z - startPosLocal.z);
-	m_rotation.y = XMConvertToDegrees(angleY);
+	m_position = 
+	{
+		(start.x + end.x) * 0.5f,
+		(start.y + end.y) * 0.5f,
+		(start.z + end.z) * 0.5f
+	};
+
+	m_scale.y = length;
+
+	const float invLength = 1.0f / length;
+	const float dx = dir.x * invLength;
+	const float dy = dir.y * invLength;
+	const float dz = dir.z * invLength;
+
+	const float dyClamped = std::clamp(dy, -1.0f, 1.0f);
+
+	float yaw = 0.0f;
+	const float xzLenSq = dx * dx + dz * dz;
+	if (xzLenSq > 1e-8f)
+	{
+		yaw = atan2f(dx, dz);
+	}
+
+	const float pitch = acosf(dyClamped);
+	const float roll = 0.0f;
+	m_rotation = 
+	{
+		XMConvertToDegrees(pitch),
+		XMConvertToDegrees(yaw),
+		XMConvertToDegrees(roll)
+	};
+
+	////座標
+	//XMFLOAT3 midPos{};	//中点座標
+	//midPos.x = (start.x + end.x) * 0.5f;
+	//midPos.y = (start.y + end.y) * 0.5f;
+	//midPos.z = (start.z + end.z) * 0.5f;
+	//m_position = midPos;	//位置設定
+
+	////長さ
+	//m_length = sqrtf(
+	//	(start.x - end.x) * (start.x - end.x) +
+	//	(start.y - end.y) * (start.y - end.y) +
+	//	(start.z - end.z) * (start.z - end.z)
+	//);
+	//m_scale.y = m_length;	//スケール設定	
+
+	//XMFLOAT3 startPosLocal{};	//ローカル座標系での開始位置
+	//XMFLOAT3 endPosLocal{};		//ローカル座標系での終了位置
+	//startPosLocal.x = start.x - midPos.x;
+	//startPosLocal.y = start.y - midPos.y;
+	//startPosLocal.z = start.z - midPos.z;
+	//endPosLocal.x = end.x - midPos.x;
+	//endPosLocal.y = end.y - midPos.y;
+	//endPosLocal.z = end.z - midPos.z;
+
+	////Y軸回転
+	//float angleY = atan2f(endPosLocal.x - startPosLocal.x, endPosLocal.z - startPosLocal.z);
+	//m_rotation.y = XMConvertToDegrees(angleY);
 }
 
 //壁と最も近い衝突点の収集

@@ -129,6 +129,7 @@ void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManage
         MESH_TYPE::QUAD,	                //メッシュタイプ
         BLEND_MODE::BLEND_MASKED,		    //ブレンドモード
         texPath,						    //テクスチャのファイル名
+		false,							    //ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
     );
 }

@@ -130,12 +130,6 @@ void BB::ResolveCollisions()
 				1 - m_teamId,
 				BB::DAMAGE * eb->GetHitNum()
 			));
-			/*
-			EventManager::GetInstance()->TakeDamage(
-				1 - m_teamId,
-				BB::DAMAGE * eb->GetHitNum()
-			);
-			*/
 
 			//リセット
 			eb->SetHasHitPlayer(false);

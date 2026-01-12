@@ -36,17 +36,21 @@ public:	//公開関数
 	void SubmitToEffectList(const struct EffectRenderInfo& item);	//エフェクト用
 	void SubmitToScreenList(const struct WorldRenderInfo& item);	//スクリーン座標用
 
+	void SubmitDirectionalLight(const DirectionalLight& light);	//平行光源情報を設定
+
 private:	//非公開メンバ変数
 	RootSignature* m_pRootSignature = nullptr;			//ルートシグネチャ
-	PipelineState* m_pPipelineStateWorld[BLEND_MAX]{};	//ワールド座標用パイプラインステートオブジェクト
-	PipelineState* m_pPipelineStateEffect[BLEND_MAX]{};	//エフェクト用パイプラインステートオブジェクト
-	PipelineState* m_pPipelineStateScreen[BLEND_MAX]{};	//スクリーン座標用パイプラインステートオブジェクト
+	PipelineState* m_pPipelineStateWorldNoLight[BLEND_MAX]{};	//ワールド座標用パイプラインステートオブジェクト(ライティング無効)
+	PipelineState* m_pPipelineStateWorldLight[BLEND_MAX]{};		//ワールド座標用パイプラインステートオブジェクト(ライティング有効)
+	PipelineState* m_pPipelineStateEffect[BLEND_MAX]{};			//エフェクト用パイプラインステートオブジェクト
+	PipelineState* m_pPipelineStateScreen[BLEND_MAX]{};			//スクリーン座標用パイプラインステートオブジェクト
 
 	ID3D12Device* m_pDevice = nullptr;	//デバイス
 	CameraInfo* m_cameraInfo = nullptr;	//カメラ情報構造体
 
-	std::vector<WorldRenderInfo> m_drawListWorld[BLEND_MAX]{};			//描画リスト(ワールド座標)
-	std::vector<EffectRenderInfo> m_drawListEffect[BLEND_MAX]{};	//描画リスト(エフェクト用)
+	std::vector<WorldRenderInfo> m_drawListWorldNoLight[BLEND_MAX]{};	//描画リスト(ワールド座標)
+	std::vector<WorldRenderInfo> m_drawListWorldLight[BLEND_MAX]{};		//描画リスト(ワールド座標)
+	std::vector<EffectRenderInfo> m_drawListEffect[BLEND_MAX]{};		//描画リスト(エフェクト用)
 	std::vector<WorldRenderInfo> m_drawListScreen[BLEND_MAX]{};			//描画リスト(スクリーン座標)
 
 	//フレームごとのオブジェクト用CBVプール（1オブジェクト＝1定数バッファ）
@@ -61,6 +65,7 @@ private:	//非公開メンバ変数
 	DirectX::XMMATRIX m_screenProj{};	//スクリーン座標用プロジェクション行列
 	DirectX::XMMATRIX m_screenView{};	//スクリーン座標用ビュー行列
 
+	DirectionalLight m_directionalLight;	//平行光源
 
 private:	//非公開関数
 	//描画リストの描画関数
