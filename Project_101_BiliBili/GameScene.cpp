@@ -7,7 +7,7 @@
 #include "App.h"
 #include "EventManager.h"
 
-
+using namespace DirectX;
 
 //コンストラクタ
 GameScene::GameScene(float window_width, float window_height)
@@ -126,6 +126,10 @@ void GameScene::InitializeOverride(
 	m_timer = 0;								//タイマー初期化
 	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
+
+	m_directionalLight.direction = XMFLOAT3(-0.5f, -1.0f, -0.5f);
+	m_directionalLight.intensity = 1.5f;
+	m_directionalLight.ambient = 0.2f;
 
 	m_pGameUIManager->StartFadeIn(0.01f); // ゲームシーンフェードイン
 }

@@ -70,7 +70,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	int Stagenum = dist(gen);
 
 	Stagenum = 5;
-
 	m_pWalls.push_back(
 		new Wall(
 			MESH_TYPE::CUBE,
@@ -1414,6 +1413,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	{
 		ground->GetColliderSet()->RegisterColliders(collisionManager);
 	}
+
 }
 
 //更新
@@ -1575,9 +1575,13 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_springInfo,					//描画情報構造体配列へのポインタ
-		m_pSprings[0]->GetMeshType(),		//メッシュタイプ
+		MESH_TYPE::CUBE,				//メッシュタイプ
 		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
-		springTexPath						//テクスチャのファイル名
+		springTexPath,
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
 	);
 
 	CreateRenderInfo(

@@ -5,6 +5,7 @@
 struct VSOutPut
 {
     float4 svpos : SV_POSITION; //システム用頂点座標
-    float4 color : COLOR;       //頂点カラー
-    float2 uv : TEXCOORD;       //uv座標
+    float4 color : COLOR; //頂点カラー
+    float2 uv : TEXCOORD; //uv座標
+    float3 normal : NORMAL; //法線ベクトル
 };

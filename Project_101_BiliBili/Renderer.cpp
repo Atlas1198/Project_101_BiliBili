@@ -20,7 +20,7 @@ Renderer::~Renderer()
 		m_pRootSignature = nullptr;
 	}
 	//パイプラインステートの解放
-	for (auto& pPipelineState : m_pPipelineStateWorld)
+	for (auto& pPipelineState : m_pPipelineStateWorldLight)
 	{
 		if (pPipelineState)
 		{
@@ -53,7 +53,14 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo)
 	m_pRootSignature = new RootSignature(m_pDevice);
 
 	//パイプラインステートの生成
-	for(auto& pPipelineState : m_pPipelineStateWorld)
+	for(auto& pPipelineState : m_pPipelineStateWorldNoLight)
+	{
+		pPipelineState = new PipelineState(m_pDevice);
+		pPipelineState->SetInputLayout(Vertex::InputLayout);						//入力レイアウトの設定
+		pPipelineState->SetRootSignature(m_pRootSignature->GetRootSignature());	//ルートシグネチャの設定
+		pPipelineState->SetVertexShader(L"VertexShader.hlsl");					//頂点シェーダーの設定
+	}
+	for(auto& pPipelineState : m_pPipelineStateWorldLight)
 	{
 		pPipelineState = new PipelineState(m_pDevice);
 		pPipelineState->SetInputLayout(Vertex::InputLayout);						//入力レイアウトの設定
@@ -77,20 +84,36 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo)
 
 	//ワールド座標用パイプラインステートの設定
 	//不透明設定
-	m_pPipelineStateWorld[BLEND_OPAQUE]->SetPixelShader(L"PixelShader.hlsl", "BasicPS");	//ピクセルシェーダーの設定
-	m_pPipelineStateWorld[BLEND_OPAQUE]->EnableAlphaBlend(false);							//不透明設定
-	m_pPipelineStateWorld[BLEND_OPAQUE]->EnableDepthWrite(true);							//深度書き込み有効
-	m_pPipelineStateWorld[BLEND_OPAQUE]->Create();											//生成
+	m_pPipelineStateWorldNoLight[BLEND_OPAQUE]->SetPixelShader(L"PixelShader.hlsl", "BasicPS");	//ピクセルシェーダーの設定
+	m_pPipelineStateWorldNoLight[BLEND_OPAQUE]->EnableAlphaBlend(false);							//不透明設定
+	m_pPipelineStateWorldNoLight[BLEND_OPAQUE]->EnableDepthWrite(true);							//深度書き込み有効
+	m_pPipelineStateWorldNoLight[BLEND_OPAQUE]->Create();											//生成
 	//マスク設定
-	m_pPipelineStateWorld[BLEND_MASKED]->SetPixelShader(L"PixelShader.hlsl", "BasicPSMasked");	//ピクセルシェーダーの設定
-	m_pPipelineStateWorld[BLEND_MASKED]->EnableAlphaBlend(false);								//不透明設定
-	m_pPipelineStateWorld[BLEND_MASKED]->EnableDepthWrite(true);								//深度書き込み有効
-	m_pPipelineStateWorld[BLEND_MASKED]->Create();												//生成
+	m_pPipelineStateWorldNoLight[BLEND_MASKED]->SetPixelShader(L"PixelShader.hlsl", "BasicPSMasked");	//ピクセルシェーダーの設定
+	m_pPipelineStateWorldNoLight[BLEND_MASKED]->EnableAlphaBlend(false);								//不透明設定
+	m_pPipelineStateWorldNoLight[BLEND_MASKED]->EnableDepthWrite(true);								//深度書き込み有効
+	m_pPipelineStateWorldNoLight[BLEND_MASKED]->Create();												//生成
 	//透明設定
-	m_pPipelineStateWorld[BLEND_TRANSPARENT]->SetPixelShader(L"PixelShader.hlsl", "BasicPS");	//ピクセルシェーダーの設定
-	m_pPipelineStateWorld[BLEND_TRANSPARENT]->EnableAlphaBlend(true);							//透明設定
-	m_pPipelineStateWorld[BLEND_TRANSPARENT]->EnableDepthWrite(false);							//深度書き込み無効
-	m_pPipelineStateWorld[BLEND_TRANSPARENT]->Create();											//生成
+	m_pPipelineStateWorldNoLight[BLEND_TRANSPARENT]->SetPixelShader(L"PixelShader.hlsl", "BasicPS");	//ピクセルシェーダーの設定
+	m_pPipelineStateWorldNoLight[BLEND_TRANSPARENT]->EnableAlphaBlend(true);							//透明設定
+	m_pPipelineStateWorldNoLight[BLEND_TRANSPARENT]->EnableDepthWrite(false);							//深度書き込み無効
+	m_pPipelineStateWorldNoLight[BLEND_TRANSPARENT]->Create();											//生成
+
+	//不透明設定
+	m_pPipelineStateWorldLight[BLEND_OPAQUE]->SetPixelShader(L"PixelShader.hlsl", "BasicLightPS");	//ピクセルシェーダーの設定
+	m_pPipelineStateWorldLight[BLEND_OPAQUE]->EnableAlphaBlend(false);							//不透明設定
+	m_pPipelineStateWorldLight[BLEND_OPAQUE]->EnableDepthWrite(true);							//深度書き込み有効
+	m_pPipelineStateWorldLight[BLEND_OPAQUE]->Create();											//生成
+	//マスク設定
+	m_pPipelineStateWorldLight[BLEND_MASKED]->SetPixelShader(L"PixelShader.hlsl", "BasicLightPSMasked");	//ピクセルシェーダーの設定
+	m_pPipelineStateWorldLight[BLEND_MASKED]->EnableAlphaBlend(false);								//不透明設定
+	m_pPipelineStateWorldLight[BLEND_MASKED]->EnableDepthWrite(true);								//深度書き込み有効
+	m_pPipelineStateWorldLight[BLEND_MASKED]->Create();												//生成
+	//透明設定
+	m_pPipelineStateWorldLight[BLEND_TRANSPARENT]->SetPixelShader(L"PixelShader.hlsl", "BasicLightPS");	//ピクセルシェーダーの設定
+	m_pPipelineStateWorldLight[BLEND_TRANSPARENT]->EnableAlphaBlend(true);							//透明設定
+	m_pPipelineStateWorldLight[BLEND_TRANSPARENT]->EnableDepthWrite(false);							//深度書き込み無効
+	m_pPipelineStateWorldLight[BLEND_TRANSPARENT]->Create();											//生成
 
 	//エフェクト用パイプラインステートの設定
 //不透明設定
@@ -117,21 +140,21 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo)
 
 	//スクリーン座標用パイプラインステートの設定
 	//不透明設定
-	m_pPipelineStateScreen[BLEND_OPAQUE]->SetPixelShader(L"PixelShader.hlsl", "BasicPS");	//ピクセルシェーダーの設定
+	m_pPipelineStateScreen[BLEND_OPAQUE]->SetPixelShader(L"PixelShader.hlsl", "BasicScreenPS");	//ピクセルシェーダーの設定
 	m_pPipelineStateScreen[BLEND_OPAQUE]->EnableAlphaBlend(false);							//不透明設定
 	m_pPipelineStateScreen[BLEND_OPAQUE]->EnableDepthWrite(false);							//深度書き込み有効
 	m_pPipelineStateScreen[BLEND_OPAQUE]->EnableDepthTest(false);							//深度テスト無効
 	m_pPipelineStateScreen[BLEND_OPAQUE]->SetCullMode(D3D12_CULL_MODE_NONE);				//カリング無効化
 	m_pPipelineStateScreen[BLEND_OPAQUE]->Create();											//生成
 	//マスク設定
-	m_pPipelineStateScreen[BLEND_MASKED]->SetPixelShader(L"PixelShader.hlsl", "BasicPSMasked");	//ピクセルシェーダーの設定
+	m_pPipelineStateScreen[BLEND_MASKED]->SetPixelShader(L"PixelShader.hlsl", "BasicScreenPSMasked");	//ピクセルシェーダーの設定
 	m_pPipelineStateScreen[BLEND_MASKED]->EnableAlphaBlend(false);								//不透明設定
 	m_pPipelineStateScreen[BLEND_MASKED]->EnableDepthWrite(false);								//深度書き込み有効
 	m_pPipelineStateScreen[BLEND_MASKED]->EnableDepthTest(false);								//深度テスト無効
 	m_pPipelineStateScreen[BLEND_MASKED]->SetCullMode(D3D12_CULL_MODE_NONE);					//カリング無効化
 	m_pPipelineStateScreen[BLEND_MASKED]->Create();												//生成
 	//透明設定
-	m_pPipelineStateScreen[BLEND_TRANSPARENT]->SetPixelShader(L"PixelShader.hlsl", "BasicPS");		//ピクセルシェーダーの設定
+	m_pPipelineStateScreen[BLEND_TRANSPARENT]->SetPixelShader(L"PixelShader.hlsl", "BasicScreenPS");		//ピクセルシェーダーの設定
 	m_pPipelineStateScreen[BLEND_TRANSPARENT]->EnableAlphaBlend(true);								//透明設定
 	m_pPipelineStateScreen[BLEND_TRANSPARENT]->EnableDepthWrite(false);								//深度書き込み無効
 	m_pPipelineStateScreen[BLEND_TRANSPARENT]->EnableDepthTest(false);								//深度テスト無効
@@ -156,21 +179,9 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 		info.nearZ,			//ニアクリップ距離
 		info.farZ			//ファークリップ距離
 	);
-	
-
-	//float orthoheight = 30;
-	//float orthowidth = orthoheight * info.aspectRatio;
-
-	//m_worldProj = XMMatrixOrthographicLH(
-	//	orthowidth,	//画面幅
-	//	orthoheight,	//画面高さ5
-	//	0.1f,									//ニアクリップ距離
-	//	100.0f);
 
 	//スクリーンカメラ行列の更新
 	m_screenView = XMMatrixIdentity();					//カメラの上方
-
-	
 
 	//スクリーンプロジェクション行列の更新
 	m_screenProj = XMMatrixOrthographicLH(
@@ -206,7 +217,11 @@ void Renderer::BeginFrame(UINT backIndex)
 {
 	m_currBackIndex = backIndex;	//現在のバックバッファインデックスを保存
 	//描画リストのクリア
-	for(auto& drawList : m_drawListWorld)
+	for (auto& drawList : m_drawListWorldNoLight)
+	{
+		drawList.clear();
+	}
+	for(auto& drawList : m_drawListWorldLight)
 	{
 		drawList.clear();
 	}
@@ -223,7 +238,9 @@ void Renderer::BeginFrame(UINT backIndex)
 //ワールド座標用描画リストに描画要求を追加
 void Renderer::SubmitToWorldList(const WorldRenderInfo& item)
 {
-	m_drawListWorld[item.common.blendMode].push_back(item);	//描画リストに描画要求を追加
+	//ライト有効・無効で分けて追加
+	if(item.lightingEnabled) m_drawListWorldLight[item.common.blendMode].push_back(item);	//ライト有効
+	else  m_drawListWorldNoLight[item.common.blendMode].push_back(item);					//ライト無効
 }
 
 //エフェクト用描画リストに描画要求を追加
@@ -238,6 +255,12 @@ void Renderer::SubmitToScreenList(const WorldRenderInfo& item)
 	m_drawListScreen[item.common.blendMode].push_back(item);	//描画リストに描画要求を追加
 }
 
+//平行光源情報を設定
+void Renderer::SubmitDirectionalLight(const DirectionalLight& light)
+{
+	m_directionalLight = light;	//平行光源情報を保存
+}
+
 //スクリーン座標用描画リストの描画
 void Renderer::DrawRenderListWorld(
 	ID3D12GraphicsCommandList* p_commandList, 
@@ -246,19 +269,19 @@ void Renderer::DrawRenderListWorld(
 {
 	int objIndex = 0;
 
-	// ドロー要求を順に処理
+	//ライト無効オブジェクトの描画
 	for (size_t i = 0; i < BLEND_MAX; ++i)
 	{
 		//パイプラインステートの設定
-		p_commandList->SetPipelineState(m_pPipelineStateWorld[i]->GetPipelineState());
+		p_commandList->SetPipelineState(m_pPipelineStateWorldNoLight[i]->GetPipelineState());
 
-		for (size_t j = 0; j < m_drawListWorld[i].size(); j++)
+		for (size_t j = 0; j < m_drawListWorldNoLight[i].size(); j++)
 		{
 			// フレームごとのCBVプールを必要数まで確保
 			if (objIndex >= m_objectCBWorld[m_currBackIndex].size())
 			{
 				//新しい定数バッファを作成
-				auto* newCb = new ConstantBuffer(m_pDevice, sizeof(Transform));
+				auto* newCb = new ConstantBuffer(m_pDevice, sizeof(PerObjectConstants));
 
 				if (!newCb->GetIsValid())
 				{//作成失敗時
@@ -272,25 +295,27 @@ void Renderer::DrawRenderListWorld(
 
 			//オブジェクト用定数バッファの取得
 			ConstantBuffer* cb = m_objectCBWorld[m_currBackIndex][objIndex];
-			auto* ptr = cb->GetPtr<Transform>();
+			auto* ptr = cb->GetPtr<PerObjectConstants>();
 
 			//定数バッファに transform を書く（各オブジェクト専用のメモリ）
 
-			if (m_drawListWorld[i][j].billboardType != BILLBOARD_NONE)
-			{
-				ptr->worldMatrix = CalcBillBoard(m_drawListWorld[i][j]);
+			if (m_drawListWorldNoLight[i][j].billboardType != BILLBOARD_NONE)
+			{//ビルボードの場合
+				//ビルボード用のワールド行列を計算してセット
+				ptr->worldMatrix = CalcBillBoard(m_drawListWorldNoLight[i][j]);
 			}
 			else
-			{
-				ptr->worldMatrix = m_drawListWorld[i][j].world;	//ワールド行列
+			{//通常のワールド行列の場合
+				ptr->worldMatrix = m_drawListWorldNoLight[i][j].world;	//ワールド行列
 			}
+			ptr->worldInvTranspose = XMMatrixTranspose(XMMatrixInverse(nullptr, ptr->worldMatrix)); //ワールド逆転置行列
 			ptr->viewMatrix = m_worldView;					//ビュー行列
 			ptr->projMatrix = m_worldProj;					//プロジェクション行列
-			ptr->objectColor = m_drawListWorld[i][j].common.color;	//オブジェクトの色
-			ptr->uvRect = m_drawListWorld[i][j].common.uvRect;		//UV矩形
+			ptr->objectColor = m_drawListWorldNoLight[i][j].common.color;	//オブジェクトの色
+			ptr->uvRect = m_drawListWorldNoLight[i][j].common.uvRect;		//UV矩形
 
 			//メッシュGPUデータの取得
-			auto meshGPU = m_drawListWorld[i][j].common.pMeshGPU;
+			auto meshGPU = m_drawListWorldNoLight[i][j].common.pMeshGPU;
 
 			//セットアップ
 			auto vbv = meshGPU->GetVertexBuffer()->GetView();						//頂点バッファビューの取得
@@ -301,10 +326,10 @@ void Renderer::DrawRenderListWorld(
 			p_commandList->IASetIndexBuffer(&ibv);									//インデックスバッファの設定
 
 			//SRVの設定
-			if (m_drawListWorld[i][j].common.srvIndex != UINT32_MAX)
+			if (m_drawListWorldNoLight[i][j].common.srvIndex != UINT32_MAX)
 			{//SRVインデックスが有効な場合
 				auto gpuHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
-				gpuHandle.ptr += static_cast<UINT64>(m_drawListWorld[i][j].common.srvIndex) * textureManager.GetSrvIncrementSize();	//SRVインデックスに対応するGPUハンドルを計算
+				gpuHandle.ptr += static_cast<UINT64>(m_drawListWorldNoLight[i][j].common.srvIndex) * textureManager.GetSrvIncrementSize();	//SRVインデックスに対応するGPUハンドルを計算
 				p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);											//t0にSRVをセット
 			}
 
@@ -312,8 +337,100 @@ void Renderer::DrawRenderListWorld(
 			p_commandList->DrawIndexedInstanced(	//描画コマンド
 				meshGPU->GetIndexCount(),		//インデックス数
 				1,								//インスタンス数
-				m_drawListWorld[i][j].startIndex,	//スタートインデックス位置
-				m_drawListWorld[i][j].baseVertex,	//ベース頂点位置
+				m_drawListWorldNoLight[i][j].startIndex,	//スタートインデックス位置
+				m_drawListWorldNoLight[i][j].baseVertex,	//ベース頂点位置
+				0								//スタートインスタンス位置
+			);
+
+			objIndex++;	//オブジェクト用定数バッファのインデックスを進める
+		}
+	}
+
+	//ライト有効オブジェクトの描画
+	for (size_t i = 0; i < BLEND_MAX; ++i)
+	{
+		//パイプラインステートの設定
+		p_commandList->SetPipelineState(m_pPipelineStateWorldLight[i]->GetPipelineState());
+
+		for (size_t j = 0; j < m_drawListWorldLight[i].size(); j++)
+		{
+			// フレームごとのCBVプールを必要数まで確保
+			if (objIndex >= m_objectCBWorld[m_currBackIndex].size())
+			{
+				//新しい定数バッファを作成
+				auto* newCb = new ConstantBuffer(m_pDevice, sizeof(PerObjectConstants));
+
+				if (!newCb->GetIsValid())
+				{//作成失敗時
+					OutputDebugStringA("ConstantBuffer creation failed\n");
+					delete newCb;
+				}
+
+				//プールに追加
+				m_objectCBWorld[m_currBackIndex].push_back(newCb);
+			}
+
+			//オブジェクト用定数バッファの取得
+			ConstantBuffer* cb = m_objectCBWorld[m_currBackIndex][objIndex];
+			auto* ptr = cb->GetPtr<PerObjectConstants>();
+
+			//定数バッファに transform を書く（各オブジェクト専用のメモリ）
+
+			if (m_drawListWorldLight[i][j].billboardType != BILLBOARD_NONE)
+			{//ビルボードの場合
+				//ビルボード用のワールド行列を計算してセット
+				ptr->worldMatrix = CalcBillBoard(m_drawListWorldLight[i][j]);
+			}
+			else
+			{//通常のワールド行列の場合
+				ptr->worldMatrix = m_drawListWorldLight[i][j].world;	//ワールド行列
+			}
+			ptr->worldInvTranspose = XMMatrixTranspose(XMMatrixInverse(nullptr, ptr->worldMatrix)); //ワールド逆転置行列
+			ptr->viewMatrix = m_worldView;					//ビュー行列
+			ptr->projMatrix = m_worldProj;					//プロジェクション行列
+			ptr->objectColor = m_drawListWorldLight[i][j].common.color;	//オブジェクトの色
+			ptr->uvRect = m_drawListWorldLight[i][j].common.uvRect;		//UV矩形
+			XMFLOAT4 direction_intensity =
+			{
+				m_directionalLight.direction.x,
+				m_directionalLight.direction.y,
+				m_directionalLight.direction.z,
+				m_directionalLight.intensity
+			};
+			XMFLOAT4 color_amobient = XMFLOAT4(
+				m_directionalLight.color.x,
+				m_directionalLight.color.y,
+				m_directionalLight.color.z,
+				m_directionalLight.ambient
+			);
+			ptr->lightDir_Intensity = direction_intensity;
+			ptr->lightColor_Ambient = color_amobient;
+
+			//メッシュGPUデータの取得
+			auto meshGPU = m_drawListWorldLight[i][j].common.pMeshGPU;
+
+			//セットアップ
+			auto vbv = meshGPU->GetVertexBuffer()->GetView();						//頂点バッファビューの取得
+			auto ibv = meshGPU->GetIndexBuffer()->GetView();						//インデックスバッファビューの取得
+			p_commandList->SetGraphicsRootConstantBufferView(0, cb->GetAddress());	//ルートパラメータ0に定数バッファをセット
+			p_commandList->IASetPrimitiveTopology(meshGPU->GetTopology());			//プリミティブトポロジの設定
+			p_commandList->IASetVertexBuffers(0, 1, &vbv);							//頂点バッファの設定
+			p_commandList->IASetIndexBuffer(&ibv);									//インデックスバッファの設定
+
+			//SRVの設定
+			if (m_drawListWorldLight[i][j].common.srvIndex != UINT32_MAX)
+			{//SRVインデックスが有効な場合
+				auto gpuHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
+				gpuHandle.ptr += static_cast<UINT64>(m_drawListWorldLight[i][j].common.srvIndex) * textureManager.GetSrvIncrementSize();	//SRVインデックスに対応するGPUハンドルを計算
+				p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);											//t0にSRVをセット
+			}
+
+			//描画コマンドの発行
+			p_commandList->DrawIndexedInstanced(	//描画コマンド
+				meshGPU->GetIndexCount(),		//インデックス数
+				1,								//インスタンス数
+				m_drawListWorldLight[i][j].startIndex,	//スタートインデックス位置
+				m_drawListWorldLight[i][j].baseVertex,	//ベース頂点位置
 				0								//スタートインスタンス位置
 			);
 
@@ -417,7 +534,7 @@ void Renderer::DrawRenderListScreen(
 			if (objIndex >= m_objectCBScreen[m_currBackIndex].size())
 			{
 				//新しい定数バッファを作成
-				auto* newCb = new ConstantBuffer(m_pDevice, sizeof(Transform));
+				auto* newCb = new ConstantBuffer(m_pDevice, sizeof(PerObjectConstants));
 
 				if (!newCb->GetIsValid())
 				{//作成失敗時
@@ -431,10 +548,11 @@ void Renderer::DrawRenderListScreen(
 
 			//オブジェクト用定数バッファの取得
 			ConstantBuffer* cb = m_objectCBScreen[m_currBackIndex][objIndex];
-			auto* ptr = cb->GetPtr<Transform>();
+			auto* ptr = cb->GetPtr<PerObjectConstants>();
 
 			//定数バッファに transform を書く（各オブジェクト専用のメモリ）
 			ptr->worldMatrix = m_drawListScreen[i][j].world;	//ワールド行列
+			ptr->worldInvTranspose = XMMatrixTranspose(XMMatrixInverse(nullptr, ptr->worldMatrix)); //ワールド逆転置行列
 			ptr->viewMatrix = m_screenView;						//ビュー行列
 			ptr->projMatrix = m_screenProj;						//プロジェクション行列
 			ptr->objectColor = m_drawListScreen[i][j].common.color;	//オブジェクトの色
@@ -497,8 +615,16 @@ void Renderer::SortDrawListOpaque()
 	//ワールド座標用描画リスト
 	//OPAQUE
 	std::sort(
-		m_drawListWorld[BLEND_OPAQUE].begin(),	//ソート開始位置
-		m_drawListWorld[BLEND_OPAQUE].end(),	//ソート終了位置
+		m_drawListWorldLight[BLEND_OPAQUE].begin(),	//ソート開始位置
+		m_drawListWorldLight[BLEND_OPAQUE].end(),	//ソート終了位置
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
+		{
+			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
+		}
+	);
+	std::sort(
+		m_drawListWorldNoLight[BLEND_OPAQUE].begin(),	//ソート開始位置
+		m_drawListWorldNoLight[BLEND_OPAQUE].end(),	//ソート終了位置
 		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
@@ -506,8 +632,16 @@ void Renderer::SortDrawListOpaque()
 	);
 	//MASKED
 	std::sort(
-		m_drawListWorld[BLEND_MASKED].begin(),	//ソート開始位置
-		m_drawListWorld[BLEND_MASKED].end(),	//ソート終了位置
+		m_drawListWorldLight[BLEND_MASKED].begin(),	//ソート開始位置
+		m_drawListWorldLight[BLEND_MASKED].end(),	//ソート終了位置
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
+		{
+			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
+		}
+	);
+	std::sort(
+		m_drawListWorldNoLight[BLEND_MASKED].begin(),	//ソート開始位置
+		m_drawListWorldNoLight[BLEND_MASKED].end(),	//ソート終了位置
 		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return dist2(a.position, cameraPos) < dist2(b.position, cameraPos);
@@ -587,8 +721,16 @@ void Renderer::SortDrawListTransparent()
 	//カメラから遠い順にソート
 	//ワールド座標用描画リスト
 	std::sort(
-		m_drawListWorld[BLEND_TRANSPARENT].begin(),
-		m_drawListWorld[BLEND_TRANSPARENT].end(),
+		m_drawListWorldLight[BLEND_TRANSPARENT].begin(),
+		m_drawListWorldLight[BLEND_TRANSPARENT].end(),
+		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
+		{
+			return depthFar(a.position, a.common.pMeshGPU) > depthFar(b.position, b.common.pMeshGPU);
+		}
+	);
+	std::sort(
+		m_drawListWorldNoLight[BLEND_TRANSPARENT].begin(),
+		m_drawListWorldNoLight[BLEND_TRANSPARENT].end(),
 		[&](const WorldRenderInfo& a, const WorldRenderInfo& b)
 		{
 			return depthFar(a.position, a.common.pMeshGPU) > depthFar(b.position, b.common.pMeshGPU);
@@ -626,12 +768,30 @@ XMMATRIX Renderer::CalcBillBoard(const WorldRenderInfo& info)
 
 	XMVECTOR toCam = XMVectorSubtract(cameraPos, objPos);
 
-	if (info.billboardType == BILLBOARD_TYPE::BILLBOARD_CYLINDRICAL)
+	if(info.billboardType == BILLBOARD_TYPE::BILLBOARD_FIX_X)
+	{
+		toCam = XMVectorSet(
+			0.0f,
+			XMVectorGetY(toCam),
+			XMVectorGetZ(toCam),
+			0.0f
+		);
+	}
+	else if (info.billboardType == BILLBOARD_TYPE::BILLBOARD_FIX_Y)
 	{
 		toCam = XMVectorSet(
 			XMVectorGetX(toCam),
 			0.0f,
 			XMVectorGetZ(toCam),
+			0.0f
+		);
+	}
+	else if (info.billboardType == BILLBOARD_TYPE::BILLBOARD_FIX_Z)
+	{
+		toCam = XMVectorSet(
+			XMVectorGetX(toCam),
+			XMVectorGetY(toCam),
+			0.0f,
 			0.0f
 		);
 	}

@@ -16,10 +16,11 @@ using namespace DirectX;
 void CreateRenderInfo(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
-	MESH_TYPE mType,				//メッシュタイプ
+	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+	MESH_TYPE mType,						//メッシュタイプ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
+	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType,					//ビルボードタイプ
 	bool inverseU,							//Uを反転するかどうか(モデルデータの場合のみ有効)
 	bool inverseV							//Vを反転するかどうか(モデルデータの場合のみ有効
@@ -34,6 +35,7 @@ void CreateRenderInfo(
 			pInfo,			//描画情報構造体配列へのポインタ
 			mode,			//ブレンドモード
 			path,			//モデルファイルのパス
+			lightEneble,	//ライト有効or無効
 			bType,			//ビルボードタイプ
 			inverseU,		//Uを反転するかどうか
 			inverseV		//Vを反転するかどうか
@@ -48,6 +50,7 @@ void CreateRenderInfo(
 			mType,			//メッシュタイプ
 			mode,			//ブレンドモード
 			path,			//テクスチャのファイル名
+			lightEneble,	//ライト有効or無効
 			bType			//ビルボードタイプ
 		);
 	}
@@ -55,14 +58,15 @@ void CreateRenderInfo(
 
 //FBXファイルから描画情報を作成する関数
 void CreateRenderInfoFromFBX(
-	TextureManager& textureManager,	//テクスチャマネージャへの参照
-	MeshManager& meshManager,		//メッシュマネージャへの参照
+	TextureManager& textureManager,			//テクスチャマネージャへの参照
+	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
-	BLEND_MODE mode,				//ブレンドモード
-	const wchar_t* path,			//モデルファイルのパス
-	BILLBOARD_TYPE bType,			//ビルボードタイプ
-	bool inverseU,					//Uを反転するかどうか
-	bool inverseV					//Vを反転するかどうか
+	BLEND_MODE mode,						//ブレンドモード
+	const wchar_t* path,					//モデルファイルのパス
+	bool lightEneble,						//ライト有効or無効
+	BILLBOARD_TYPE bType,					//ビルボードタイプ
+	bool inverseU,							//Uを反転するかどうか
+	bool inverseV							//Vを反転するかどうか
 )
 {
 	std::vector<Mesh> meshes;	//メッシュデータ配列
@@ -94,11 +98,12 @@ void CreateRenderInfoFromFBX(
 			bType			//ビルボードタイプ
 		);
 
-		WorldRenderInfo info;			//描画情報構造体
-		info.common = desc;		//共通描画記述構造体の設定
-		info.billboardType = bType;	//ビルボードタイプの設定
-		info.baseVertex = 0;		//基準インデックスの設定
-		info.startIndex = 0;		//開始インデックスの設定
+		WorldRenderInfo info;				//描画情報構造体
+		info.common = desc;					//共通描画記述構造体の設定
+		info.lightingEnabled = lightEneble;	//ライティング有効フラグの設定
+		info.billboardType = bType;			//ビルボードタイプの設定
+		info.baseVertex = 0;				//基準インデックスの設定
+		info.startIndex = 0;				//開始インデックスの設定
 
 		pInfo->push_back(info);	//配列に格納
 	}
@@ -106,13 +111,14 @@ void CreateRenderInfoFromFBX(
 
 //デフォルトのメッシュデータから描画情報を作成する関数
 void CreateRenderInfoFromDefaultMesh(
-	TextureManager& textureManager,	//テクスチャマネージャへの参照
-	MeshManager& meshManager,		//メッシュマネージャへの参照
+	TextureManager& textureManager,			//テクスチャマネージャへの参照
+	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
-	MESH_TYPE type,		//メッシュタイプ
-	BLEND_MODE mode,				//ブレンドモード
-	const wchar_t* path,				//テクスチャのファイル名
-	BILLBOARD_TYPE bType			//ビルボードタイプ
+	MESH_TYPE type,							//メッシュタイプ
+	BLEND_MODE mode,						//ブレンドモード
+	const wchar_t* path,					//テクスチャのファイル名
+	bool lightEneble,						//ライト有効or無効
+	BILLBOARD_TYPE bType					//ビルボードタイプ
 )
 {
 	Model model;	//モデルデータ構造体
@@ -130,11 +136,12 @@ void CreateRenderInfoFromDefaultMesh(
 			bType				//ビルボードタイプ
 		);
 
-		WorldRenderInfo info;			//描画情報構造体
-		info.common = desc;		//共通描画記述構造体の設定
-		info.billboardType = bType;	//ビルボードタイプの設定
-		info.baseVertex = 0;		//基準インデックスの設定
-		info.startIndex = 0;		//開始インデックスの設定
+		WorldRenderInfo info;				//描画情報構造体
+		info.common = desc;					//共通描画記述構造体の設定
+		info.lightingEnabled = lightEneble;	//ライティング有効フラグの設定
+		info.billboardType = bType;			//ビルボードタイプの設定
+		info.baseVertex = 0;				//基準インデックスの設定
+		info.startIndex = 0;				//開始インデックスの設定
 
 		pInfo->push_back(info);	//配列に格納
 	}

@@ -120,6 +120,7 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 		MESH_TYPE::QUAD,					//メッシュタイプ
 		BLEND_MODE::BLEND_MASKED,			//ブレンドモード
 		itemTexPath,						//テクスチャのファイル名
+		false,								//ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
 	);
 

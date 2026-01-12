@@ -242,6 +242,7 @@ void PlayerManager::PrepareRenderInfo(
 		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		L"asset/texture/white.png",	//テクスチャのファイル名
+		false,							//ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
 	);
 }
