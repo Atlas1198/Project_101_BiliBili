@@ -241,7 +241,17 @@ void PlayerManager::PrepareRenderInfo(
 		&m_playerInfo,					//描画情報構造体配列へのポインタ
 		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/texture/white.png",	//テクスチャのファイル名
+		L"asset/texture/character_images/YELLOW_off_CH.png",	//テクスチャのファイル名
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
+	);
+
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_playerTransformInfo,			//描画情報構造体配列へのポインタ
+		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		L"asset/texture/character_images/YELLOW_on_CH.png",	//テクスチャのファイル名
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
 	);
 }

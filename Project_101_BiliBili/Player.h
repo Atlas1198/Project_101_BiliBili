@@ -25,6 +25,11 @@ private:	//非公開メンバ変数
 	bool m_isGrounded = false;
 	bool m_isSpringJump = false;
 	int m_ignoreCollisionFrame = 3;
+	int direction = 0; // 移動方向
+	int minAnimIndex = 0; // アニメーションの最小インデックス
+	int maxAnimIndex = 0; // アニメーションの最大インデックス
+	int animUpdateRate = 10; // アニメーションの更新速度
+	bool isMoving = false; // 移動中フラグ
 
 public:	//公開関数
 	Player(	//コンストラクタ
@@ -65,4 +70,5 @@ private:	//非公開関数
 	void Rotate();	//回転
 	void Scale();	//スケール
 	void Shoot();	//射撃
+	void UpdateAnimation(); //アニメーション更新
 };
