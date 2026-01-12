@@ -8,6 +8,7 @@
 #include "ItemManager.h"
 #include "BBManager.h"
 #include "SharedStruct.h"
+#include "GameEventManager.h"
 
 //前方宣言
 class Renderer;
@@ -52,6 +53,7 @@ private:
 	BulletManager *m_pBulletManager = nullptr;	//弾管理クラス
 	ItemManager* m_pItemManager = nullptr;		//アイテム管理クラス
 	BBManager* m_pBBManager = nullptr;			//BB管理クラス
+	GameEventManager* m_pGameEventManager = nullptr; //イベント管理クラスのポインタ
 
 	GameState m_gameState = GameState::STATE_COUNTDOWN; // ゲームの状態
 

@@ -6,7 +6,7 @@
 #include "MeshManager.h"
 #include "App.h"
 #include "EventManager.h"
-
+#include "GameEventManager.h"
 
 
 //コンストラクタ
@@ -18,6 +18,7 @@ GameScene::GameScene(float window_width, float window_height)
 	m_pBulletManager = new BulletManager(); //弾管理クラスの生成
 	m_pItemManager = new ItemManager();		//アイテム管理クラスの生成
 	m_pBBManager = new BBManager();			//BB管理クラスの生成
+	m_pGameEventManager = new GameEventManager(); //イベント管理クラスの生成
 
 	m_pGameUIManager = new GameUIManager(window_width, window_height);	//ゲームUI管理クラスの生成
 }
@@ -54,6 +55,11 @@ GameScene::~GameScene()
 	{
 		delete m_pBBManager;		//BB管理クラスの削除
 		m_pBBManager = nullptr;
+	}
+	if (m_pGameEventManager)
+	{
+		delete m_pGameEventManager; //イベント管理クラスの削除
+		m_pGameEventManager = nullptr;
 	}
 }
 
@@ -245,6 +251,7 @@ void GameScene::CountdownUpdate()
 	{
 		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
+		m_pGameEventManager->Start(); // イベントマネージャー開始
 	}
 }
 
@@ -255,6 +262,7 @@ void GameScene::PlayUpdate()
 	m_pFieldManager->Update();	//フィールド管理クラス更新
 	m_pBulletManager->Update(); //弾管理クラス更新
 	m_pItemManager->Update();	//アイテム管理クラス更新
+	m_pGameEventManager->Update(); //イベント管理クラス更新
 
 	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
 	m_pBBManager->Update();		//BB管理クラス更新

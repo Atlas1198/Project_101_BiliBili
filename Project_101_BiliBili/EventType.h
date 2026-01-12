@@ -33,6 +33,9 @@ enum EventType
 	SHOW_FINISH_UI, // void
 	HIDE_COUNT_UI, // void
 	SHOW_RESULT_UI, // void
+
+	//ランダムイベント
+	EVENT_BULLET_SPEED, // void
 };
 
 //イベントデータ構造体

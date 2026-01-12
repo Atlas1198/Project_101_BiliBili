@@ -178,6 +178,7 @@
     <ClInclude Include="EventType.h" />
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="FrameTimer.h" />
+    <ClInclude Include="GameEventManager.h" />
     <ClInclude Include="GameUIManager.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="HPBarUI.h" />

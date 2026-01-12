@@ -29,6 +29,7 @@ public:
 
     inline static float BULLET_RECOVERY = 2.0f;
     inline static float BULLET_DAMAGE = 0.1f;
+    inline static float BULLET_BONUS_SPEED_MUL = 3.0f;
 
 	static constexpr int MAX_BULLETS_PER_TEAM = 6;
 
@@ -45,6 +46,9 @@ protected:
     void PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager) override;
 
 private:
+	void BulletSpeedEvent();
+
+private:
     std::vector<std::unique_ptr<Bullet>> m_bullets;
     CollisionManager* m_pCollisionManager = nullptr;
     std::vector<WorldRenderInfo> m_bulletInfo;
@@ -53,6 +57,7 @@ private:
     FrameTimer m_totalTimer;
 	float m_bulletRestoreElapsed;
 	float m_restoreModifier = 1.0f;
+    float m_speedModifier = 1.0f;
 
     int teamBulletCount[2] = { MAX_BULLETS_PER_TEAM, MAX_BULLETS_PER_TEAM };
 };

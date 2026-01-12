@@ -24,7 +24,7 @@ void BulletManager::FireBullet(
 	EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>
         (EventType::UPDATE_BULLET_UI, { ownerTeam, teamBulletCount[ownerTeam] });
 
-    auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
+    auto bullet = std::make_unique<Bullet>(position, direction, speed * m_speedModifier, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
 		bullet->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
@@ -41,6 +41,14 @@ void BulletManager::InitializeOverride(
     )
 {
     m_pCollisionManager = &collisionManager;
+
+    EventManager::GetInstance()->Subscribe<void>(
+        EventType::EVENT_BULLET_SPEED,
+        [this](std::shared_ptr<void> data)
+        {
+            BulletSpeedEvent();
+        }
+    );
 }
 
 
@@ -86,6 +94,18 @@ void BulletManager::UpdateOverride()
         }
 
         m_bulletRestoreElapsed = 0.0f;
+    }
+}
+
+void BulletManager::BulletSpeedEvent()
+{
+    if (m_speedModifier == 1.0f)
+    {
+        m_speedModifier = BULLET_BONUS_SPEED_MUL;
+    }
+    else
+    {
+        m_speedModifier = 1.0f;
     }
 }
 
