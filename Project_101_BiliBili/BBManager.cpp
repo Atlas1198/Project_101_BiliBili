@@ -213,10 +213,12 @@ void BBManager::SetBB(int teamID, bool activate)
 	if(activate)
 	{
 		m_BB[teamID]->ActivateBB();
+		EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(EventType::SET_BB, std::make_pair(teamID, true));
 	}
 	else
 	{
 		m_BB[teamID]->DisableBB();
+		EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(EventType::SET_BB, std::make_pair(teamID, false));
 	}
 }
 

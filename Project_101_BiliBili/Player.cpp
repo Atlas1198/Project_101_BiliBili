@@ -28,6 +28,19 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 		DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 3;
+	texInfo.rows = 8;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.frameCount = 0;
+	texInfo.updateRate = 0;
+
+	m_texSplitInfo = texInfo;
+
+	minAnimIndex = 0;
+	maxAnimIndex = 1;
 }
 
 //èâä˙âª
@@ -167,6 +180,22 @@ void Player::ResolveCollisionsOverride()
 
 }
 
+void Player::SetBB(bool isActive)
+{
+	if (isActive)
+	{
+		bbActive = true;
+		m_texSplitInfo.cols = 2;
+		m_texSplitInfo.frameCount = 0;
+	}
+	else
+	{
+		bbActive = false;
+		m_texSplitInfo.cols = 3;
+		m_texSplitInfo.frameCount = 0;
+	}
+}
+
 //à⁄ìÆ
 void Player::Move()
 {
@@ -260,6 +289,62 @@ void Player::Move()
 			m_position.x += direction.z * MOVE_SPEED;
 			m_position.z -= direction.x * MOVE_SPEED;
 		}
+
+		
+		if (dir.x != 0.0f || dir.y != 0.0f)
+		{
+			down = dir.y < -0.5f;
+			up = dir.y > 0.5f;
+			left = dir.x < -0.5f;
+			right = dir.x > 0.5f;
+		}
+		
+		/*
+		if (down && left) this->direction = 1;
+		else if (down && right) this->direction = 7;
+		else if (up && right) this->direction = 5;
+		else if (up && left) this->direction = 3;
+		else if (up) this->direction = 4;
+		else if (down) this->direction = 0;
+		else if (left) this->direction = 2;
+		else if (right) this->direction = 6;
+		*/
+
+		isMoving = true;
+
+		if (!bbActive)
+		{
+			if (down && left) this->direction = 7;
+			else if (down && right) this->direction = 1;
+			else if (up && right) this->direction = 3;
+			else if (up && left) this->direction = 5;
+			else if (up) this->direction = 4;
+			else if (down) this->direction = 0;
+			else if (left) this->direction = 6;
+			else if (right) this->direction = 2;
+			else isMoving = false;
+		}
+		else
+		{
+			if (down && left) 
+				this->direction = 7;
+			else if (down && right) 
+				this->direction = 1;
+			else if (up && right) 
+				this->direction = 3;
+			else if (up && left) 
+				this->direction = 5;
+			else if (up) 
+				this->direction = 4;
+			else if (down) 
+				this->direction = 0;
+			else if (left) 
+				this->direction = 6;
+			else if (right) 
+				this->direction = 2;
+			else 
+				isMoving = false;
+		}
 	}
 
 	m_position.x += m_velocity.x;
@@ -270,9 +355,52 @@ void Player::Move()
 	m_velocity.y *= 0.95f;
 	m_velocity.z *= 0.95f;
 
+	UpdateAnimation();
+
 	if (!m_isGrounded)
 	{
 		m_velocity.y -= GRAVITY;
+	}
+}
+
+void Player::UpdateAnimation()
+{
+	if (!bbActive && isShooting)
+	{
+		m_texSplitInfo.frameCount++;
+		m_texSplitInfo.index = direction * 3 + 2;
+
+		if (m_texSplitInfo.frameCount >= shootAnimDuration)
+		{
+			isShooting = false;
+			m_texSplitInfo.frameCount = 0;
+		}
+	}
+	else
+	{
+		minAnimIndex = bbActive ? direction * 2 : direction * 3;
+		maxAnimIndex = minAnimIndex + 1;
+
+		if (isMoving)
+			m_texSplitInfo.frameCount++;
+
+		if (m_texSplitInfo.index < minAnimIndex || m_texSplitInfo.index > maxAnimIndex)
+		{
+			m_texSplitInfo.index = minAnimIndex;
+			m_texSplitInfo.frameCount = 0;
+		}
+
+		if (m_texSplitInfo.frameCount >= animUpdateRate)
+		{
+			m_texSplitInfo.index++;
+
+			if (m_texSplitInfo.index > maxAnimIndex)
+			{
+				m_texSplitInfo.index = minAnimIndex;
+			}
+
+			m_texSplitInfo.frameCount = 0;
+		}
 	}
 }
 
@@ -334,6 +462,10 @@ void Player::Shoot()
 			teamID,
 			id
 		);
+
+		isShooting = true;
+		m_texSplitInfo.frameCount = 0;
+		UpdateAnimation();
 	}
 }
 

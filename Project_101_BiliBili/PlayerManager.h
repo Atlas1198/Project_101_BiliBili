@@ -29,8 +29,10 @@ public:
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
 	std::vector<WorldRenderInfo> m_playerInfo;					//プレイヤー描画情報
+	std::vector<WorldRenderInfo> m_playerTransformInfo;			//プレイヤー変身描画情報
 	InputManager* m_pInputManager = nullptr;					//入力マネージャーポインタ
 	float teamHP[2] = { 1.0f, 1.0f };							//チームの体力
+	bool teamBBActive[2] = { false, false };					//チームのBBアクティブフラグ
 
 	std::vector<EventData> m_subscribedEvents;	//購読しているイベント配列
 
@@ -55,6 +57,7 @@ public:
 	void RemovePlayer(uint32_t id);
 
 	void OnTakeDamage(int teamID, float damage); // ダメージを受けたときの処理
+	void OnSetBB(int teamID, bool isActive); // BBをセットしたときの処理
 
 	void UpdateOverride() override;		//更新
 	void ResolveCollisionsOverride() override;	//衝突後処理
