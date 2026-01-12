@@ -25,6 +25,14 @@ private:	//非公開メンバ変数
 	bool m_isGrounded = false;
 	bool m_isSpringJump = false;
 	int m_ignoreCollisionFrame = 3;
+	int direction = 0; // 移動方向
+	int minAnimIndex = 0; // アニメーションの最小インデックス
+	int maxAnimIndex = 0; // アニメーションの最大インデックス
+	int animUpdateRate = 10; // アニメーションの更新速度
+	bool isMoving = false; // 移動中フラグ
+	bool isShooting = false; // 射撃中フラグ
+	int shootAnimDuration = 5; // 射撃アニメーションの持続フレーム数
+	bool bbActive = false; // BBアクティブフラグ
 
 public:	//公開関数
 	Player(	//コンストラクタ
@@ -59,10 +67,12 @@ public:	//公開関数
 
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
+	void SetBB(bool isActive); // BBセット
 
 private:	//非公開関数
 	void Move();	//移動
 	void Rotate();	//回転
 	void Scale();	//スケール
 	void Shoot();	//射撃
+	void UpdateAnimation(); //アニメーション更新
 };

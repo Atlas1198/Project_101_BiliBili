@@ -9,6 +9,7 @@ enum EventType
 	GAME_OVER, // int winningTeamID
 	ADD_EFFECT,
 	CHANGE_SCENE, // int sceneID
+	SET_BB, // int teamID, bool isActive
 
 	//プレイヤー設定関連イベント
 	SET_PLAYER_CONTROLLER, // int playerIndex, int controllerID
