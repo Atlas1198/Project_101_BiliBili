@@ -180,6 +180,22 @@ void Player::ResolveCollisionsOverride()
 
 }
 
+void Player::SetBB(bool isActive)
+{
+	if (isActive)
+	{
+		bbActive = true;
+		m_texSplitInfo.cols = 2;
+		m_texSplitInfo.frameCount = 0;
+	}
+	else
+	{
+		bbActive = false;
+		m_texSplitInfo.cols = 3;
+		m_texSplitInfo.frameCount = 0;
+	}
+}
+
 //ˆÚ“®
 void Player::Move()
 {
@@ -325,7 +341,7 @@ void Player::Move()
 
 void Player::UpdateAnimation()
 {
-	if (isShooting)
+	if (!bbActive && isShooting)
 	{
 		m_texSplitInfo.frameCount++;
 		m_texSplitInfo.index = direction * 3 + 2;

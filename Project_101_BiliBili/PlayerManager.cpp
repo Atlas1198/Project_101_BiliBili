@@ -45,6 +45,18 @@ void PlayerManager::InitializeOverride(
 		}
 	) });
 
+	m_subscribedEvents.push_back(
+		EventData{ EventType::SET_BB,
+		EventManager::GetInstance()->Subscribe<std::pair<int, bool>>(
+		EventType::SET_BB,
+		[this](std::shared_ptr<std::pair<int, bool>> data)
+		{
+			int teamID = data->first;
+			bool isActive = data->second;
+			OnSetBB(teamID, isActive);
+		}
+	) });
+
 	
 
 	//チームの体力を初期化
@@ -103,12 +115,12 @@ Player* PlayerManager::AddPlayer(
 		MESH_TYPE::QUAD,
 		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//回転
-		XMFLOAT3(2.0f, 2.0f, 2.0f),						//スケール
+		XMFLOAT3(4.0f, 4.0f, 4.0f),						//スケール
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//移動速度
 		id,												//ID
 		true,											//アクティブフラグ
 		ColliderType::BOX,								//コライダータイプ	
-		XMFLOAT3(1.0f, 1.0f, 1.0f),						//コライダーセットサイズ
+		XMFLOAT3(0.5f, 0.5f, 0.5f),						//コライダーセットサイズ
 		false											//コライダーのトリガーフラグ
 	);
 
@@ -170,6 +182,18 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 	}
 }
 
+void PlayerManager::OnSetBB(int teamID, bool isActive)
+{
+	teamBBActive[teamID] = isActive;
+	for (auto& player : m_pPlayer)
+	{
+		if (player->GetTeamID() == teamID)
+		{
+			player->SetBB(isActive);
+		}
+	}
+}
+
 //更新
 void PlayerManager::UpdateOverride()
 {
@@ -223,7 +247,7 @@ void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
 			*player,		//ゲームオブジェクト配列の参照
-			m_playerInfo	//プレイヤー描画情報
+			teamBBActive[player->GetTeamID()] ? m_playerTransformInfo : m_playerInfo	//プレイヤー描画情報
 		);
 	}
 }
