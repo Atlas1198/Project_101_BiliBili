@@ -325,28 +325,42 @@ void Player::Move()
 
 void Player::UpdateAnimation()
 {
-	minAnimIndex = direction * 3;
-	maxAnimIndex = minAnimIndex + 1;
-
-	if (isMoving)
+	if (isShooting)
+	{
 		m_texSplitInfo.frameCount++;
+		m_texSplitInfo.index = direction * 3 + 2;
 
-	if (m_texSplitInfo.index < minAnimIndex || m_texSplitInfo.index > maxAnimIndex)
-	{
-		m_texSplitInfo.index = minAnimIndex;
-		m_texSplitInfo.frameCount = 0;
+		if (m_texSplitInfo.frameCount >= shootAnimDuration)
+		{
+			isShooting = false;
+			m_texSplitInfo.frameCount = 0;
+		}
 	}
-
-	if (m_texSplitInfo.frameCount >= animUpdateRate)
+	else
 	{
-		m_texSplitInfo.index++;
+		minAnimIndex = direction * 3;
+		maxAnimIndex = minAnimIndex + 1;
 
-		if (m_texSplitInfo.index > maxAnimIndex)
+		if (isMoving)
+			m_texSplitInfo.frameCount++;
+
+		if (m_texSplitInfo.index < minAnimIndex || m_texSplitInfo.index > maxAnimIndex)
 		{
 			m_texSplitInfo.index = minAnimIndex;
+			m_texSplitInfo.frameCount = 0;
 		}
 
-		m_texSplitInfo.frameCount = 0;
+		if (m_texSplitInfo.frameCount >= animUpdateRate)
+		{
+			m_texSplitInfo.index++;
+
+			if (m_texSplitInfo.index > maxAnimIndex)
+			{
+				m_texSplitInfo.index = minAnimIndex;
+			}
+
+			m_texSplitInfo.frameCount = 0;
+		}
 	}
 }
 
@@ -408,6 +422,10 @@ void Player::Shoot()
 			teamID,
 			id
 		);
+
+		isShooting = true;
+		m_texSplitInfo.frameCount = 0;
+		UpdateAnimation();
 	}
 }
 
