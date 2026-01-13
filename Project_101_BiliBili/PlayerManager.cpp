@@ -94,7 +94,7 @@ void PlayerManager::InitializeOverride(
 			break;
 		}
 
-		m_pPlayer[i]->SetColor(color);
+		//m_pPlayer[i]->SetColor(color);
 		m_pPlayer[i]->SetCharacterID(m_pSceneContext->playersInfo[i].characterID);
 	}
 
@@ -241,13 +241,13 @@ std::vector<Player*>& PlayerManager::GetPlayers()
 //描画要求をシーンに提出
 void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 {
-	for (auto& player : m_pPlayer)
+	for (int i = 0; i < m_pPlayer.size(); i++)
 	{
 		//描画要求をシーンに提出
 		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
-			*player,		//ゲームオブジェクト配列の参照
-			teamBBActive[player->GetTeamID()] ? m_playerTransformInfo : m_playerInfo	//プレイヤー描画情報
+			*m_pPlayer[i],		//ゲームオブジェクト配列の参照
+			teamBBActive[m_pPlayer[i]->GetTeamID()] ? m_playerTransformInfo[i] : m_playerInfo[i]	//プレイヤー描画情報
 		);
 	}
 }
@@ -258,26 +258,43 @@ void PlayerManager::PrepareRenderInfo(
 	MeshManager& meshManager		//メッシュ管理クラスの参照
 	)
 {
-	//描画情報生成関数を呼び出し、描画情報を作成
-	CreateRenderInfo(
-		textureManager,					//テクスチャマネージャへの参照
-		meshManager,					//メッシュマネージャへの参照
-		&m_playerInfo,					//描画情報構造体配列へのポインタ
-		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/texture/player/YELLOW_off_CH.png",		//テクスチャのファイル名
-		false,							//ライト無効
-		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
-	);
 
-	CreateRenderInfo(
-		textureManager,					//テクスチャマネージャへの参照
-		meshManager,					//メッシュマネージャへの参照
-		&m_playerTransformInfo,			//描画情報構造体配列へのポインタ
-		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/texture/player/YELLOW_on_CH.png",		//テクスチャのファイル名
-		false,							//ライト無効
-		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
-	);
+	wchar_t normalTextures[4][39] = {
+		L"asset/texture/player/BLUE_off_CH.png",
+		L"asset/texture/player/SKY_off_CH.png",
+		L"asset/texture/player/ORANGE_off_CH.png",
+		L"asset/texture/player/YELLOW_off_CH.png",
+	};
+
+	wchar_t bbTextures[4][38] = {
+		L"asset/texture/player/BLUE_on_CH.png",
+		L"asset/texture/player/SKY_on_CH.png",
+		L"asset/texture/player/ORANGE_on_CH.png",
+		L"asset/texture/player/YELLOW_on_CH.png"
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		CreateRenderInfo(
+			textureManager,					//テクスチャマネージャへの参照
+			meshManager,					//メッシュマネージャへの参照
+			&m_playerInfo[i],					//描画情報構造体配列へのポインタ
+			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+			normalTextures[i],		//テクスチャのファイル名
+			false,							//ライト無効
+			BILLBOARD_TYPE::BILLBOARD_SPHERICAL
+		);
+
+		CreateRenderInfo(
+			textureManager,					//テクスチャマネージャへの参照
+			meshManager,					//メッシュマネージャへの参照
+			&m_playerTransformInfo[i],			//描画情報構造体配列へのポインタ
+			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+			bbTextures[i],		//テクスチャのファイル名
+			false,							//ライト無効
+			BILLBOARD_TYPE::BILLBOARD_SPHERICAL
+		);
+	}
 }
