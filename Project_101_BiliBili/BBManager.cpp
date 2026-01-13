@@ -17,6 +17,10 @@ BBManager::~BBManager()
 	{
 		delete m_BB[i];
 	}
+	for (int i = 0; i < BB_AREA_NUM; i++)
+	{
+		delete m_BBAreas[i];
+	}
 }
 
 //初期化
@@ -69,6 +73,17 @@ void BBManager::InitializeOverride(
 			}
 		);
 	}
+
+	for (int i = 0; i < BB_AREA_NUM; i++)
+	{
+		m_BBAreas[i] = new BilibiliArea(
+			XMFLOAT3(0.0f, 0.0f, 0.0f),
+			i < 2 ? 0 : 1,
+			BB::DAMAGE / 3.0f
+		);
+		m_BBAreas[i]->GetColliderSet()->RegisterColliders(collisionManager);
+  		m_BBAreas[i]->SetActive(false);
+	}
 }
 
 void BBManager::OnItemPickup(int teamID)
@@ -80,6 +95,8 @@ void BBManager::OnItemPickup(int teamID)
 	if (!m_BB[teamID]->IsActivated())
 	{
 		SetBB(teamID, true);
+		m_BBAreas[teamID * 2]->SetActive(true);
+		m_BBAreas[teamID * 2 + 1]->SetActive(true);
 	}
 	m_BBTimer[teamID] = BB_DURATION;
 	m_frameTimer[teamID].Mark();
@@ -97,10 +114,14 @@ void BBManager::UpdateOverride()
 			{
 				SetBB(i, false);
 				m_BBTimer[i] = 0.0f;
+				m_BBAreas[i * 2]->SetActive(false);
+				m_BBAreas[i * 2 + 1]->SetActive(false);
 			}
 		}
 
 		m_BB[i]->Update();
+		m_BBAreas[i * 2]->Update();
+		m_BBAreas[i * 2 + 1]->Update();
 	}
 }
 
@@ -129,6 +150,11 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 			}
 		}
 	}
+
+	for (int i = 0; i < BB_AREA_NUM; i++)
+	{
+		SubmitRenderInfo(renderer, *m_BBAreas[i], m_BBAreaInfo);
+	}
 }
 
 //衝突解決
@@ -137,6 +163,10 @@ void BBManager::ResolveCollisionsOverride()
 	for(int i = 0; i < BB_NUM; i++)
 	{
 		m_BB[i]->ResolveCollisions();
+	}
+	for (int i = 0; i < BB_AREA_NUM; i++)
+	{
+		m_BBAreas[i]->ResolveCollisions();
 	}
 }
 
@@ -176,6 +206,11 @@ void BBManager::SetPlayerData(std::vector<Player*>& players)
 	//BBにプレイヤー位置を設定
 	m_BB[0]->SetPlayerPos(team1Pos.data());
 	m_BB[1]->SetPlayerPos(team2Pos.data());
+
+	m_BBAreas[0]->SetPlayerPos(team1Pos[0]);
+	m_BBAreas[1]->SetPlayerPos(team1Pos[1]);
+	m_BBAreas[2]->SetPlayerPos(team2Pos[0]);
+	m_BBAreas[3]->SetPlayerPos(team2Pos[1]);
 }
 
 void BBManager::SetBB(int teamID, bool activate)
@@ -231,5 +266,15 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		BLEND_MODE::BLEND_MASKED,
 		electricityBBTexPath,
 		false
+	);
+
+	//BBエリア描画情報生成
+	CreateRenderInfo(
+		textureManager,
+		meshManager,
+		&m_BBAreaInfo,
+		m_BBAreas[0]->GetMeshType(),
+		BLEND_MODE::BLEND_MASKED,
+		electricityBBTexPath
 	);
 }

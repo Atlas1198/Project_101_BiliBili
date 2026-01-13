@@ -6,6 +6,7 @@
 #include "SharedStruct.h"
 #include "FrameTimer.h"
 #include "RenderData.h"
+#include "BilibiliArea.h"
 
 class Player;
 class GameUIManager;
@@ -16,6 +17,7 @@ class BBManager : public ObjectManagerBase
 {
 public:
 	static constexpr int BB_NUM = 2; //BBの数
+	static constexpr int BB_AREA_NUM = 4;
 	const wchar_t* lineBBTexPath = L"asset/texture/line.png";
 	const wchar_t* electricityBBTexPath = L"asset/texture/effect/bilibili.png";
 
@@ -44,8 +46,10 @@ public:
 
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; //BB配列
+	BilibiliArea *m_BBAreas[BB_AREA_NUM] = { nullptr };
 	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBライン描画情報
 	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
+	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BBエリア描画情報
 
 	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
 	FrameTimer m_frameTimer[BB_NUM];
