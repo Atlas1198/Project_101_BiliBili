@@ -267,6 +267,7 @@ void App::PrepareInstance()
 	);
 	m_pTextureManager = new TextureManager();	//テクスチャ管理クラスの生成
 	m_pMeshManager = new MeshManager();			//メッシュ管理クラスの生成
+	m_pAudioManager = new AudioManager();		//オーディオ管理クラスの生成
 }
 
 //インスタンス初期化
@@ -313,6 +314,9 @@ void App::InitInstance()
 
 	//入力管理クラス初期化
 	m_pInputManager->Initialize();
+
+	//オーディオ管理クラス初期化
+	m_pAudioManager->Initialize();
 
 	//レンダーを終了してコマンドリストをクローズ
 	m_pEngine->RenderEnd();

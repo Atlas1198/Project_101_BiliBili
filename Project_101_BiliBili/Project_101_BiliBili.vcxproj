@@ -146,6 +146,10 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="AssimpLoader.h" />
+    <ClInclude Include="Audiofile.h" />
+    <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="Audio_BGM.h" />
+    <ClInclude Include="Audio_SE.h" />
     <ClInclude Include="BB.h" />
     <ClInclude Include="BBManager.h" />
     <ClInclude Include="BulletCountUI.h" />
@@ -214,6 +218,9 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="AssimpLoader.cpp" />
+    <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="Audio_BGM.cpp" />
+    <ClCompile Include="Audio_SE.cpp" />
     <ClCompile Include="BB.cpp" />
     <ClCompile Include="BBManager.cpp" />
     <ClCompile Include="BulletCountUI.cpp" />
