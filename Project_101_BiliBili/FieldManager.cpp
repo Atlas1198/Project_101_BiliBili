@@ -150,9 +150,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pGrounds.push_back(
 		new Ground(
 			MESH_TYPE::QUAD,
-			XMFLOAT3(0.0f, -5.0f, 5.0f), //位置
-			XMFLOAT3(90.0f, 0.0f, 0.0f), //回転
-			XMFLOAT3(48.0f, 27.0f, 1.0f),//スケール
+			XMFLOAT3(0.0f, -.0f, 5.0f), //位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f), //回転
+			XMFLOAT3(1.0f, 1.0f, 1.0f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 			true,						 //アクティブフラグ
 			ColliderType::BOX			 //コライダータイプ
@@ -1548,18 +1548,26 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallInfo,					//描画情報構造体配列へのポインタ
-		m_pWalls[0]->GetMeshType(),		//メッシュタイプ
-		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
-		wallTexPath						//テクスチャのファイル名
+		MESH_TYPE::IMPORT,
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		L"asset/fbx/wall_screw_ST.fbx",	//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
 	);
 
 	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallPassInfo,				//描画情報構造体配列へのポインタ
-		m_pWallPasses[0]->GetMeshType(),//メッシュタイプ
-		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
-		wallPassTexPath					//テクスチャのファイル名
+		MESH_TYPE::IMPORT,
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		L"asset/fbx/hole_ST.fbx",	//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
 	);
 
 	CreateRenderInfo(
@@ -1588,8 +1596,12 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_groundInfo,					//描画情報構造体配列へのポインタ
-		m_pGrounds[0]->GetMeshType(),	//メッシュタイプ
+		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		groundTexPath					//テクスチャのファイル名
+		L"asset/fbx/stage_main_ST.fbx",	//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
 	);
 }
