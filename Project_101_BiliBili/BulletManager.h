@@ -13,7 +13,7 @@ public:
     BulletManager() {}
     ~BulletManager() {}
 
-    const wchar_t *texPath = L"asset/texture/bullet.png";
+    const wchar_t *texPath = L"asset/texture/game_scene/ball.png";
 
     void FireBullet(
         const DirectX::XMFLOAT3& position,

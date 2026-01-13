@@ -43,12 +43,21 @@ FieldManager::~FieldManager()
 	m_pWallCurves.clear();
 
 	//地面オブジェクトの解放
+	for (auto& spring : m_pSprings)
+	{
+		delete spring;
+		spring = nullptr;
+	}
+	m_pSprings.clear();
+
+	//地面オブジェクトの解放
 	for (auto& ground : m_pGrounds)
 	{
 		delete ground;
 		ground = nullptr;
 	}
 	m_pGrounds.clear();
+
 }
 
 //初期化
@@ -60,6 +69,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 	int Stagenum = dist(gen);
 
+	Stagenum = 5;
 	m_pWalls.push_back(
 		new Wall(
 			MESH_TYPE::CUBE,
@@ -168,6 +178,51 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		)
 	);
 
+	m_pSprings.push_back(
+		new Spring(
+			MESH_TYPE::CUBE,
+			XMFLOAT3(22.0f, -3.75f, 17.0f),//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+			true,						  //アクティブフラグ
+			ColliderType::BOX			  //コライダータイプ
+		)
+	);
+	m_pSprings.push_back(
+		new Spring(
+			MESH_TYPE::CUBE,
+			XMFLOAT3(-22.0f, -3.75f, -7.5f),//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+			true,						  //アクティブフラグ
+			ColliderType::BOX			  //コライダータイプ
+		)
+	);
+	m_pSprings.push_back(
+		new Spring(
+			MESH_TYPE::CUBE,
+			XMFLOAT3(22.0f, -3.75f, -7.5f),//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+			true,						  //アクティブフラグ
+			ColliderType::BOX			  //コライダータイプ
+		)
+	);
+	m_pSprings.push_back(
+		new Spring(
+			MESH_TYPE::CUBE,
+			XMFLOAT3(-22.0f, -3.75f, 17.0f),//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+			true,						  //アクティブフラグ
+			ColliderType::BOX			  //コライダータイプ
+		)
+	);
+
 	switch (Stagenum)
 	{
 	case 1:	//ステージ1
@@ -259,8 +314,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(6.1f, 6.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(6.1f, 3.1f, 2.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -316,8 +371,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(6.1f, 6.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(6.1f, 3.1f, 2.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -458,7 +513,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				MESH_TYPE::CUBE,
 				XMFLOAT3(-5.0f, -4.5f, -5.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 0.0f, 7.0f),	  //スケール
+				XMFLOAT3(1.0f, 0.0f, 6.5f),	  //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
 				true,						  //アクティブフラグ
 				ColliderType::BOX			  //コライダータイプ
@@ -466,8 +521,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 6.1f, 7.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(1.1f, 3.1f, 6.6f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -568,9 +623,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		m_pWallPasses.push_back(
 			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -4.5f, 15.5f),//位置
+				XMFLOAT3(5.0f, -4.5f, 14.5f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 7.0f),	 //スケール
+				XMFLOAT3(1.0f, 0.0f, 6.5f),	 //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 				true,						 //アクティブフラグ
 				ColliderType::BOX			 //コライダータイプ
@@ -578,8 +633,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 6.1f, 7.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(1.1f, 3.1f, 6.6f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -591,7 +646,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		m_pWallPasses.push_back(
 			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-8.0f, -4.5f, -4.5f),//位置
+				XMFLOAT3(-8.0f, -4.5f, -4.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 0.0f, 9.0f),	  //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
@@ -601,8 +656,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 6.1f, 9.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(1.1f, 3.1f, 9.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -658,7 +713,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		m_pWallPasses.push_back(
 			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(8.0f, -4.5f, 14.5f),//位置
+				XMFLOAT3(8.0f, -4.5f, 13.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 0.0f, 9.0f),	 //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
@@ -668,8 +723,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 6.1f, 9.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(1.1f, 3.1f, 9.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -710,8 +765,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 6.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(1.1f, 3.1f, 2.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -728,8 +783,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(2.1f, 6.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(2.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -772,7 +827,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -3.0f, -6.5f),//位置
+				XMFLOAT3(-5.0f, -3.0f, -6.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	  //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
@@ -809,8 +864,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 6.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(3.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -833,8 +888,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 6.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(3.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -857,8 +912,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 6.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(3.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -881,8 +936,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 6.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(3.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -892,7 +947,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -3.0f, 16.0f),//位置
+				XMFLOAT3(5.0f, -3.0f, 15.0f),//位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
 				XMFLOAT3(1.0f, 3.0f, 5.0f),	 //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
@@ -956,8 +1011,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 6.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(1.1f, 3.1f, 2.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
@@ -974,10 +1029,11 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 6.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(3.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
+		break;
 
 	case 5:	//ステージ5
 		//-------------
@@ -1348,6 +1404,11 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		wallcurve->GetColliderSet()->RegisterColliders(collisionManager);
 	}
 
+	for (auto& spring : m_pSprings)
+	{
+		spring->GetColliderSet()->RegisterColliders(collisionManager);
+	}
+
 	for (auto& ground : m_pGrounds)
 	{
 		ground->GetColliderSet()->RegisterColliders(collisionManager);
@@ -1377,6 +1438,24 @@ void FieldManager::UpdateOverride()
 
 	//カーブ壁更新
 	for (auto& i : m_pWallCurves)
+	{
+		if (i->IsActive())
+		{
+			i->Update();
+		}
+	}
+
+	//地面更新	
+	for (auto& i : m_pGrounds)
+	{
+		if (i->IsActive())
+		{
+			i->Update();
+		}
+	}
+
+	//バネ更新
+	for(auto& i : m_pSprings)
 	{
 		if (i->IsActive())
 		{
@@ -1418,6 +1497,16 @@ void FieldManager::SubmitDrawsOverride(Renderer& renderer)
 		);
 	}
 
+	//バネ描画情報をシーンに提出
+	for (auto& spring : m_pSprings)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,			//シーンの参照
+			*spring,			//ゲームオブジェクト配列の参照
+			m_springInfo		//バネ描画情報
+		);
+	}
+
 	//地面描画情報をシーンに提出
 	for (auto& ground : m_pGrounds)
 	{//描画要求をシーンに提出
@@ -1440,11 +1529,14 @@ void FieldManager::FinalizeOverride()
 	m_pWalls.clear();
 	m_pWallPasses.clear();
 	m_pWallCurves.clear();
+	m_pSprings.clear();
 	m_pGrounds.clear();
+	
 
 	m_wallInfo.clear();
 	m_wallPassInfo.clear();
 	m_wallCurveInfo.clear();
+	m_springInfo.clear();
 	m_groundInfo.clear();
 }
 
@@ -1477,6 +1569,19 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		m_pWallCurves[0]->GetMeshType(),//メッシュタイプ
 		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
 		wallCurveFbxPath				//テクスチャのファイル名
+	);
+
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_springInfo,					//描画情報構造体配列へのポインタ
+		MESH_TYPE::CUBE,				//メッシュタイプ
+		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
+		springTexPath,
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
 	);
 
 	CreateRenderInfo(

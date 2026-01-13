@@ -9,6 +9,8 @@
 #include "GameEventManager.h"
 
 
+using namespace DirectX;
+
 //コンストラクタ
 GameScene::GameScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
@@ -119,12 +121,12 @@ void GameScene::InitializeOverride(
 		*m_pCollisionManager
 	);
 
-	using args = bool;
+	using args = std::tuple<bool, int, int, int>;
 	EventManager::GetInstance()->Subscribe<args>(
 		EventType::GAME_OVER, 
 		[this](std::shared_ptr<args> data)
 		{
-			SetGameOver(*data);
+			SetGameOver(std::get<0>(*data), std::get<1>(*data), std::get<2>(*data), std::get<3>(*data));
 		}
 	);
 
@@ -132,6 +134,12 @@ void GameScene::InitializeOverride(
 	m_timer = 0;								//タイマー初期化
 	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
+
+	m_directionalLight.direction = XMFLOAT3(-0.5f, -1.0f, -0.5f);
+	m_directionalLight.intensity = 1.5f;
+	m_directionalLight.ambient = 0.2f;
+
+	m_pGameUIManager->StartFadeIn(0.01f); // ゲームシーンフェードイン
 }
 
 void GameScene::AddPlayer(uint32_t id, InputManager* pInputManager)
@@ -297,7 +305,7 @@ void GameScene::ResultUpdate()
 
 	if (m_timer == WAIT_DURATION)
 	{
-		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_RESULT_UI);
+		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, {m_winner, m_character1ID, m_character2ID});
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
 	}
 	else if (m_timer > WAIT_DURATION)

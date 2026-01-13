@@ -20,7 +20,7 @@ Bullet::Bullet(
         MESH_TYPE::QUAD,
         pos,
         {0,0,0},
-        {1.0f,1.0f,1.0f}, 
+        {2.5f,2.5f,2.5f}, 
         {0,0,0},
         true,
         OBJECT_TAG::BULLET,
@@ -33,9 +33,17 @@ Bullet::Bullet(
     m_pColliderSet->AddCollider(
         ColliderType::SPHERE,
         XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(0.5f, 0.5f, 0.5f),
+        XMFLOAT3(2.5f, 2.5f, 2.5f),
         XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
+
+    TexSplitInfo texInfo{};
+    texInfo.cols = 6;
+    texInfo.rows = 5;
+    texInfo.total = texInfo.cols * texInfo.rows;
+    texInfo.frameCount = 0;
+    texInfo.updateRate = 2;
+    m_texSplitInfo = texInfo;
 }
 
 
@@ -91,33 +99,21 @@ void Bullet::ResolveCollisionsOverride()
         }
 
         if (Player *otherPlayer = dynamic_cast<Player *>(otherOwner))
-        {
+		{//プレイヤーに当たった場合
             if (otherPlayer->id == m_ownerID)
-            {
+			{//自チームには当たらない
                 continue;
 			}
             else if (otherPlayer->GetTeamID() != m_ownerTeam)
-            {
-				//m_pGameUIManager->TakeDamage(otherPlayer->GetTeamID(), 0.1f);
-                //EventManager::GetInstance()->TakeDamage(otherPlayer->GetTeamID(), m_damage);
+			{//敵チームに当たった場合ダメージを与える
                 EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
 				);
             }
         }
-        else
-        {
 
-        }
-
-        // 同じチーム弾は無視
-        //if (otherOwner->GetTeam() == m_ownerTeam)
-        //{
-        //    continue;
-        //}
-
-        // 衝突 → 消滅
+        //消滅
         EventManager::GetInstance()->TriggerEvent<EffectCommand>(
             EventType::ADD_EFFECT,
             EffectCommand{
@@ -125,7 +121,7 @@ void Bullet::ResolveCollisionsOverride()
                 m_position,
                 XMFLOAT2{ 2.5f,2.5f },
             }
-        );
+            );
         m_deleteFlag = true;
         SetActive(false);
         break;

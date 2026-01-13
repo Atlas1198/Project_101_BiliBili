@@ -26,7 +26,9 @@ enum BILLBOARD_TYPE
 {
 	BILLBOARD_NONE,			//ビルボードなし
 	BILLBOARD_SPHERICAL,	//全軸ビルボード
-	BILLBOARD_CYLINDRICAL	//Y軸のみ
+	BILLBOARD_FIX_X,		//X軸のみ
+	BILLBOARD_FIX_Y,		//Y軸のみ
+	BILLBOARD_FIX_Z,		//Z軸のみ
 };
 
 //=======================================================================================================
@@ -51,6 +53,7 @@ struct WorldRenderInfo
 	INT  baseVertex = 0;					//基準インデックス
 	DirectX::XMFLOAT3 position{};			//座標
 	DirectX::XMFLOAT3 scale{};				//スケール
+	bool lightingEnabled = true;			//ライティング有効フラグ
 	BILLBOARD_TYPE billboardType 
 		= BILLBOARD_TYPE::BILLBOARD_NONE;	//ビルボードタイプ
 };
@@ -242,10 +245,11 @@ inline Model GetModel(MESH_TYPE type)
 void CreateRenderInfo(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
-	MESH_TYPE mType,				//メッシュタイプ
+	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+	MESH_TYPE mType,						//メッシュタイプ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
+	bool lightEneble = true,				//ライト有効or無効
 	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
 	bool inverseU = false,					//Uを反転するかどうか(モデルデータの場合のみ有効)
 	bool inverseV = false					//Vを反転するかどうか(モデルデータの場合のみ有効)
@@ -255,9 +259,10 @@ void CreateRenderInfo(
 void CreateRenderInfoFromFBX(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
+	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//モデルファイルのパス
+	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
 	bool inverseU = false,					//Uを反転するかどうか
 	bool inverseV = false					//Vを反転するかどうか
@@ -267,10 +272,11 @@ void CreateRenderInfoFromFBX(
 void CreateRenderInfoFromDefaultMesh(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<WorldRenderInfo>* pInfo,			//描画情報構造体配列へのポインタ
-	MESH_TYPE type,				//メッシュタイプ
+	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
+	MESH_TYPE type,							//メッシュタイプ
 	BLEND_MODE mode,						//ブレンドモード
 	const wchar_t* path,					//テクスチャのファイル名
+	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
 );
 

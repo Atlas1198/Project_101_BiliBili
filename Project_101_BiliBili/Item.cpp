@@ -10,13 +10,27 @@ Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rot
 	: ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::ITEM_TRANSFORM, COLLISION_LAYER::ITEM_TRANSFORM)
 {
 	m_isDrawn = true;
+	XMFLOAT3 colliderSetScale = { 
+		scale.x * 0.8f, 
+		scale.y * 0.8f, 
+		scale.z * 0.8f 
+	};
 
 	m_pColliderSet->AddCollider(
 		colliderType,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		collisionBoxSize,
+		colliderSetScale,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 6;
+	texInfo.rows = 5;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.frameCount = 0;
+	texInfo.updateRate = 2;
+	m_texSplitInfo = texInfo;
 }
 
 //çXêV

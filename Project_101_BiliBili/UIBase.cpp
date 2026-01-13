@@ -83,23 +83,33 @@ void UIBase::CollectRenderInfos(std::vector<WorldRenderInfo>& out) const
 }
 
 // ワールド変換情報の取得
-const Transform3D& UIBase::GetWorldTransform() const {
+const Transform3D& UIBase::GetWorldTransform() const 
+{
 	return m_world;
 }
 
 // ローカル変換情報の取得
-const Transform3D& UIBase::GetLocalTransform() const {
+const Transform3D& UIBase::GetLocalTransform() const 
+{
 	return m_local;
 }
 
 // 色RGBAの取得
-const DirectX::XMFLOAT4 UIBase::GetColor() const {
+const DirectX::XMFLOAT4 UIBase::GetColor() const 
+{
 	return m_color;
 }
 
 // アクティブかどうかを取得
-const bool UIBase::IsActive() const {
+const bool UIBase::IsActive() const 
+{
 	return m_isActive;
+}
+
+//描画順の取得
+int UIBase::GetOrder() const
+{
+	return m_order;
 }
 
 //UV矩形の取得

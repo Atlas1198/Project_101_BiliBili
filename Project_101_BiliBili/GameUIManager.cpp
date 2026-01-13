@@ -192,11 +192,16 @@ void GameUIManager::InitializeOverride(
 		}
 	);
 
-	EventManager::GetInstance()->Subscribe<void>(
+	using resultArgs = std::tuple<int, int, int>;
+	EventManager::GetInstance()->Subscribe<resultArgs>(
 		EventType::SHOW_RESULT_UI,
-		[this](std::shared_ptr<void> data)
+		[this](std::shared_ptr<resultArgs> data)
 		{
-			ShowResultUI();
+			ShowResultUI(
+				std::get<0>(*data),
+				std::get<1>(*data),
+				std::get<2>(*data)
+			);
 		}
 	);
 }
@@ -275,22 +280,8 @@ void GameUIManager::HideCountUI()
 }
 
 //リザルトUI表示関数
-void GameUIManager::ShowResultUI()
+void GameUIManager::ShowResultUI(int winner, int character1ID, int character2ID)
 {
 	m_pResultUI->SetActive(true);
-	m_pResultUI->ShowResult();
-}
-
-//オブジェクトの描画情報生成
-void GameUIManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
-{
-	m_pTeamUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pTeamUI2->PrepareRenderInfo(textureManager, meshManager);
-	m_pBulletCountUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pBulletCountUI2->PrepareRenderInfo(textureManager, meshManager);
-	m_pCutInUI1->PrepareRenderInfo(textureManager, meshManager);
-	m_pCutInUI2->PrepareRenderInfo(textureManager, meshManager);
-	m_pOperationGuideImage->PrepareRenderInfo(textureManager, meshManager);
-	m_pCountUI->PrepareRenderInfo(textureManager, meshManager);
-	m_pResultUI->PrepareRenderInfo(textureManager, meshManager);
+	m_pResultUI->ShowResult(winner, character1ID, character2ID);
 }

@@ -44,6 +44,8 @@ protected:	//非公開メンバ変数
 
 	SceneContext* m_pSceneContext = nullptr;					//シーンコンテキスト構造体
 
+	DirectionalLight m_directionalLight;		//平行光源
+
 	bool m_drawColliders = true; // コライダー描画フラグ
 
 protected:	//非公開メンバ関数

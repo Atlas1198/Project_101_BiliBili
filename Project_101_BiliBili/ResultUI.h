@@ -19,11 +19,20 @@ class ResultUI : public UIBase
 	void UpdateOverride() override;
 	//終了
 	void FinalizeOverride() override;
-	void ShowResult();	//リザルト表示関数(引数:勝利かどうか)
+
+	void ShowResult(int winner, int character1ID, int character2ID);	//リザルト表示関数
 
 private:
-	UIImage* m_pBackgroundImage = nullptr;	//背景画像UIポインタ
-	int m_mainTimer = 0;				//メインタイマー
+	UIImage* m_pBackgroundImage = nullptr;			//背景画像UIポインタ
+	UIImage* m_pHeaderImage = nullptr;				//ヘッダー画像UIポインタ
+	UIImage* m_pFooterImage = nullptr;				//フッター画像UIポインタ
+	UIImage* m_pWinnerImage = nullptr;				//勝者画像UIポインタ
+	UIImage* m_pBlueImage = nullptr;				//青チーム画像UIポインタ
+	UIImage* m_pRedImage = nullptr;					//赤チーム画像UIポインタ
+	UIImage* m_pGoToTitleImage = nullptr;			//タイトルへ戻る画像UIポインタ
+	UIImage* m_pCharacterImage[4] = { nullptr };	//キャラクター画像UIポインタ配列
+
+	int m_mainTimer = 0;	//メインタイマー
 
 private:
 	//オブジェクトの描画情報生成

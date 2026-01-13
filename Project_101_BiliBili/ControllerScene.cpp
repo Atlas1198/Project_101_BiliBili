@@ -20,6 +20,7 @@ void ControllerScene::InitializeOverride(InputManager* pInputManager, TextureMan
 {
 	m_pControllerConnecter->Initialize();
 	m_pUIManager->Initialize(pTextureManager, pMeshManager);
+	m_pUIManager->StartFadeIn(0.01f);
 }
 
 //シーン固有の更新

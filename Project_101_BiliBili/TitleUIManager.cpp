@@ -1,5 +1,7 @@
 #include "TitleUIManager.h"
 
+using namespace DirectX;
+
 //デストラクタ
 TitleUIManager::~TitleUIManager()
 {
@@ -11,38 +13,58 @@ void TitleUIManager::InitializeOverride(
 	MeshManager& meshManager
 )
 {
-	m_pTitleUI = (new TitleUI(
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 1920.0f, 1080.0f, 0.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-		0											//描画順序
-	));
+	m_pBackImage = new UIImage(
+		XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		XMFLOAT3{ m_screenWidth, m_screenWidth / 1421.0f * m_screenHeight, 1.0f },
+		XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		0,
+		L"asset/texture/title_scene/UI_TITLE_Back.png",
+		BLEND_MODE::BLEND_OPAQUE
+	);
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pBackImage));
 
+	m_pFrameImage = new UIImage(
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		DirectX::XMFLOAT3{ m_screenWidth, m_screenHeight, 1.0f },
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		1,
+		L"asset/texture/title_scene/UI_TITLE_Frame.png"
+	);
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pFrameImage));
 
-	if (m_pTitleUI)
-	{
-		m_pTitleUI->Initialize(textureManager, meshManager);
-	}
+	m_pButtonImage = new UIImage(
+		DirectX::XMFLOAT3{ 0.0f, -300.0f, 0.0f },
+		DirectX::XMFLOAT3{ 708.0f, 80.0f, 1.0f },
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		2,
+		L"asset/texture/title_scene/UI_TITLE_Button.png"
+	);
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pButtonImage));
 
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pTitleUI));
-
+	m_timer = 0;
 }
 
 //更新
 void TitleUIManager::UpdateOverride()
 {
+	m_timer++;
+
+	//背景スクロール
+	auto uvRect = m_pBackImage->GetUVRect();
+	uvRect.u += 0.002f;
+	m_pBackImage->SetUVRect(uvRect);
+
+	
+	float blinkSpeed = 0.05f; 
+	float alpha = sinf(m_timer * blinkSpeed);
+	alpha = (alpha + 1.0f) * 0.5f; // 0.0fから1.0fの範囲に変換
+	auto color = m_pButtonImage->GetColor();
+	color.w = alpha;
+	m_pButtonImage->SetColor(color);
+
 }
 
 //終了
 void TitleUIManager::FinalizeOverride()
 {
-}
-
-
-void TitleUIManager::PrepareRenderInfo(	//オブジェクトの描画情報生成
-	TextureManager& textureManager,	//テクスチャ管理クラスの参照
-	MeshManager& meshManager		//メッシュ管理クラスの参照
-)
-{
-	m_pTitleUI->PrepareRenderInfo(textureManager, meshManager);
 }

@@ -28,6 +28,19 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 		DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 3;
+	texInfo.rows = 8;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.frameCount = 0;
+	texInfo.updateRate = 0;
+
+	m_texSplitInfo = texInfo;
+
+	minAnimIndex = 0;
+	maxAnimIndex = 1;
 }
 
 //初期化
@@ -66,6 +79,20 @@ void Player::UpdateOverride()
 	}
 	else
 	{
+		if (m_ignoreCollisionFrame > 0)
+		{
+			--m_ignoreCollisionFrame;
+		}
+
+		if (runTimerStarted)
+		{
+			if (runTimer.Peek() >= RUN_DELAY)
+			{
+				canRun = true;
+				runTimerStarted = false;
+			}
+		}
+
 		Move();		//移動
 
 		/*
@@ -77,10 +104,10 @@ void Player::UpdateOverride()
 	};
 		*/
 
-		if (m_position.x < -22.5f) m_position.x = 22.1f;
+		/*if (m_position.x < -22.5f) m_position.x = 22.1f;
 		if (m_position.x > 22.5f) m_position.x = -22.1f;
 		if (m_position.z < -8.5f) m_position.z = 18.1f;
-		if (m_position.z > 18.5f) m_position.z = -8.1f;
+		if (m_position.z > 18.5f) m_position.z = -8.1f;*/
 
 		Shoot();
 		//Rotate();
@@ -91,6 +118,11 @@ void Player::UpdateOverride()
 //衝突解決
 void Player::ResolveCollisionsOverride()
 {
+	if (m_ignoreCollisionFrame > 0)
+	{
+		return;
+	}
+
 	XMFLOAT3 pushVector{};	//押し出しベクトル
 	auto& infos = m_pColliderSet->GetCollisionInfos();
 
@@ -110,13 +142,66 @@ void Player::ResolveCollisionsOverride()
 	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
 
+	m_isGrounded = false;
+
 	for (auto& info : infos)
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
 			//地面に接触している場合はY座標を補正
+			m_isGrounded = true;
 			m_velocity.y = 0.0f;
+			m_isSpringJump = false;
 		}
+	}
+
+	for (auto& info : infos)
+	{
+		if (info.opponent->GetTag() == OBJECT_TAG::SPRING)
+		{
+			if (!m_isSpringJump)
+			{
+				XMFLOAT3 currentPos = GetPosition();
+				XMFLOAT3 centerPos(0.0f, -4.0f, 5.0f);
+
+				XMFLOAT3 dir{
+					centerPos.x - currentPos.x,
+					centerPos.y - currentPos.y,
+					centerPos.z - currentPos.z
+				};
+
+				float length = std::sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+				if (length > 0.0f)
+				{
+					dir.x /= length;
+					dir.y /= length;
+					dir.z /= length;
+				}
+
+				m_velocity.x = dir.x * 1.15f;
+				m_velocity.y = 1.0f;   // 上方向に跳ねさせたいなら
+				m_velocity.z = dir.z * 1.15f;
+
+				m_isSpringJump = true;
+			}
+		}
+	}
+
+}
+
+void Player::SetBB(bool isActive)
+{
+	if (isActive)
+	{
+		bbActive = true;
+		m_texSplitInfo.cols = 2;
+		m_texSplitInfo.frameCount = 0;
+	}
+	else
+	{
+		bbActive = false;
+		m_texSplitInfo.cols = 3;
+		m_texSplitInfo.frameCount = 0;
 	}
 }
 
@@ -182,40 +267,179 @@ void Player::Move()
 		}
 	}
 
-	m_position.x += dir.x * MOVE_SPEED;
-	m_position.z += dir.y * MOVE_SPEED;
+	float modifier = 1.0f;
 
-	if(up)
+	if (!canRun)
 	{
-		//前進
-		m_position.x += direction.x * MOVE_SPEED;
-		m_position.y += direction.y * MOVE_SPEED;
-		m_position.z += direction.z * MOVE_SPEED;
+		if (!runTimerStarted)
+		{
+			modifier = RUN_MODIFIER;
+			runTimerStarted = true;
+			runTimer.Mark();
+		}
+		else
+		{
+			modifier = RUN_MODIFIER + (runTimer.Peek() / RUN_DELAY) * (1.0f - RUN_MODIFIER);
+		}
 	}
-	if(down)
+
+	if (!m_isSpringJump)
 	{
-		//後退
-		m_position.x -= direction.x * MOVE_SPEED;
-		m_position.y -= direction.y * MOVE_SPEED;
-		m_position.z -= direction.z * MOVE_SPEED;
+		m_position.x += dir.x * MOVE_SPEED * modifier;
+		m_position.z += dir.y * MOVE_SPEED * modifier;
+
+		if (up)
+		{
+			//前進
+			m_position.x += direction.x * MOVE_SPEED * modifier;
+			m_position.y += direction.y * MOVE_SPEED * modifier;
+			m_position.z += direction.z * MOVE_SPEED * modifier;
+		}
+		if (down)
+		{
+			//後退
+			m_position.x -= direction.x * MOVE_SPEED * modifier;
+			m_position.y -= direction.y * MOVE_SPEED * modifier;
+			m_position.z -= direction.z * MOVE_SPEED * modifier;
+		}
+		if (left)
+		{
+			//左移動
+			m_position.x -= direction.z * MOVE_SPEED * modifier;
+			m_position.z += direction.x * MOVE_SPEED * modifier;
+		}
+		if (right)
+		{
+			//右移動
+			m_position.x += direction.z * MOVE_SPEED * modifier;
+			m_position.z -= direction.x * MOVE_SPEED * modifier;
+		}
+
+		
+		if (dir.x != 0.0f || dir.y != 0.0f)
+		{
+			down = dir.y < -0.5f;
+			up = dir.y > 0.5f;
+			left = dir.x < -0.5f;
+			right = dir.x > 0.5f;
+		}
+		
+		/*
+		if (down && left) this->direction = 1;
+		else if (down && right) this->direction = 7;
+		else if (up && right) this->direction = 5;
+		else if (up && left) this->direction = 3;
+		else if (up) this->direction = 4;
+		else if (down) this->direction = 0;
+		else if (left) this->direction = 2;
+		else if (right) this->direction = 6;
+		*/
+
+		isMoving = true;
+
+		if (!bbActive)
+		{
+			if (down && left) this->direction = 7;
+			else if (down && right) this->direction = 1;
+			else if (up && right) this->direction = 3;
+			else if (up && left) this->direction = 5;
+			else if (up) this->direction = 4;
+			else if (down) this->direction = 0;
+			else if (left) this->direction = 6;
+			else if (right) this->direction = 2;
+			else isMoving = false;
+		}
+		else
+		{
+			if (down && left) 
+				this->direction = 7;
+			else if (down && right) 
+				this->direction = 1;
+			else if (up && right) 
+				this->direction = 3;
+			else if (up && left) 
+				this->direction = 5;
+			else if (up) 
+				this->direction = 4;
+			else if (down) 
+				this->direction = 0;
+			else if (left) 
+				this->direction = 6;
+			else if (right) 
+				this->direction = 2;
+			else 
+				isMoving = false;
+		}
+
+		if (!isMoving)
+		{
+			runTimerStarted = false;
+			canRun = false;
+			runTimer.Mark();
+		}
 	}
-	if(left)
+
+	m_position.x += m_velocity.x;
+	m_position.y += m_velocity.y;
+	m_position.z += m_velocity.z;
+
+	m_velocity.x *= 0.95f;
+	m_velocity.y *= 0.95f;
+	m_velocity.z *= 0.95f;
+
+	UpdateAnimation();
+
+	if (!m_isGrounded)
 	{
-		//左移動
-		m_position.x -= direction.z * MOVE_SPEED;
-		m_position.z += direction.x * MOVE_SPEED;
+		m_velocity.y -= GRAVITY;
 	}
-	if(right)
+}
+
+void Player::UpdateAnimation()
+{
+	if (!bbActive && isShooting)
 	{
-		//右移動
-		m_position.x += direction.z * MOVE_SPEED;
-		m_position.z -= direction.x * MOVE_SPEED;
+		m_texSplitInfo.frameCount++;
+		m_texSplitInfo.index = direction * 3 + 2;
+
+		if (m_texSplitInfo.frameCount >= shootAnimDuration)
+		{
+			isShooting = false;
+			m_texSplitInfo.frameCount = 0;
+		}
+	}
+	else
+	{
+		minAnimIndex = bbActive ? direction * 2 : direction * 3;
+		maxAnimIndex = minAnimIndex + 1;
+
+		if (isMoving)
+			m_texSplitInfo.frameCount++;
+
+		if (m_texSplitInfo.index < minAnimIndex || m_texSplitInfo.index > maxAnimIndex)
+		{
+			m_texSplitInfo.index = minAnimIndex;
+			m_texSplitInfo.frameCount = 0;
+		}
+
+		if (m_texSplitInfo.frameCount >= animUpdateRate)
+		{
+			m_texSplitInfo.index++;
+
+			if (m_texSplitInfo.index > maxAnimIndex)
+			{
+				m_texSplitInfo.index = minAnimIndex;
+			}
+
+			m_texSplitInfo.frameCount = 0;
+		}
 	}
 }
 
 void Player::Shoot()
 {
 	if (!m_pBulletManager) return;
+	if (bbActive) return;
 
 	bool shoot = false;
 
@@ -271,6 +495,10 @@ void Player::Shoot()
 			teamID,
 			id
 		);
+
+		isShooting = true;
+		m_texSplitInfo.frameCount = 0;
+		UpdateAnimation();
 	}
 }
 

@@ -42,13 +42,28 @@ struct UVRect
 };
 
 //定数バッファ構造体
-struct alignas(256) Transform
+struct alignas(256) PerObjectConstants
 {
-	DirectX::XMMATRIX worldMatrix;	//ワールド行列
-	DirectX::XMMATRIX viewMatrix;	//ビュー行列
-	DirectX::XMMATRIX projMatrix;	//プロジェクション行列
-	DirectX::XMFLOAT4 objectColor;	//オブジェクトの色
-	DirectX::XMFLOAT4 uvRect;		//UV矩形
+	DirectX::XMMATRIX worldMatrix;			//ワールド行列
+	DirectX::XMMATRIX worldInvTranspose;	//ワールド逆転置行列
+	DirectX::XMMATRIX viewMatrix;			//ビュー行列
+	DirectX::XMMATRIX projMatrix;			//プロジェクション行列
+	DirectX::XMFLOAT4 objectColor;			//オブジェクトの色
+	DirectX::XMFLOAT4 uvRect;				//UV矩形
+
+	//lighting related data
+	DirectX::XMFLOAT4 lightDir_Intensity;	//light direction (xyz) and intensity (w)
+	DirectX::XMFLOAT4 lightColor_Ambient;	//light color (xyz) and ambient intensity (w)
+};
+
+//directional light structure
+struct DirectionalLight
+{
+	DirectX::XMFLOAT3 direction = { -1.0f, -1.0f, 1.0f };	//light direction
+	float intensity = 1.0f;									//light intensity
+	DirectX::XMFLOAT3 color = { 1.0f, 1.0f, 1.0f };			//light color
+	float ambient = 0.1f;									//ambient light intensity
+	bool enabled = true;									//light enabled flag
 };
 
 //3D変換情報構造体
@@ -117,6 +132,7 @@ enum class OBJECT_TAG
 	ITEM_TRANSFORM,		//変身アイテム
 	BB_LINE,			//ビリビリライン
 	BB_ELECTRICITY,		//ビリビリ電流
+	SPRING,				//バネ
 	MAX					//最大数
 };
 
@@ -170,6 +186,7 @@ namespace CollisionData
 		ITEM_TRANSFORM,	//変身アイテム
 		BB_LINE,		//ビリビリライン
 		BB_ELECTRICITY,	//ビリビリ電流
+		SPRING,			//バネ
 		MAX_LAYER		//最大数
 	};
 

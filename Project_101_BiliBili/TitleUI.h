@@ -9,9 +9,9 @@ class TitleUI : public UIBase
 {
 public:
 	//テクスチャファイルパス定数(仮)
-	static constexpr const wchar_t* TITLE_LOG_TEXTURE_PATH = L"asset/texture/UI/Title_Log.png";
-	static constexpr const wchar_t* START_PROMPT_TEXTURE_PATH = L"asset/texture/UI/Start_Prompt.png";
-	static constexpr const wchar_t* BASE_TEXTURE_PATH = L"asset/texture/UI/white.png";
+	static constexpr const wchar_t* FRAME_TEXTURE_PATH = L"asset/texture/title_scene/UI_TITLE_Frame.png";
+	static constexpr const wchar_t* BUTTON_TEXTURE_PATH = L"asset/texture/title_scene/UI_TITLE_Button.png";
+	static constexpr const wchar_t* BACK_TEXTURE_PATH = L"asset/texture/title_scene/UI_TITLE_Back.png";
 public:
 	TitleUI(
 		DirectX::XMFLOAT3 position = { 0,0,0 },
@@ -27,9 +27,9 @@ public:
 	void UpdateOverride() override;
 	void FinalizeOverride() override;
 private:
-	UIImage* m_pLogImage = nullptr;
-	UIImage* m_pPromptImage = nullptr;
-	UIImage* m_pBaseImage = nullptr;
+	UIImage* m_pFrameImage = nullptr;
+	UIImage* m_pButtonImage = nullptr;
+	UIImage* m_pBackImage = nullptr;
 
 private:
 	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成

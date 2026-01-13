@@ -11,7 +11,7 @@
 TitleScene::TitleScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
 {
-	m_pTitleUIManager = new TitleUIManager();
+	m_pTitleUIManager = new TitleUIManager(window_width, window_height);
 }
 
 //デストラクタ
@@ -37,28 +37,35 @@ void TitleScene::InitializeOverride(
 //更新
 void TitleScene::UpdateOverride()
 {
-	//スペースキーでタイトルシーンへ遷移(テスト用)
-	if (m_pInputManager != nullptr &&
-		m_pInputManager->GetInputInfo() != nullptr &&
-		m_pInputManager->GetInputInfo()->key.space.trigger)
+	if (!m_pTitleUIManager->IsFading())
+	{
+		//スペースキーでタイトルシーンへ遷移(テスト用)
+		if (m_pInputManager != nullptr &&
+			m_pInputManager->GetInputInfo() != nullptr &&
+			m_pInputManager->GetInputInfo()->key.space.trigger)
+		{
+			//フェードアウト開始
+			m_pTitleUIManager->StartFadeOut(0.05f);
+		}
+		//コントローラーの任意のボタン入力でコントローラー設定シーンへ遷移
+		for (auto& controller : m_pInputManager->GetInputInfo()->controller)
+		{
+			if (controller.anyButton.trigger)
+			{
+				//フェードアウト開始
+				m_pTitleUIManager->StartFadeOut(0.05f);
+			}
+		}
+	}
+
+	m_pTitleUIManager->Update();
+
+	if( m_pTitleUIManager->IsFadeEnd())
 	{
 		//シーン変更イベント発行
 		EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
 			EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CONTROLLER);
 	}
-
-	//コントローラーの任意のボタン入力でコントローラー設定シーンへ遷移
-	for(auto& controller : m_pInputManager->GetInputInfo()->controller)
-	{
-		if (controller.anyButton.trigger)
-		{
-			//シーン変更イベント発行
-			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
-				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CONTROLLER);
-		}
-	}
-
-	m_pTitleUIManager->Update();
 }
 
 //描画

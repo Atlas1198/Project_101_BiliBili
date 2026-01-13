@@ -70,6 +70,8 @@ void SceneBase::Update()
 //描画
 void SceneBase::Draw(Renderer& pRenderer)
 {
+	pRenderer.SubmitDirectionalLight(m_directionalLight);
+
 	//シーン固有の描画呼び出し
 	DrawOverride(pRenderer);
 

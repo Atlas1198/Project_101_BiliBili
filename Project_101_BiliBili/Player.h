@@ -3,14 +3,18 @@
 #include "InputManager.h"
 #include "BulletManager.h"
 #include "SharedStruct.h"
+#include "FrameTimer.h"
 
 //プレイヤークラス
 class Player : public ObjectBase
 {
 public:	//公開定数
-	inline static float MOVE_SPEED = 0.2f;	//移動速度
+	inline static float MOVE_SPEED = 0.2f;		//移動速度
 	inline static float BULLET_SPEED = 0.2f;
 	static constexpr float ROTATE_SPEED = 3.0f;	//回転速度
+	static constexpr float GRAVITY = 0.02f;		//重力
+	static constexpr float RUN_DELAY = 0.5f;
+	static constexpr float RUN_MODIFIER = 0.2f;
 	uint32_t id;								//ID
 
 
@@ -21,6 +25,20 @@ private:	//非公開メンバ変数
 	int teamID = -1;
 	int characterID = -1;
 	BulletManager *m_pBulletManager = nullptr;
+	bool m_isGrounded = false;
+	bool m_isSpringJump = false;
+	int m_ignoreCollisionFrame = 3;
+	int direction = 0; // 移動方向
+	int minAnimIndex = 0; // アニメーションの最小インデックス
+	int maxAnimIndex = 0; // アニメーションの最大インデックス
+	int animUpdateRate = 10; // アニメーションの更新速度
+	bool isMoving = false; // 移動中フラグ
+	bool isShooting = false; // 射撃中フラグ
+	int shootAnimDuration = 5; // 射撃アニメーションの持続フレーム数
+	bool bbActive = false; // BBアクティブフラグ
+	bool canRun = false;
+	bool runTimerStarted = false;
+	FrameTimer runTimer; // 走行タイマー
 
 public:	//公開関数
 	Player(	//コンストラクタ
@@ -55,10 +73,12 @@ public:	//公開関数
 
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
+	void SetBB(bool isActive); // BBセット
 
 private:	//非公開関数
 	void Move();	//移動
 	void Rotate();	//回転
 	void Scale();	//スケール
 	void Shoot();	//射撃
+	void UpdateAnimation(); //アニメーション更新
 };
