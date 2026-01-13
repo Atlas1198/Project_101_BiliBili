@@ -407,6 +407,7 @@ void Player::UpdateAnimation()
 void Player::Shoot()
 {
 	if (!m_pBulletManager) return;
+	if (bbActive) return;
 
 	bool shoot = false;
 
