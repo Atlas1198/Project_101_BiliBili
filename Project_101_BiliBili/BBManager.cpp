@@ -82,7 +82,7 @@ void BBManager::InitializeOverride(
 			BB::DAMAGE / 3.0f
 		);
 		m_BBAreas[i]->GetColliderSet()->RegisterColliders(collisionManager);
-		m_BBAreas[i]->SetActive(false);
+  		m_BBAreas[i]->SetActive(false);
 	}
 }
 

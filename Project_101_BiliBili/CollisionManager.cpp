@@ -98,6 +98,10 @@ void CollisionManager::CheckColliders()
 		{
 			c->SetActive(false);
 		}
+		else
+		{
+			c->SetActive(true);
+		}
 	}
 
 	//前回の衝突ペアリストを走査してデリートフラグが立っているコライダーを含むペアを削除
