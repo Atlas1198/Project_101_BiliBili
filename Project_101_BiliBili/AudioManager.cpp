@@ -1,5 +1,6 @@
 #include "AudioManager.h"
 #include <fstream>
+#include <algorithm>
 
 AudioManager::AudioManager() 
 {
@@ -11,16 +12,12 @@ AudioManager::~AudioManager()
 
 }
 
-
-
 void AudioManager::Initialize()
 {
-	AudioInstance I;
-
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr))
 	{
-
+		
 	}
 
 	hr = XAudio2Create(&m_pXaudio2);
