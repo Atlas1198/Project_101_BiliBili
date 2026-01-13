@@ -3,7 +3,7 @@
 enum EventType
 {
 	NONE = 0,
-	//ƒQ[ƒ€ƒvƒŒƒCŠÖ˜AƒCƒxƒ“ƒg
+	//ã‚²ãƒ¼ãƒ ãƒ—ãƒ¬ã‚¤é–¢é€£ã‚¤ãƒ™ãƒ³ãƒˆ
 	ITEM_PICKUP, // int teamID
 	TAKE_DAMAGE, // int teamID, float damage
 	GAME_OVER, // int winningTeamID
@@ -11,21 +11,21 @@ enum EventType
 	CHANGE_SCENE, // int sceneID
 	SET_BB, // int teamID, bool isActive
 
-	//ƒvƒŒƒCƒ„[İ’èŠÖ˜AƒCƒxƒ“ƒg
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼è¨­å®šé–¢é€£ã‚¤ãƒ™ãƒ³ãƒˆ
 	SET_PLAYER_CONTROLLER, // int playerIndex, int controllerID
 	SET_PLAYER_CHARACTER, // int playerIndex, int characterID
 
-	//ƒRƒ“ƒgƒ[ƒ‰[Ú‘±ŠÖ˜AƒCƒxƒ“ƒg
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼æ¥ç¶šé–¢é€£ã‚¤ãƒ™ãƒ³ãƒˆ
 	CONTROLLER_CONNECTED, // int controllerIndex
 	CONTROLLER_ICON_REACTION, // int controllerIndex, InputInfo inputInfo
 
-	//ƒLƒƒƒ‰ƒNƒ^[‘I‘ğ‰æ–ÊŠÖ˜AƒCƒxƒ“ƒg
+	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼é¸æŠç”»é¢é–¢é€£ã‚¤ãƒ™ãƒ³ãƒˆ
 	CHARACTER_ICON_MOVE, // int playerIndex, DIRECTION direction
 	SHOW_SELECTED_ICON, // int playerIndex
 	HIDE_SELECTED_ICON, // int playerIndex
 	GO_TO_GAME_SCENE, // void
 
-	//ƒQ[ƒ€ƒV[ƒ“UIŠÖ˜AƒCƒxƒ“ƒg
+	//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³UIé–¢é€£ã‚¤ãƒ™ãƒ³ãƒˆ
 	UPDATE_HP_UI, // int teamID, float newHP
 	UPDATE_BULLET_UI, // int teamID, int newBulletCount
 	BB_CUT_IN, // int teamID
@@ -35,19 +35,22 @@ enum EventType
 	HIDE_COUNT_UI, // void
 	SHOW_RESULT_UI, // void
 
-	//ƒtƒF[ƒhŠÖ˜AƒCƒxƒ“ƒg
+	//ãƒ©ãƒ³ãƒ€ãƒ ã‚¤ãƒ™ãƒ³ãƒˆ
+	EVENT_BULLET_SPEED, // void
+	EVENT_BULLET_RECOVERY, // void
+	//ãƒ•ã‚§ãƒ¼ãƒ‰é–¢é€£ã‚¤ãƒ™ãƒ³ãƒˆ
 	START_FADE_IN, // float duration
 	START_FADE_OUT, // float duration
 };
 
-//ƒCƒxƒ“ƒgƒf[ƒ^\‘¢‘Ì
+//ã‚¤ãƒ™ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 struct EventData
 {
 	EventType type = EventType::NONE;
 	uint64_t id = 0;
 };
 
-//ƒCƒxƒ“ƒgƒf[ƒ^ƒŠƒXƒg‚©‚ç“Á’è‚ÌƒCƒxƒ“ƒgƒf[ƒ^‚ğŒŸõ‚·‚éƒwƒ‹ƒp[ŠÖ”
+//ã‚¤ãƒ™ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã‹ã‚‰ç‰¹å®šã®ã‚¤ãƒ™ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’æ¤œç´¢ã™ã‚‹ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°
 inline static EventData FindEventData(
 	const std::vector<EventData>& eventDataList,
 	EventType type

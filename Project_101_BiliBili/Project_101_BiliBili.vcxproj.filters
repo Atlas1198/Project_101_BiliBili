@@ -255,6 +255,9 @@
     <ClInclude Include="WallCurve.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameEventManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="Spring.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
