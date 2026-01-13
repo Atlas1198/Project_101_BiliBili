@@ -84,6 +84,15 @@ void Player::UpdateOverride()
 			--m_ignoreCollisionFrame;
 		}
 
+		if (runTimerStarted)
+		{
+			if (runTimer.Peek() >= RUN_DELAY)
+			{
+				canRun = true;
+				runTimerStarted = false;
+			}
+		}
+
 		Move();		//ˆÚ“®
 
 		/*
@@ -258,36 +267,52 @@ void Player::Move()
 		}
 	}
 
+	float modifier = 1.0f;
+
+	if (!canRun)
+	{
+		if (!runTimerStarted)
+		{
+			modifier = RUN_MODIFIER;
+			runTimerStarted = true;
+			runTimer.Mark();
+		}
+		else
+		{
+			modifier = RUN_MODIFIER + (runTimer.Peek() / RUN_DELAY) * (1.0f - RUN_MODIFIER);
+		}
+	}
+
 	if (!m_isSpringJump)
 	{
-		m_position.x += dir.x * MOVE_SPEED;
-		m_position.z += dir.y * MOVE_SPEED;
+		m_position.x += dir.x * MOVE_SPEED * modifier;
+		m_position.z += dir.y * MOVE_SPEED * modifier;
 
 		if (up)
 		{
 			//‘Oi
-			m_position.x += direction.x * MOVE_SPEED;
-			m_position.y += direction.y * MOVE_SPEED;
-			m_position.z += direction.z * MOVE_SPEED;
+			m_position.x += direction.x * MOVE_SPEED * modifier;
+			m_position.y += direction.y * MOVE_SPEED * modifier;
+			m_position.z += direction.z * MOVE_SPEED * modifier;
 		}
 		if (down)
 		{
 			//Œã‘Þ
-			m_position.x -= direction.x * MOVE_SPEED;
-			m_position.y -= direction.y * MOVE_SPEED;
-			m_position.z -= direction.z * MOVE_SPEED;
+			m_position.x -= direction.x * MOVE_SPEED * modifier;
+			m_position.y -= direction.y * MOVE_SPEED * modifier;
+			m_position.z -= direction.z * MOVE_SPEED * modifier;
 		}
 		if (left)
 		{
 			//¶ˆÚ“®
-			m_position.x -= direction.z * MOVE_SPEED;
-			m_position.z += direction.x * MOVE_SPEED;
+			m_position.x -= direction.z * MOVE_SPEED * modifier;
+			m_position.z += direction.x * MOVE_SPEED * modifier;
 		}
 		if (right)
 		{
 			//‰EˆÚ“®
-			m_position.x += direction.z * MOVE_SPEED;
-			m_position.z -= direction.x * MOVE_SPEED;
+			m_position.x += direction.z * MOVE_SPEED * modifier;
+			m_position.z -= direction.x * MOVE_SPEED * modifier;
 		}
 
 		
@@ -344,6 +369,13 @@ void Player::Move()
 				this->direction = 2;
 			else 
 				isMoving = false;
+		}
+
+		if (!isMoving)
+		{
+			runTimerStarted = false;
+			canRun = false;
+			runTimer.Mark();
 		}
 	}
 

@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "BulletManager.h"
 #include "SharedStruct.h"
+#include "FrameTimer.h"
 
 //プレイヤークラス
 class Player : public ObjectBase
@@ -12,6 +13,8 @@ public:	//公開定数
 	inline static float BULLET_SPEED = 0.2f;
 	static constexpr float ROTATE_SPEED = 3.0f;	//回転速度
 	static constexpr float GRAVITY = 0.02f;		//重力
+	static constexpr float RUN_DELAY = 0.5f;
+	static constexpr float RUN_MODIFIER = 0.2f;
 	uint32_t id;								//ID
 
 
@@ -33,6 +36,9 @@ private:	//非公開メンバ変数
 	bool isShooting = false; // 射撃中フラグ
 	int shootAnimDuration = 5; // 射撃アニメーションの持続フレーム数
 	bool bbActive = false; // BBアクティブフラグ
+	bool canRun = false;
+	bool runTimerStarted = false;
+	FrameTimer runTimer; // 走行タイマー
 
 public:	//公開関数
 	Player(	//コンストラクタ
