@@ -5,6 +5,7 @@
 #include "MeshManager.h"
 #include "SharedStruct.h"
 #include <random>
+#include "EventManager.h"
 
 using namespace DirectX;
 
@@ -31,6 +32,14 @@ ItemManager::~ItemManager()
 void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
 	m_pCollisionManager = &collisionManager;
+
+	EventManager::GetInstance()->Subscribe<void>(
+		EventType::SHOW_START_UI,
+		[this](std::shared_ptr<void> data)
+		{
+			StartTimer();
+		}
+	);
 }
 
 void ItemManager::SpawnItem()
@@ -62,7 +71,14 @@ void ItemManager::UpdateOverride()
 {
 	if (m_frameTimer.Peek() >= ITEM_RESPAWN)
 	{
-		SpawnItem();
+		if (!skippedFirstItem)
+		{
+			skippedFirstItem = true;
+		}
+		else
+		{
+			SpawnItem();
+		}
 		m_frameTimer.Mark();
 	}
 

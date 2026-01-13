@@ -34,6 +34,7 @@ private:	//非公開メンバ変数
 	void SubmitDrawsOverride(Renderer& renderer) override;	//描画要求をシーンに提出
 	void ResolveCollisionsOverride() override;				//衝突後処理
 	void FinalizeOverride() override;						//終了
+	void StartTimer() { m_frameTimer.Mark(); }
 
 	void PrepareRenderInfo(	//オブジェクトの描画情報生成
 		TextureManager& textureManager,	//テクスチャ管理クラスの参照
@@ -45,4 +46,5 @@ private:
 	std::vector<WorldRenderInfo> m_itemInfo;		//アイテム描画情報
 	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
 	FrameTimer m_frameTimer;
+	bool skippedFirstItem = false;
 };
