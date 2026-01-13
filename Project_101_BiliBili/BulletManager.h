@@ -29,7 +29,9 @@ public:
 
     inline static float BULLET_RECOVERY = 2.0f;
     inline static float BULLET_DAMAGE = 0.1f;
-    inline static float BULLET_BONUS_SPEED_MUL = 3.0f;
+    inline static float BULLET_BONUS_SPEED_MUL = 2.0f;
+	inline static float BONUS_RECOVERY_MODIFIER = 1.5f;
+	inline static float EVENT_RECOVERY_MODIFIER = 2.0f;
 
 	static constexpr int MAX_BULLETS_PER_TEAM = 6;
 
@@ -47,6 +49,7 @@ protected:
 
 private:
 	void BulletSpeedEvent();
+	void BulletRecoveryEvent();
 
 private:
     std::vector<std::unique_ptr<Bullet>> m_bullets;
@@ -56,8 +59,10 @@ private:
     FrameTimer m_bulletRestoreTimer;
     FrameTimer m_totalTimer;
 	float m_bulletRestoreElapsed;
-	float m_restoreModifier = 1.0f;
+	float m_currentRestoreModifier = 1.0f;
+	float m_normalRestoreModifier = 1.0f;
     float m_speedModifier = 1.0f;
+    float timeUntilBonusRestoreModifier = 75.0f;
 
     int teamBulletCount[2] = { MAX_BULLETS_PER_TEAM, MAX_BULLETS_PER_TEAM };
 };

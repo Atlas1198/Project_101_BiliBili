@@ -36,6 +36,7 @@ enum EventType
 
 	//ランダムイベント
 	EVENT_BULLET_SPEED, // void
+	EVENT_BULLET_RECOVERY, // void
 };
 
 //イベントデータ構造体

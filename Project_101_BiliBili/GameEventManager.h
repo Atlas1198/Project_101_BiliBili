@@ -44,7 +44,14 @@ public:
 		{
 			if (timer.Peek() >= eventInterval)
 			{
-				TriggerRandomEvent();
+				if (skipsLeft > 0)
+				{
+					skipsLeft--;
+				}
+				else
+				{
+					TriggerRandomEvent();
+				}
 				timer.Mark();
 			}
 		}
@@ -74,12 +81,14 @@ private:
 	}
 
 private:
-	float eventInterval = 10.0f; // イベント発生間隔（秒
-	float eventDuration = 3.0f; // イベント持続時間（秒）
+	float eventInterval = 20.0f; // イベント発生間隔（秒
+	float eventDuration = 5.0f; // イベント持続時間（秒）
 	FrameTimer timer;
 	const std::vector<EventType> eventList = {
 		EVENT_BULLET_SPEED,
+		EVENT_BULLET_RECOVERY
 	};
 	int currentEventIndex = -1;
 	bool started = false;
+	int skipsLeft = 2;
 };

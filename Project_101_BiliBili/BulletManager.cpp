@@ -49,6 +49,14 @@ void BulletManager::InitializeOverride(
             BulletSpeedEvent();
         }
     );
+
+    EventManager::GetInstance()->Subscribe<void>(
+        EventType::EVENT_BULLET_RECOVERY,
+        [this](std::shared_ptr<void> data)
+        {
+            BulletRecoveryEvent();
+        }
+    );
 }
 
 
@@ -76,10 +84,20 @@ void BulletManager::UpdateOverride()
 
     m_bulletRestoreElapsed += m_bulletRestoreTimer.Mark();
 
-	m_restoreModifier = 1.0f + m_totalTimer.Peek() / 60.0f; // ƒQ[ƒ€Œo‰ßŽžŠÔ‚É‰ž‚¶‚Ä‰ñ•œ‘¬“x‚ðã‚°‚é
+    if (timeUntilBonusRestoreModifier > 0.0f)
+    {
+        timeUntilBonusRestoreModifier -= m_totalTimer.Mark();
+    }
+    else
+    {
+        if (m_currentRestoreModifier != EVENT_RECOVERY_MODIFIER)
+            m_currentRestoreModifier = BONUS_RECOVERY_MODIFIER;
+        m_normalRestoreModifier = BONUS_RECOVERY_MODIFIER;
+    }
+	
 
 
-    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_restoreModifier)
+    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_currentRestoreModifier)
     {
         for (int team = 0; team < 2; ++team)
         {
@@ -106,6 +124,18 @@ void BulletManager::BulletSpeedEvent()
     else
     {
         m_speedModifier = 1.0f;
+    }
+}
+
+void BulletManager::BulletRecoveryEvent()
+{
+    if (m_currentRestoreModifier != EVENT_RECOVERY_MODIFIER)
+    {
+		m_currentRestoreModifier = EVENT_RECOVERY_MODIFIER;
+    }
+    else
+    {
+		m_currentRestoreModifier = m_normalRestoreModifier;
     }
 }
 
