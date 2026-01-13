@@ -20,7 +20,6 @@ Ground::Ground(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 		colliderScale,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
-	m_isDrawn = false;
 }
 
 //çXêV

@@ -189,7 +189,7 @@ CommonRenderDesc CreateRenderInfoFromMeshData(
 
 	//メッシュGPUデータの作成と描画情報構造体への設定
 	desc.pMeshGPU = meshManager.CreateMesh(mesh);	//メッシュGPUデータの作成とポインタの取得
-	desc.color = XMFLOAT4(1, 1, 1, 1);				//オブジェクトの色を白に設定
+	desc.color = mesh.materialColor;				//オブジェクトの色を白に設定
 	desc.blendMode = mode;							//ブレンドモードを設定
 
 	//テクスチャのSRVインデックスを取得

@@ -326,12 +326,15 @@ void Renderer::DrawRenderListWorld(
 			p_commandList->IASetIndexBuffer(&ibv);									//インデックスバッファの設定
 
 			//SRVの設定
-			if (m_drawListWorldNoLight[i][j].common.srvIndex != UINT32_MAX)
-			{//SRVインデックスが有効な場合
-				auto gpuHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
-				gpuHandle.ptr += static_cast<UINT64>(m_drawListWorldNoLight[i][j].common.srvIndex) * textureManager.GetSrvIncrementSize();	//SRVインデックスに対応するGPUハンドルを計算
-				p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);											//t0にSRVをセット
+			auto heapHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
+			uint32_t idx = m_drawListWorldNoLight[i][j].common.srvIndex;
+			if(idx == UINT32_MAX)
+			{
+				idx = textureManager.GetDefaultWhiteTextureIndex(); //白テクスチャのインデックスを使用
 			}
+			auto gpuHandle = heapHandle;
+			gpuHandle.ptr += static_cast<UINT64>(idx) * textureManager.GetSrvIncrementSize();
+			p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
 			//描画コマンドの発行
 			p_commandList->DrawIndexedInstanced(	//描画コマンド
@@ -418,12 +421,15 @@ void Renderer::DrawRenderListWorld(
 			p_commandList->IASetIndexBuffer(&ibv);									//インデックスバッファの設定
 
 			//SRVの設定
-			if (m_drawListWorldLight[i][j].common.srvIndex != UINT32_MAX)
-			{//SRVインデックスが有効な場合
-				auto gpuHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
-				gpuHandle.ptr += static_cast<UINT64>(m_drawListWorldLight[i][j].common.srvIndex) * textureManager.GetSrvIncrementSize();	//SRVインデックスに対応するGPUハンドルを計算
-				p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);											//t0にSRVをセット
+			auto heapHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();	//SRVヒープのGPUハンドルを取得
+			uint32_t idx = m_drawListWorldLight[i][j].common.srvIndex;
+			if (idx == UINT32_MAX)
+			{
+				idx = textureManager.GetDefaultWhiteTextureIndex(); //白テクスチャのインデックスを使用
 			}
+			auto gpuHandle = heapHandle;
+			gpuHandle.ptr += static_cast<UINT64>(idx) * textureManager.GetSrvIncrementSize();
+			p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
 			//描画コマンドの発行
 			p_commandList->DrawIndexedInstanced(	//描画コマンド
@@ -493,12 +499,15 @@ void Renderer::DrawRenderListEffect(ID3D12GraphicsCommandList* p_commandList, Te
 			p_commandList->IASetIndexBuffer(&ibv);							//インデックスバッファの設定
 
 			//SRVの設定
-			if (effectDrawInfo.common.srvIndex != UINT32_MAX)
-			{//SRVインデックスが有効な場合
-				auto gpuHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();								//SRVヒープのGPUハンドルを取得
-				gpuHandle.ptr += static_cast<UINT64>(effectDrawInfo.common.srvIndex) * textureManager.GetSrvIncrementSize();	//SRVインデックスに対応するGPUハンドルを計算
-				p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);													//t0にSRVをセット
+			auto heapHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
+			uint32_t idx = m_drawListEffect[i][j].common.srvIndex;
+			if (idx == UINT32_MAX)
+			{
+				idx = textureManager.GetDefaultWhiteTextureIndex(); //白テクスチャのインデックスを使用
 			}
+			auto gpuHandle = heapHandle;
+			gpuHandle.ptr += static_cast<UINT64>(idx) * textureManager.GetSrvIncrementSize();
+			p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
 			//描画コマンドの発行
 			p_commandList->DrawIndexedInstanced(	//描画コマンド
@@ -570,12 +579,15 @@ void Renderer::DrawRenderListScreen(
 			p_commandList->IASetIndexBuffer(&ibv);									//インデックスバッファの設定
 
 			//SRVの設定
-			if (m_drawListScreen[i][j].common.srvIndex != UINT32_MAX)
-			{//SRVインデックスが有効な場合
-				auto gpuHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
-				gpuHandle.ptr += static_cast<UINT64>(m_drawListScreen[i][j].common.srvIndex) * textureManager.GetSrvIncrementSize();	//SRVインデックスに対応するGPUハンドルを計算
-				p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);											//t0にSRVをセット
+			auto heapHandle = textureManager.GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
+			uint32_t idx = m_drawListScreen[i][j].common.srvIndex;
+			if (idx == UINT32_MAX)
+			{
+				idx = textureManager.GetDefaultWhiteTextureIndex(); //白テクスチャのインデックスを使用
 			}
+			auto gpuHandle = heapHandle;
+			gpuHandle.ptr += static_cast<UINT64>(idx) * textureManager.GetSrvIncrementSize();
+			p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
 			//描画コマンドの発行
 			p_commandList->DrawIndexedInstanced(	//描画コマンド

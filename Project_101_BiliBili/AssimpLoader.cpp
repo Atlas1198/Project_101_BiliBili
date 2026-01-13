@@ -3,11 +3,13 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/material.h>
+#include <assimp/version.h>
+#include <DirectXMath.h>
 #include "d3dx12.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
-
 
 //ディレクトリパス取得関数
 std::wstring GetDirectoryPath(const std::wstring& origin)
@@ -173,6 +175,8 @@ void AssimpLoader::LoadTexture(
 	const aiMaterial* src		//Assimpのメッシュ構造体へのポインタ
 )
 {
+	dst.materialColor = GetMaterialColor(src);	//マテリアルカラー取得関数の呼び出し
+
 	aiString path;	//テクスチャパス格納用aiString
 
 	//拡散反射テクスチャのパスを取得
@@ -190,4 +194,26 @@ void AssimpLoader::LoadTexture(
 	{//取得失敗時
 		dst.texPath.clear();	//テクスチャパスをクリア
 	}
+}
+
+//マテリアルカラー取得関数
+DirectX::XMFLOAT4 AssimpLoader::GetMaterialColor(const aiMaterial* src)
+{
+	aiColor4D color(1.0f, 1.0f, 1.0f, 1.0f);	//マテリアルカラー格納用aiColor4D
+
+	if(src->Get("$clr.base", 0, 0, color) != aiReturn_SUCCESS)
+	{
+		aiGetMaterialColor(src, AI_MATKEY_COLOR_DIFFUSE, &color);
+	}
+
+	float opacity = 1.0f;
+	src->Get(AI_MATKEY_OPACITY, opacity);
+	color.a *= opacity;
+
+	return DirectX::XMFLOAT4(
+		color.r,
+		color.g,
+		color.b,
+		color.a
+	);
 }

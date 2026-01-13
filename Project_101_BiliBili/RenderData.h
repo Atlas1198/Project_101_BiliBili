@@ -72,11 +72,17 @@ struct EffectRenderInfo
 //メッシュデータ構造体
 struct Mesh
 {
-	std::vector<Vertex> vertices;	//頂点データ配列
-	size_t vertexCount = 0;			//頂点数
-	std::vector<uint32_t> indices;	//インデックスデータ配列
-	size_t indexCount = 0;			//インデックス数
-	std::wstring texPath;			//テクスチャのファイル名
+	std::vector<Vertex> vertices;		//頂点データ配列
+	size_t vertexCount = 0;				//頂点数
+	std::vector<uint32_t> indices;		//インデックスデータ配列
+	size_t indexCount = 0;				//インデックス数
+	std::wstring texPath;				//テクスチャのファイル名
+	DirectX::XMFLOAT4 materialColor{	//マテリアルカラー
+		1.0f,	//拡散反射色R
+		1.0f,	//拡散反射色G
+		1.0f,	//拡散反射色B
+		1.0f	//拡散反射色A
+	};
 };
 
 //モデルデータ構造体

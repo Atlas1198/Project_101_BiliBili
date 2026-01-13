@@ -45,6 +45,7 @@ public:
 	ID3D12DescriptorHeap* GetSrvHeap() const;	//SRVヒープを取得(ここにSRVが格納されている)
 	UINT GetSrvIncrementSize() const;			//SRVディスクリプタのインクリメントサイズを取得
 
+	uint32_t GetDefaultWhiteTextureIndex() const;	//デフォルトの白テクスチャのSRVインデックスを取得
 private:
 	ComPtr<ID3D12DescriptorHeap> m_pSrvHeap;	//SRVディスクリプタヒープ(テクスチャのSRVが格納される)
 
@@ -57,4 +58,6 @@ private:
 	std::vector<PendingTextureUpload> m_pendingUploads;				//アップロード待ちテクスチャ配列
 
 	ID3D12Device* m_pDevice = nullptr;	//デバイス
+
+	uint32_t m_defaultTextureIndex = UINT32_MAX; //デフォルトテクスチャのSRVインデックス
 };

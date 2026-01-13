@@ -2014,7 +2014,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		L"asset/fbx/stage_main_ST.fbx",	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
-		true,
-		true
+		false,
+		false
 	);
 }
