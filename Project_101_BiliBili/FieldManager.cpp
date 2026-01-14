@@ -8,7 +8,6 @@
 
 using namespace DirectX;
 
-
 //コンストラクタ
 FieldManager::FieldManager()
 {
@@ -150,9 +149,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pGrounds.push_back(
 		new Ground(
 			MESH_TYPE::QUAD,
-			XMFLOAT3(0.0f, -6.0f, 5.0f), //位置
-			XMFLOAT3(0.0f, 0.0f, 0.0f), //回転
-			XMFLOAT3(1.0f, 1.0f, 1.0f),//スケール
+			XMFLOAT3(0.0f, -6.5f, 12.0f), //位置
+			XMFLOAT3(0.0f, 180.0f, 0.0f), //回転
+			XMFLOAT3(1.5f, 1.5f, 1.5f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 			true,						 //アクティブフラグ
 			ColliderType::BOX			 //コライダータイプ

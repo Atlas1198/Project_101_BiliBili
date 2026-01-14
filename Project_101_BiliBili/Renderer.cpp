@@ -448,7 +448,7 @@ void Renderer::DrawRenderListWorld(
 //エフェクト用描画リストの描画
 void Renderer::DrawRenderListEffect(ID3D12GraphicsCommandList* p_commandList, TextureManager& textureManager)
 {
-	int objIndex = 0; //オブジェクト用定数バッファのインデックス
+ 	int objIndex = 0; //オブジェクト用定数バッファのインデックス
 
 	for (int i = 0; i < BLEND_MAX; i++)
 	{
@@ -809,6 +809,7 @@ XMMATRIX Renderer::CalcBillBoard(const WorldRenderInfo& info)
 	}
 
 	XMVECTOR forward = XMVector3Normalize(toCam);
+	forward = XMVectorNegate(forward);
 	XMVECTOR right = XMVector3Normalize(XMVector3Cross(upWorld, forward));
 	XMVECTOR up = XMVector3Cross(forward, right);
 

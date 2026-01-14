@@ -115,7 +115,7 @@
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <ShowIncludes>true</ShowIncludes>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
