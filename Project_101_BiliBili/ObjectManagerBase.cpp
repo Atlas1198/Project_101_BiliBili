@@ -95,7 +95,13 @@ void ObjectManagerBase::SubmitRenderInfo(
 			for(auto& i : submitInfos)
 			{
 				i.world = object.GetWorldMatrix();
-				i.common.color = object.GetColor();
+				i.common.color =
+				{
+					object.GetColor().x* i.common.color.x,
+					object.GetColor().y* i.common.color.y,
+					object.GetColor().z* i.common.color.z,
+					object.GetColor().w* i.common.color.w
+				};
 			}
 		}
 

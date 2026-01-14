@@ -41,4 +41,8 @@ private:
 		Mesh& mesh,		//メッシュデータ構造体への参照
 		const aiMaterial* src		//Assimpのメッシュ構造体へのポインタ
 	);
+
+	DirectX::XMFLOAT4 GetMaterialColor( //マテリアルカラー取得関数
+		const aiMaterial* src	//Assimpのマテリアル構造体へのポインタ
+		);
 };
