@@ -22,7 +22,7 @@ class FieldManager : public ObjectManagerBase
 	const wchar_t* wallPassTexPath = L"asset/texture/black.png";
 	const wchar_t* wallCurveFbxPath = L"asset/fbx/CurveWall2.fbx";
 	const wchar_t* groundTexPath = L"asset/texture/tile.PNG";
-	const wchar_t* springTexPath = L"asset/texture/white.png";
+	const wchar_t* springTexPath = L"asset/texture/Spring.png";
 public:
 	FieldManager();		//コンストラクタ
 	~FieldManager();	//デストラクタ

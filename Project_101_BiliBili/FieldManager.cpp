@@ -181,7 +181,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(22.0f, -3.75f, 17.0f),//位置
+			XMFLOAT3(24.0f, -5.0f, 18.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
@@ -192,7 +192,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(-22.0f, -3.75f, -7.5f),//位置
+			XMFLOAT3(-22.0f, -5.0f, -7.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
@@ -203,7 +203,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(22.0f, -3.75f, -7.5f),//位置
+			XMFLOAT3(22.0f, -5.0f, -7.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
@@ -214,7 +214,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(-22.0f, -3.75f, 17.0f),//位置
+			XMFLOAT3(-24.0f, -5.0f, 18.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
@@ -1996,11 +1996,11 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_springInfo,					//描画情報構造体配列へのポインタ
-		MESH_TYPE::CUBE,				//メッシュタイプ
-		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
+		MESH_TYPE::QUAD,				//メッシュタイプ
+		BLEND_MODE::BLEND_TRANSPARENT,		//ブレンドモード
 		springTexPath,
 		true,
-		BILLBOARD_NONE,
+		BILLBOARD_SPHERICAL,
 		false,
 		false
 	);
