@@ -314,34 +314,34 @@ void Player::Move()
 
 		if (!bbActive)
 		{
-			if (down && left) this->direction = 7;
-			else if (down && right) this->direction = 1;
-			else if (up && right) this->direction = 3;
-			else if (up && left) this->direction = 5;
+			if (down && left) this->direction = 1;
+			else if (down && right) this->direction = 7;
+			else if (up && right) this->direction = 5;
+			else if (up && left) this->direction = 3;
 			else if (up) this->direction = 4;
 			else if (down) this->direction = 0;
-			else if (left) this->direction = 6;
-			else if (right) this->direction = 2;
+			else if (left) this->direction = 2;
+			else if (right) this->direction = 6;
 			else isMoving = false;
 		}
 		else
 		{
 			if (down && left) 
-				this->direction = 7;
-			else if (down && right) 
 				this->direction = 1;
+			else if (down && right) 
+				this->direction = 7;
 			else if (up && right) 
-				this->direction = 3;
-			else if (up && left) 
 				this->direction = 5;
+			else if (up && left) 
+				this->direction = 3;
 			else if (up) 
 				this->direction = 4;
 			else if (down) 
 				this->direction = 0;
 			else if (left) 
-				this->direction = 6;
-			else if (right) 
 				this->direction = 2;
+			else if (right) 
+				this->direction = 6;
 			else 
 				isMoving = false;
 		}
