@@ -131,6 +131,9 @@ void GameScene::InitializeOverride(
 	m_directionalLight.intensity = 1.5f;
 	m_directionalLight.ambient = 0.2f;
 
+	m_pCamera->SetPosition({ 0.0f, 30.0f, -20.0f });
+	m_pCamera->SetTarget({ 0.0f, 00.0f, 2.0f });
+
 	m_pGameUIManager->StartFadeIn(0.01f); // ゲームシーンフェードイン
 }
 

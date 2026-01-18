@@ -1116,6 +1116,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 90.0f, 0.0f)
 		);
+		m_pWallCurves.back()->SetActive(false); //最初は非アクティブにしておく
 
 		m_pWallCurves.push_back(
 			new WallCurve(
@@ -1195,6 +1196,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 90.0f, 0.0f)
 		);
+
+		m_pWallCurves.back()->SetActive(false); //最初は非アクティブにしておく
 		///////////////////////////////
 		//-------------
 		//左側

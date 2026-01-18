@@ -60,7 +60,7 @@ void TitleScene::UpdateOverride()
 
 	m_pTitleUIManager->Update();
 
-	if( m_pTitleUIManager->IsFadeEnd())
+	if(m_pTitleUIManager->IsFadeEnd())
 	{
 		//シーン変更イベント発行
 		EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(

@@ -115,7 +115,7 @@ Player* PlayerManager::AddPlayer(
 		MESH_TYPE::QUAD,
 		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//回転
-		XMFLOAT3(4.0f, 4.0f, 4.0f),						//スケール
+		XMFLOAT3(4.5f, 4.5f, 4.5f),						//スケール
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//移動速度
 		id,												//ID
 		true,											//アクティブフラグ
