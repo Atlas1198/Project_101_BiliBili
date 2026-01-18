@@ -1043,7 +1043,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				MESH_TYPE::IMPORT,
 				XMFLOAT3(0.0f, -4.5f, 8.0f),  //位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(3.0f, 0.0f, 3.0f),	  //スケール
+				XMFLOAT3(3.0f, 3.0f, 3.0f),	  //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
 				true,						  //アクティブフラグ
 				ColliderType::BOX,			  //コライダータイプ
@@ -1056,6 +1056,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				-180.0f
 			)
 		);
+		m_pWallCurves.back()->SetDrawn(false);
 		m_pWallCurves.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
 			XMFLOAT3(-1.5f, 1.5f, -2.5f),
@@ -1116,14 +1117,13 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 90.0f, 0.0f)
 		);
-		m_pWallCurves.back()->SetActive(false); //最初は非アクティブにしておく
 
 		m_pWallCurves.push_back(
 			new WallCurve(
 				MESH_TYPE::IMPORT,
 				XMFLOAT3(0.0f, -4.5f, 2.0f),  //位置
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(3.0f, 0.0f, 3.0f),	  //スケール
+				XMFLOAT3(3.0f, 3.0f, 3.0f),	  //スケール
 				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
 				true,						  //アクティブフラグ
 				ColliderType::BOX,			  //コライダータイプ
@@ -1136,6 +1136,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				-180.0f
 			)
 		);
+		m_pWallCurves.back()->SetDrawn(false);
 		m_pWallCurves.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
 			XMFLOAT3(-1.5f, 1.5f, -2.5f),
@@ -1196,8 +1197,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 90.0f, 0.0f)
 		);
-
-		m_pWallCurves.back()->SetActive(false); //最初は非アクティブにしておく
 		///////////////////////////////
 		//-------------
 		//左側
@@ -1991,8 +1990,12 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		&m_wallCurveInfo,				//描画情報構造体配列へのポインタ
 		m_pWallCurves[0]->GetMeshType(),//メッシュタイプ
 		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
-		wallCurveFbxPath				//テクスチャのファイル名
-	);
+		L"asset/fbx/wall_curve_ST.fbx",		//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
+		);
 
 	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照

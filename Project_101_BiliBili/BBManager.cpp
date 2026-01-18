@@ -65,7 +65,14 @@ void BBManager::InitializeOverride(
 			EventType::ITEM_PICKUP,
 			[this](std::shared_ptr<int> teamID)
 			{
-				this->OnItemPickup(*teamID);
+				for(auto& index : m_activationCalledBBIndex)
+				{
+					if(index == *teamID)
+					{
+						return;
+					}
+				}
+				m_activationCalledBBIndex.push_back(*teamID);
 			}
 		);
 	}
@@ -88,6 +95,13 @@ void BBManager::OnItemPickup(int teamID)
 //更新
 void BBManager::UpdateOverride()
 {
+	//BB発動コマンド処理
+	for (auto& index : m_activationCalledBBIndex)
+	{
+		OnItemPickup(index);
+	}
+	m_activationCalledBBIndex.clear();
+
 	for(int i = 0; i < BB_NUM; i++)
 	{
 		if (m_BBTimer[i] > 0.0f)
@@ -107,6 +121,7 @@ void BBManager::UpdateOverride()
 //描画要求提出
 void BBManager::SubmitDrawsOverride(Renderer& renderer)
 {
+
 	for(int i = 0; i < BB_NUM; i++)
 	{
 		//ラインBB描画情報提出
@@ -155,8 +170,6 @@ void BBManager::SetPlayerData(std::vector<Player*>& players)
 
 	std::vector<XMFLOAT3> team1Pos;	//チーム1のプレイヤー位置
 	std::vector<XMFLOAT3> team2Pos;	//チーム2のプレイヤー位置
-	//bool team1Transformed = false;	//チーム1の変身フラグ
-	//bool team2Transformed = false;	//チーム2の変身フラグ
 
 	//プレイヤーの位置・変身フラグをチームごとに分ける
 	for(auto& player : players)

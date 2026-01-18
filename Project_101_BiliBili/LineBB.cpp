@@ -63,6 +63,12 @@ DirectX::XMFLOAT3 LineBB::GetWallCollisionPoint() const
 	return m_wallCollisionPoint;
 }
 
+//レイキャストヒット情報クリア
+void LineBB::ClearRaycastHitInfos()
+{
+	m_raycastSegment.hitInfos.clear();
+}
+
 //レイキャストセグメント取得
 CollisionData::RaycastSegment& LineBB::GetRaycastSegment()
 {

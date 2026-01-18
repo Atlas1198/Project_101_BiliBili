@@ -1,7 +1,6 @@
 #include "App.h"
 #include <objbase.h>
 
-
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	//アプリケーションクラスのインスタンスを取得
