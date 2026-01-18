@@ -50,7 +50,7 @@ private:
 	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
 	FrameTimer m_frameTimer[BB_NUM];
 
-
+	std::vector<int> m_activationCalledBBIndex; //BB発動コマンド(インデックス指定)
 
 	GameUIManager* m_pUIManager = nullptr; //UIマネージャーへのポインタ
 	CollisionManager* m_pCollisionManager = nullptr; //衝突マネージャーへのポインタ

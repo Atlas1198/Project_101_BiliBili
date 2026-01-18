@@ -38,6 +38,7 @@ class LineBB : public ObjectBase
 
 	DirectX::XMFLOAT3 GetWallCollisionPoint() const;	//壁と最も近い衝突点の取得
 
+	void ClearRaycastHitInfos(); //レイキャストヒット情報クリア
 private:
 	float m_length = 0.0f;						//ラインの長さ
 	DirectX::XMFLOAT3 m_edgePos[2]{};			//エッジの位置(始点、終点)

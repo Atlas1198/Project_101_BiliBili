@@ -91,7 +91,7 @@ void BB::Update()
 
 		for (auto& eb : m_electricityBB)
 		{
-			eb->Update();
+			if(eb->IsActive()) eb->Update();
 		}
 	}
 
@@ -198,8 +198,8 @@ void BB::SetTeamId(int id)
 //ビリビリの有効化
 void BB::ActivateBB()
 {
-	m_activatedBB = true;								//発動中フラグを立てる
-	m_electricityBB[0]->SetActive(true);				//片方の電流をオン
+	m_activatedBB = true;									//発動中フラグを立てる
+	m_electricityBB[0]->SetActive(true);					//片方の電流をオン
 	m_electricityBB[0]->GetColliderSet()->SetActive(true);	//コライダーもオン
 	for(auto& line : m_lineBB)
 	{
