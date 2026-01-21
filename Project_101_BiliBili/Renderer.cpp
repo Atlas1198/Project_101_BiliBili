@@ -28,6 +28,30 @@ Renderer::~Renderer()
 			pPipelineState = nullptr;
 		}
 	}
+	for (auto& pPipelineState : m_pPipelineStateWorldNoLight)
+	{
+		if (pPipelineState)
+		{
+			delete pPipelineState;
+			pPipelineState = nullptr;
+		}
+	}
+	for (auto& pPipelineState : m_pPipelineStateEffect)
+	{
+		if (pPipelineState)
+		{
+			delete pPipelineState;
+			pPipelineState = nullptr;
+		}
+	}
+	for (auto& pPipelineState : m_pPipelineStateScreen)
+	{
+		if (pPipelineState)
+		{
+			delete pPipelineState;
+			pPipelineState = nullptr;
+		}
+	}
 	//オブジェクト用定数バッファの解放
 	for (int i = 0; i < Engine::FRAME_BUFFER_COUNT; i++)
 	{
