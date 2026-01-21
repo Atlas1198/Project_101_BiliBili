@@ -149,7 +149,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pGrounds.push_back(
 		new Ground(
 			MESH_TYPE::QUAD,
-			XMFLOAT3(0.0f, -6.5f, 12.0f), //位置
+			XMFLOAT3(0.0f, -6.5f, 11.0f), //位置
 			XMFLOAT3(0.0f, 180.0f, 0.0f), //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
@@ -1964,11 +1964,11 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		&m_wallInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/fbx/wall_screw_ST.fbx",	//テクスチャのファイル名
+		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
 		false,
-		false
+		true
 	);
 
 	CreateRenderInfo(
@@ -1977,11 +1977,11 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		&m_wallPassInfo,				//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/fbx/hole_ST.fbx",	//テクスチャのファイル名
-		true,
+		L"asset/fbx/hole/ST_hole.fbx",	//テクスチャのファイル名
+		false,
 		BILLBOARD_NONE,
 		false,
-		false
+		true
 	);
 
 	CreateRenderInfo(
@@ -2016,10 +2016,10 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		&m_groundInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/fbx/stage_main_ST.fbx",	//テクスチャのファイル名
+		L"asset/fbx/stage/ST_stage.fbx",	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
 		false,
-		false
+		true
 	);
 }
