@@ -124,6 +124,12 @@ TexSplitInfo& UIBase::GetTexSplitInfo()
 	return m_texSplitInfo;
 }
 
+// ワールド変換情報の設定
+void UIBase::SetWorldTransform(const Transform3D& world)
+{
+	m_world = world;
+}
+
 //ローカル変換情報の設定
 void UIBase::SetLocalTransform(const Transform3D& local)
 {
@@ -138,6 +144,9 @@ void UIBase::SetColor(DirectX::XMFLOAT4 color) {
 // アクティブフラグの設定
 void UIBase::SetActive(bool isActive) {
 	m_isActive = isActive;
+	for(auto& child : m_children) {
+		child->SetActive(isActive);	//子も同様に設定
+	}
 }
 
 //UV矩形の設定

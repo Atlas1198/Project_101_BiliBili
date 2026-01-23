@@ -192,6 +192,10 @@ void PlayerManager::OnSetBB(int teamID, bool isActive)
 			player->SetBB(isActive);
 		}
 	}
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+		EventType::SET_BULLET_UI_ACTIVE,
+		{ teamID, !isActive }
+	);
 }
 
 //更新
@@ -202,6 +206,17 @@ void PlayerManager::UpdateOverride()
 		player->Update();
 	}
 
+	EventManager::GetInstance()->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+		m_pPlayer[0]->GetTeamID(), m_pPlayer[0]->GetPosition(), m_pPlayer[1]->GetPosition()
+	));
+
+	EventManager::GetInstance()->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+		m_pPlayer[2]->GetTeamID(), m_pPlayer[2]->GetPosition(), m_pPlayer[3]->GetPosition()
+	));
+
+#ifdef DEBUG
 	{
 		auto keyInput = m_pInputManager->GetInputInfo()->key;
 		if (keyInput.one.trigger)
@@ -214,6 +229,7 @@ void PlayerManager::UpdateOverride()
 			OnTakeDamage(1, 100.0f);
 		}
 	}
+#endif // DEBUG
 }
 
 //衝突後処理
@@ -283,7 +299,7 @@ void PlayerManager::PrepareRenderInfo(
 			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 			normalTextures[i],		//テクスチャのファイル名
 			false,							//ライト無効
-			BILLBOARD_TYPE::BILLBOARD_SPHERICAL
+			BILLBOARD_TYPE::BILLBOARD_FIX_X
 		);
 
 		CreateRenderInfo(
@@ -294,7 +310,7 @@ void PlayerManager::PrepareRenderInfo(
 			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 			bbTextures[i],		//テクスチャのファイル名
 			false,							//ライト無効
-			BILLBOARD_TYPE::BILLBOARD_SPHERICAL
+			BILLBOARD_TYPE::BILLBOARD_FIX_X
 		);
 	}
 }

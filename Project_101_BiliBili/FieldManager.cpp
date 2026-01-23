@@ -150,7 +150,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		new Ground(
 			MESH_TYPE::QUAD,
 			XMFLOAT3(0.0f, -6.5f, 11.0f), //位置
-			XMFLOAT3(0.0f, 180.0f, 0.0f), //回転
+			XMFLOAT3(0.0f, 0.0f, 0.0f), //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 			true,						 //アクティブフラグ
@@ -1965,10 +1965,10 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",	//テクスチャのファイル名
-		true,
+		false,
 		BILLBOARD_NONE,
 		false,
-		true
+		false
 	);
 
 	CreateRenderInfo(
@@ -1981,7 +1981,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		false,
 		BILLBOARD_NONE,
 		false,
-		true
+		false
 	);
 
 	CreateRenderInfo(
@@ -2017,9 +2017,9 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		L"asset/fbx/stage/ST_stage.fbx",	//テクスチャのファイル名
-		true,
+		false,
 		BILLBOARD_NONE,
 		false,
-		true
+		false
 	);
 }

@@ -8,8 +8,8 @@
 class TitleUIManager : public UIManagerBase
 {
 public:	//公開関数
-	TitleUIManager(float screenWidth, float screenHeight)
-		: UIManagerBase(screenWidth, screenHeight) {}
+	TitleUIManager(CameraInfo* cameraInfo, float screenWidth, float screenHeight)
+		: UIManagerBase(cameraInfo, screenWidth, screenHeight) {}
 	~TitleUIManager();	//デストラクタ
 
 	//メイン処理関数

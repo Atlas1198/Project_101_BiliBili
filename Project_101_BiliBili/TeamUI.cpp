@@ -145,7 +145,7 @@ void TeamUI::ShakeUI()
 	if (m_isHitEffect)
 	{
 		//シェイク処理
-		float shakeAmount = 7.0f;	//シェイクの強さ
+		float shakeAmount = 14.0f;	//シェイクの強さ
 		position.x = m_originalPosition.x + (rand() % (int)(shakeAmount * 2)) - shakeAmount;
 		position.y = m_originalPosition.y + (rand() % (int)(shakeAmount * 2)) - shakeAmount;
 		m_local.position = position;

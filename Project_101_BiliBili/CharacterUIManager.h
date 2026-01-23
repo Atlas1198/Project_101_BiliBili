@@ -11,10 +11,11 @@ public:	//公開関数
 
 public:
 	CharacterUIManager(
+		CameraInfo* cameraInfo,
 		float screenWidth = 0.0f,
 		float screenHeight = 0.0f
 	)
-		: UIManagerBase(screenWidth, screenHeight)
+		: UIManagerBase(cameraInfo, screenWidth, screenHeight)
 	{};	//コンストラクタ
 	~CharacterUIManager();	//デストラクタ
 

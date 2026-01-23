@@ -8,7 +8,7 @@ class BulletCountUI : public UIBase
 {
 public:
 	//テクスチャファイルパス定数(仮)
-		static constexpr const wchar_t* BULLET_TEXTURE_PATH = L"asset/texture/UI/UI_Bullet.png"; // 弾数テクスチャパス
+		static constexpr const wchar_t* BULLET_TEXTURE_PATH = L"asset/texture/game_scene/UI_INGAME_Rest.png"; // 弾数テクスチャパス
 public:
 	BulletCountUI(
 		DirectX::XMFLOAT3 position = { 0,0,0 },
