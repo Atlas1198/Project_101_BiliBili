@@ -38,18 +38,30 @@ void GameUIManager::InitializeOverride(
 		DIRECTION::RIGHT									//オフセット方向
 	));
 
-	m_pBulletCountUI1 = (new BulletCountUI(
-		DirectX::XMFLOAT3{ -430.0f, 360.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ -220.0f, 209.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-		0											//描画順序
-	));
-	m_pBulletCountUI2 = (new BulletCountUI(
-		DirectX::XMFLOAT3{ 430.0f, 360.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 220.0f, 209.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-		0											//描画順序
-	));
+	const DirectX::XMFLOAT3 bulletUIBaseScale = { 110.0f, 104.5f, 1.0f }; // 弾数UIの基本スケール
+	const float scaleFactor = 1.5f; // スケール調整用の係数
+	const DirectX::XMFLOAT3 adjustedScale = { bulletUIBaseScale.x * scaleFactor, bulletUIBaseScale.y * scaleFactor, bulletUIBaseScale.z };
+	for (auto& bulletUI : m_pBulletCountUI1)
+	{
+		bulletUI = (new BulletCountUI(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+			adjustedScale,	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
+			0											//描画順序
+		));
+		bulletUI->SetActive(false); // 初期状態では非表示にする
+	}
+
+	for (auto& bulletUI : m_pBulletCountUI2)
+	{
+		bulletUI = (new BulletCountUI(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+			adjustedScale,	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
+			0											//描画順序
+		));
+		bulletUI->SetActive(false); // 初期状態では非表示にする
+	}
 
 	m_pCutInUI1 = (new CutInUI(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
@@ -104,14 +116,14 @@ void GameUIManager::InitializeOverride(
 		m_pTeamUI2->Initialize(textureManager, meshManager);
 	}
 
-	//弾数UIの初期化
-	if(m_pBulletCountUI1)
+
+	for(auto& bulletUI : m_pBulletCountUI1)
 	{
-		m_pBulletCountUI1->Initialize(textureManager, meshManager);
+		bulletUI->Initialize(textureManager, meshManager);
 	}
-	if(m_pBulletCountUI2)
+	for(auto& bulletUI : m_pBulletCountUI2)
 	{
-		m_pBulletCountUI2->Initialize(textureManager, meshManager);
+		bulletUI->Initialize(textureManager, meshManager);
 	}
 
 	//カットインUIの初期化
@@ -123,8 +135,14 @@ void GameUIManager::InitializeOverride(
 	//操作ガイド画像UIの初期化
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pTeamUI1));				//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pTeamUI2));				//ルートUIオブジェクト配列に追加
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pBulletCountUI1));		//ルートUIオブジェクト配列に追加
-	m_roots.push_back(std::unique_ptr<UIBase>(m_pBulletCountUI2));		//ルートUIオブジェクト配列に追加
+	for (auto& bulletUI : m_pBulletCountUI1)
+	{
+		m_roots.push_back(std::unique_ptr<UIBase>(bulletUI));			//ルートUIオブジェクト配列に追加
+	}
+	for (auto& bulletUI : m_pBulletCountUI2)
+	{
+		m_roots.push_back(std::unique_ptr<UIBase>(bulletUI));			//ルートUIオブジェクト配列に追加
+	}
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI1));			//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI2));			//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pOperationGuideImage));	//ルートUIオブジェクト配列に追加
@@ -204,6 +222,31 @@ void GameUIManager::InitializeOverride(
 			);
 		}
 	);
+
+	using bulletArgs = std::tuple<int, DirectX::XMFLOAT3, DirectX::XMFLOAT3>;
+	EventManager::GetInstance()->Subscribe<bulletArgs>(
+		EventType::SET_BULLET_UI_POSITION,
+		[this](std::shared_ptr<bulletArgs> data)
+		{
+			SetBulletCountPosition(
+				std::get<0>(*data),
+				std::get<1>(*data),
+				std::get<2>(*data)
+			);
+		}
+	);
+
+	using bulletBoolArgs = std::pair<int, bool>;
+	EventManager::GetInstance()->Subscribe<bulletBoolArgs>(
+		EventType::SET_BULLET_UI_ACTIVE,
+		[this](std::shared_ptr<bulletBoolArgs> data)
+		{
+			SetBulletCountActive(
+				std::get<0>(*data),
+				std::get<1>(*data)
+			);
+		}
+	);
 }
 
 //更新
@@ -214,6 +257,35 @@ void GameUIManager::UpdateOverride()
 //終了
 void GameUIManager::FinalizeOverride()
 {
+}
+
+void GameUIManager::SetBulletCountPosition(int teamID, const DirectX::XMFLOAT3& position1, const DirectX::XMFLOAT3& position2)
+{
+	const float offsetY = 60.0f; // Y座標のオフセット値
+
+	//取得座標をスクリーン座標に変換
+	DirectX::XMFLOAT2 screenPos1 = m_pCameraInfo->ConvertWorldToScreen(position1, m_screenWidth, m_screenHeight);
+	DirectX::XMFLOAT2 screenPos2 = m_pCameraInfo->ConvertWorldToScreen(position2, m_screenWidth, m_screenHeight);
+	DirectX::XMFLOAT3 adjustedPosition1 = DirectX::XMFLOAT3{ screenPos1.x, screenPos1.y + offsetY, 0.0f };
+	DirectX::XMFLOAT3 adjustedPosition2 = DirectX::XMFLOAT3{ screenPos2.x, screenPos2.y + offsetY, 0.0f };
+	if (teamID == 0)
+	{
+		auto transform1 = m_pBulletCountUI1[0]->GetLocalTransform();
+		transform1.position = adjustedPosition1;
+		m_pBulletCountUI1[0]->SetLocalTransform(transform1);
+		auto transform2 = m_pBulletCountUI1[1]->GetLocalTransform();
+		transform2.position = adjustedPosition2;
+		m_pBulletCountUI1[1]->SetLocalTransform(transform2);
+	}
+	else if (teamID == 1)
+	{
+		auto transform1 = m_pBulletCountUI2[0]->GetLocalTransform();
+		transform1.position = adjustedPosition1;
+		m_pBulletCountUI2[0]->SetLocalTransform(transform1);
+		auto transform2 = m_pBulletCountUI2[1]->GetLocalTransform();
+		transform2.position = adjustedPosition2;
+		m_pBulletCountUI2[1]->SetLocalTransform(transform2);
+	}
 }
 
 //HP変更時の処理
@@ -234,11 +306,17 @@ void GameUIManager::OnBulletCountChanged(int teamID, int newCount)
 {
 	if (teamID == 0)
 	{
-		m_pBulletCountUI1->SetBulletCount(newCount);
+		for(auto& bulletUI : m_pBulletCountUI1)
+		{
+			bulletUI->SetBulletCount(newCount);
+		}
 	}
 	else if (teamID == 1)
 	{
-		m_pBulletCountUI2->SetBulletCount(newCount);
+		for(auto& bulletUI : m_pBulletCountUI2)
+		{
+			bulletUI->SetBulletCount(newCount);
+		}
 	}
 }
 
@@ -284,4 +362,23 @@ void GameUIManager::ShowResultUI(int winner, int character1ID, int character2ID)
 {
 	m_pResultUI->SetActive(true);
 	m_pResultUI->ShowResult(winner, character1ID, character2ID);
+}
+
+//弾数UIアクティブ設定関数
+void GameUIManager::SetBulletCountActive(int teamID, bool isActive)
+{
+	if (teamID == 0)
+	{
+		for(auto& bulletUI : m_pBulletCountUI1)
+		{
+			bulletUI->SetActive(isActive);
+		}
+	}
+	else if (teamID == 1)
+	{
+		for(auto& bulletUI : m_pBulletCountUI2)
+		{
+			bulletUI->SetActive(isActive);
+		}
+	}
 }

@@ -19,7 +19,7 @@ GameScene::GameScene(float window_width, float window_height)
 	m_pItemManager = new ItemManager();		//アイテム管理クラスの生成
 	m_pBBManager = new BBManager();			//BB管理クラスの生成
 
-	m_pGameUIManager = new GameUIManager(window_width, window_height);	//ゲームUI管理クラスの生成
+	m_pGameUIManager = new GameUIManager(m_pCamera->GetCameraInfo(), window_width, window_height);	//ゲームUI管理クラスの生成
 }
 
 //デストラクタ
@@ -131,8 +131,9 @@ void GameScene::InitializeOverride(
 	m_directionalLight.intensity = 1.5f;
 	m_directionalLight.ambient = 0.2f;
 
-	m_pCamera->SetPosition({ 0.0f, 30.0f, -20.0f });
-	m_pCamera->SetTarget({ 0.0f, 00.0f, 2.0f });
+	m_pCamera->SetPosition({ 0.0f, 40.0f, -14.0f });
+	m_pCamera->SetTarget({ 0.0f, 00.0f, 4.0f });
+	m_pCamera->SetFov(XMConvertToRadians(38.0f));
 
 	m_pGameUIManager->StartFadeIn(0.01f); // ゲームシーンフェードイン
 }
@@ -246,7 +247,35 @@ void GameScene::CountdownUpdate()
 	//カウントダウンUIの表示
 	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
 	{// 1秒ごとにUIを更新
-		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_COUNT_UI, (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND);
+		int second = (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND;
+		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_COUNT_UI, second);
+
+		//残り１秒で弾UIを表示
+		const int showBulletUISecond = 1;
+		if (second == showBulletUISecond)
+		{
+			auto players = m_pPlayerManager->GetPlayers();
+			//弾UI表示イベントをトリガー
+			auto eventManager = EventManager::GetInstance();
+			eventManager->TriggerEvent<std::pair<int, bool>>(
+				EventType::SET_BULLET_UI_ACTIVE,
+				{ players[0]->GetTeamID(), true}
+			);
+			eventManager->TriggerEvent<std::pair<int, bool>>(
+				EventType::SET_BULLET_UI_ACTIVE,
+				{ players[2]->GetTeamID(), true}
+			);
+			//弾UI位置設定イベントをトリガー
+			eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+				EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+					players[0]->GetTeamID(), players[0]->GetPosition(), players[1]->GetPosition()
+				));
+
+			eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+				EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+					players[2]->GetTeamID(), players[2]->GetPosition(), players[3]->GetPosition()
+				));
+		}
 	}
 
 	//カウントダウン終了後、ゲーム状態をプレイに変更

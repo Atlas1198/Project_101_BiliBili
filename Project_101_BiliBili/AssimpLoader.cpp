@@ -71,6 +71,8 @@ bool AssimpLoader::Load(ImportSettings settings)
 	flag |= aiProcess_GenUVCoords;				//UV座標の生成
 	flag |= aiProcess_RemoveRedundantMaterials;	//冗長なマテリアルの削除
 	flag |= aiProcess_OptimizeMeshes;			//メッシュの最適化
+	flag |= aiProcess_ConvertToLeftHanded;		//左手座標系に変換
+
 
 	auto scene = importer.ReadFile(path, flag); //モデル読み込み
 

@@ -12,10 +12,11 @@ class ControllerUIManager : public UIManagerBase
 {
 public:
 	ControllerUIManager(
+		CameraInfo* cameraInfo,
 		float screenWidth = 0.0f,
 		float screenHeight = 0.0f
 	) 
-		: UIManagerBase(screenWidth, screenHeight)
+		: UIManagerBase(cameraInfo, screenWidth, screenHeight)
 	{};
 	~ControllerUIManager() {};
 protected:

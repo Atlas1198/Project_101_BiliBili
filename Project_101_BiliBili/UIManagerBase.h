@@ -19,10 +19,13 @@ class UIManagerBase
 {
 public:	//公開関数
 	UIManagerBase(
+		CameraInfo* cameraInfo,
 		float screenWidth = 0.0f,
 		float screenHeight = 0.0f
 	) 
-		: m_screenWidth(screenWidth),
+		: 
+		m_pCameraInfo(cameraInfo),
+		m_screenWidth(screenWidth),
 		m_screenHeight(screenHeight)
 	{};	//コンストラクタ
 
@@ -70,6 +73,8 @@ protected:
 	bool m_isFading = false;		//フェード中フラグ
 	bool m_isFadeEnd = false;		//フェード終了フラグ
 	float m_fadeDuration = 0.0f;	//フェード時間
+
+	CameraInfo* m_pCameraInfo = nullptr;		//カメラ情報構造体参照
 
 private:
 	uint64_t m_fadeStartEventID = 0;	//フェード開始イベントID

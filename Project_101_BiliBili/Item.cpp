@@ -54,7 +54,6 @@ void Item::ResolveCollisionsOverride()
 			{
 				//EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
 				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
-
 				//アイテム取得エフェクトの発生
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::BB_CUT_IN, std::make_pair(player->GetTeamID(), player->GetCharacterID()));
 			}

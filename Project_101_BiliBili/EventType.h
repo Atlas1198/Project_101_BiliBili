@@ -34,6 +34,8 @@ enum EventType
 	SHOW_FINISH_UI, // void
 	HIDE_COUNT_UI, // void
 	SHOW_RESULT_UI, // void
+	SET_BULLET_UI_POSITION, // int teamID, XMFLOAT3 position1, XMFLOAT3 position2
+	SET_BULLET_UI_ACTIVE, // int teamID, bool isActive
 
 	//フェード関連イベント
 	START_FADE_IN, // float duration
