@@ -4,6 +4,9 @@
 #include "App.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include <algorithm> // clamp
+#include <cmath>
+
 
 using namespace DirectX;
 using namespace CollisionData;
@@ -140,46 +143,72 @@ void Player::ResolveCollisionsOverride()
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
-			//地面に接触している場合はY座標を補正
 			m_isGrounded = true;
+
+			// 落下は止める
 			m_velocity.y = 0.0f;
+
+			// ★ここ：着地時の滑り防止（バネジャンプ後なら水平速度も止める）
+			if (m_isSpringJump)
+			{
+				m_velocity.x = 0.0f;
+				m_velocity.z = 0.0f;
+			}
+
 			m_isSpringJump = false;
 		}
 	}
 
 	for (auto& info : infos)
 	{
+		if (!info.opponent)      // ★NULLチェック
+			continue;
+
 		if (info.opponent->GetTag() == OBJECT_TAG::SPRING)
 		{
 			if (!m_isSpringJump)
 			{
-				// どのスプリングでも同じ方向に飛ぶのではなく、
-				// 「そのスプリングが持つターゲット座標」へ向かって飛ばす
-				Spring* pSpring = static_cast<Spring*>(info.opponent);
-
-				XMFLOAT3 springPos = pSpring->GetPosition();
-				XMFLOAT3 targetPos = pSpring->GetLaunchTarget();
-
-				XMFLOAT3 dir{
-					targetPos.x - springPos.x,
-					targetPos.y - springPos.y,
-					targetPos.z - springPos.z
-				};
-
-				float length = std::sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
-				if (length > 0.0f)
+				Spring* spring = dynamic_cast<Spring*>(info.opponent);
+				if (!spring) continue;
+				if (spring)
 				{
-					dir.x /= length;
-					dir.y /= length;
-					dir.z /= length;
+					const XMFLOAT3 startPos = m_position;                 // ★ここ重要
+					const XMFLOAT3 targetPos = spring->ChooseLaunchTarget();
+
+					const float dx = targetPos.x - startPos.x;
+					const float dy = targetPos.y - startPos.y;
+					const float dz = targetPos.z - startPos.z;
+
+					// 距離に応じて飛行時間(フレーム)を決める
+					// 目安：水平速度 0.9f くらいで飛ばす
+					const float distXZ = std::sqrt(dx * dx + dz * dz);
+
+					const float desiredSpeedXZ = 0.1f; // 好みで調整（大きいほど速く短時間）
+					float T = (desiredSpeedXZ > 0.0001f) ? (distXZ / desiredSpeedXZ) : 30.0f;
+
+					// 早すぎ/遅すぎ防止（15～60フレームに制限）
+					T = std::clamp(T, 15.0f, 60.0f);
+
+					// あなたの重力適用：毎フレーム vy -= GRAVITY
+					const float g = GRAVITY;
+
+					// 目標：Tフレーム後に target に到達
+					// x,z は等速： vx = dx/T, vz = dz/T
+					// y は等加速度： dy = vy0*T - 0.5*g*T^2  -> vy0 = (dy + 0.5*g*T^2)/T
+					const float vx = dx / T;
+					const float vz = dz / T;
+					const float vy = (dy + 0.5f * g * T * T) / T;
+
+					m_velocity.x = vx;
+					m_velocity.z = vz;
+					m_velocity.y = vy;
+
+					m_isGrounded = false;
+					m_isSpringJump = true;
+
+					// 連続ヒット防止（必要なら）
+					// m_ignoreCollisionFrame = 5;
 				}
-
-				// XZ はターゲット方向、Y はジャンプ力（必要ならここを調整）
-				m_velocity.x = dir.x * 1.15f;
-				m_velocity.y = 1.0f;
-				m_velocity.z = dir.z * 1.15f;
-
-				m_isSpringJump = true;
 			}
 		}
 	}
@@ -357,9 +386,12 @@ void Player::Move()
 	m_position.y += m_velocity.y;
 	m_position.z += m_velocity.z;
 
-	m_velocity.x *= 0.95f;
-	m_velocity.y *= 0.95f;
-	m_velocity.z *= 0.95f;
+	if (!m_isSpringJump)
+	{
+		m_velocity.x *= 0.95f;
+		m_velocity.y *= 0.95f;
+		m_velocity.z *= 0.95f;
+	}
 
 	UpdateAnimation();
 
