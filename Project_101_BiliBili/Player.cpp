@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Spring.h"
 #include <DirectXMath.h>
 #include "App.h"
 #include "EventManager.h"
@@ -66,7 +67,7 @@ void Player::UpdateOverride()
 		}
 		else
 		{
-			for (const auto &desc : App::GetInstance()->players)
+			for (const auto& desc : App::GetInstance()->players)
 			{
 				if (desc.first == id)
 				{
@@ -105,7 +106,7 @@ void Player::UpdateOverride()
 		//Scale();
 	}
 }
- 
+
 //衝突解決
 void Player::ResolveCollisionsOverride()
 {
@@ -152,13 +153,17 @@ void Player::ResolveCollisionsOverride()
 		{
 			if (!m_isSpringJump)
 			{
-				XMFLOAT3 currentPos = GetPosition();
-				XMFLOAT3 centerPos(0.0f, -4.0f, 5.0f);
+				// どのスプリングでも同じ方向に飛ぶのではなく、
+				// 「そのスプリングが持つターゲット座標」へ向かって飛ばす
+				Spring* pSpring = static_cast<Spring*>(info.opponent);
+
+				XMFLOAT3 springPos = pSpring->GetPosition();
+				XMFLOAT3 targetPos = pSpring->GetLaunchTarget();
 
 				XMFLOAT3 dir{
-					centerPos.x - currentPos.x,
-					centerPos.y - currentPos.y,
-					centerPos.z - currentPos.z
+					targetPos.x - springPos.x,
+					targetPos.y - springPos.y,
+					targetPos.z - springPos.z
 				};
 
 				float length = std::sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
@@ -169,8 +174,9 @@ void Player::ResolveCollisionsOverride()
 					dir.z /= length;
 				}
 
+				// XZ はターゲット方向、Y はジャンプ力（必要ならここを調整）
 				m_velocity.x = dir.x * 1.15f;
-				m_velocity.y = 1.0f;   // 上方向に跳ねさせたいなら
+				m_velocity.y = 1.0f;
 				m_velocity.z = dir.z * 1.15f;
 
 				m_isSpringJump = true;
@@ -212,7 +218,7 @@ void Player::Move()
 		緑：テンキーの8456 + 右のPlusボタン
 	*/
 
-	
+
 
 	bool up = m_pInputInfo->key.w.down;
 	bool down = m_pInputInfo->key.s.down;
@@ -226,7 +232,7 @@ void Player::Move()
 		switch (id)
 		{
 		case 0:
-			dir = m_pInputInfo->controller[0].leftStick; 
+			dir = m_pInputInfo->controller[0].leftStick;
 			up = m_pInputInfo->key.w.down;
 			down = m_pInputInfo->key.s.down;
 			left = m_pInputInfo->key.a.down;
@@ -290,7 +296,7 @@ void Player::Move()
 			m_position.z -= direction.x * MOVE_SPEED;
 		}
 
-		
+
 		if (dir.x != 0.0f || dir.y != 0.0f)
 		{
 			down = dir.y < -0.5f;
@@ -298,7 +304,7 @@ void Player::Move()
 			left = dir.x < -0.5f;
 			right = dir.x > 0.5f;
 		}
-		
+
 		/*
 		if (down && left) this->direction = 1;
 		else if (down && right) this->direction = 7;
@@ -326,23 +332,23 @@ void Player::Move()
 		}
 		else
 		{
-			if (down && left) 
+			if (down && left)
 				this->direction = 1;
-			else if (down && right) 
+			else if (down && right)
 				this->direction = 7;
-			else if (up && right) 
+			else if (up && right)
 				this->direction = 5;
-			else if (up && left) 
+			else if (up && left)
 				this->direction = 3;
-			else if (up) 
+			else if (up)
 				this->direction = 4;
-			else if (down) 
+			else if (down)
 				this->direction = 0;
-			else if (left) 
+			else if (left)
 				this->direction = 2;
-			else if (right) 
+			else if (right)
 				this->direction = 6;
-			else 
+			else
 				isMoving = false;
 		}
 	}
@@ -416,7 +422,7 @@ void Player::Shoot()
 		switch (id)
 		{
 		case 0:
-			shoot = m_pInputInfo->key.z.trigger|| m_pInputInfo->controller[0].B.trigger;
+			shoot = m_pInputInfo->key.z.trigger || m_pInputInfo->controller[0].B.trigger;
 			break;
 		case 1:
 			shoot = m_pInputInfo->key.c.trigger || m_pInputInfo->controller[1].B.trigger;
@@ -473,12 +479,12 @@ void Player::Shoot()
 //回転
 void Player::Rotate()
 {
-	if(m_pInputInfo->key.left.down)
+	if (m_pInputInfo->key.left.down)
 	{
 		//左回転
 		m_rotation.y -= ROTATE_SPEED;
 	}
-	if(m_pInputInfo->key.right.down)
+	if (m_pInputInfo->key.right.down)
 	{
 		//右回転
 		m_rotation.y += ROTATE_SPEED;

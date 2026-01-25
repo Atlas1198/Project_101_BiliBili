@@ -184,32 +184,38 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-			true,						  //アクティブフラグ
+			XMFLOAT3(13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
+			false,					  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
 		)
 	);
+
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(-22.0f, -5.0f, -7.5f),//位置
+			XMFLOAT3(-24.0f, -5.0f, -7.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-			true,						  //アクティブフラグ
+			XMFLOAT3(-13.0f, -4.0f, -8.0f),	  //発射ターゲット（このスプリング固有）
+			false,					  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
 		)
 	);
+
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(22.0f, -5.0f, -7.5f),//位置
+			XMFLOAT3(24.0f, -5.0f, -7.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-			true,						  //アクティブフラグ
+			XMFLOAT3(13.0f, -4.0f, -8.0f),	  //発射ターゲット（このスプリング固有）
+			false,					  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
 		)
 	);
+
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
@@ -217,7 +223,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
 			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-			true,						  //アクティブフラグ
+			XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
+			false,					  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
 		)
 	);
@@ -1035,6 +1042,63 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		break;
 
 	case 5:	//ステージ5
+
+		//-------------
+		//バネ
+		//-------------
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(24.0f, -5.0f, 18.5f),//位置
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+				XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+				XMFLOAT3(13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
+				true,					  //アクティブフラグ
+				ColliderType::BOX			  //コライダータイプ
+			)
+		);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-24.0f, -5.0f, -7.5f),//位置
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+				XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+				XMFLOAT3(-13.0f, -4.0f, -8.0f),	  //発射ターゲット（このスプリング固有）
+				true,					  //アクティブフラグ
+				ColliderType::BOX			  //コライダータイプ
+			)
+		);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(24.0f, -5.0f, -7.5f),//位置
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+				XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+				XMFLOAT3(13.0f, -4.0f, -8.0f),	  //発射ターゲット（このスプリング固有）
+				true,					  //アクティブフラグ
+				ColliderType::BOX			  //コライダータイプ
+			)
+		);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-24.0f, -5.0f, 18.5f),//位置
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+				XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
+				true,					  //アクティブフラグ
+				ColliderType::BOX			  //コライダータイプ
+			)
+		);
+
 		//-------------
 		//真ん中側
 		//-------------
@@ -1834,7 +1898,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		BILLBOARD_NONE,
 		false,
 		false
-		);
+	);
 
 	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
