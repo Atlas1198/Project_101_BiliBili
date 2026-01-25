@@ -1,8 +1,12 @@
 #include "Player.h"
+#include "Spring.h"
 #include <DirectXMath.h>
 #include "App.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include <algorithm> // clamp
+#include <cmath>
+
 
 using namespace DirectX;
 using namespace CollisionData;
@@ -66,7 +70,7 @@ void Player::UpdateOverride()
 		}
 		else
 		{
-			for (const auto &desc : App::GetInstance()->players)
+			for (const auto& desc : App::GetInstance()->players)
 			{
 				if (desc.first == id)
 				{
@@ -105,7 +109,7 @@ void Player::UpdateOverride()
 		//Scale();
 	}
 }
- 
+
 //衝突解決
 void Player::ResolveCollisionsOverride()
 {
@@ -139,41 +143,72 @@ void Player::ResolveCollisionsOverride()
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
-			//地面に接触している場合はY座標を補正
 			m_isGrounded = true;
+
+			// 落下は止める
 			m_velocity.y = 0.0f;
+
+			// ★ここ：着地時の滑り防止（バネジャンプ後なら水平速度も止める）
+			if (m_isSpringJump)
+			{
+				m_velocity.x = 0.0f;
+				m_velocity.z = 0.0f;
+			}
+
 			m_isSpringJump = false;
 		}
 	}
 
 	for (auto& info : infos)
 	{
+		if (!info.opponent)      // ★NULLチェック
+			continue;
+
 		if (info.opponent->GetTag() == OBJECT_TAG::SPRING)
 		{
 			if (!m_isSpringJump)
 			{
-				XMFLOAT3 currentPos = GetPosition();
-				XMFLOAT3 centerPos(0.0f, -4.0f, 5.0f);
-
-				XMFLOAT3 dir{
-					centerPos.x - currentPos.x,
-					centerPos.y - currentPos.y,
-					centerPos.z - currentPos.z
-				};
-
-				float length = std::sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
-				if (length > 0.0f)
+				Spring* spring = dynamic_cast<Spring*>(info.opponent);
+				if (!spring) continue;
+				if (spring)
 				{
-					dir.x /= length;
-					dir.y /= length;
-					dir.z /= length;
+					const XMFLOAT3 startPos = m_position;                 // ★ここ重要
+					const XMFLOAT3 targetPos = spring->ChooseLaunchTarget();
+
+					const float dx = targetPos.x - startPos.x;
+					const float dy = targetPos.y - startPos.y;
+					const float dz = targetPos.z - startPos.z;
+
+					// 距離に応じて飛行時間(フレーム)を決める
+					// 目安：水平速度 0.9f くらいで飛ばす
+					const float distXZ = std::sqrt(dx * dx + dz * dz);
+
+					const float desiredSpeedXZ = 0.1f; // 好みで調整（大きいほど速く短時間）
+					float T = (desiredSpeedXZ > 0.0001f) ? (distXZ / desiredSpeedXZ) : 30.0f;
+
+					// 早すぎ/遅すぎ防止（15～60フレームに制限）
+					T = std::clamp(T, 15.0f, 60.0f);
+
+					// あなたの重力適用：毎フレーム vy -= GRAVITY
+					const float g = GRAVITY;
+
+					// 目標：Tフレーム後に target に到達
+					// x,z は等速： vx = dx/T, vz = dz/T
+					// y は等加速度： dy = vy0*T - 0.5*g*T^2  -> vy0 = (dy + 0.5*g*T^2)/T
+					const float vx = dx / T;
+					const float vz = dz / T;
+					const float vy = (dy + 0.5f * g * T * T) / T;
+
+					m_velocity.x = vx;
+					m_velocity.z = vz;
+					m_velocity.y = vy;
+
+					m_isGrounded = false;
+					m_isSpringJump = true;
+
+					// 連続ヒット防止（必要なら）
+					// m_ignoreCollisionFrame = 5;
 				}
-
-				m_velocity.x = dir.x * 1.15f;
-				m_velocity.y = 1.0f;   // 上方向に跳ねさせたいなら
-				m_velocity.z = dir.z * 1.15f;
-
-				m_isSpringJump = true;
 			}
 		}
 	}
@@ -212,7 +247,7 @@ void Player::Move()
 		緑：テンキーの8456 + 右のPlusボタン
 	*/
 
-	
+
 
 	bool up = m_pInputInfo->key.w.down;
 	bool down = m_pInputInfo->key.s.down;
@@ -226,7 +261,7 @@ void Player::Move()
 		switch (id)
 		{
 		case 0:
-			dir = m_pInputInfo->controller[0].leftStick; 
+			dir = m_pInputInfo->controller[0].leftStick;
 			up = m_pInputInfo->key.w.down;
 			down = m_pInputInfo->key.s.down;
 			left = m_pInputInfo->key.a.down;
@@ -290,7 +325,7 @@ void Player::Move()
 			m_position.z -= direction.x * MOVE_SPEED;
 		}
 
-		
+
 		if (dir.x != 0.0f || dir.y != 0.0f)
 		{
 			down = dir.y < -0.5f;
@@ -298,7 +333,7 @@ void Player::Move()
 			left = dir.x < -0.5f;
 			right = dir.x > 0.5f;
 		}
-		
+
 		/*
 		if (down && left) this->direction = 1;
 		else if (down && right) this->direction = 7;
@@ -326,23 +361,23 @@ void Player::Move()
 		}
 		else
 		{
-			if (down && left) 
+			if (down && left)
 				this->direction = 1;
-			else if (down && right) 
+			else if (down && right)
 				this->direction = 7;
-			else if (up && right) 
+			else if (up && right)
 				this->direction = 5;
-			else if (up && left) 
+			else if (up && left)
 				this->direction = 3;
-			else if (up) 
+			else if (up)
 				this->direction = 4;
-			else if (down) 
+			else if (down)
 				this->direction = 0;
-			else if (left) 
+			else if (left)
 				this->direction = 2;
-			else if (right) 
+			else if (right)
 				this->direction = 6;
-			else 
+			else
 				isMoving = false;
 		}
 	}
@@ -351,9 +386,12 @@ void Player::Move()
 	m_position.y += m_velocity.y;
 	m_position.z += m_velocity.z;
 
-	m_velocity.x *= 0.95f;
-	m_velocity.y *= 0.95f;
-	m_velocity.z *= 0.95f;
+	if (!m_isSpringJump)
+	{
+		m_velocity.x *= 0.95f;
+		m_velocity.y *= 0.95f;
+		m_velocity.z *= 0.95f;
+	}
 
 	UpdateAnimation();
 
@@ -416,7 +454,7 @@ void Player::Shoot()
 		switch (id)
 		{
 		case 0:
-			shoot = m_pInputInfo->key.z.trigger|| m_pInputInfo->controller[0].B.trigger;
+			shoot = m_pInputInfo->key.z.trigger || m_pInputInfo->controller[0].B.trigger;
 			break;
 		case 1:
 			shoot = m_pInputInfo->key.c.trigger || m_pInputInfo->controller[1].B.trigger;
@@ -473,12 +511,12 @@ void Player::Shoot()
 //回転
 void Player::Rotate()
 {
-	if(m_pInputInfo->key.left.down)
+	if (m_pInputInfo->key.left.down)
 	{
 		//左回転
 		m_rotation.y -= ROTATE_SPEED;
 	}
-	if(m_pInputInfo->key.right.down)
+	if (m_pInputInfo->key.right.down)
 	{
 		//右回転
 		m_rotation.y += ROTATE_SPEED;

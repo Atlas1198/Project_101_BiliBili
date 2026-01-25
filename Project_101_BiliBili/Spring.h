@@ -1,29 +1,44 @@
 #pragma once
 #include <d3d12.h>
 #include <DirectXMath.h>
+#include <vector>
+#include <random>
 #include "ObjectBase.h"
 
-//壁クラス
 class Spring : public ObjectBase
 {
 public:
-	Spring(	//コンストラクタ(引数あり)
-		MESH_TYPE meshType,			//メッシュタイプ
-		DirectX::XMFLOAT3 position,				//座標
-		DirectX::XMFLOAT3 rotation,				//回転
-		DirectX::XMFLOAT3 scale,				//スケール
-		DirectX::XMFLOAT3 velocity,				//移動速度
-		bool isActive = true,					//アクティブフラグ
-		ColliderType colliderType =				//コライダータイプ
-		ColliderType::BOX,
-		DirectX::XMFLOAT3 collisionBoxSize =	//コライダーのボックスサイズ
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool collisionIsTrigger = true			//コライダーのトリガーフラグ
-	);
-	~Spring() {};	//デストラクタ
+    Spring(
+        MESH_TYPE meshType,
+        DirectX::XMFLOAT3 position,
+        DirectX::XMFLOAT3 rotation,
+        DirectX::XMFLOAT3 scale,
+        DirectX::XMFLOAT3 velocity,
+        DirectX::XMFLOAT3 launchTarget,   // ← 今のあなたのFieldManagerに合わせて維持
+        bool isActive = true,
+        ColliderType colliderType = ColliderType::BOX,
+        DirectX::XMFLOAT3 collisionBoxSize = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
+        bool collisionIsTrigger = true
+    );
 
-	void UpdateOverride() override;				//更新
-	void ResolveCollisionsOverride() override;	//衝突解決
+    ~Spring() {}
+
+    // 単発（固定）
+    void SetLaunchTarget(const DirectX::XMFLOAT3& target);
+
+    // 複数（ランダム可）
+    void SetLaunchTargets(const std::vector<DirectX::XMFLOAT3>& targets, bool random = true);
+
+    // Playerが衝突時に呼ぶ（ランダムならここで選ぶ）
+    DirectX::XMFLOAT3 ChooseLaunchTarget() const;
+
+    void UpdateOverride() override;
+    void ResolveCollisionsOverride() override;
 
 private:
+    std::vector<DirectX::XMFLOAT3> m_launchTargets;
+    bool m_randomLaunch = false;
+
+    // ランダム用（毎回生成しないようにメンバに）
+    mutable std::mt19937 m_rng;
 };

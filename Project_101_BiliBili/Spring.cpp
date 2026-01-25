@@ -1,37 +1,71 @@
 #include "Spring.h"
-#include "EventManager.h"
+#include <chrono>
 
 using namespace DirectX;
-using namespace CollisionData;
 
-//コンストラクタ
-Spring::Spring(MESH_TYPE meshType, 
-	DirectX::XMFLOAT3 position, 
-	DirectX::XMFLOAT3 rotation, 
-	DirectX::XMFLOAT3 scale, 
-	DirectX::XMFLOAT3 velocity, 
-	bool isActive, 
-	ColliderType colliderType, 
-	DirectX::XMFLOAT3 collisionBoxSize, 
-	bool collisionIsTrigger)
-	: ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::SPRING, COLLISION_LAYER::SPRING)
+Spring::Spring(
+    MESH_TYPE meshType,
+    XMFLOAT3 position,
+    XMFLOAT3 rotation,
+    XMFLOAT3 scale,
+    XMFLOAT3 velocity,
+    XMFLOAT3 launchTarget,
+    bool isActive,
+    ColliderType colliderType,
+    XMFLOAT3 collisionBoxSize,
+    bool collisionIsTrigger
+)
+    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::SPRING, CollisionData::COLLISION_LAYER::SPRING)
 {
-	m_isDrawn = true;
+    // 乱数初期化
+    const auto seed = static_cast<unsigned>(
+        std::chrono::high_resolution_clock::now().time_since_epoch().count()
+        );
+    m_rng.seed(seed);
 
-	m_pColliderSet->AddCollider(
-		ColliderType::BOX,
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		scale,
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
-	);
+    // デフォルトは「単発ターゲット」
+    m_launchTargets.clear();
+    m_launchTargets.push_back(launchTarget);
+    m_randomLaunch = false;
+
+    // Collider作るならここ（あなたのSpringの実装に合わせて）
+    m_pColliderSet->AddCollider(
+        ColliderType::BOX,
+        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+        scale,
+        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
+    );
 }
 
-//更新
-void Spring::UpdateOverride()
+void Spring::SetLaunchTarget(const XMFLOAT3& target)
 {
+    m_launchTargets.clear();
+    m_launchTargets.push_back(target);
+    m_randomLaunch = false;
 }
 
-//衝突解決
-void Spring::ResolveCollisionsOverride()
+void Spring::SetLaunchTargets(const std::vector<XMFLOAT3>& targets, bool random)
 {
+    m_launchTargets = targets;
+    m_randomLaunch = random;
 }
+
+XMFLOAT3 Spring::ChooseLaunchTarget() const
+{
+    if (m_launchTargets.empty())
+    {
+        // 念のため：未設定なら自分の位置へ（飛ばない）
+        return GetPosition();
+    }
+
+    if (!m_randomLaunch || m_launchTargets.size() == 1)
+    {
+        return m_launchTargets[0];
+    }
+
+    std::uniform_int_distribution<size_t> dist(0, m_launchTargets.size() - 1);
+    return m_launchTargets[dist(m_rng)];
+}
+
+void Spring::UpdateOverride() {}
+void Spring::ResolveCollisionsOverride() {}
