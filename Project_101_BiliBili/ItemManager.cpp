@@ -10,16 +10,16 @@
 using namespace DirectX;
 
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ItemManager::ItemManager()
 {
-	//TODO: ’n–Ê‚Æ•ÇƒIƒuƒWƒFƒNƒg‚Ì¶¬
+	//TODO: åœ°é¢ã¨å£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ItemManager::~ItemManager()
 {
-	//’n–ÊƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//åœ°é¢ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& item : m_pItems)
 	{
 		delete item;
@@ -28,7 +28,7 @@ ItemManager::~ItemManager()
 	m_pItems.clear();
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
 	m_pCollisionManager = &collisionManager;
@@ -45,7 +45,7 @@ void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager
 void ItemManager::SpawnItem()
 {
 
-	// X: -15.0f ~ 15.0f, Z: -10.0f ~ 20.0f ‚Ì”ÍˆÍ‚Åƒ‰ƒ“ƒ_ƒ€‚ÈˆÊ’u‚ÉƒAƒCƒeƒ€‚ğ¶¬
+	// X: -15.0f ~ 15.0f, Z: -10.0f ~ 20.0f ã®ç¯„å›²ã§ãƒ©ãƒ³ãƒ€ãƒ ãªä½ç½®ã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’ç”Ÿæˆ
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -55,21 +55,21 @@ void ItemManager::SpawnItem()
 	m_pItems.push_back(
 		new Item(
 			MESH_TYPE::QUAD,
-			XMFLOAT3(xDist(gen), -4.0f, zDist(gen)),	//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-			XMFLOAT3(3.0f, 3.0f, 3.0f),	//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-			true						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
+			XMFLOAT3(xDist(gen), -4.0f, zDist(gen)),	//ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//å›è»¢
+			XMFLOAT3(3.0f, 3.0f, 3.0f),	//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	//ç§»å‹•é€Ÿåº¦
+			true						//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
 		)
 	);
 
 	m_pItems.back()->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
 }
 
-//XV
+//æ›´æ–°
 void ItemManager::UpdateOverride()
 {
-	if (m_frameTimer.Peek() >= ITEM_RESPAWN)
+	if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
 	{
 		if (!skippedFirstItem)
 		{
@@ -82,6 +82,11 @@ void ItemManager::UpdateOverride()
 		m_frameTimer.Mark();
 	}
 
+	if (!applyNewSpawnRate && m_totalTimer.Peek() >= 180.0f)
+	{
+		applyNewSpawnRate = true;
+	}
+
 	for(auto& i : m_pItems)
 	{
 		if (i->IsActive())
@@ -91,21 +96,21 @@ void ItemManager::UpdateOverride()
 	}
 }
 
-//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 void ItemManager::SubmitDrawsOverride(Renderer& renderer)
 {
-	//’n–Ê•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//åœ°é¢æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& item : m_pItems)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*item,		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_itemInfo	//’n–Ê•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*item,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_itemInfo	//åœ°é¢æç”»æƒ…å ±
 		);
 	}
 }
 
-//Õ“ËŒãˆ—
+//è¡çªå¾Œå‡¦ç†
 void ItemManager::ResolveCollisionsOverride()
 {
 	for (auto& i : m_pItems)
@@ -117,7 +122,7 @@ void ItemManager::ResolveCollisionsOverride()
 	}
 }
 
-//I—¹
+//çµ‚äº†
 void ItemManager::FinalizeOverride()
 {
 	m_pItems.clear();
@@ -125,19 +130,19 @@ void ItemManager::FinalizeOverride()
 	m_itemInfo.clear();
 }
 
-//ƒIƒuƒWƒFƒNƒg‚Ì•`‰æî•ñ¶¬
+//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æç”»æƒ…å ±ç”Ÿæˆ
 void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-	//•`‰æî•ñ¶¬ŠÖ”‚ğŒÄ‚Ño‚µA•`‰æî•ñ‚ğì¬
+	//æç”»æƒ…å ±ç”Ÿæˆé–¢æ•°ã‚’å‘¼ã³å‡ºã—ã€æç”»æƒ…å ±ã‚’ä½œæˆ
 	CreateRenderInfo(
-		textureManager,						//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,						//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_itemInfo,						//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		MESH_TYPE::QUAD,					//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_MASKED,			//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		itemTexPath,						//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
-		false,								//ƒ‰ƒCƒg–³Œø
-		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ƒrƒ‹ƒ{[ƒhƒ^ƒCƒv
+		textureManager,						//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,						//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_itemInfo,						//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::QUAD,					//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_MODE::BLEND_MASKED,			//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		itemTexPath,						//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		false,								//ãƒ©ã‚¤ãƒˆç„¡åŠ¹
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—
 	);
 
 }
