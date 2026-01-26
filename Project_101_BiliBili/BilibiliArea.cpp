@@ -25,14 +25,14 @@ BilibiliArea::BilibiliArea(
     SetActive(true);
 
     m_pColliderSet->AddCollider(
-        ColliderType::BOX,
+        ColliderType::SPHERE,
         XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(3.0f, 3.0f, 3.0f),
+        XMFLOAT3(10.0f, 10.0f, 10.0f),
         XMFLOAT3(0.0f, 0.0f, 0.0f)
     );
 }
 
-//ƒvƒŒƒCƒ„[ˆÊ’u‚ÌÝ’è
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®ã®è¨­å®š
 void BilibiliArea::SetPlayerPos(const DirectX::XMFLOAT3& position)
 {
     m_position = position;
@@ -54,15 +54,15 @@ void BilibiliArea::UpdateOverride()
 
     SetPosition(m_position);
 
-    // ‘O‰ñˆÊ’u
+    // å‰å›žä½ç½®
     //DirectX::XMFLOAT3 oldPos = m_position;
 
-    //// ˆÚ“®
+    //// ç§»å‹•
     //m_position.x += m_direction.x * m_speed;
     //m_position.y += m_direction.y * m_speed;
     //m_position.z += m_direction.z * m_speed;
 
-    //// ‹——£‰ÁŽZ
+    //// è·é›¢åŠ ç®—
     //float dx = m_position.x - oldPos.x;
     //float dy = m_position.y - oldPos.y;
     //float dz = m_position.z - oldPos.z;
@@ -70,7 +70,7 @@ void BilibiliArea::UpdateOverride()
 
     //SetPosition(m_position);
 
-    ////’e‚Ì‘¶ÝŽžŠÔ
+    ////å¼¾ã®å­˜åœ¨æ™‚é–“
     //m_livedTime += 1.0f / 60.0f;
     //if (m_livedTime >= m_lifeTime || m_traveled >= m_maxDistance)
     //{
