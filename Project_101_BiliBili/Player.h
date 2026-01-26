@@ -5,22 +5,23 @@
 #include "SharedStruct.h"
 #include "FrameTimer.h"
 
-//ƒvƒŒƒCƒ„[ƒNƒ‰ƒX
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¯ãƒ©ã‚¹
 class Player : public ObjectBase
 {
-public:	//ŒöŠJ’è”
-	inline static float MOVE_SPEED = 0.2f;		//ˆÚ“®‘¬“x
+public:	//å…¬é–‹å®šæ•°
+	inline static float MOVE_SPEED = 0.2f;		//ç§»å‹•é€Ÿåº¦
 	inline static float BULLET_SPEED = 0.2f;
-	static constexpr float ROTATE_SPEED = 3.0f;	//‰ñ“]‘¬“x
-	static constexpr float GRAVITY = 0.02f;		//d—Í
+	static constexpr float ROTATE_SPEED = 3.0f;	//å›è»¢é€Ÿåº¦
+	static constexpr float GRAVITY = 0.02f;		//é‡åŠ›
 	static constexpr float RUN_DELAY = 0.5f;
 	static constexpr float RUN_MODIFIER = 0.2f;
+	static constexpr float BB_SLOW_MOVE_MODIFIER = 0.8f;
 	uint32_t id;								//ID
 
 
-private:	//”ñŒöŠJƒƒ“ƒo•Ï”
-	InputInfo* m_pInputInfo{};	//“ü—Íî•ñ\‘¢‘Ì
-	PlayerInfo info{};			//ƒvƒŒƒCƒ„[î•ñ\‘¢‘Ì
+private:	//éå…¬é–‹ãƒ¡ãƒ³ãƒå¤‰æ•°
+	InputInfo* m_pInputInfo{};	//å…¥åŠ›æƒ…å ±æ§‹é€ ä½“
+	PlayerInfo info{};			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ§‹é€ ä½“
 	Player* teammate = nullptr;
 	int teamID = -1;
 	int characterID = -1;
@@ -28,57 +29,59 @@ private:	//”ñŒöŠJƒƒ“ƒo•Ï”
 	bool m_isGrounded = false;
 	bool m_isSpringJump = false;
 	int m_ignoreCollisionFrame = 3;
-	int direction = 0; // ˆÚ“®•ûŒü
-	int minAnimIndex = 0; // ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÅ¬ƒCƒ“ƒfƒbƒNƒX
-	int maxAnimIndex = 0; // ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÅ‘åƒCƒ“ƒfƒbƒNƒX
-	int animUpdateRate = 10; // ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXV‘¬“x
-	bool isMoving = false; // ˆÚ“®’†ƒtƒ‰ƒO
-	bool isShooting = false; // ËŒ‚’†ƒtƒ‰ƒO
-	int shootAnimDuration = 5; // ËŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‘±ƒtƒŒ[ƒ€”
-	bool bbActive = false; // BBƒAƒNƒeƒBƒuƒtƒ‰ƒO
+	int direction = 0; // ç§»å‹•æ–¹å‘
+	int minAnimIndex = 0; // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æœ€å°ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	int maxAnimIndex = 0; // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æœ€å¤§ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	int animUpdateRate = 10; // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°é€Ÿåº¦
+	bool isMoving = false; // ç§»å‹•ä¸­ãƒ•ãƒ©ã‚°
+	bool isShooting = false; // å°„æ’ƒä¸­ãƒ•ãƒ©ã‚°
+	int shootAnimDuration = 5; // å°„æ’ƒã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æŒç¶šãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+	bool bbActive = false; // BBã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
 	bool canRun = false;
 	bool runTimerStarted = false;
-	FrameTimer runTimer; // ‘–sƒ^ƒCƒ}[
+	bool bbSlowMoveSpeed = false;
+	FrameTimer runTimer; // èµ°è¡Œã‚¿ã‚¤ãƒãƒ¼
+	FrameTimer gameTimer;
 
-public:	//ŒöŠJŠÖ”
-	Player(	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-		MESH_TYPE meshType,			//ƒƒbƒVƒ…ƒ^ƒCƒv
-		DirectX::XMFLOAT3 position,				//À•W
-		DirectX::XMFLOAT3 rotation,				//‰ñ“]
-		DirectX::XMFLOAT3 scale,				//ƒXƒP[ƒ‹
-		DirectX::XMFLOAT3 velocity,				//ˆÚ“®‘¬“x
+public:	//å…¬é–‹é–¢æ•°
+	Player(	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+		MESH_TYPE meshType,			//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		DirectX::XMFLOAT3 position,				//åº§æ¨™
+		DirectX::XMFLOAT3 rotation,				//å›è»¢
+		DirectX::XMFLOAT3 scale,				//ã‚¹ã‚±ãƒ¼ãƒ«
+		DirectX::XMFLOAT3 velocity,				//ç§»å‹•é€Ÿåº¦
 
 		uint32_t id,							//ID
 
-		bool isActive = true,					//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-		ColliderType colliderType =				//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+		bool isActive = true,					//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+		ColliderType colliderType =				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 		ColliderType::BOX,
-		DirectX::XMFLOAT3 collisionBoxSize =	//ƒRƒ‰ƒCƒ_[‚Ìƒ{ƒbƒNƒXƒTƒCƒY
+		DirectX::XMFLOAT3 collisionBoxSize =	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
 		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool collisionIsTrigger = false			//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
+		bool collisionIsTrigger = false			//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
 	);
 
-	~Player() {}	//ƒfƒXƒgƒ‰ƒNƒ^
+	~Player() {}	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-	//ƒƒCƒ“ˆ—ŠÖ”
-	void Initialize(InputManager* pInputManager, BulletManager* pBulletManager);	//‰Šú‰»
-	void UpdateOverride() override;					//XV
-	void ResolveCollisionsOverride() override;		//Õ“Ë‰ğŒˆ
-	void SetTeamID(int team) { teamID = team; } //ƒ`[ƒ€IDƒZƒbƒg
-	void BindTeammate(Player* teammate) { this->teammate = teammate; } //–¡•û‚ÌƒZƒbƒg
-	int GetTeamID() const { return teamID; } //ƒ`[ƒ€IDæ“¾
+	//ãƒ¡ã‚¤ãƒ³å‡¦ç†é–¢æ•°
+	void Initialize(InputManager* pInputManager, BulletManager* pBulletManager);	//åˆæœŸåŒ–
+	void UpdateOverride() override;					//æ›´æ–°
+	void ResolveCollisionsOverride() override;		//è¡çªè§£æ±º
+	void SetTeamID(int team) { teamID = team; } //ãƒãƒ¼ãƒ IDã‚»ãƒƒãƒˆ
+	void BindTeammate(Player* teammate) { this->teammate = teammate; } //å‘³æ–¹ã®ã‚»ãƒƒãƒˆ
+	int GetTeamID() const { return teamID; } //ãƒãƒ¼ãƒ IDå–å¾—
 
-	void SetCharacterID(int character) { characterID = character; } //ƒLƒƒƒ‰ƒNƒ^[IDƒZƒbƒg
-	void SetPlayerInfo(const PlayerInfo& info) { this->info = info; }	//ƒvƒŒƒCƒ„[î•ñ\‘¢‘ÌƒZƒbƒg
+	void SetCharacterID(int character) { characterID = character; } //ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼IDã‚»ãƒƒãƒˆ
+	void SetPlayerInfo(const PlayerInfo& info) { this->info = info; }	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ§‹é€ ä½“ã‚»ãƒƒãƒˆ
 
-	int GetCharacterID() const { return characterID; } //ƒLƒƒƒ‰ƒNƒ^[IDæ“¾
-	PlayerInfo GetPlayerInfo() const { return info; }					//ƒvƒŒƒCƒ„[î•ñ\‘¢‘Ìæ“¾
-	void SetBB(bool isActive); // BBƒZƒbƒg
+	int GetCharacterID() const { return characterID; } //ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼IDå–å¾—
+	PlayerInfo GetPlayerInfo() const { return info; }					//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ§‹é€ ä½“å–å¾—
+	void SetBB(bool isActive); // BBã‚»ãƒƒãƒˆ
 
-private:	//”ñŒöŠJŠÖ”
-	void Move();	//ˆÚ“®
-	void Rotate();	//‰ñ“]
-	void Scale();	//ƒXƒP[ƒ‹
-	void Shoot();	//ËŒ‚
-	void UpdateAnimation(); //ƒAƒjƒ[ƒVƒ‡ƒ“XV
+private:	//éå…¬é–‹é–¢æ•°
+	void Move();	//ç§»å‹•
+	void Rotate();	//å›è»¢
+	void Scale();	//ã‚¹ã‚±ãƒ¼ãƒ«
+	void Shoot();	//å°„æ’ƒ
+	void UpdateAnimation(); //ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
 };

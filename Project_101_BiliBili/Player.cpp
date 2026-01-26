@@ -43,23 +43,24 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 	maxAnimIndex = 1;
 }
 
-//èâä˙âª
+//ÂàùÊúüÂåñ
 void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManager)
 {
-	m_pInputInfo = pInputManager->GetInputInfo();	//ì¸óÕèÓïÒç\ë¢ëÃÇÃéÊìæ
+	m_pInputInfo = pInputManager->GetInputInfo();	//ÂÖ•ÂäõÊÉÖÂ†±ÊßãÈÄ†‰Ωì„ÅÆÂèñÂæó
 	m_pBulletManager = pBulletManager;
+	gameTimer.Mark();
 }
 
-//çXêV
+//Êõ¥Êñ∞
 void Player::UpdateOverride()
 {
 	if (App::GetInstance()->isOnline)
 	{
 		if (id == App::GetInstance()->descPlayer.uniqueID)
 		{
-			Move();		//à⁄ìÆ
-			//Rotate();	//âÒì]
-			//Scale();	//ÉXÉPÅ[Éã
+			Move();		//ÁßªÂãï
+			//Rotate();	//ÂõûËª¢
+			//Scale();	//„Çπ„Ç±„Éº„É´
 
 			App::GetInstance()->descPlayer.pos = { m_position.x, m_position.y, m_position.z };
 			App::GetInstance()->players[id].pos = { m_position.x, m_position.y, m_position.z };
@@ -84,6 +85,11 @@ void Player::UpdateOverride()
 			--m_ignoreCollisionFrame;
 		}
 
+		if (!bbSlowMoveSpeed && (gameTimer.Peek() > 120.0f))
+		{
+			bbSlowMoveSpeed = true;
+		}
+
 		if (runTimerStarted)
 		{
 			if (runTimer.Peek() >= RUN_DELAY)
@@ -93,7 +99,7 @@ void Player::UpdateOverride()
 			}
 		}
 
-		Move();		//à⁄ìÆ
+		Move();		//ÁßªÂãï
 
 		/*
 		Vec3 spawnPoses[4] = {
@@ -115,7 +121,7 @@ void Player::UpdateOverride()
 	}
 }
  
-//è’ìÀâåà
+//Ë°ùÁ™ÅËß£Ê±∫
 void Player::ResolveCollisionsOverride()
 {
 	if (m_ignoreCollisionFrame > 0)
@@ -123,21 +129,21 @@ void Player::ResolveCollisionsOverride()
 		return;
 	}
 
-	XMFLOAT3 pushVector{};	//âüÇµèoÇµÉxÉNÉgÉã
+	XMFLOAT3 pushVector{};	//Êäº„ÅóÂá∫„Åó„Éô„ÇØ„Éà„É´
 	auto& infos = m_pColliderSet->GetCollisionInfos();
 
 	pushVector = GetPushOutVector(
-		infos,	//è’ìÀèÓïÒîzóÒ
-		{//ëŒè€É^ÉOÉäÉXÉg(ÉåÉCÉÑÅ[É}ÉXÉNÇ…Ç‡ä‹Ç‹ÇÍÇƒÇ¢ÇÈïKóvÇ™Ç†ÇÈ)
-			OBJECT_TAG::PLAYER,		//ëºÇÃÉvÉåÉCÉÑÅ[Ç‡âüÇµèoÇ∑
-			OBJECT_TAG::WALL,		//ï«
-			OBJECT_TAG::WALLPASS,	//íeä—í ï«
-			OBJECT_TAG::WALLCURVE,	//ÉJÅ[Éuï«
-			OBJECT_TAG::GROUND		//ínñ 
+		infos,	//Ë°ùÁ™ÅÊÉÖÂ†±ÈÖçÂàó
+		{//ÂØæË±°„Çø„Ç∞„É™„Çπ„Éà(„É¨„Ç§„É§„Éº„Éû„Çπ„ÇØ„Å´„ÇÇÂê´„Åæ„Çå„Å¶„ÅÑ„ÇãÂøÖË¶Å„Åå„ÅÇ„Çã)
+			OBJECT_TAG::PLAYER,		//‰ªñ„ÅÆ„Éó„É¨„Ç§„É§„Éº„ÇÇÊäº„ÅóÂá∫„Åô
+			OBJECT_TAG::WALL,		//Â£Å
+			OBJECT_TAG::WALLPASS,	//ÂºæË≤´ÈÄöÂ£Å
+			OBJECT_TAG::WALLCURVE,	//„Ç´„Éº„ÉñÂ£Å
+			OBJECT_TAG::GROUND		//Âú∞Èù¢
 		}
 	);
 
-	//ç≈ëÂâüÇµèoÇµÉxÉNÉgÉãï™ÇæÇØà⁄ìÆ
+	//ÊúÄÂ§ßÊäº„ÅóÂá∫„Åó„Éô„ÇØ„Éà„É´ÂàÜ„Å†„ÅëÁßªÂãï
 	m_position.x += pushVector.x;
 	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
@@ -148,7 +154,7 @@ void Player::ResolveCollisionsOverride()
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
-			//ínñ Ç…ê⁄êGÇµÇƒÇ¢ÇÈèÍçáÇÕYç¿ïWÇï‚ê≥
+			//Âú∞Èù¢„Å´Êé•Ëß¶„Åó„Å¶„ÅÑ„ÇãÂ†¥Âêà„ÅØYÂ∫ßÊ®ô„ÇíË£úÊ≠£
 			m_isGrounded = true;
 			m_velocity.y = 0.0f;
 			m_isSpringJump = false;
@@ -179,7 +185,7 @@ void Player::ResolveCollisionsOverride()
 				}
 
 				m_velocity.x = dir.x * 1.15f;
-				m_velocity.y = 1.0f;   // è„ï˚å¸Ç…íµÇÀÇ≥ÇπÇΩÇ¢Ç»ÇÁ
+				m_velocity.y = 1.0f;   // ‰∏äÊñπÂêë„Å´Ë∑≥„Å≠„Åï„Åõ„Åü„ÅÑ„Å™„Çâ
 				m_velocity.z = dir.z * 1.15f;
 
 				m_isSpringJump = true;
@@ -205,20 +211,20 @@ void Player::SetBB(bool isActive)
 	}
 }
 
-//à⁄ìÆ
+//ÁßªÂãï
 void Player::Move()
 {
-	//âÒì]Ç©ÇÁà⁄ìÆï˚å¸ÇåàíËÇ∑ÇÈ
+	//ÂõûËª¢„Åã„ÇâÁßªÂãïÊñπÂêë„ÇíÊ±∫ÂÆö„Åô„Çã
 	XMFLOAT3 direction{};
 	direction.x = sinf(XMConvertToRadians(m_rotation.y));
 	direction.y = 0.0f;
 	direction.z = cosf(XMConvertToRadians(m_rotation.y));
 
 	/*
-		ê‘ÅFWASD    +     F
-		ê¬ÅFUHJK    +     G
-		â©ÅFÅ™Å©Å´Å®     +     âECtrl
-		óŒÅFÉeÉìÉLÅ[ÇÃ8456 + âEÇÃPlusÉ{É^Éì
+		Ëµ§ÔºöWASD    +     F
+		ÈùíÔºöUHJK    +     G
+		ÈªÑÔºö‚Üë‚Üê‚Üì‚Üí     +     Âè≥Ctrl
+		Á∑ëÔºö„ÉÜ„É≥„Ç≠„Éº„ÅÆ8456 + Âè≥„ÅÆPlus„Éú„Çø„É≥
 	*/
 
 	
@@ -283,6 +289,11 @@ void Player::Move()
 		}
 	}
 
+	if (bbSlowMoveSpeed && bbActive)
+	{
+		modifier *= BB_SLOW_MOVE_MODIFIER;
+	}
+
 	if (!m_isSpringJump)
 	{
 		m_position.x += dir.x * MOVE_SPEED * modifier;
@@ -290,27 +301,27 @@ void Player::Move()
 
 		if (up)
 		{
-			//ëOêi
+			//ÂâçÈÄ≤
 			m_position.x += direction.x * MOVE_SPEED * modifier;
 			m_position.y += direction.y * MOVE_SPEED * modifier;
 			m_position.z += direction.z * MOVE_SPEED * modifier;
 		}
 		if (down)
 		{
-			//å„ëﬁ
+			//ÂæåÈÄÄ
 			m_position.x -= direction.x * MOVE_SPEED * modifier;
 			m_position.y -= direction.y * MOVE_SPEED * modifier;
 			m_position.z -= direction.z * MOVE_SPEED * modifier;
 		}
 		if (left)
 		{
-			//ç∂à⁄ìÆ
+			//Â∑¶ÁßªÂãï
 			m_position.x -= direction.z * MOVE_SPEED * modifier;
 			m_position.z += direction.x * MOVE_SPEED * modifier;
 		}
 		if (right)
 		{
-			//âEà⁄ìÆ
+			//Âè≥ÁßªÂãï
 			m_position.x += direction.z * MOVE_SPEED * modifier;
 			m_position.z -= direction.x * MOVE_SPEED * modifier;
 		}
@@ -484,7 +495,7 @@ void Player::Shoot()
 		}
 		else
 		{
-			// ñ°ï˚Ç∆ìØÇ∂à íuÇ»ÇÁëOï˚Ç…åÇÇ¬
+			// Âë≥Êñπ„Å®Âêå„Åò‰ΩçÁΩÆ„Å™„ÇâÂâçÊñπ„Å´ÊíÉ„Å§
 			dir = DirectX::XMFLOAT3{ 0.0f, 0.0f, 1.0f };
 		}
 
@@ -502,34 +513,34 @@ void Player::Shoot()
 	}
 }
 
-//âÒì]
+//ÂõûËª¢
 void Player::Rotate()
 {
 	if(m_pInputInfo->key.left.down)
 	{
-		//ç∂âÒì]
+		//Â∑¶ÂõûËª¢
 		m_rotation.y -= ROTATE_SPEED;
 	}
 	if(m_pInputInfo->key.right.down)
 	{
-		//âEâÒì]
+		//Âè≥ÂõûËª¢
 		m_rotation.y += ROTATE_SPEED;
 	}
 }
 
-//ÉXÉPÅ[Éã
+//„Çπ„Ç±„Éº„É´
 void Player::Scale()
 {
 	if (m_pInputInfo->key.up.down)
 	{
-		//ägëÂ
+		//Êã°Â§ß
 		m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
 		m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
 		m_scale.z = (std::min)(m_scale.z + 0.008f, 5.0f);
 	}
 	if (m_pInputInfo->key.down.down)
 	{
-		//èkè¨
+		//Á∏ÆÂ∞è
 		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
 		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
 		m_scale.z = (std::max)(m_scale.z - 0.008f, 0.005f);
