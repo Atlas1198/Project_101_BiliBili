@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="AssimpLoader.h" />
+    <ClInclude Include="AssimpNodeTransformAnim.h" />
     <ClInclude Include="BB.h" />
     <ClInclude Include="BBManager.h" />
     <ClInclude Include="BulletCountUI.h" />
