@@ -12,24 +12,25 @@ public:
         int ownerTeam,
 		uint32_t ownerID,
         float damage,
-        float lifeTimeSec = 3.0f,  //‘¶İŠÔ
-        float maxDistance = 50.0f  //Å‘åˆÚ“®‹——£
+        float lifeTimeSec = 3.0f,  //å­˜åœ¨æ™‚é–“
+        float maxDistance = 50.0f  //æœ€å¤§ç§»å‹•è·é›¢
     );
     void UpdateOverride() override;
     void ResolveCollisionsOverride() override;
-    bool DeleteFlag() const { return m_deleteFlag; }    //Bulletê—p‚Ì¶‘¶ŠÇ—
-    DirectX::XMFLOAT3 GetPosition() const { return m_position; }    //À•W‚ğ•Ô‚·
+    bool DeleteFlag() const { return m_deleteFlag; }    //Bulletå°‚ç”¨ã®ç”Ÿå­˜ç®¡ç†
+    DirectX::XMFLOAT3 GetPosition() const { return m_position; }    //åº§æ¨™ã‚’è¿”ã™
+	int GetTeam() const { return m_ownerTeam; } //ç™ºå°„ã—ãŸãƒãƒ¼ãƒ ã‚’è¿”ã™
 
 private:
-    DirectX::XMFLOAT3 m_direction;  //ˆÚ“®•ûŒü
-    float m_speed;                  //ˆÚ“®‘¬“x
-    int   m_ownerTeam;              //”­Ë‚µ‚½ƒ`[ƒ€i–¡•ûE“G”»’è—pj
-	uint32_t m_ownerID;            //”­Ë‚µ‚½ƒvƒŒƒCƒ„[‚ÌID
-    float m_lifeTime;               //Å‘å‘¶İŠÔ
-    float m_livedTime = 0.0f;       //Œ»İ‚Ì¶‘¶ŠÔ
-    float m_maxDistance;            //Å‘åˆÚ“®‹——£
-    float m_traveled = 0.0f;        //ˆÚ“®‚µ‚½‹——£
-	float m_damage;                 //ƒ_ƒ[ƒW—Ê
+    DirectX::XMFLOAT3 m_direction;  //ç§»å‹•æ–¹å‘
+    float m_speed;                  //ç§»å‹•é€Ÿåº¦
+    int   m_ownerTeam;              //ç™ºå°„ã—ãŸãƒãƒ¼ãƒ ï¼ˆå‘³æ–¹ãƒ»æ•µåˆ¤å®šç”¨ï¼‰
+	uint32_t m_ownerID;            //ç™ºå°„ã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ID
+    float m_lifeTime;               //æœ€å¤§å­˜åœ¨æ™‚é–“
+    float m_livedTime = 0.0f;       //ç¾åœ¨ã®ç”Ÿå­˜æ™‚é–“
+    float m_maxDistance;            //æœ€å¤§ç§»å‹•è·é›¢
+    float m_traveled = 0.0f;        //ç§»å‹•ã—ãŸè·é›¢
+	float m_damage;                 //ãƒ€ãƒ¡ãƒ¼ã‚¸é‡
     bool m_deleteFlag = false;
-	int m_ricochetCount = 0;        //’µ‚Ë•Ô‚è‰ñ”
+	int m_ricochetCount = 0;        //è·³ã­è¿”ã‚Šå›æ•°
 };
