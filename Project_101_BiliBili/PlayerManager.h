@@ -37,7 +37,7 @@ private:
 	std::vector<EventData> m_subscribedEvents;	//購読しているイベント配列
 
 public:
-	PlayerManager(){};			//コンストラクタ
+	PlayerManager();			//コンストラクタ
 	~PlayerManager();	//デストラクタ
 
 	//メイン処理関数

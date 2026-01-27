@@ -180,6 +180,11 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		)
 	);
 
+	for (auto& wallPass : m_pWallPasses)
+	{
+		wallPass->SetDrawn(false);
+	}
+
 	switch (Stagenum)
 	{
 	case 1:	//緑基盤
@@ -2073,7 +2078,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",	//テクスチャのファイル名
-		false,
+		true,
 		BILLBOARD_NONE,
 		false,
 		false
@@ -2132,7 +2137,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		L"asset/fbx/stage/ST_stage.fbx",	//テクスチャのファイル名
-		false,
+		true,
 		BILLBOARD_NONE,
 		false,
 		false
