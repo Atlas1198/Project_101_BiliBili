@@ -74,6 +74,11 @@ public:
 		}
 	}
 
+	void ClearAllEvent()
+	{
+		listeners.clear();
+	}
+
 private:
 	using Listener = std::function<void(std::shared_ptr<void>)>;
 
@@ -85,4 +90,10 @@ private:
 
 	std::map<EventType, std::vector<ListenerItem>> listeners;
 	std::uint64_t nextId;
+
+public:
+	std::map<EventType, std::vector<ListenerItem>> GetListeners()
+	{
+		return listeners;
+	}
 };

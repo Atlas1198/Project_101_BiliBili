@@ -4,6 +4,7 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "EventManager.h"
+#include "Debug.h"
 
 //コンストラクタ
 SceneManager::SceneManager(float windowWidth, float windowHeight)
@@ -38,15 +39,7 @@ void SceneManager::Initialize(
 	m_pTextureManager = pTextureManager;	//テクスチャ管理クラスのポインタを保存
 	m_pMeshManager = pMeshManager;		//メッシュ管理クラスのポインタを保存
 
-	//シーン変更イベント登録
-	using args = SCENE_TYPE;
-	EventManager::GetInstance()->Subscribe<args>(
-		EventType::CHANGE_SCENE,
-		[this](std::shared_ptr<args> data)
-		{
-			ReserveChangeScene(*data);
-		}
-	);
+	SubscribeEvent();
 
 	//最初のシーン初期化
 	m_pCurrentScene->Initialize(&m_sceneContext, pInputManager,*m_pTextureManager, *m_pMeshManager);
@@ -110,6 +103,9 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 		break;
 	}
 
+	EventManager::GetInstance()->ClearAllEvent();
+
+	SubscribeEvent();
 	//シーン変更後の初期化処理
 	m_pCurrentScene->Initialize(	//新しいシーン初期化
 		&m_sceneContext,		//シーンコンテキスト構造体
@@ -129,6 +125,19 @@ void SceneManager::SubmitDraws(Renderer& pRenderer)
 CameraInfo* SceneManager::GetCameraInfo()
 {
 	return m_pCurrentScene->GetCameraInfo();
+}
+
+void SceneManager::SubscribeEvent()
+{
+	//シーン変更イベント登録
+	using args = SCENE_TYPE;
+	EventManager::GetInstance()->Subscribe<args>(
+		EventType::CHANGE_SCENE,
+		[this](std::shared_ptr<args> data)
+		{
+			ReserveChangeScene(*data);
+		}
+	);
 }
 
 void SceneManager::AddPlayer(uint32_t id)
