@@ -210,3 +210,41 @@ DirectX::XMFLOAT3 CollisionData::GetPushOutVector(
 
 	return total;	//押し出しベクトルを返す
 }
+
+//ワールド座標をスクリーン座標に変換する関数
+DirectX::XMFLOAT2 CameraInfo::ConvertWorldToScreen(const DirectX::XMFLOAT3& worldPos, int screenWidth, int screenHeight) const
+{
+	using namespace DirectX;
+	float aspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+	//ビュー行列の計算
+	XMVECTOR vPosition = XMLoadFloat3(&position);
+	XMVECTOR vTarget = XMLoadFloat3(&target);
+	XMVECTOR vUp = XMLoadFloat3(&up);
+	XMMATRIX viewMatrix = XMMatrixLookAtLH(vPosition, vTarget, vUp);
+	//プロジェクション行列の計算
+	XMMATRIX projMatrix = XMMatrixPerspectiveFovLH(
+		fov,	//垂直視野角
+		aspect,				//アスペクト比
+		nearZ,						//ニアクリップ距離
+		farZ						//ファークリップ距離
+	);
+	//ワールド行列（単位行列）
+	XMMATRIX worldMatrix = XMMatrixIdentity();
+	//ワールド→ビュー→プロジェクション変換行列の計算
+	XMMATRIX wvpMatrix = XMMatrixMultiply(worldMatrix, XMMatrixMultiply(viewMatrix, projMatrix));
+	//ワールド座標をベクトルに変換
+	XMVECTOR vWorldPos = XMLoadFloat3(&worldPos);
+	//ワールド座標をスクリーン座標に変換
+	XMVECTOR vScreenPos = XMVector3TransformCoord(vWorldPos, wvpMatrix);
+	//スクリーン座標を正規化デバイス座標に変換
+	float ndcX = XMVectorGetX(vScreenPos);
+	float ndcY = XMVectorGetY(vScreenPos);
+	//正規化デバイス座標をスクリーン座標に変換
+	float screenX = (ndcX + 1.0f) * 0.5f * static_cast<float>(screenWidth);
+	float screenY = (1.0f - ndcY) * 0.5f * static_cast<float>(screenHeight); // Y軸は上下反転
+
+	float uiX = screenX - screenWidth * 0.5f;
+	float uiY = screenHeight * 0.5f - screenY;
+
+	return XMFLOAT2(uiX, uiY); //スクリーン座標を返す
+}

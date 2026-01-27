@@ -5,7 +5,7 @@
 using namespace DirectX;
 using namespace CollisionData;
 
-//コンストラクタ
+//繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
 Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
 	: ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::ITEM_TRANSFORM, COLLISION_LAYER::ITEM_TRANSFORM)
 {
@@ -33,12 +33,12 @@ Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rot
 	m_texSplitInfo = texInfo;
 }
 
-//更新
+//譖ｴ譁ｰ
 void Item::UpdateOverride()
 {
 }
 
-//衝突解決
+//陦晉ｪ∬ｧ｣豎ｺ
 void Item::ResolveCollisionsOverride()
 {
 	auto& infos = m_pColliderSet->GetCollisionInfos();
@@ -54,7 +54,6 @@ void Item::ResolveCollisionsOverride()
 			{
 				//EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
 				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
-
 				//アイテム取得エフェクトの発生
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::BB_CUT_IN, std::make_pair(player->GetTeamID(), player->GetCharacterID()));
 			}

@@ -47,6 +47,7 @@ public:	//公開関数
 	TexSplitInfo& GetTexSplitInfo();				//テクスチャ分割情報構造体の取得
 
 	//セッター
+	void SetWorldTransform(const Transform3D& world); //ワールド変換情報の設定
 	void SetLocalTransform(const Transform3D& local); //ローカル変換情報の設定
 	void SetColor(DirectX::XMFLOAT4 color);	//色RGBAの設定
 	void SetActive(bool isActive);			//アクティブフラグの設定

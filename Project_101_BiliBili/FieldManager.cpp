@@ -5,20 +5,21 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "SharedStruct.h"
+#include "AssimpNodeTransformAnim.h"
+#include "Debug.h"
 
 using namespace DirectX;
 
-
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 FieldManager::FieldManager()
 {
-	//TODO: ’n–Ê‚Æ•ÇƒIƒuƒWƒFƒNƒg‚Ì¶¬
+	//TODO: åœ°é¢ã¨å£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 FieldManager::~FieldManager()
 {
-	//•ÇƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//å£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& wall : m_pWalls)
 	{
 		delete wall;
@@ -26,7 +27,7 @@ FieldManager::~FieldManager()
 	}
 	m_pWalls.clear();
 
-	//’eŠÑ’Ê•ÇƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//å¼¾è²«é€šå£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& wallpass : m_pWallPasses)
 	{
 		delete wallpass;
@@ -34,7 +35,7 @@ FieldManager::~FieldManager()
 	}
 	m_pWallPasses.clear();
 
-	//ƒJ[ƒu•ÇƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//ã‚«ãƒ¼ãƒ–å£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& wallcurve : m_pWallCurves)
 	{
 		delete wallcurve;
@@ -42,7 +43,7 @@ FieldManager::~FieldManager()
 	}
 	m_pWallCurves.clear();
 
-	//’n–ÊƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//åœ°é¢ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& spring : m_pSprings)
 	{
 		delete spring;
@@ -50,7 +51,7 @@ FieldManager::~FieldManager()
 	}
 	m_pSprings.clear();
 
-	//’n–ÊƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú
+	//åœ°é¢ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾
 	for (auto& ground : m_pGrounds)
 	{
 		delete ground;
@@ -60,7 +61,7 @@ FieldManager::~FieldManager()
 
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
 	std::random_device rd;
@@ -69,994 +70,1267 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 	int Stagenum = dist(gen);
 
-	Stagenum = 5;
-	m_pWalls.push_back(
-		new Wall(
+	Stagenum = 2;
+
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(-25.0f, 0.0f, 5.0f),//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-			XMFLOAT3(2.0f, 10.0f, 30.0f),//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-			true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+			XMFLOAT3(-25.0f, 0.0f, 5.0f),//ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(2.0f, 10.0f, 30.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(2.1f, 10.1f, 30.1f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
-	m_pWalls.push_back(
-		new Wall(
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(25.0f, 0.0f, 5.0f), //ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-			XMFLOAT3(2.0f, 10.0f, 30.0f),//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-			true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+			XMFLOAT3(25.0f, 0.0f, 5.0f), //ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(2.0f, 10.0f, 30.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(2.1f, 10.1f, 30.1f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
-	m_pWalls.push_back(
-		new Wall(
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(0.0f, 0.0f, 19.5f), //ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-			XMFLOAT3(48.0f, 10.0f, 2.0f),//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-			true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+			XMFLOAT3(0.0f, 0.0f, 19.5f), //ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(48.0f, 10.0f, 2.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(48.1f, 10.1f, 2.1f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
-	m_pWalls.push_back(
-		new Wall(
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(0.0f, 0.0f, -9.5f),//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-			XMFLOAT3(48.0f, 10.0f, 2.0f),//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-			true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+			XMFLOAT3(0.0f, 0.0f, -9.5f),//ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+			XMFLOAT3(48.0f, 10.0f, 2.0f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(48.1f, 10.1f, 2.1f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
-	for (auto& wall : m_pWalls)
+	for (auto& wallpass : m_pWallPasses)
 	{
-		wall->SetDrawn(false);
+		wallpass->SetDrawn(false);
 	}
 
 	m_pGrounds.push_back(
 		new Ground(
 			MESH_TYPE::QUAD,
-			XMFLOAT3(0.0f, -5.0f, 5.0f), //ˆÊ’u
-			XMFLOAT3(90.0f, 0.0f, 0.0f), //‰ñ“]
-			XMFLOAT3(48.0f, 27.0f, 1.0f),//ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-			true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+			XMFLOAT3(0.0f, -6.5f, 11.0f), //ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f), //å›è»¢
+			XMFLOAT3(1.5f, 1.5f, 1.5f),//ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+			true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 		)
 	);
 
 	m_pWallCurves.push_back(
 		new WallCurve(
 			MESH_TYPE::IMPORT,
-			XMFLOAT3(5.0f, -3.0f, 5.0f),  //ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-			XMFLOAT3(3.0f, 1.5f, 3.0f),	  //ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-			false,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX,			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+			XMFLOAT3(5.0f, -3.0f, 5.0f),  //ä½ç½®
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+			XMFLOAT3(3.0f, 1.5f, 3.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+			false,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+			ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			XMFLOAT3(-1.5f, 1.5f, -2.5f),
 			false,
 			1.0f,
 			true,
 			3.0f,
-			XMFLOAT3(0.0f, -4.5f, 5.0f),  //ˆÊ’u
-			-90.0f						  //³–Ê•â³Šp
+			XMFLOAT3(0.0f, -4.5f, 5.0f),  //ä½ç½®
+			-90.0f						  //æ­£é¢è£œæ­£è§’
 		)
 	);
 
-	m_pSprings.push_back(
-		new Spring(
-			MESH_TYPE::CUBE,
-			XMFLOAT3(22.0f, -3.75f, 17.0f),//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-			true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-		)
-	);
-	m_pSprings.push_back(
-		new Spring(
-			MESH_TYPE::CUBE,
-			XMFLOAT3(-22.0f, -3.75f, -7.5f),//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-			true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-		)
-	);
-	m_pSprings.push_back(
-		new Spring(
-			MESH_TYPE::CUBE,
-			XMFLOAT3(22.0f, -3.75f, -7.5f),//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-			true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-		)
-	);
-	m_pSprings.push_back(
-		new Spring(
-			MESH_TYPE::CUBE,
-			XMFLOAT3(-22.0f, -3.75f, 17.0f),//ˆÊ’u
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //ƒXƒP[ƒ‹
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-			true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-			ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-		)
-	);
+	for (auto& wallPass : m_pWallPasses)
+	{
+		wallPass->SetDrawn(false);
+	}
 
 	switch (Stagenum)
 	{
-	case 1:	//ƒXƒe[ƒW1
+	case 1:	//ç·‘åŸºç›¤
 		//-------------
-		//¶‘¤
+		//ãƒãƒ
+		//-------------
+
+		m_pSprings.push_back(
+				new Spring(
+					MESH_TYPE::CUBE,
+					XMFLOAT3(24.0f, -6.0f, 18.5f),//ä½ç½®
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+					XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+					XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+					XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+					true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+					ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				)
+			);
+		// 4åœ°ç‚¹ãƒ©ãƒ³ãƒ€ãƒ 	
+		m_pSprings.back()->SetLaunchTargets({
+			XMFLOAT3(1.0f, -4.0f, 12.0f),
+			XMFLOAT3(0.0f, -4.0f, -1.0f),
+			XMFLOAT3(-9.0f, -4.0f, 3.0f),
+			XMFLOAT3(14.0f, -4.0f, -5.0f),
+			}, true);	
+		
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-22.0f, -6.0f, -0.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		// 4åœ°ç‚¹ãƒ©ãƒ³ãƒ€ãƒ 
+		m_pSprings.back()->SetLaunchTargets({
+			XMFLOAT3(-14.0f, -4.0f, 16.0f),
+			XMFLOAT3(7.0f, -4.0f, 2.0f),
+			XMFLOAT3(-7.0f, -4.0f, -3.0f),
+			XMFLOAT3(12.0f, -4.0f, 7.0f),
+			}, true);
+
+		//-------------
+		//å£
 		//-------------
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-6.0f, -3.0f, 15.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(5.0f, 3.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-10.0f, -5.0f, 13.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(5.1f, 3.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -3.0f, 3.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(2.0f, 3.0f, 6.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-12.5f, -5.0f, 13.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(2.1f, 3.1f, 6.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-15.0f, -5.0f, 13.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		///////////////////////////////////
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-19.0f, -5.0f, -3.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-3.0f, -3.0f, 7.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 6.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-19.0f, -5.0f, -0.5f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 6.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-8.0f, -3.0f, -4.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(2.0f, 3.0f, 2.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-19.0f, -5.0f, 2.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(2.1f, 3.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		///////////////////////////////////
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(10.0f, -5.0f, -3.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(12.5f, -5.0f, -3.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(15.0f, -5.0f, -3.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		///////////////////////////////////
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(19.0f, -5.0f, 13.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(19.0f, -5.0f, 10.5f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(19.0f, -5.0f, 8.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		///////////////////////////////////
+
+		//-------------
+		//ç©´
+		//-------------
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(4.0f, -5.5f, -2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWallPasses.push_back(
 			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-4.0f, -4.5f, -4.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(6.0f, 0.0f, 2.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(1.5f, -5.5f, -2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(6.1f, 3.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
-
-		//-------------
-		//‰E‘¤
-		//-------------
-		m_pWalls.push_back(
-			new Wall(
+		///////////////////////////////////
+		m_pWallPasses.push_back(
+			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(3.0f, -3.0f, 3.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 6.0f),	//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-				true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(7.0f, -5.5f, 10.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 6.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(8.0f, -3.0f, 14.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(2.0f, 3.0f, 2.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(2.1f, 3.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWallPasses.push_back(
 			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(4.0f, -4.5f, 14.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(6.0f, 0.0f, 2.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(7.0f, -5.5f, 7.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(6.1f, 3.1f, 2.1f),
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(7.0f, -5.5f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		///////////////////////////////////
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-4.0f, -5.5f, 12.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-1.5f, -5.5f, 12.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		///////////////////////////////////
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-7.0f, -5.5f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-7.0f, -5.5f, 2.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-7.0f, -5.5f, 0.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		break;
+	case 2:	//èµ¤åŸºç›¤
+		//-------------
+		//ãƒãƒ
+		//-------------
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(0.0f, -6.0f, 17.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		// 4åœ°ç‚¹ãƒ©ãƒ³ãƒ€ãƒ 	
+		m_pSprings.back()->SetLaunchTargets({
+			XMFLOAT3(-6.0f, -4.0f, 14.0f),
+			XMFLOAT3(6.0f, -4.0f, 14.0f),
+			XMFLOAT3(-17.0f, -4.0f, -4.0f),
+			XMFLOAT3(17.0f, -4.0f, 13.5f),
+			}, true);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(0.0f, -6.0f, -8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		// 4åœ°ç‚¹ãƒ©ãƒ³ãƒ€ãƒ 
+		m_pSprings.back()->SetLaunchTargets({
+			XMFLOAT3(-6.0f, -4.0f, -4.5f),
+			XMFLOAT3(6.0f, -4.0f, -4.5f),
+			XMFLOAT3(-10.0f, -4.0f, 5.0f),
+			XMFLOAT3(10.0f, -4.0f, 9.0f),
+			}, true);
+
+		//-------------
+		//å£
+		//-------------
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(0.0f, -5.0f, 15.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -3.0f, 7.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(2.0f, 3.0f, 6.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(0.0f, -5.0f, -5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(2.1f, 3.1f, 6.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(6.0f, -3.0f, -5.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(5.0f, 3.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-10.0f, -5.0f, -8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(5.1f, 3.1f, 1.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(10.0f, -5.0f, 17.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-14.0f, -5.0f, -2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(14.0f, -5.0f, 11.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°	
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-11.0f, -5.5f, 10.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°	
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(11.0f, -5.0f, -0.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°	
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-13.5f, -5.0f, 7.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°	
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(13.5f, -5.0f, 2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°	
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -5.0f, 7.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°	
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -5.0f, 2.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°	
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		//-------------
+		//ç©´
+		//-------------
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-23.0f, -5.5f, 2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-20.5f, -5.5f, 2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		/////////////////////////////////////////
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(23.0f, -5.5f, 8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(20.5f, -5.5f, 8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		/////////////////////////////////////////////
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-18.0f, -5.5f, 12.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(18.0f, -5.5f, -3.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-11.0f, -5.5f, 12.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-11.0f, -5.5f, 15.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(11.0f, -5.5f, -3.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(11.0f, -5.5f, -5.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		////////////////////////////////////////////////////////
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -5.5f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-5.0f, -5.5f, 2.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		/////////////////////////////////////////
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -5.5f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(5.0f, -5.5f, 7.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		//////////////////////////////////////////
+
+		break;
+	case 3: //ã‚ãŠåŸºç›¤
+		//-------------
+		//ãƒãƒ
+		//-------------
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(0.0f, -6.0f, 17.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		// 4åœ°ç‚¹ãƒ©ãƒ³ãƒ€ãƒ 	
+		m_pSprings.back()->SetLaunchTargets({
+			XMFLOAT3(-6.0f, -4.0f, 14.0f),
+			XMFLOAT3(6.0f, -4.0f, 14.0f),
+			XMFLOAT3(-17.0f, -4.0f, -4.0f),
+			XMFLOAT3(17.0f, -4.0f, 13.5f),
+			}, true);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(0.0f, -6.0f, -8.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		// 4åœ°ç‚¹ãƒ©ãƒ³ãƒ€ãƒ 
+		m_pSprings.back()->SetLaunchTargets({
+			XMFLOAT3(-6.0f, -4.0f, -4.5f),
+			XMFLOAT3(6.0f, -4.0f, -4.5f),
+			XMFLOAT3(-10.0f, -4.0f, 5.0f),
+			XMFLOAT3(10.0f, -4.0f, 9.0f),
+			}, true);
+
+		//-------------
+		//å£
+		//-------------
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(0.0f, -5.0f, 15.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+
+		//-------------
+		//ç©´
+		//-------------
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-23.0f, -5.5f, 2.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		break;
-	case 2:	//ƒXƒe[ƒW2
-		//-------------
-		//¶‘¤
-		//-------------
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-10.0f, -3.0f, 8.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-9.0f, -3.0f, 5.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 5.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 5.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-10.0f, -3.0f, 2.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -3.0f, 13.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(7.0f, 3.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(7.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -3.0f, 10.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 5.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 5.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -4.5f, -5.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 6.5f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 6.6f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		//-------------
-		//‰E‘¤
-		//-------------
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(10.0f, -3.0f, 8.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(9.0f, -3.0f, 5.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 5.0f),	//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-				true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 5.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(10.0f, -3.0f, 2.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -3.0f, -3.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(7.0f, 3.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(7.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -3.0f, 0.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 5.0f),	//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-				true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 5.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -4.5f, 14.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 6.5f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 6.6f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		break;
-	case 3: //ƒXƒe[ƒW3
-		//-------------
-		//¶‘¤
-		//-------------
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-8.0f, -4.5f, -4.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 9.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 9.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -3.0f, 17.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 3.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 3.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		//-------------
-		//^‚ñ’†
-		//-------------
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -3.0f, 5.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//‰ñ“]
-				XMFLOAT3(8.0f, 3.0f, 1.0f),	//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	//ˆÚ“®‘¬“x
-				true,						//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX,			//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	//ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-				false,						//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				1.0f,						//‰ñ“]‘¬“x
-				true,						//‰ñ“]ƒtƒ‰ƒO
-				4.0f,						//‰ñ“]”¼Œa
-				XMFLOAT3(0.0f, 0.0f, 5.0f)	//‰ñ“]’†SÀ•W
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(8.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		//-------------
-		//‰E‘¤
-		//-------------
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(8.0f, -4.5f, 13.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 9.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 9.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -3.0f, -7.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 3.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 3.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		break;
-	case 4: //ƒXƒe[ƒW4
-		//-------------
-		//¶‘¤
-		//-------------
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-6.0f, -4.5f, 12.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 2.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 2.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-6.5f, -4.5f, 11.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(2.0f, 0.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-8.0f, -3.0f, 9.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 4.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 4.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-4.0f, -3.0f, 13.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -3.0f, -6.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 5.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 5.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		//-------------
-		//^‚ñ’†
-		//-------------
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-2.0f, -4.5f, 2.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 45.0f, 0.0f), //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX,			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	 //ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-				false,						 //ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				1.0f,						 //‰ñ“]‘¬“x	
-				true,						 //‰ñ“]ƒtƒ‰ƒO
-				3.5f,						 //‰ñ“]”¼Œa
-				XMFLOAT3(0.0f, -3.0f, 5.0f)  //‰ñ“]’†SÀ•W
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(2.0f, -4.5f, 8.0f), //ˆÊ’u
-				XMFLOAT3(0.0f, 90.0f, 0.0f), //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX,			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	 //ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-				false,						 //ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				1.0f,						 //‰ñ“]‘¬“x	
-				true,						 //‰ñ“]ƒtƒ‰ƒO
-				3.5f,						 //‰ñ“]”¼Œa
-				XMFLOAT3(0.0f, -3.0f, 5.0f)  //‰ñ“]’†SÀ•W
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-4.0f, -4.5f, 8.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 90.0f, 0.0f), //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX,			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	 //ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-				false,						 //ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				1.0f,						 //‰ñ“]‘¬“x	
-				true,						 //‰ñ“]ƒtƒ‰ƒO
-				3.5f,						 //‰ñ“]”¼Œa
-				XMFLOAT3(0.0f, -3.0f, 5.0f)  //‰ñ“]’†SÀ•W
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(4.0f, -4.5f, 2.0f), //ˆÊ’u
-				XMFLOAT3(0.0f, 45.0f, 0.0f), //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 1.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX,			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	 //ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-				false,						 //ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				1.0f,						 //‰ñ“]‘¬“x	
-				true,						 //‰ñ“]ƒtƒ‰ƒO
-				3.5f,						 //‰ñ“]”¼Œa
-				XMFLOAT3(0.0f, -3.0f, 5.0f)  //‰ñ“]’†SÀ•W
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		//-------------
-		//‰E‘¤
-		//-------------
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -3.0f, 15.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 5.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 5.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(6.0f, -3.0f, -2.5f), //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 2.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 2.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(7.0f, -3.0f, -1.0f), //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(8.0f, -4.5f, 0.5f), //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 2.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 2.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(4.0f, -4.5f, -3.0f), //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+	case 4: //ã‚¹ãƒ†ãƒ¼ã‚¸4
 		break;
 
-	case 5:	//ƒXƒe[ƒW5
+	case 5:	//ã‚¹ãƒ†ãƒ¼ã‚¸5
+
 		//-------------
-		//^‚ñ’†‘¤
+		//ãƒãƒ
+		//-------------
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(24.0f, -6.0f, 18.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-24.0f, -6.0f, -7.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(24.0f, -6.0f, -7.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+
+		m_pSprings.push_back(
+			new Spring(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-24.0f, -6.0f, 18.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //ç™ºå°„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆã“ã®ã‚¹ãƒ—ãƒªãƒ³ã‚°å›ºæœ‰ï¼‰
+				true,					  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		//-------------
+		//çœŸã‚“ä¸­å´
 		//-------------
 		m_pWallCurves.push_back(
 			new WallCurve(
 				MESH_TYPE::IMPORT,
-				XMFLOAT3(0.0f, -4.5f, 8.0f),  //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 3.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX,			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-				XMFLOAT3(-1.5f, 1.5f, -2.5f), //ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-				false,						  //ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				1.0f,						  //‰ñ“]‘¬“x	
-				true,						  //‰ñ“]ƒtƒ‰ƒO
-				6.0f,						  //‰ñ“]”¼Œa
-				XMFLOAT3(0.0f, -4.5f, 5.0f),  //‰ñ“]’†SÀ•W
+				XMFLOAT3(0.0f, -4.5f, 8.0f),  //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 3.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(-1.5f, 1.5f, -2.5f), //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false,						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+				1.0f,						  //å›è»¢é€Ÿåº¦	
+				true,						  //å›è»¢ãƒ•ãƒ©ã‚°
+				6.0f,						  //å›è»¢åŠå¾„
+				XMFLOAT3(0.0f, -4.5f, 5.0f),  //å›è»¢ä¸­å¿ƒåº§æ¨™
 				-180.0f
 			)
 		);
+		m_pWallCurves.back()->SetDrawn(false);
 		m_pWallCurves.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
 			XMFLOAT3(-1.5f, 1.5f, -2.5f),
@@ -1081,13 +1355,13 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, -30.0f, 0.0f)
 		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//^‚ñ’†
+		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//çœŸã‚“ä¸­
 			ColliderType::BOX,
 			XMFLOAT3(0.0f, 1.5f, 0.0f),
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//^‚ñ’†
+		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//çœŸã‚“ä¸­
 			ColliderType::BOX,
 			XMFLOAT3(1.0f, 1.5f, 0.0f),
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
@@ -1121,21 +1395,22 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		m_pWallCurves.push_back(
 			new WallCurve(
 				MESH_TYPE::IMPORT,
-				XMFLOAT3(0.0f, -4.5f, 2.0f),  //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 3.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX,			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-				XMFLOAT3(-1.5f, 1.5f, -2.5f), //ƒRƒ‰ƒCƒ_[ƒ{ƒbƒNƒXƒTƒCƒY
-				false,						  //ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-				1.0f,						  //‰ñ“]‘¬“x	
-				true,						  //‰ñ“]ƒtƒ‰ƒO
-				6.0f,						  //‰ñ“]”¼Œa
-				XMFLOAT3(0.0f, -4.5f, 5.0f),  //‰ñ“]’†SÀ•W
+				XMFLOAT3(0.0f, -4.5f, 2.0f),  //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(3.0f, 3.0f, 3.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX,			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+				XMFLOAT3(-1.5f, 1.5f, -2.5f), //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚º
+				false,						  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒˆãƒªã‚¬ãƒ¼ãƒ•ãƒ©ã‚°
+				1.0f,						  //å›è»¢é€Ÿåº¦	
+				true,						  //å›è»¢ãƒ•ãƒ©ã‚°
+				6.0f,						  //å›è»¢åŠå¾„
+				XMFLOAT3(0.0f, -4.5f, 5.0f),  //å›è»¢ä¸­å¿ƒåº§æ¨™
 				-180.0f
 			)
 		);
+		m_pWallCurves.back()->SetDrawn(false);
 		m_pWallCurves.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
 			XMFLOAT3(-1.5f, 1.5f, -2.5f),
@@ -1160,13 +1435,13 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, -30.0f, 0.0f)
 		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//^‚ñ’†
+		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//çœŸã‚“ä¸­
 			ColliderType::BOX,
 			XMFLOAT3(0.0f, 1.5f, 0.0f),
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//^‚ñ’†
+		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//çœŸã‚“ä¸­
 			ColliderType::BOX,
 			XMFLOAT3(1.0f, 1.5f, 0.0f),
 			XMFLOAT3(1.1f, 3.1f, 1.1f),
@@ -1198,193 +1473,445 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		);
 		///////////////////////////////
 		//-------------
-		//¶‘¤
+		//å·¦å´
 		//-------------
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-10.0f, -3.0f, 13.0f),	//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),		//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ˆÚ“®‘¬“x
-				true,							//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX					//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-7.5f, -5.0f, 12.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX					//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-12.0f, -4.5f, 12.0f), //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 3.0f),		//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ˆÚ“®‘¬“x
-				true,							//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX				//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 3.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-13.0f, -4.5f, 10.0f), //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 1.0f),		//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ˆÚ“®‘¬“x
-				true,							//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX				//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
+			XMFLOAT3(-0.5f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-14.0f, -3.0f, 7.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 4.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-10.0f, -5.0f, 12.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),	//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 4.1f),
+			XMFLOAT3(-0.5f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-12.5f, -5.5f, 12.5f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-12.5f, -5.5f, 10.0f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-12.5f, -5.5f, 7.5f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-15.0f, -5.5f, 7.5f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.5f, 1.5f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-17.5f, -5.5f, 7.5f), //ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.5f, 1.5f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -3.0f, -6.5f),	//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 4.0f),		//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ˆÚ“®‘¬“x
-				true,							//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX				//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(-17.0f, -5.0f, 5.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 4.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-17.0f, -5.0f, 2.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-11.0f, -5.0f, -8.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-11.0f, -5.0f, -5.5f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(-11.0f, -5.0f, -3.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
 		/////////////////////////////////
 
 		//-------------
-		//‰E‘¤
+		//å³å´
 		//-------------
 
 		m_pWallPasses.push_back(
 			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(10.0f, -4.5f, -3.0f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 0.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(8.0f, -5.5f, -3.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
 			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(12.0f, -3.0f, -2.0f),	//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 3.0f),		//ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ˆÚ“®‘¬“x
-				true,							//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX				//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 3.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(13.0f, -3.0f, 0.0f), //ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(3.0f, 3.0f, 1.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(3.1f, 3.1f, 1.1f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWallPasses.push_back(
 			new WallPass(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(14.0f, -4.5f, 2.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //‰ñ“]
-				XMFLOAT3(1.0f, 0.0f, 4.0f),	 //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ˆÚ“®‘¬“x
-				true,						 //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			 //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(10.5f, -5.5f, -3.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWallPasses.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
 			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 4.1f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
+
 		m_pWalls.push_back(
 			new Wall(
 				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -3.0f, 16.5f),//ˆÊ’u
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //‰ñ“]
-				XMFLOAT3(1.0f, 3.0f, 4.0f),	  //ƒXƒP[ƒ‹
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ˆÚ“®‘¬“x
-				true,						  //ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-				ColliderType::BOX			  //ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
+				XMFLOAT3(12.5f, -5.0f, 2.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
 			)
 		);
 		m_pWalls.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 4.1f),
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(12.5f, -5.0f, -0.5f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(12.5f, -5.0f, -3.0f),	//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),		//ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),		//ç§»å‹•é€Ÿåº¦
+				true,							//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX				//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(14.6f, -5.0f, 2.4f), //ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.4f, 1.0f, 0.4f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(17.0f, -5.0f, 2.4f), //ä½ç½®
+				XMFLOAT3(0.0f, 90.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.4f, 1.0f, 0.5f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(17.5f, -5.5f, 4.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWallPasses.push_back(
+			new WallPass(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(17.5f, -5.5f, 7.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //å›è»¢
+				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //ç§»å‹•é€Ÿåº¦
+				true,						 //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			 //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.5f, 0.0f),
+			XMFLOAT3(2.5f, 3.0f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(11.0f, -5.0f, 17.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.1f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(11.0f, -5.0f, 15.0f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.1f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
+
+
+		m_pWalls.push_back(
+			new Wall(
+				MESH_TYPE::CUBE,
+				XMFLOAT3(11.0f, -5.0f, 12.5f),//ä½ç½®
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //å›è»¢
+				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //ã‚¹ã‚±ãƒ¼ãƒ«
+				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //ç§»å‹•é€Ÿåº¦
+				true,						  //ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+				ColliderType::BOX			  //ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—
+			)
+		);
+		m_pWalls.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 1.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.1f, 2.5f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f)
+		);
 		break;
 
 	}
@@ -1416,10 +1943,10 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 
 }
 
-//XV
+//æ›´æ–°
 void FieldManager::UpdateOverride()
 {
-	//•ÇXV	
+	//å£æ›´æ–°	
 	for (auto& i : m_pWalls)
 	{
 		if (i->IsActive())
@@ -1427,7 +1954,7 @@ void FieldManager::UpdateOverride()
 			i->Update();
 		}
 	}
-	//’eŠÑ’Ê•ÇXV
+	//å¼¾è²«é€šå£æ›´æ–°
 	for (auto& i : m_pWallPasses)
 	{
 		if (i->IsActive())
@@ -1436,7 +1963,7 @@ void FieldManager::UpdateOverride()
 		}
 	}
 
-	//ƒJ[ƒu•ÇXV
+	//ã‚«ãƒ¼ãƒ–å£æ›´æ–°
 	for (auto& i : m_pWallCurves)
 	{
 		if (i->IsActive())
@@ -1445,7 +1972,7 @@ void FieldManager::UpdateOverride()
 		}
 	}
 
-	//’n–ÊXV	
+	//åœ°é¢æ›´æ–°	
 	for (auto& i : m_pGrounds)
 	{
 		if (i->IsActive())
@@ -1454,8 +1981,8 @@ void FieldManager::UpdateOverride()
 		}
 	}
 
-	//ƒoƒlXV
-	for(auto& i : m_pSprings)
+	//ãƒãƒæ›´æ–°
+	for (auto& i : m_pSprings)
 	{
 		if (i->IsActive())
 		{
@@ -1464,66 +1991,66 @@ void FieldManager::UpdateOverride()
 	}
 }
 
-//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 void FieldManager::SubmitDrawsOverride(Renderer& renderer)
 {
-	//•Ç•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//å£æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& wall : m_pWalls)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*wall,			//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_wallInfo		//•Ç•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*wall,			//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_wallInfo		//å£æç”»æƒ…å ±
 		);
 	}
 
-	//’eŠÑ’Ê•Ç•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//å¼¾è²«é€šå£æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& wallpass : m_pWallPasses)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*wallpass,		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_wallPassInfo	//’eŠÑ’Ê•Ç•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*wallpass,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_wallPassInfo	//å¼¾è²«é€šå£æç”»æƒ…å ±
 		);
 	}
 
-	//ƒJ[ƒu•Ç•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//ã‚«ãƒ¼ãƒ–å£æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& wallcurve : m_pWallCurves)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*wallcurve,			//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_wallCurveInfo		//•Ç•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*wallcurve,			//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_wallCurveInfo		//å£æç”»æƒ…å ±
 		);
 	}
 
-	//ƒoƒl•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//ãƒãƒæç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& spring : m_pSprings)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,			//ƒV[ƒ“‚ÌQÆ
-			*spring,			//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_springInfo		//ƒoƒl•`‰æî•ñ
+			renderer,			//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*spring,			//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_springInfo		//ãƒãƒæç”»æƒ…å ±
 		);
 	}
 
-	//’n–Ê•`‰æî•ñ‚ğƒV[ƒ“‚É’ño
+	//åœ°é¢æç”»æƒ…å ±ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	for (auto& ground : m_pGrounds)
-	{//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	{//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 		SubmitRenderInfo(
-			renderer,		//ƒV[ƒ“‚ÌQÆ
-			*ground,		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-			m_groundInfo	//’n–Ê•`‰æî•ñ
+			renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+			*ground,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+			m_groundInfo	//åœ°é¢æç”»æƒ…å ±
 		);
 	}
 }
 
-//Õ“ËŒãˆ—
+//è¡çªå¾Œå‡¦ç†
 void FieldManager::ResolveCollisionsOverride()
 {
 }
 
-//I—¹
+//çµ‚äº†
 void FieldManager::FinalizeOverride()
 {
 	m_pWalls.clear();
@@ -1531,7 +2058,7 @@ void FieldManager::FinalizeOverride()
 	m_pWallCurves.clear();
 	m_pSprings.clear();
 	m_pGrounds.clear();
-	
+
 
 	m_wallInfo.clear();
 	m_wallPassInfo.clear();
@@ -1540,44 +2067,17 @@ void FieldManager::FinalizeOverride()
 	m_groundInfo.clear();
 }
 
-//ƒIƒuƒWƒFƒNƒg‚Ì•`‰æî•ñ¶¬
+//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æç”»æƒ…å ±ç”Ÿæˆ
 void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-	//•`‰æî•ñ¶¬ŠÖ”‚ğŒÄ‚Ño‚µA•`‰æî•ñ‚ğì¬
+	//æç”»æƒ…å ±ç”Ÿæˆé–¢æ•°ã‚’å‘¼ã³å‡ºã—ã€æç”»æƒ…å ±ã‚’ä½œæˆ
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_wallInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pWalls[0]->GetMeshType(),		//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_OPAQUE,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		wallTexPath						//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
-	);
-
-	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_wallPassInfo,				//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pWallPasses[0]->GetMeshType(),//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_OPAQUE,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		wallPassTexPath					//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
-	);
-
-	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_wallCurveInfo,				//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pWallCurves[0]->GetMeshType(),//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_OPAQUE,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		wallCurveFbxPath				//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
-	);
-
-	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_springInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		MESH_TYPE::CUBE,				//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_OPAQUE,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		springTexPath,
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_wallInfo,					//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::IMPORT,
+		BLEND_MODE::BLEND_MASKED,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 		true,
 		BILLBOARD_NONE,
 		false,
@@ -1585,11 +2085,61 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 	);
 
 	CreateRenderInfo(
-		textureManager,					//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		meshManager,					//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-		&m_groundInfo,					//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		m_pGrounds[0]->GetMeshType(),	//ƒƒbƒVƒ…ƒ^ƒCƒv
-		BLEND_MODE::BLEND_MASKED,		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-		groundTexPath					//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_wallPassInfo,				//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::IMPORT,
+		BLEND_MODE::BLEND_MASKED,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		L"asset/fbx/hole/ST_hole.fbx",	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		false,
+		BILLBOARD_NONE,
+		false,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_wallCurveInfo,				//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		m_pWallCurves[0]->GetMeshType(),//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_MODE::BLEND_OPAQUE,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		L"asset/fbx/wall_curve_ST.fbx",		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_springInfo,					//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::IMPORT,				//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+		BLEND_MODE::BLEND_MASKED,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		springTexPath,
+		true
+	);
+	//ãƒãƒã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ãƒã‚¤ãƒ³ãƒ‰
+	for(auto& spring : m_pSprings)
+	{
+		auto* set = spring->GetNodeAnimatorSet();          // Springå†…éƒ¨ã®å®Ÿä½“
+		auto* asset = m_springInfo[0].pNodeAnimAsset;
+
+		set->pNodeAnimator->Bind(asset);
+		set->isAnimLoaded = true;
+		set->isAnimPlaying = true;
+	}
+
+	CreateRenderInfo(
+		textureManager,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		meshManager,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+		&m_groundInfo,					//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		MESH_TYPE::IMPORT,
+		BLEND_MODE::BLEND_MASKED,		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+		L"asset/fbx/stage/ST_stage.fbx",	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
 	);
 }

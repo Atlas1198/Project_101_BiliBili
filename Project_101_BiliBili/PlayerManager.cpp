@@ -8,6 +8,21 @@
 
 using namespace DirectX;
 
+PlayerManager::PlayerManager()
+{
+	m_subscribedEvents.push_back(
+		EventData{ EventType::TAKE_DAMAGE,
+		EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
+		EventType::TAKE_DAMAGE,
+		[this](std::shared_ptr<std::pair<int, float>> data)
+		{
+			int teamID = data->first;
+			float damage = data->second;
+			OnTakeDamage(teamID, damage);
+		}
+	) });
+}
+
 //デストラクタ
 PlayerManager::~PlayerManager()
 {
@@ -32,18 +47,6 @@ void PlayerManager::InitializeOverride(
 	{
 		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
 	}
-
-	m_subscribedEvents.push_back(
-		EventData{ EventType::TAKE_DAMAGE,
-		EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
-		EventType::TAKE_DAMAGE,
-		[this](std::shared_ptr<std::pair<int, float>> data)
-		{
-			int teamID = data->first;
-			float damage = data->second;
-			OnTakeDamage(teamID, damage);
-		}
-	) });
 
 	m_subscribedEvents.push_back(
 		EventData{ EventType::SET_BB,
@@ -94,7 +97,7 @@ void PlayerManager::InitializeOverride(
 			break;
 		}
 
-		m_pPlayer[i]->SetColor(color);
+		//m_pPlayer[i]->SetColor(color);
 		m_pPlayer[i]->SetCharacterID(m_pSceneContext->playersInfo[i].characterID);
 	}
 
@@ -115,7 +118,7 @@ Player* PlayerManager::AddPlayer(
 		MESH_TYPE::QUAD,
 		XMFLOAT3(spawnPos.x, spawnPos.y, spawnPos.z),	//位置
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//回転
-		XMFLOAT3(4.0f, 4.0f, 4.0f),						//スケール
+		XMFLOAT3(4.5f, 4.5f, 4.5f),						//スケール
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//移動速度
 		id,												//ID
 		true,											//アクティブフラグ
@@ -192,6 +195,10 @@ void PlayerManager::OnSetBB(int teamID, bool isActive)
 			player->SetBB(isActive);
 		}
 	}
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+		EventType::SET_BULLET_UI_ACTIVE,
+		{ teamID, !isActive }
+	);
 }
 
 //更新
@@ -202,6 +209,17 @@ void PlayerManager::UpdateOverride()
 		player->Update();
 	}
 
+	EventManager::GetInstance()->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+		m_pPlayer[0]->GetTeamID(), m_pPlayer[0]->GetPosition(), m_pPlayer[1]->GetPosition()
+	));
+
+	EventManager::GetInstance()->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+		m_pPlayer[2]->GetTeamID(), m_pPlayer[2]->GetPosition(), m_pPlayer[3]->GetPosition()
+	));
+
+#ifdef DEBUG
 	{
 		auto keyInput = m_pInputManager->GetInputInfo()->key;
 		if (keyInput.one.trigger)
@@ -214,6 +232,7 @@ void PlayerManager::UpdateOverride()
 			OnTakeDamage(1, 100.0f);
 		}
 	}
+#endif // DEBUG
 }
 
 //衝突後処理
@@ -228,8 +247,9 @@ void PlayerManager::ResolveCollisionsOverride()
 //終了
 void PlayerManager::FinalizeOverride()
 {
-	//イベント購読解除
-	EventManager::GetInstance()->Unsubscribe(EventType::TAKE_DAMAGE, FindEventData(m_subscribedEvents, EventType::TAKE_DAMAGE).id);
+//	//イベント購読解除
+//	EventManager::GetInstance()->Unsubscribe(EventType::TAKE_DAMAGE, FindEventData(m_subscribedEvents, EventType::TAKE_DAMAGE).id);
+//
 }
 
 //プレイヤーオブジェクトを取得
@@ -241,13 +261,13 @@ std::vector<Player*>& PlayerManager::GetPlayers()
 //描画要求をシーンに提出
 void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 {
-	for (auto& player : m_pPlayer)
+	for (int i = 0; i < m_pPlayer.size(); i++)
 	{
 		//描画要求をシーンに提出
 		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
-			*player,		//ゲームオブジェクト配列の参照
-			teamBBActive[player->GetTeamID()] ? m_playerTransformInfo : m_playerInfo	//プレイヤー描画情報
+			*m_pPlayer[i],		//ゲームオブジェクト配列の参照
+			teamBBActive[m_pPlayer[i]->GetTeamID()] ? m_playerTransformInfo[i] : m_playerInfo[i]	//プレイヤー描画情報
 		);
 	}
 }
@@ -258,26 +278,43 @@ void PlayerManager::PrepareRenderInfo(
 	MeshManager& meshManager		//メッシュ管理クラスの参照
 	)
 {
-	//描画情報生成関数を呼び出し、描画情報を作成
-	CreateRenderInfo(
-		textureManager,					//テクスチャマネージャへの参照
-		meshManager,					//メッシュマネージャへの参照
-		&m_playerInfo,					//描画情報構造体配列へのポインタ
-		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/texture/player/YELLOW_off_CH.png",		//テクスチャのファイル名
-		false,							//ライト無効
-		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
-	);
 
-	CreateRenderInfo(
-		textureManager,					//テクスチャマネージャへの参照
-		meshManager,					//メッシュマネージャへの参照
-		&m_playerTransformInfo,			//描画情報構造体配列へのポインタ
-		m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/texture/player/YELLOW_on_CH.png",		//テクスチャのファイル名
-		false,							//ライト無効
-		BILLBOARD_TYPE::BILLBOARD_SPHERICAL
-	);
+	wchar_t normalTextures[4][39] = {
+		L"asset/texture/player/BLUE_off_CH.png",
+		L"asset/texture/player/SKY_off_CH.png",
+		L"asset/texture/player/ORANGE_off_CH.png",
+		L"asset/texture/player/YELLOW_off_CH.png",
+	};
+
+	wchar_t bbTextures[4][38] = {
+		L"asset/texture/player/BLUE_on_CH.png",
+		L"asset/texture/player/SKY_on_CH.png",
+		L"asset/texture/player/ORANGE_on_CH.png",
+		L"asset/texture/player/YELLOW_on_CH.png"
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		CreateRenderInfo(
+			textureManager,					//テクスチャマネージャへの参照
+			meshManager,					//メッシュマネージャへの参照
+			&m_playerInfo[i],					//描画情報構造体配列へのポインタ
+			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+			normalTextures[i],		//テクスチャのファイル名
+			false,							//ライト無効
+			BILLBOARD_TYPE::BILLBOARD_FIX_X
+		);
+
+		CreateRenderInfo(
+			textureManager,					//テクスチャマネージャへの参照
+			meshManager,					//メッシュマネージャへの参照
+			&m_playerTransformInfo[i],			//描画情報構造体配列へのポインタ
+			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+			bbTextures[i],		//テクスチャのファイル名
+			false,							//ライト無効
+			BILLBOARD_TYPE::BILLBOARD_FIX_X
+		);
+	}
 }

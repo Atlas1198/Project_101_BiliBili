@@ -104,6 +104,7 @@ void CreateRenderInfoFromFBX(
 		info.billboardType = bType;			//ビルボードタイプの設定
 		info.baseVertex = 0;				//基準インデックスの設定
 		info.startIndex = 0;				//開始インデックスの設定
+		info.pNodeAnimAsset = new NodeAnimationAsset(mesh.nodeAnimAsset);	//ノードアニメーション資産の生成
 
 		pInfo->push_back(info);	//配列に格納
 	}
@@ -189,7 +190,7 @@ CommonRenderDesc CreateRenderInfoFromMeshData(
 
 	//メッシュGPUデータの作成と描画情報構造体への設定
 	desc.pMeshGPU = meshManager.CreateMesh(mesh);	//メッシュGPUデータの作成とポインタの取得
-	desc.color = XMFLOAT4(1, 1, 1, 1);				//オブジェクトの色を白に設定
+	desc.color = mesh.materialColor;				//オブジェクトの色を白に設定
 	desc.blendMode = mode;							//ブレンドモードを設定
 
 	//テクスチャのSRVインデックスを取得

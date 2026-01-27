@@ -108,11 +108,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX; WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <OpenMPSupport>false</OpenMPSupport>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="AssimpLoader.h" />
+    <ClInclude Include="AssimpNodeTransformAnim.h" />
     <ClInclude Include="BB.h" />
     <ClInclude Include="BBManager.h" />
     <ClInclude Include="BilibiliArea.h" />
@@ -169,6 +173,7 @@
     <ClInclude Include="CutInUI.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DatabaseManager.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="DirectXTex.h" />
     <ClInclude Include="EffectBase.h" />
     <ClInclude Include="EffectData.h" />

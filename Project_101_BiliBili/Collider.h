@@ -1,5 +1,4 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include "SharedStruct.h"

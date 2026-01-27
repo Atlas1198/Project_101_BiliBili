@@ -1,13 +1,16 @@
 #include "AssimpLoader.h"
+#include "AssimpNodeTransformAnim.h"
 #include "SharedStruct.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/material.h>
+#include <assimp/version.h>
+#include <DirectXMath.h>
 #include "d3dx12.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
-
 
 //ディレクトリパス取得関数
 std::wstring GetDirectoryPath(const std::wstring& origin)
@@ -19,30 +22,30 @@ std::wstring GetDirectoryPath(const std::wstring& origin)
 //std::wstring(ワイド文字列)からstd::string(マルチバイト文字列)を得る
 std::string ToUTF8(const std::wstring& value)
 {
-    auto length = WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, nullptr, 0, nullptr, nullptr);
-    auto buffer = new char[length];
+	auto length = WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, nullptr, 0, nullptr, nullptr);
+	auto buffer = new char[length];
 
-    WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, buffer, length, nullptr, nullptr);
+	WideCharToMultiByte(CP_UTF8, 0U, value.data(), -1, buffer, length, nullptr, nullptr);
 
-    std::string result(buffer);
-    delete[] buffer;
-    buffer = nullptr;
+	std::string result(buffer);
+	delete[] buffer;
+	buffer = nullptr;
 
-    return result;
+	return result;
 }
 
 //std::string(マルチバイト文字列)からstd::wstring(ワイド文字列)を得る
 std::wstring ToWideString(const std::string& str)
 {
-    auto num1 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, nullptr, 0);
+	auto num1 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, nullptr, 0);
 
-    std::wstring wstr;
-    wstr.resize(num1);
+	std::wstring wstr;
+	wstr.resize(num1);
 
-    auto num2 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, &wstr[0], num1);
+	auto num2 = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.c_str(), -1, &wstr[0], num1);
 
-    assert(num1 == num2);
-    return wstr;
+	assert(num1 == num2);
+	return wstr;
 }
 
 //モデル読み込み関数
@@ -63,12 +66,13 @@ bool AssimpLoader::Load(ImportSettings settings)
 	Assimp::Importer importer;	//Assimpのインポーター生成
 	int flag = 0;   //インポート設定フラグ
 	flag |= aiProcess_Triangulate;				//三角形化
-	flag |= aiProcess_PreTransformVertices;		//頂点座標の前計算
 	flag |= aiProcess_CalcTangentSpace;			//接線空間の計算
 	flag |= aiProcess_GenSmoothNormals;			//スムーズシェーディング用法線の計算
 	flag |= aiProcess_GenUVCoords;				//UV座標の生成
 	flag |= aiProcess_RemoveRedundantMaterials;	//冗長なマテリアルの削除
 	flag |= aiProcess_OptimizeMeshes;			//メッシュの最適化
+	flag |= aiProcess_LimitBoneWeights;			//ボーンウェイトの制限
+	flag |= aiProcess_ConvertToLeftHanded;		//左手座標系に変換
 
 	auto scene = importer.ReadFile(path, flag); //モデル読み込み
 
@@ -94,6 +98,9 @@ bool AssimpLoader::Load(ImportSettings settings)
 		//テクスチャの読み込み
 		const auto pMaterial = scene->mMaterials[pMesh->mMaterialIndex];	//マテリアル構造体へのポインタ
 		LoadTexture(settings.fileName, meshes[i], pMaterial);				//テクスチャ読み込み関数の呼び出し
+	
+		BuildNodeTree(scene, meshes[i].nodeAnimAsset);	//ノードツリー構築関数の呼び出し
+		BuildClip0(scene, meshes[i].nodeAnimAsset);		//クリップ0構築関数の呼び出し
 	}
 
 	scene = nullptr; //シーン情報の解放
@@ -173,6 +180,8 @@ void AssimpLoader::LoadTexture(
 	const aiMaterial* src		//Assimpのメッシュ構造体へのポインタ
 )
 {
+	dst.materialColor = GetMaterialColor(src);	//マテリアルカラー取得関数の呼び出し
+
 	aiString path;	//テクスチャパス格納用aiString
 
 	//拡散反射テクスチャのパスを取得
@@ -190,4 +199,26 @@ void AssimpLoader::LoadTexture(
 	{//取得失敗時
 		dst.texPath.clear();	//テクスチャパスをクリア
 	}
+}
+
+//マテリアルカラー取得関数
+DirectX::XMFLOAT4 AssimpLoader::GetMaterialColor(const aiMaterial* src)
+{
+	aiColor4D color(1.0f, 1.0f, 1.0f, 1.0f);	//マテリアルカラー格納用aiColor4D
+
+	if (src->Get("$clr.base", 0, 0, color) != aiReturn_SUCCESS)
+	{
+		aiGetMaterialColor(src, AI_MATKEY_COLOR_DIFFUSE, &color);
+	}
+
+	float opacity = 1.0f;
+	src->Get(AI_MATKEY_OPACITY, opacity);
+	color.a *= opacity;
+
+	return DirectX::XMFLOAT4(
+		color.r,
+		color.g,
+		color.b,
+		color.a
+	);
 }

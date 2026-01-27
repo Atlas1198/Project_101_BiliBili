@@ -1,12 +1,6 @@
 #pragma once
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
 #define _WIN32_WINNT 0x0A00
 #include <sdkddkver.h>
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-//#include <d3d12.h>
 #include <DirectXMath.h>
 #include "DirectXTex.h"
 #include <vector>
@@ -104,6 +98,12 @@ struct CameraInfo
 	float aspectRatio;			//アスペクト比
 	float nearZ;				//ニアクリップ距離
 	float farZ;					//ファークリップ距離
+
+	DirectX::XMFLOAT2 ConvertWorldToScreen(
+		const DirectX::XMFLOAT3& worldPos,	//ワールド座標
+		int screenWidth,					//画面幅
+		int screenHeight					//画面高さ
+	) const;
 };
 
 //プレイヤー情報構造体

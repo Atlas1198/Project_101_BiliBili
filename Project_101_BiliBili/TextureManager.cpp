@@ -34,6 +34,9 @@ void TextureManager::Initialize(
 
 	m_nextFreeIndex = 0;		//次の空きインデックスを初期化
 	m_loadedTextures.clear();	//読み込み済みテクスチャマップをクリア
+
+	//デフォルトの白テクスチャを作成
+	m_defaultTextureIndex = LoadSrvFromFile(L"asset/texture/white.png");
 }
 
 //ファイルからSRVを読み込み
@@ -260,4 +263,10 @@ ID3D12DescriptorHeap* TextureManager::GetSrvHeap() const
 UINT TextureManager::GetSrvIncrementSize() const
 {
 	return m_srvIncrementSize;
+}
+
+//デフォルトの白テクスチャのSRVインデックスを取得
+uint32_t TextureManager::GetDefaultWhiteTextureIndex() const
+{
+	return m_defaultTextureIndex;
 }

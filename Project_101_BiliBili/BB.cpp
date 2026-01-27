@@ -50,7 +50,7 @@ void BB::Initialize()
 		m_electricityBB[i]->GetColliderSet()->AddCollider(
 			ColliderType::CAPSULE,
 			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(2.0f, 1.0f, 2.0f),
+			XMFLOAT3(3.5f, 1.0f, 3.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 		m_electricityBB[i]->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
@@ -91,7 +91,7 @@ void BB::Update()
 
 		for (auto& eb : m_electricityBB)
 		{
-			eb->Update();
+			if(eb->IsActive()) eb->Update();
 		}
 	}
 
@@ -130,6 +130,7 @@ void BB::ResolveCollisions()
 				1 - m_teamId,
 				BB::DAMAGE * eb->GetHitNum()
 			));
+
 
 			//リセット
 			eb->SetHasHitPlayer(false);
@@ -198,8 +199,8 @@ void BB::SetTeamId(int id)
 //ビリビリの有効化
 void BB::ActivateBB()
 {
-	m_activatedBB = true;								//発動中フラグを立てる
-	m_electricityBB[0]->SetActive(true);				//片方の電流をオン
+	m_activatedBB = true;									//発動中フラグを立てる
+	m_electricityBB[0]->SetActive(true);					//片方の電流をオン
 	m_electricityBB[0]->GetColliderSet()->SetActive(true);	//コライダーもオン
 	for(auto& line : m_lineBB)
 	{

@@ -55,7 +55,7 @@ private:
 	FrameTimer m_frameTimer[BB_NUM];
 	FrameTimer bbAreaStartEventTimer;
 
-
+	std::vector<int> m_activationCalledBBIndex; //BB発動コマンド(インデックス指定)
 
 	GameUIManager* m_pUIManager = nullptr; //UI繝槭ロ繝ｼ繧ｸ繝｣繝ｼ縺ｸ縺ｮ繝昴う繝ｳ繧ｿ
 	CollisionManager* m_pCollisionManager = nullptr; //陦晉ｪ√�槭ロ繝ｼ繧ｸ繝｣繝ｼ縺ｸ縺ｮ繝昴う繝ｳ繧ｿ

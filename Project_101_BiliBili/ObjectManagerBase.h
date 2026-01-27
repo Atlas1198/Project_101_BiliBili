@@ -53,7 +53,7 @@ protected:
 
 	void SubmitRenderInfo(	//描画情報をシーンに提出
 		Renderer& renderer,							//シーンの参照
-		const ObjectBase& objects,					//ゲームオブジェクト
+		ObjectBase& objects,					//ゲームオブジェクト
 		std::vector <WorldRenderInfo>& info	//描画情報構造体
 	);
 
