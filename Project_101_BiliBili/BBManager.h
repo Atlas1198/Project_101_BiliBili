@@ -12,11 +12,11 @@ class Player;
 class GameUIManager;
 class CollisionManager;
 
-//BBƒ}ƒl[ƒWƒƒ[ƒNƒ‰ƒX
+//BBãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚¯ãƒ©ã‚¹
 class BBManager : public ObjectManagerBase
 {
 public:
-	static constexpr int BB_NUM = 2; //BB‚Ì”
+	static constexpr int BB_NUM = 2; //BBã®æ•°
 	static constexpr int BB_AREA_NUM = 4;
 	const wchar_t* lineBBTexPath = L"asset/texture/line.png";
 	const wchar_t* electricityBBTexPath = L"asset/texture/effect/bilibili.png";
@@ -24,42 +24,43 @@ public:
 	inline static float BB_DURATION = 5.0f;
 
 public:
-	BBManager();		//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~BBManager();	//ƒfƒXƒgƒ‰ƒNƒ^
-	//ƒƒCƒ“ˆ—ŠÖ”
-	void InitializeOverride(	//‰Šú‰»
+	BBManager();		//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~BBManager();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	//ãƒ¡ã‚¤ãƒ³å‡¦ç†é–¢æ•°
+	void InitializeOverride(	//åˆæœŸåŒ–
 		InputManager* pInputManager,
 		TextureManager& textureManager,
 		MeshManager& meshManager,
 		CollisionManager& collisionManager
 	) override;
-	void UpdateOverride() override;					//XV
-	void SubmitDrawsOverride(Renderer& renderer) override;		//•`‰æ—v‹’ño
-	void ResolveCollisionsOverride() override;		//Õ“Ë‰ğŒˆ
-	void FinalizeOverride() override;					//I—¹
+	void UpdateOverride() override;					//æ›´æ–°
+	void SubmitDrawsOverride(Renderer& renderer) override;		//æç”»è¦æ±‚æå‡º
+	void ResolveCollisionsOverride() override;		//è¡çªè§£æ±º
+	void FinalizeOverride() override;					//çµ‚äº†
 
-	void SetPlayerData(std::vector<Player*>& players);				//ƒvƒŒƒCƒ„[î•ñ‚Ìİ’è
-	void SetGameUIManager(GameUIManager* pUIManager);				//UIƒ}ƒl[ƒWƒƒ[‚Ìİ’è
-	void SetCollisionManager(CollisionManager* pCollisionManager);	//Õ“Ëƒ}ƒl[ƒWƒƒ[‚Ìİ’è
-	void SetBB(int teamID, bool activate);						//BB‚Ì”­“®E–³Œø‰»İ’è
-	void OnItemPickup(int teamID);								//ƒAƒCƒeƒ€æ“¾ƒR[ƒ‹ƒoƒbƒN
+	void SetPlayerData(std::vector<Player*>& players);				//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±ã®è¨­å®š
+	void SetGameUIManager(GameUIManager* pUIManager);				//UIãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®è¨­å®š
+	void SetCollisionManager(CollisionManager* pCollisionManager);	//è¡çªãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®è¨­å®š
+	void SetBB(int teamID, bool activate);						//BBã®ç™ºå‹•ãƒ»ç„¡åŠ¹åŒ–è¨­å®š
+	void OnItemPickup(int teamID);								//ã‚¢ã‚¤ãƒ†ãƒ å–å¾—ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 
 private:
-	BB* m_BB[BB_NUM] = { nullptr }; //BB”z—ñ
+	BB* m_BB[BB_NUM] = { nullptr }; //BBé…åˆ—
 	BilibiliArea *m_BBAreas[BB_AREA_NUM] = { nullptr };
-	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBƒ‰ƒCƒ“•`‰æî•ñ
-	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB“d‹C•`‰æî•ñ
-	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BBƒGƒŠƒA•`‰æî•ñ
+	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBãƒ©ã‚¤ãƒ³æç”»æƒ…å ±
+	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BBé›»æ°—æç”»æƒ…å ±
+	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BBã‚¨ãƒªã‚¢æç”»æƒ…å ±
 
-	float m_BBTimer[BB_NUM] = { 0.0f }; //BBƒ^ƒCƒ}[
+	float m_BBTimer[BB_NUM] = { 0.0f }; //BBã‚¿ã‚¤ãƒãƒ¼
 	FrameTimer m_frameTimer[BB_NUM];
+	FrameTimer bbAreaStartEventTimer;
 
 
 
-	GameUIManager* m_pUIManager = nullptr; //UIƒ}ƒl[ƒWƒƒ[‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	CollisionManager* m_pCollisionManager = nullptr; //Õ“Ëƒ}ƒl[ƒWƒƒ[‚Ö‚Ìƒ|ƒCƒ“ƒ^
+	GameUIManager* m_pUIManager = nullptr; //UIãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	CollisionManager* m_pCollisionManager = nullptr; //è¡çªãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 private:
-	void PrepareRenderInfo(	//BB•`‰æî•ñ¶¬
+	void PrepareRenderInfo(	//BBæç”»æƒ…å ±ç”Ÿæˆ
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	) override;

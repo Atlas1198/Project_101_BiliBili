@@ -5,12 +5,12 @@
 
 using namespace DirectX;
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 BBManager::BBManager()
 {
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 BBManager::~BBManager()
 {
 	for(int i = 0; i < BB_NUM; i++)
@@ -23,7 +23,7 @@ BBManager::~BBManager()
 	}
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void BBManager::InitializeOverride(
 	InputManager* pInputManager,
 	TextureManager& textureManager,
@@ -31,29 +31,29 @@ void BBManager::InitializeOverride(
 	CollisionManager& collisionManager
 )
 {
-	//BB¶¬
+	//BBç”Ÿæˆ
 	for (int i = 0; i < BB_NUM; i++)
 	{
 		m_BB[i] = new BB(m_pUIManager, m_pCollisionManager);
 	}
 
-	//BB‰Šú‰»
+	//BBåˆæœŸåŒ–
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		m_BB[i]->Initialize();	//‰Šú‰»
-		m_BB[i]->SetTeamId(i);	//ƒ`[ƒ€IDİ’è
+		m_BB[i]->Initialize();	//åˆæœŸåŒ–
+		m_BB[i]->SetTeamId(i);	//ãƒãƒ¼ãƒ IDè¨­å®š
 	}
 
-	//ƒRƒ‰ƒCƒ_[‚Ì’ño
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®æå‡º
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		//ƒ‰ƒCƒ“BBƒRƒ‰ƒCƒ_[’ño
+		//ãƒ©ã‚¤ãƒ³BBã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æå‡º
 		for(int j = 0; j < BB::PLAYER_NUM; j++)
 		{
 			auto lineBB = m_BB[i]->GetLineBB();
 		}
 
-		//“d‹CBBƒRƒ‰ƒCƒ_[’ño
+		//é›»æ°—BBã‚³ãƒ©ã‚¤ãƒ€ãƒ¼æå‡º
 		auto electricityBB = m_BB[i]->GetElectricityBB();
 		for (int j = 0; j < BB::PLAYER_NUM; j++)
 		{
@@ -84,6 +84,8 @@ void BBManager::InitializeOverride(
 		m_BBAreas[i]->GetColliderSet()->RegisterColliders(collisionManager);
   		m_BBAreas[i]->SetActive(false);
 	}
+
+	bbAreaStartEventTimer.Mark();
 }
 
 void BBManager::OnItemPickup(int teamID)
@@ -95,14 +97,18 @@ void BBManager::OnItemPickup(int teamID)
 	if (!m_BB[teamID]->IsActivated())
 	{
 		SetBB(teamID, true);
-		m_BBAreas[teamID * 2]->SetActive(true);
-		m_BBAreas[teamID * 2 + 1]->SetActive(true);
+
+		if (bbAreaStartEventTimer.Peek() >= 120.0f)
+		{
+			m_BBAreas[teamID * 2]->SetActive(true);
+			m_BBAreas[teamID * 2 + 1]->SetActive(true);
+		}
 	}
 	m_BBTimer[teamID] = BB_DURATION;
 	m_frameTimer[teamID].Mark();
 }
 
-//XV
+//æ›´æ–°
 void BBManager::UpdateOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
@@ -125,12 +131,12 @@ void BBManager::UpdateOverride()
 	}
 }
 
-//•`‰æ—v‹’ño
+//æç”»è¦æ±‚æå‡º
 void BBManager::SubmitDrawsOverride(Renderer& renderer)
 {
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		//ƒ‰ƒCƒ“BB•`‰æî•ñ’ño
+		//ãƒ©ã‚¤ãƒ³BBæç”»æƒ…å ±æå‡º
 		auto lineBB = m_BB[i]->GetLineBB();
 		for (int j = 0; j < BB::PLAYER_NUM; j++)
 		{
@@ -140,7 +146,7 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 			}
 		}
 
-		//“d‹CBB•`‰æî•ñ’ño
+		//é›»æ°—BBæç”»æƒ…å ±æå‡º
 		auto electricityBB = m_BB[i]->GetElectricityBB();
 		for (int j = 0; j < BB::PLAYER_NUM; j++)
 		{
@@ -157,7 +163,7 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 	}
 }
 
-//Õ“Ë‰ğŒˆ
+//è¡çªè§£æ±º
 void BBManager::ResolveCollisionsOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
@@ -170,7 +176,7 @@ void BBManager::ResolveCollisionsOverride()
 	}
 }
 
-//I—¹
+//çµ‚äº†
 void BBManager::FinalizeOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
@@ -179,31 +185,31 @@ void BBManager::FinalizeOverride()
 	}
 }
 
-//ƒvƒŒƒCƒ„[î•ñ‚Ìİ’è
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±ã®è¨­å®š
 void BBManager::SetPlayerData(std::vector<Player*>& players)
 {
 
-	std::vector<XMFLOAT3> team1Pos;	//ƒ`[ƒ€1‚ÌƒvƒŒƒCƒ„[ˆÊ’u
-	std::vector<XMFLOAT3> team2Pos;	//ƒ`[ƒ€2‚ÌƒvƒŒƒCƒ„[ˆÊ’u
-	//bool team1Transformed = false;	//ƒ`[ƒ€1‚Ì•Ïgƒtƒ‰ƒO
-	//bool team2Transformed = false;	//ƒ`[ƒ€2‚Ì•Ïgƒtƒ‰ƒO
+	std::vector<XMFLOAT3> team1Pos;	//ãƒãƒ¼ãƒ 1ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®
+	std::vector<XMFLOAT3> team2Pos;	//ãƒãƒ¼ãƒ 2ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®
+	//bool team1Transformed = false;	//ãƒãƒ¼ãƒ 1ã®å¤‰èº«ãƒ•ãƒ©ã‚°
+	//bool team2Transformed = false;	//ãƒãƒ¼ãƒ 2ã®å¤‰èº«ãƒ•ãƒ©ã‚°
 
-	//ƒvƒŒƒCƒ„[‚ÌˆÊ’uE•Ïgƒtƒ‰ƒO‚ğƒ`[ƒ€‚²‚Æ‚É•ª‚¯‚é
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ãƒ»å¤‰èº«ãƒ•ãƒ©ã‚°ã‚’ãƒãƒ¼ãƒ ã”ã¨ã«åˆ†ã‘ã‚‹
 	for(auto& player : players)
 	{
 		if(player->GetTeamID() == 0)
-		{//ƒ`[ƒ€1
+		{//ãƒãƒ¼ãƒ 1
 			team1Pos.push_back(player->GetPosition());
 			//team1Transformed |= player->IsTransformed();
 		}
 		else if(player->GetTeamID() == 1)
-		{//ƒ`[ƒ€2
+		{//ãƒãƒ¼ãƒ 2
 			team2Pos.push_back(player->GetPosition());
 			//team2Transformed |= player->IsTransformed();
 		}
 	}
 
-	//BB‚ÉƒvƒŒƒCƒ„[ˆÊ’u‚ğİ’è
+	//BBã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®ã‚’è¨­å®š
 	m_BB[0]->SetPlayerPos(team1Pos.data());
 	m_BB[1]->SetPlayerPos(team2Pos.data());
 
@@ -231,22 +237,22 @@ void BBManager::SetBB(int teamID, bool activate)
 	}
 }
 
-//UIƒ}ƒl[ƒWƒƒ[‚Ìİ’è
+//UIãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®è¨­å®š
 void BBManager::SetGameUIManager(GameUIManager* pUIManager)
 {
 	m_pUIManager = pUIManager;
 }
 
-//Õ“Ëƒ}ƒl[ƒWƒƒ[‚Ìİ’è
+//è¡çªãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®è¨­å®š
 void BBManager::SetCollisionManager(CollisionManager* pCollisionManager)
 {
 	m_pCollisionManager = pCollisionManager;
 }
 
-//BB•`‰æî•ñ¶¬
+//BBæç”»æƒ…å ±ç”Ÿæˆ
 void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-	//ƒ‰ƒCƒ“BB•`‰æî•ñ¶¬
+	//ãƒ©ã‚¤ãƒ³BBæç”»æƒ…å ±ç”Ÿæˆ
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
@@ -257,7 +263,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		false
 	);
 
-	//“d‹CBB•`‰æî•ñ¶¬
+	//é›»æ°—BBæç”»æƒ…å ±ç”Ÿæˆ
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
@@ -268,7 +274,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		false
 	);
 
-	//BBƒGƒŠƒA•`‰æî•ñ¶¬
+	//BBã‚¨ãƒªã‚¢æç”»æƒ…å ±ç”Ÿæˆ
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
