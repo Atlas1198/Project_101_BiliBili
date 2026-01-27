@@ -74,6 +74,8 @@ public:	//公開関数
 	void SetCharacterID(int character) { characterID = character; } //キャラクターIDセット
 	void SetPlayerInfo(const PlayerInfo& info) { this->info = info; }	//プレイヤー情報構造体セット
 
+	void Reset();
+
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
 	void SetBB(bool isActive); // BBセット
