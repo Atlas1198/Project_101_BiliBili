@@ -27,7 +27,7 @@ BilibiliArea::BilibiliArea(
     m_pColliderSet->AddCollider(
         ColliderType::SPHERE,
         XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(10.0f, 10.0f, 10.0f),
+        XMFLOAT3(8.0f, 8.0f, 8.0f),
         XMFLOAT3(0.0f, 0.0f, 0.0f)
     );
 }
