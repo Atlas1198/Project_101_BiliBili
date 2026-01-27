@@ -22,6 +22,7 @@ public:
 	void SpawnItem();
 	inline static float ITEM_RESPAWN = 15.0f;
 	static constexpr float EVENT_SPAWN_RATE = 0.5f;
+	const int MAX_SKIPS = 2;
 
 private:	//非公開メンバ変数
 	//メイン処理関数
@@ -48,6 +49,7 @@ private:
 	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
 	FrameTimer m_frameTimer;
 	FrameTimer m_totalTimer;
-	bool skippedFirstItem = false;
+	int nextItemIndex = 1;
+	int skips[2] = { 1, 4 };
 	bool applyNewSpawnRate = false;
 };

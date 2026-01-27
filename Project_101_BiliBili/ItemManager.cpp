@@ -71,14 +71,23 @@ void ItemManager::UpdateOverride()
 {
 	if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
 	{
-		if (!skippedFirstItem)
+		bool skipped = false;
+
+		for (int i = 0; i < MAX_SKIPS; i++)
 		{
-			skippedFirstItem = true;
+			if (nextItemIndex == skips[i])
+			{
+				skipped = true;
+				break;
+			}
 		}
-		else
+
+		if (!skipped)
 		{
 			SpawnItem();
 		}
+
+		nextItemIndex++;
 		m_frameTimer.Mark();
 	}
 
