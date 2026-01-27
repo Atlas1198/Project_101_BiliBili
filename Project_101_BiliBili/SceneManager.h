@@ -56,4 +56,7 @@ private:	//メンバ変数
 	SCENE_TYPE m_reservedScene = SCENE_TYPE::SCENE_NONE;	//予約されたシーン
 
 	SceneContext m_sceneContext;	//シーンコンテキスト
+
+private:
+	void SubscribeEvent();
 };
