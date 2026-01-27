@@ -220,7 +220,7 @@ void PlayerManager::UpdateOverride()
 		m_pPlayer[2]->GetTeamID(), m_pPlayer[2]->GetPosition(), m_pPlayer[3]->GetPosition()
 	));
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	{
 		auto keyInput = m_pInputManager->GetInputInfo()->key;
 		if (keyInput.one.trigger)
@@ -233,7 +233,7 @@ void PlayerManager::UpdateOverride()
 			OnTakeDamage(1, 100.0f);
 		}
 	}
-#endif // DEBUG
+#endif // _DEBUG
 }
 
 //衝突後処理

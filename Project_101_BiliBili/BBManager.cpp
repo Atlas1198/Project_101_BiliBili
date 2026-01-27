@@ -123,13 +123,16 @@ void BBManager::UpdateOverride()
 	}
 	m_activationCalledBBIndex.clear();
 
+	//BB時間管理
 	for(int i = 0; i < BB_NUM; i++)
 	{
 		if (m_BBTimer[i] > 0.0f)
 		{
 			m_BBTimer[i] -= m_frameTimer[i].Mark();
+
 			if (m_BBTimer[i] <= 0.0f)
 			{
+				// BB無効化処理
 				SetBB(i, false);
 				m_BBTimer[i] = 0.0f;
 				m_BBAreas[i * 2]->SetActive(false);
