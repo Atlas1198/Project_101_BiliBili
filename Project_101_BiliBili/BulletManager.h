@@ -46,6 +46,7 @@ protected:
     void ResolveCollisionsOverride() override;
     void FinalizeOverride() override;
     void PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager) override;
+    void Reset();
 
 private:
 	void BulletSpeedEvent();

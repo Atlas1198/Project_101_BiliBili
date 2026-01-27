@@ -69,6 +69,11 @@ void PlayerManager::InitializeOverride(
 		hp = 1.0f;
 	}
 
+	for (auto& bbActive : teamBBActive)
+	{
+		bbActive = false;
+	}
+
 	//スポーン位置設定
 	for (int i = 0; i < 4; i++)
 	{

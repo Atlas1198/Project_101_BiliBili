@@ -53,6 +53,7 @@ void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManag
 	m_pInputInfo = pInputManager->GetInputInfo();	//入力情報構造体の取得
 	m_pBulletManager = pBulletManager;
 	gameTimer.Mark();
+	Reset();
 }
 
 //更新
@@ -589,4 +590,23 @@ void Player::Scale()
 		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
 		m_scale.z = (std::max)(m_scale.z - 0.008f, 0.005f);
 	}
+}
+
+void Player::Reset()
+{
+	m_isGrounded = false;
+	m_isSpringJump = false;
+	m_ignoreCollisionFrame = 3;
+	direction = 0;
+	minAnimIndex = 0;
+	maxAnimIndex = 0;
+	animUpdateRate = 10;
+	isMoving = false;
+	isShooting = false;
+	bbActive = false;
+	canRun = false;
+	runTimerStarted = false;
+	bbSlowMoveSpeed = false;
+	runTimer.Mark();
+	gameTimer.Mark();
 }
