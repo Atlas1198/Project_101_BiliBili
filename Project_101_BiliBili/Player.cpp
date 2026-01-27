@@ -130,7 +130,6 @@ void Player::UpdateOverride()
 	}
 }
 
-//衝突解決
 void Player::ResolveCollisionsOverride()
 {
 	if (m_ignoreCollisionFrame > 0)
@@ -139,7 +138,7 @@ void Player::ResolveCollisionsOverride()
 	}
 
 	XMFLOAT3 pushVector{};	//押し出しベクトル
-	auto& infos = m_pColliderSet->GetCollisionInfos();
+	auto &infos = m_pColliderSet->GetCollisionInfos();
 
 	pushVector = GetPushOutVector(
 		infos,	//衝突情報配列
@@ -159,11 +158,10 @@ void Player::ResolveCollisionsOverride()
 
 	m_isGrounded = false;
 
-	for (auto& info : infos)
+	for (auto &info : infos)
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
-			//地面に接触している場合はY座標を補正
 			m_isGrounded = true;
 
 			// 落下は止める
@@ -180,7 +178,7 @@ void Player::ResolveCollisionsOverride()
 		}
 	}
 
-	for (auto& info : infos)
+	for (auto &info : infos)
 	{
 		if (!info.opponent)      // ★NULLチェック
 			continue;
@@ -189,7 +187,7 @@ void Player::ResolveCollisionsOverride()
 		{
 			if (!m_isSpringJump)
 			{
-				Spring* spring = dynamic_cast<Spring*>(info.opponent);
+				Spring *spring = dynamic_cast<Spring *>(info.opponent);
 				if (!spring) continue;
 				if (spring)
 				{
@@ -220,17 +218,17 @@ void Player::ResolveCollisionsOverride()
 					const float vz = dz / T;
 					const float vy = (dy + 0.5f * g * T * T) / T;
 
-				m_velocity.x = dir.x * 1.15f;
-				m_velocity.y = 1.0f;   // 上方向に跳ねさせたいなら
-				m_velocity.z = dir.z * 1.15f;
+					m_velocity.x = vx;
+					m_velocity.z = vz;
+					m_velocity.y = vy;
 
 					m_isGrounded = false;
 					m_isSpringJump = true;
 
 					// 連続ヒット防止（必要なら）
 					// m_ignoreCollisionFrame = 5;
-          
-          spring->SetIsBlowing(true);
+
+					spring->SetIsBlowing(true);
 				}
 			}
 		}

@@ -5,12 +5,10 @@
 
 using namespace DirectX;
 
-//繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
 BBManager::BBManager()
 {
 }
 
-//繝�せ繝医Λ繧ｯ繧ｿ
 BBManager::~BBManager()
 {
 	for(int i = 0; i < BB_NUM; i++)
@@ -23,7 +21,6 @@ BBManager::~BBManager()
 	}
 }
 
-//蛻晄悄蛹
 void BBManager::InitializeOverride(
 	InputManager* pInputManager,
 	TextureManager& textureManager,
@@ -31,29 +28,24 @@ void BBManager::InitializeOverride(
 	CollisionManager& collisionManager
 )
 {
-	//BB逕滓�
 	for (int i = 0; i < BB_NUM; i++)
 	{
 		m_BB[i] = new BB(m_pUIManager, m_pCollisionManager);
 	}
 
-	//BB蛻晄悄蛹
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		m_BB[i]->Initialize();	//蛻晄悄蛹
-		m_BB[i]->SetTeamId(i);	//繝√�繝ID險ｭ螳
+		m_BB[i]->Initialize();
+		m_BB[i]->SetTeamId(i);
 	}
 
-	//繧ｳ繝ｩ繧､繝繝ｼ縺ｮ謠仙�
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		//繝ｩ繧､繝ｳBB繧ｳ繝ｩ繧､繝繝ｼ謠仙�
 		for(int j = 0; j < BB::PLAYER_NUM; j++)
 		{
 			auto lineBB = m_BB[i]->GetLineBB();
 		}
 
-		//髮ｻ豌唯B繧ｳ繝ｩ繧､繝繝ｼ謠仙�
 		auto electricityBB = m_BB[i]->GetElectricityBB();
 		for (int j = 0; j < BB::PLAYER_NUM; j++)
 		{
@@ -151,13 +143,11 @@ void BBManager::UpdateOverride()
 	}
 }
 
-//謠冗判隕∵ｱよ署蜃ｺ
 void BBManager::SubmitDrawsOverride(Renderer& renderer)
 {
 
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		//繝ｩ繧､繝ｳBB謠冗判諠�ｱ謠仙�
 		auto lineBB = m_BB[i]->GetLineBB();
 		for (int j = 0; j < BB::PLAYER_NUM; j++)
 		{
@@ -166,8 +156,6 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 				SubmitRenderInfo(renderer, *lineBB[j], m_LineBBInfo);
 			}
 		}
-
-		//髮ｻ豌唯B謠冗判諠�ｱ謠仙�
 		auto electricityBB = m_BB[i]->GetElectricityBB();
 		for (int j = 0; j < BB::PLAYER_NUM; j++)
 		{
@@ -184,7 +172,6 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 	}
 }
 
-//陦晉ｪ∬ｧ｣豎ｺ
 void BBManager::ResolveCollisionsOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
@@ -197,7 +184,6 @@ void BBManager::ResolveCollisionsOverride()
 	}
 }
 
-//邨ゆｺ
 void BBManager::FinalizeOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
@@ -206,29 +192,26 @@ void BBManager::FinalizeOverride()
 	}
 }
 
-//繝励Ξ繧､繝､繝ｼ諠�ｱ縺ｮ險ｭ螳
 void BBManager::SetPlayerData(std::vector<Player*>& players)
 {
 
 	std::vector<XMFLOAT3> team1Pos;	//チーム1のプレイヤー位置
 	std::vector<XMFLOAT3> team2Pos;	//チーム2のプレイヤー位置
 
-	//繝励Ξ繧､繝､繝ｼ縺ｮ菴咲ｽｮ繝ｻ螟芽ｺｫ繝輔Λ繧ｰ繧偵メ繝ｼ繝縺斐→縺ｫ蛻�￠繧
 	for(auto& player : players)
 	{
 		if(player->GetTeamID() == 0)
-		{//繝√�繝1
+		{
 			team1Pos.push_back(player->GetPosition());
 			//team1Transformed |= player->IsTransformed();
 		}
 		else if(player->GetTeamID() == 1)
-		{//繝√�繝2
+		{
 			team2Pos.push_back(player->GetPosition());
 			//team2Transformed |= player->IsTransformed();
 		}
 	}
 
-	//BB縺ｫ繝励Ξ繧､繝､繝ｼ菴咲ｽｮ繧定ｨｭ螳
 	m_BB[0]->SetPlayerPos(team1Pos.data());
 	m_BB[1]->SetPlayerPos(team2Pos.data());
 
@@ -256,22 +239,18 @@ void BBManager::SetBB(int teamID, bool activate)
 	}
 }
 
-//UI繝槭ロ繝ｼ繧ｸ繝｣繝ｼ縺ｮ險ｭ螳
 void BBManager::SetGameUIManager(GameUIManager* pUIManager)
 {
 	m_pUIManager = pUIManager;
 }
 
-//陦晉ｪ√�繝阪�繧ｸ繝｣繝ｼ縺ｮ險ｭ螳
 void BBManager::SetCollisionManager(CollisionManager* pCollisionManager)
 {
 	m_pCollisionManager = pCollisionManager;
 }
 
-//BB謠冗判諠�ｱ逕滓�
 void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-	//繝ｩ繧､繝ｳBB謠冗判諠�ｱ逕滓�
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
@@ -282,7 +261,6 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		false
 	);
 
-	//髮ｻ豌唯B謠冗判諠�ｱ逕滓�
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
@@ -293,7 +271,6 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		false
 	);
 
-	//BB繧ｨ繝ｪ繧｢謠冗判諠�ｱ逕滓�
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
