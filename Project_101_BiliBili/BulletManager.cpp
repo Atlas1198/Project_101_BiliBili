@@ -150,7 +150,7 @@ void BulletManager::SubmitDrawsOverride(Renderer& renderer)
         ObjectManagerBase::SubmitRenderInfo(
             renderer,		//シーンの参照
             *bullet,		//ゲームオブジェクト配列の参照
-            m_bulletInfo	//プレイヤー描画情報
+            bullet->GetTeam() == 0 ? m_bulletInfoBlue : m_bulletInfoRed	//プレイヤー描画情報
         );
     }
 }
@@ -177,12 +177,23 @@ void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManage
     CreateRenderInfo(
         textureManager,					    //テクスチャマネージャへの参照
         meshManager,					    //メッシュマネージャへの参照
-        &m_bulletInfo,					    //描画情報構造体配列へのポインタ
+        &m_bulletInfoRed,					    //描画情報構造体配列へのポインタ
         MESH_TYPE::QUAD,	                //メッシュタイプ
         BLEND_MODE::BLEND_MASKED,		    //ブレンドモード
-        texPath,						    //テクスチャのファイル名
+        texPathRed,						    //テクスチャのファイル名
 		false,							    //ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
+    );
+
+    CreateRenderInfo(
+        textureManager,					    //テクスチャマネージャへの参照
+        meshManager,					    //メッシュマネージャへの参照
+        &m_bulletInfoBlue,					    //描画情報構造体配列へのポインタ
+        MESH_TYPE::QUAD,	                //メッシュタイプ
+        BLEND_MODE::BLEND_MASKED,		    //ブレンドモード
+        texPathBlue,						    //テクスチャのファイル名
+        false,							    //ライト無効
+        BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
     );
 }
 

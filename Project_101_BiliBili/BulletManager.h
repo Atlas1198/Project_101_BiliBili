@@ -13,7 +13,8 @@ public:
     BulletManager() {}
     ~BulletManager() {}
 
-    const wchar_t *texPath = L"asset/texture/game_scene/ball.png";
+    const wchar_t *texPathRed = L"asset/texture/game_scene/ball_R_EF.png";
+    const wchar_t *texPathBlue = L"asset/texture/game_scene/ball_B_EF.png";
 
     void FireBullet(
         const DirectX::XMFLOAT3& position,
@@ -55,7 +56,8 @@ private:
 private:
     std::vector<std::unique_ptr<Bullet>> m_bullets;
     CollisionManager* m_pCollisionManager = nullptr;
-    std::vector<WorldRenderInfo> m_bulletInfo;
+    std::vector<WorldRenderInfo> m_bulletInfoRed;
+    std::vector<WorldRenderInfo> m_bulletInfoBlue;
 	GameUIManager *m_pGameUIManager = nullptr;
     FrameTimer m_bulletRestoreTimer;
     FrameTimer m_totalTimer;
