@@ -50,7 +50,7 @@ void BB::Initialize()
 		m_electricityBB[i]->GetColliderSet()->AddCollider(
 			ColliderType::CAPSULE,
 			XMFLOAT3(0.0f, 0.0f, 0.0f),
-			XMFLOAT3(2.0f, 1.0f, 2.0f),
+			XMFLOAT3(3.5f, 1.0f, 3.5f),
 			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 		m_electricityBB[i]->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
@@ -130,6 +130,7 @@ void BB::ResolveCollisions()
 				1 - m_teamId,
 				BB::DAMAGE * eb->GetHitNum()
 			));
+
 
 			//リセット
 			eb->SetHasHitPlayer(false);

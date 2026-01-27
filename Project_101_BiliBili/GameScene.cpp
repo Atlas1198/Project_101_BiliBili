@@ -127,7 +127,7 @@ void GameScene::InitializeOverride(
 	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
 
-	m_directionalLight.direction = XMFLOAT3(-0.2f, -1.0f, -0.2f);
+	m_directionalLight.direction = XMFLOAT3(-0.2f, -1.0f, 0.2f);
 	m_directionalLight.intensity = 1.1f;
 	m_directionalLight.ambient = 0.1f;
 

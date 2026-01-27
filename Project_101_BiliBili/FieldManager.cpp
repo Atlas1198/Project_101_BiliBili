@@ -71,8 +71,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	int Stagenum = dist(gen);
 
 	Stagenum = 1;
-	m_pWalls.push_back(
-		new Wall(
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
 			XMFLOAT3(-25.0f, 0.0f, 5.0f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
@@ -82,15 +82,15 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			ColliderType::BOX			 //コライダータイプ
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(2.1f, 10.1f, 30.1f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
-	m_pWalls.push_back(
-		new Wall(
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
 			XMFLOAT3(25.0f, 0.0f, 5.0f), //位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
@@ -100,15 +100,15 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			ColliderType::BOX			 //コライダータイプ
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(2.1f, 10.1f, 30.1f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
-	m_pWalls.push_back(
-		new Wall(
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
 			XMFLOAT3(0.0f, 0.0f, 19.5f), //位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
@@ -118,15 +118,15 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			ColliderType::BOX			 //コライダータイプ
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(48.1f, 10.1f, 2.1f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
-	m_pWalls.push_back(
-		new Wall(
+	m_pWallPasses.push_back(
+		new WallPass(
 			MESH_TYPE::CUBE,
 			XMFLOAT3(0.0f, 0.0f, -9.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
@@ -136,7 +136,7 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			ColliderType::BOX			 //コライダータイプ
 		)
 	);
-	m_pWalls.back()->GetColliderSet()->AddCollider(
+	m_pWallPasses.back()->GetColliderSet()->AddCollider(
 		ColliderType::BOX,
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(48.1f, 10.1f, 2.1f),
@@ -178,6 +178,11 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			-90.0f						  //正面補正角
 		)
 	);
+
+	for (auto& wallPass : m_pWallPasses)
+	{
+		wallPass->SetDrawn(false);
+	}
 
 	switch (Stagenum)
 	{
@@ -2077,7 +2082,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",	//テクスチャのファイル名
-		false,
+		true,
 		BILLBOARD_NONE,
 		false,
 		false
@@ -2136,7 +2141,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		L"asset/fbx/stage/ST_stage.fbx",	//テクスチャのファイル名
-		false,
+		true,
 		BILLBOARD_NONE,
 		false,
 		false

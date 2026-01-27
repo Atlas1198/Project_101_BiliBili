@@ -8,6 +8,21 @@
 
 using namespace DirectX;
 
+PlayerManager::PlayerManager()
+{
+	m_subscribedEvents.push_back(
+		EventData{ EventType::TAKE_DAMAGE,
+		EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
+		EventType::TAKE_DAMAGE,
+		[this](std::shared_ptr<std::pair<int, float>> data)
+		{
+			int teamID = data->first;
+			float damage = data->second;
+			OnTakeDamage(teamID, damage);
+		}
+	) });
+}
+
 //デストラクタ
 PlayerManager::~PlayerManager()
 {
@@ -32,18 +47,6 @@ void PlayerManager::InitializeOverride(
 	{
 		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
 	}
-
-	m_subscribedEvents.push_back(
-		EventData{ EventType::TAKE_DAMAGE,
-		EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
-		EventType::TAKE_DAMAGE,
-		[this](std::shared_ptr<std::pair<int, float>> data)
-		{
-			int teamID = data->first;
-			float damage = data->second;
-			OnTakeDamage(teamID, damage);
-		}
-	) });
 
 	m_subscribedEvents.push_back(
 		EventData{ EventType::SET_BB,
@@ -244,8 +247,9 @@ void PlayerManager::ResolveCollisionsOverride()
 //終了
 void PlayerManager::FinalizeOverride()
 {
-	//イベント購読解除
-	EventManager::GetInstance()->Unsubscribe(EventType::TAKE_DAMAGE, FindEventData(m_subscribedEvents, EventType::TAKE_DAMAGE).id);
+//	//イベント購読解除
+//	EventManager::GetInstance()->Unsubscribe(EventType::TAKE_DAMAGE, FindEventData(m_subscribedEvents, EventType::TAKE_DAMAGE).id);
+//
 }
 
 //プレイヤーオブジェクトを取得
