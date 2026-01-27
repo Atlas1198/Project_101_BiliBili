@@ -24,6 +24,12 @@ public:
 
 	void UpdateOverride() override;				//çXêV
 	void ResolveCollisionsOverride() override;	//è’ìÀâåà
+	void SetIsBlowing(bool isBlowing) { m_isBlowing = isBlowing; } // Set is blowing flag
 
 private:
+	static constexpr double ANIM_TIME = 1.0 / 120.0; // Animation time
+	double m_animTime = ANIM_TIME; // Animation time
+
+	bool m_isBlowing = false; // Is blowing flag
+	int m_blowCount = 0; // Blow count
 };

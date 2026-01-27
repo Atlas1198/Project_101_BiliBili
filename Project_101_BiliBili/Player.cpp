@@ -174,6 +174,11 @@ void Player::ResolveCollisionsOverride()
 				m_velocity.z = dir.z * 1.15f;
 
 				m_isSpringJump = true;
+
+				if (Spring* spring = static_cast<Spring*>(info.opponent))
+				{
+					spring->SetIsBlowing(true);
+				}
 			}
 		}
 	}

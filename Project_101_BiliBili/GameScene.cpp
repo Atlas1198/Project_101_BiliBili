@@ -127,9 +127,9 @@ void GameScene::InitializeOverride(
 	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
 
-	m_directionalLight.direction = XMFLOAT3(-0.5f, -1.0f, -0.5f);
-	m_directionalLight.intensity = 1.5f;
-	m_directionalLight.ambient = 0.2f;
+	m_directionalLight.direction = XMFLOAT3(-0.2f, -1.0f, -0.2f);
+	m_directionalLight.intensity = 1.1f;
+	m_directionalLight.ambient = 0.1f;
 
 	m_pCamera->SetPosition({ 0.0f, 40.0f, -14.0f });
 	m_pCamera->SetTarget({ 0.0f, 00.0f, 4.0f });

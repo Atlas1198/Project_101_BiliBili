@@ -42,6 +42,8 @@ ObjectBase::ObjectBase(
 		colliderSetOffsetPosition,
 		colliderSetOffsetRotation
 	);
+
+	m_nodeAnimatorSet.pNodeAnimator = new NodeAnimator();
 }
 
 //デストラクタ
@@ -186,6 +188,12 @@ void ObjectBase::SetSceneContext(SceneContext* pSceneContext)
 	m_pSceneContext = pSceneContext;
 }
 
+// Set node animator set
+void ObjectBase::SetNodeAnimatorSet(const NodeAnimatorSet& nodeAnimatorSet)
+{
+	m_nodeAnimatorSet = nodeAnimatorSet;
+}
+
 //アニメーション更新
 void ObjectBase::UpdateAnimation()
 {
@@ -229,4 +237,10 @@ OBJECT_TAG ObjectBase::GetTag() const
 const TexSplitInfo& ObjectBase::GetTexSplitInfo() const
 {
 	return m_texSplitInfo;
+}
+
+// Get node animation set
+NodeAnimatorSet* ObjectBase::GetNodeAnimatorSet() 
+{
+	return &m_nodeAnimatorSet;
 }

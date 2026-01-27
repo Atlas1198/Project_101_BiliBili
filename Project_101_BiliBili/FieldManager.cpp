@@ -5,6 +5,8 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "SharedStruct.h"
+#include "AssimpNodeTransformAnim.h"
+#include "Debug.h"
 
 using namespace DirectX;
 
@@ -180,9 +182,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(24.0f, -5.0f, 18.5f),//位置
+			XMFLOAT3(22.0f, -6.0f, 18.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
 			true,						  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
@@ -191,9 +193,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(-22.0f, -5.0f, -7.5f),//位置
+			XMFLOAT3(-22.0f, -6.0f, -7.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
 			true,						  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
@@ -202,9 +204,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(22.0f, -5.0f, -7.5f),//位置
+			XMFLOAT3(22.0f, -6.0f, -7.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
 			true,						  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
@@ -213,9 +215,9 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 	m_pSprings.push_back(
 		new Spring(
 			MESH_TYPE::CUBE,
-			XMFLOAT3(-24.0f, -5.0f, 18.5f),//位置
+			XMFLOAT3(-22.0f, -6.0f, 18.5f),//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-			XMFLOAT3(1.5f, 1.5f, 1.5f),	  //スケール
+			XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
 			true,						  //アクティブフラグ
 			ColliderType::BOX			  //コライダータイプ
@@ -1840,14 +1842,21 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_springInfo,					//描画情報構造体配列へのポインタ
-		MESH_TYPE::QUAD,				//メッシュタイプ
-		BLEND_MODE::BLEND_TRANSPARENT,		//ブレンドモード
+		MESH_TYPE::IMPORT,				//メッシュタイプ
+		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
 		springTexPath,
-		true,
-		BILLBOARD_SPHERICAL,
-		false,
-		false
+		true
 	);
+	//バネのアニメーションをバインド
+	for(auto& spring : m_pSprings)
+	{
+		auto* set = spring->GetNodeAnimatorSet();          // Spring内部の実体
+		auto* asset = m_springInfo[0].pNodeAnimAsset;
+
+		set->pNodeAnimator->Bind(asset);
+		set->isAnimLoaded = true;
+		set->isAnimPlaying = true;
+	}
 
 	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照

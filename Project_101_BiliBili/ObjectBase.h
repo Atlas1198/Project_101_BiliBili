@@ -1,11 +1,20 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <vector>
 #include "ColliderSet.h"
 #include "SharedStruct.h"
 #include "RenderData.h"
+
+// Node Animator Set Structure
+struct NodeAnimatorSet
+{
+	NodeAnimatorSet() { pNodeAnimator = new NodeAnimator(); }
+
+	bool isAnimLoaded = false;				// Animation loaded flag
+	bool isAnimPlaying = false;				// Animation playing flag
+	NodeAnimator* pNodeAnimator = nullptr;	// Pointer to node animator
+};
 
 //ゲームオブジェクトクラス
 //全ゲームオブジェクトの基底クラス
@@ -50,6 +59,7 @@ public:	//公開関数
 	MESH_TYPE GetMeshType() const;					//メッシュタイプの取得
 	OBJECT_TAG GetTag() const;						//オブジェクトタグの取得
 	const TexSplitInfo& GetTexSplitInfo() const;	//テクスチャ分割情報構造体取得関数
+	NodeAnimatorSet* GetNodeAnimatorSet();			// Get node animation set
 
 	//セッター
 	void SetPosition(DirectX::XMFLOAT3 position);		//位置の設定
@@ -60,6 +70,7 @@ public:	//公開関数
 	void SetDrawn(bool isDrawn);						//描画フラグの設定
 	void SetTexSplitInfo(TexSplitInfo info);			//テクスチャ分割情報構造体の設定
 	void SetSceneContext(SceneContext* pSceneContext);	//シーンコンテキスト構造体の設定
+	void SetNodeAnimatorSet(const NodeAnimatorSet& nodeAnimatorSet);	// Set node animator set
 
 protected:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_position{ 0.0f, 0.0f, 0.0f };	//位置
@@ -77,6 +88,8 @@ protected:	//非公開メンバ変数
 	TexSplitInfo m_texSplitInfo{}; //テクスチャ分割情報構造体
 
 	SceneContext* m_pSceneContext = nullptr; //シーンコンテキスト構造体
+
+	NodeAnimatorSet m_nodeAnimatorSet{}; // Node animator set
 
 protected:	//非公開メンバ変数
 	virtual void UpdateOverride() = 0;				//シーン固有の更新

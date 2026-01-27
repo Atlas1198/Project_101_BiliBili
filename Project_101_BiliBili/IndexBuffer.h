@@ -1,5 +1,4 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
 #include <cstdint>
 #include <d3d12.h>
 #include "ComPtr.h"

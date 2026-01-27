@@ -104,6 +104,7 @@ void CreateRenderInfoFromFBX(
 		info.billboardType = bType;			//ビルボードタイプの設定
 		info.baseVertex = 0;				//基準インデックスの設定
 		info.startIndex = 0;				//開始インデックスの設定
+		info.pNodeAnimAsset = new NodeAnimationAsset(mesh.nodeAnimAsset);	//ノードアニメーション資産の生成
 
 		pInfo->push_back(info);	//配列に格納
 	}

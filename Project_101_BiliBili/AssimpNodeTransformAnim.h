@@ -1,4 +1,5 @@
 #pragma once
+#include <DirectXMath.h>
 #include <assimp/scene.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/quaternion.h>
@@ -11,10 +12,10 @@
 // Node structure
 struct Node
 {
-	std::string name;				// Node name
+	std::string name = "";			// Node name
 	int parent = -1;				// Parent node index
-	std::vector<int> children;		// Child node indices
-	aiMatrix4x4 baseLocalTransform;	// Base local transformation matrix
+	std::vector<int> children = {};	// Child node indices
+	aiMatrix4x4 baseLocalTransform{};	// Base local transformation matrix
 };
 
 // Channel structure
@@ -37,9 +38,9 @@ struct Clip
 struct NodeAnimationAsset
 {
 	std::vector<Node> nodes;								// Nodes
-	std::unordered_map<std::string, int> nodeIndexByName;	// Node name to index mapping
-	std::vector<int> meshNodeIndices;						// Mesh node indices
-	Clip clip0;												// Animation clip 0
+	std::unordered_map<std::string, int> nodeIndexByName{};	// Node name to index mapping
+	std::vector<int> meshNodeIndices = { -1 };				// Mesh node indices
+	Clip clip0{};											// Animation clip 0
 };
 
 // Function to build node tree from aiScene
@@ -237,6 +238,9 @@ struct NodeAnimator
 	double time = 0.0;							// Current time
 	std::vector<aiMatrix4x4> globalTransforms;	// Global transformation matrices
 
+	NodeAnimator() { 
+		asset = new NodeAnimationAsset(); time = 0.0; };
+
 	// Bind the animator to an asset
 	void Bind(const NodeAnimationAsset* a)
 	{
@@ -292,3 +296,14 @@ struct NodeAnimator
 		return globalTransforms[nodeIndex];
 	}
 };
+
+// Function to convert aiMatrix4x4 to DirectX::XMMATRIX
+static DirectX::XMMATRIX AiMatrix4x4ToXMMatrix(const aiMatrix4x4& mat)
+{
+	return DirectX::XMMATRIX(
+		mat.a1, mat.b1, mat.c1, mat.d1,
+		mat.a2, mat.b2, mat.c2, mat.d2,
+		mat.a3, mat.b3, mat.c3, mat.d3,
+		mat.a4, mat.b4, mat.c4, mat.d4
+	);
+}
