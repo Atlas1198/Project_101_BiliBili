@@ -5,7 +5,7 @@
 using namespace DirectX;
 using namespace CollisionData;
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+//ç¹§ï½³ç¹ï½³ç¹§ï½¹ç¹åŒ»Î›ç¹§ï½¯ç¹§ï½¿
 Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
 	: ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::ITEM_TRANSFORM, COLLISION_LAYER::ITEM_TRANSFORM)
 {
@@ -33,12 +33,12 @@ Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rot
 	m_texSplitInfo = texInfo;
 }
 
-//XV
+//è­–ï½´è­ï½°
 void Item::UpdateOverride()
 {
 }
 
-//Õ“Ë‰ðŒˆ
+//é™¦æ™‰ï½ªâˆ¬ï½§ï½£è±Žï½º
 void Item::ResolveCollisionsOverride()
 {
 	auto& infos = m_pColliderSet->GetCollisionInfos();
@@ -54,7 +54,7 @@ void Item::ResolveCollisionsOverride()
 			{
 				//EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
 				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
-				//ƒAƒCƒeƒ€Žæ“¾ƒGƒtƒFƒNƒg‚Ì”­¶
+				//ã‚¢ã‚¤ãƒ†ãƒ å–å¾—ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ç™ºç”Ÿ
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::BB_CUT_IN, std::make_pair(player->GetTeamID(), player->GetCharacterID()));
 			}
 		}

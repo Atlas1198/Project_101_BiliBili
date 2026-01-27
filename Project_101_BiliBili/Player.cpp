@@ -52,6 +52,7 @@ void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManag
 {
 	m_pInputInfo = pInputManager->GetInputInfo();	//入力情報構造体の取得
 	m_pBulletManager = pBulletManager;
+	gameTimer.Mark();
 }
 
 //更新
@@ -86,6 +87,25 @@ void Player::UpdateOverride()
 		if (m_ignoreCollisionFrame > 0)
 		{
 			--m_ignoreCollisionFrame;
+		}
+
+		if (!bbSlowMoveSpeed && (gameTimer.Peek() > 120.0f))
+		{
+			bbSlowMoveSpeed = true;
+		}
+
+		if (bbSlowMoveSpeed && (gameTimer.Peek() > 180.0f))
+		{
+			bbSlowMoveSpeed = false;
+		}
+
+		if (runTimerStarted)
+		{
+			if (runTimer.Peek() >= RUN_DELAY)
+			{
+				canRun = true;
+				runTimerStarted = false;
+			}
 		}
 
 		Move();		//移動
@@ -143,6 +163,7 @@ void Player::ResolveCollisionsOverride()
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
+			//地面に接触している場合はY座標を補正
 			m_isGrounded = true;
 
 			// 落下は止める
@@ -199,9 +220,9 @@ void Player::ResolveCollisionsOverride()
 					const float vz = dz / T;
 					const float vy = (dy + 0.5f * g * T * T) / T;
 
-					m_velocity.x = vx;
-					m_velocity.z = vz;
-					m_velocity.y = vy;
+				m_velocity.x = dir.x * 1.15f;
+				m_velocity.y = 1.0f;   // 上方向に跳ねさせたいなら
+				m_velocity.z = dir.z * 1.15f;
 
 					m_isGrounded = false;
 					m_isSpringJump = true;
@@ -295,36 +316,57 @@ void Player::Move()
 		}
 	}
 
+	float modifier = 1.0f;
+
+	if (!canRun)
+	{
+		if (!runTimerStarted)
+		{
+			modifier = RUN_MODIFIER;
+			runTimerStarted = true;
+			runTimer.Mark();
+		}
+		else
+		{
+			modifier = RUN_MODIFIER + (runTimer.Peek() / RUN_DELAY) * (1.0f - RUN_MODIFIER);
+		}
+	}
+
+	if (bbSlowMoveSpeed && bbActive)
+	{
+		modifier *= BB_SLOW_MOVE_MODIFIER;
+	}
+
 	if (!m_isSpringJump)
 	{
-		m_position.x += dir.x * MOVE_SPEED;
-		m_position.z += dir.y * MOVE_SPEED;
+		m_position.x += dir.x * MOVE_SPEED * modifier;
+		m_position.z += dir.y * MOVE_SPEED * modifier;
 
 		if (up)
 		{
 			//前進
-			m_position.x += direction.x * MOVE_SPEED;
-			m_position.y += direction.y * MOVE_SPEED;
-			m_position.z += direction.z * MOVE_SPEED;
+			m_position.x += direction.x * MOVE_SPEED * modifier;
+			m_position.y += direction.y * MOVE_SPEED * modifier;
+			m_position.z += direction.z * MOVE_SPEED * modifier;
 		}
 		if (down)
 		{
 			//後退
-			m_position.x -= direction.x * MOVE_SPEED;
-			m_position.y -= direction.y * MOVE_SPEED;
-			m_position.z -= direction.z * MOVE_SPEED;
+			m_position.x -= direction.x * MOVE_SPEED * modifier;
+			m_position.y -= direction.y * MOVE_SPEED * modifier;
+			m_position.z -= direction.z * MOVE_SPEED * modifier;
 		}
 		if (left)
 		{
 			//左移動
-			m_position.x -= direction.z * MOVE_SPEED;
-			m_position.z += direction.x * MOVE_SPEED;
+			m_position.x -= direction.z * MOVE_SPEED * modifier;
+			m_position.z += direction.x * MOVE_SPEED * modifier;
 		}
 		if (right)
 		{
 			//右移動
-			m_position.x += direction.z * MOVE_SPEED;
-			m_position.z -= direction.x * MOVE_SPEED;
+			m_position.x += direction.z * MOVE_SPEED * modifier;
+			m_position.z -= direction.x * MOVE_SPEED * modifier;
 		}
 
 
@@ -381,6 +423,13 @@ void Player::Move()
 				this->direction = 6;
 			else
 				isMoving = false;
+		}
+
+		if (!isMoving)
+		{
+			runTimerStarted = false;
+			canRun = false;
+			runTimer.Mark();
 		}
 	}
 

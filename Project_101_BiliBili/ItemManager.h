@@ -6,43 +6,50 @@
 #include "Item.h"
 #include "FrameTimer.h"
 
-//‘O•ûéŒ¾
+//å‰æ–¹å®£è¨€
 class Renderer;
 class InputManager;
 class TextureManager;
 class MeshManager;
 
-//ƒtƒB[ƒ‹ƒhŠÇ—ƒNƒ‰ƒX
+//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç®¡ç†ã‚¯ãƒ©ã‚¹
 class ItemManager : public ObjectManagerBase
 {
 	const wchar_t* itemTexPath = L"asset/texture/game_scene/change_item.png";
 public:
-	ItemManager();		//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~ItemManager();	//ƒfƒXƒgƒ‰ƒNƒ^
+	ItemManager();		//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~ItemManager();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	void SpawnItem();
 	inline static float ITEM_RESPAWN = 15.0f;
+	static constexpr float EVENT_SPAWN_RATE = 0.5f;
+	const int MAX_SKIPS = 2;
 
-private:	//”ñŒöŠJƒƒ“ƒo•Ï”
-	//ƒƒCƒ“ˆ—ŠÖ”
-	void InitializeOverride(	//‰Šú‰»
-		InputManager* pInputManager,		//“ü—Íƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
-		TextureManager& textureManager,		//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		MeshManager& meshManager,			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		CollisionManager& collisionManager	//Õ“ËŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+private:	//éå…¬é–‹ãƒ¡ãƒ³ãƒå¤‰æ•°
+	//ãƒ¡ã‚¤ãƒ³å‡¦ç†é–¢æ•°
+	void InitializeOverride(	//åˆæœŸåŒ–
+		InputManager* pInputManager,		//å…¥åŠ›ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
+		TextureManager& textureManager,		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		MeshManager& meshManager,			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		CollisionManager& collisionManager	//è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 	) override;
-	void UpdateOverride() override;							//XV
-	void SubmitDrawsOverride(Renderer& renderer) override;	//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
-	void ResolveCollisionsOverride() override;				//Õ“ËŒãˆ—
-	void FinalizeOverride() override;						//I—¹
+	void UpdateOverride() override;							//æ›´æ–°
+	void SubmitDrawsOverride(Renderer& renderer) override;	//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
+	void ResolveCollisionsOverride() override;				//è¡çªå¾Œå‡¦ç†
+	void FinalizeOverride() override;						//çµ‚äº†
+	void StartTimer() { m_frameTimer.Mark(); m_totalTimer.Mark(); }
 
-	void PrepareRenderInfo(	//ƒIƒuƒWƒFƒNƒg‚Ì•`‰æî•ñ¶¬
-		TextureManager& textureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		MeshManager& meshManager		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	void PrepareRenderInfo(	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æç”»æƒ…å ±ç”Ÿæˆ
+		TextureManager& textureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		MeshManager& meshManager		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 	) override;
 
 private:
-	std::vector<Item*> m_pItems;						//ƒAƒCƒeƒ€ƒIƒuƒWƒFƒNƒg”z—ñ
-	std::vector<WorldRenderInfo> m_itemInfo;		//ƒAƒCƒeƒ€•`‰æî•ñ
-	CollisionManager *m_pCollisionManager = nullptr; //Õ“ËŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
+	std::vector<Item*> m_pItems;						//ã‚¢ã‚¤ãƒ†ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—
+	std::vector<WorldRenderInfo> m_itemInfo;		//ã‚¢ã‚¤ãƒ†ãƒ æç”»æƒ…å ±
+	CollisionManager *m_pCollisionManager = nullptr; //è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
 	FrameTimer m_frameTimer;
+	FrameTimer m_totalTimer;
+	int nextItemIndex = 1;
+	int skips[2] = { 1, 4 };
+	bool applyNewSpawnRate = false;
 };

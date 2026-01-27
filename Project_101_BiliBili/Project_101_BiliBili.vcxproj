@@ -152,6 +152,7 @@
     <ClInclude Include="AssimpNodeTransformAnim.h" />
     <ClInclude Include="BB.h" />
     <ClInclude Include="BBManager.h" />
+    <ClInclude Include="BilibiliArea.h" />
     <ClInclude Include="BulletCountUI.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BulletManager.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="EventType.h" />
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="FrameTimer.h" />
+    <ClInclude Include="GameEventManager.h" />
     <ClInclude Include="GameUIManager.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="HPBarUI.h" />
@@ -236,6 +238,7 @@
     <ClCompile Include="AssimpLoader.cpp" />
     <ClCompile Include="BB.cpp" />
     <ClCompile Include="BBManager.cpp" />
+    <ClCompile Include="BilibiliArea.cpp" />
     <ClCompile Include="BulletCountUI.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletManager.cpp" />

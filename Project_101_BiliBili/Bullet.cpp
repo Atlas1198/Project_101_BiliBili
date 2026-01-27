@@ -54,15 +54,15 @@ void Bullet::UpdateOverride()
         return;
     }
 
-    // ‘O‰ñˆÊ’u
+    // å‰å›žä½ç½®
     DirectX::XMFLOAT3 oldPos = m_position;
 
-    // ˆÚ“®
+    // ç§»å‹•
     m_position.x += m_direction.x * m_speed;
     m_position.y += m_direction.y * m_speed;
     m_position.z += m_direction.z * m_speed;
 
-    // ‹——£‰ÁŽZ
+    // è·é›¢åŠ ç®—
     float dx = m_position.x - oldPos.x;
     float dy = m_position.y - oldPos.y;
     float dz = m_position.z - oldPos.z;
@@ -70,7 +70,7 @@ void Bullet::UpdateOverride()
 
     SetPosition(m_position);
 
-    //’e‚Ì‘¶ÝŽžŠÔ
+    //å¼¾ã®å­˜åœ¨æ™‚é–“
     m_livedTime += 1.0f / 60.0f;
     if (m_livedTime >= m_lifeTime || m_traveled >= m_maxDistance)
     {
@@ -99,13 +99,13 @@ void Bullet::ResolveCollisionsOverride()
         }
 
         if (Player *otherPlayer = dynamic_cast<Player *>(otherOwner))
-		{//ƒvƒŒƒCƒ„[‚É“–‚½‚Á‚½ê‡
+		{//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å½“ãŸã£ãŸå ´åˆ
             if (otherPlayer->id == m_ownerID)
-			{//Ž©ƒ`[ƒ€‚É‚Í“–‚½‚ç‚È‚¢
+			{//è‡ªãƒãƒ¼ãƒ ã«ã¯å½“ãŸã‚‰ãªã„
                 continue;
 			}
             else if (otherPlayer->GetTeamID() != m_ownerTeam)
-			{//“Gƒ`[ƒ€‚É“–‚½‚Á‚½ê‡ƒ_ƒ[ƒW‚ð—^‚¦‚é
+			{//æ•µãƒãƒ¼ãƒ ã«å½“ãŸã£ãŸå ´åˆãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸Žãˆã‚‹
                 EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
@@ -113,7 +113,7 @@ void Bullet::ResolveCollisionsOverride()
             }
         }
 
-        //Á–Å
+        //æ¶ˆæ»…
         EventManager::GetInstance()->TriggerEvent<EffectCommand>(
             EventType::ADD_EFFECT,
             EffectCommand{

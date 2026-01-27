@@ -24,7 +24,7 @@ void BulletManager::FireBullet(
 	EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>
         (EventType::UPDATE_BULLET_UI, { ownerTeam, teamBulletCount[ownerTeam] });
 
-    auto bullet = std::make_unique<Bullet>(position, direction, speed, ownerTeam, ownerID, BULLET_DAMAGE);
+    auto bullet = std::make_unique<Bullet>(position, direction, speed * m_speedModifier, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
 		bullet->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
@@ -41,6 +41,22 @@ void BulletManager::InitializeOverride(
     )
 {
     m_pCollisionManager = &collisionManager;
+
+    EventManager::GetInstance()->Subscribe<void>(
+        EventType::EVENT_BULLET_SPEED,
+        [this](std::shared_ptr<void> data)
+        {
+            BulletSpeedEvent();
+        }
+    );
+
+    EventManager::GetInstance()->Subscribe<void>(
+        EventType::EVENT_BULLET_RECOVERY,
+        [this](std::shared_ptr<void> data)
+        {
+            BulletRecoveryEvent();
+        }
+    );
 }
 
 
@@ -68,10 +84,20 @@ void BulletManager::UpdateOverride()
 
     m_bulletRestoreElapsed += m_bulletRestoreTimer.Mark();
 
-	m_restoreModifier = 1.0f + m_totalTimer.Peek() / 60.0f; // ƒQ[ƒ€Œo‰ßŽžŠÔ‚É‰ž‚¶‚Ä‰ñ•œ‘¬“x‚ðã‚°‚é
+    if (timeUntilBonusRestoreModifier > 0.0f)
+    {
+        timeUntilBonusRestoreModifier -= m_totalTimer.Mark();
+    }
+    else
+    {
+        if (m_currentRestoreModifier != EVENT_RECOVERY_MODIFIER)
+            m_currentRestoreModifier = BONUS_RECOVERY_MODIFIER;
+        m_normalRestoreModifier = BONUS_RECOVERY_MODIFIER;
+    }
+	
 
 
-    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_restoreModifier)
+    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_currentRestoreModifier)
     {
         for (int team = 0; team < 2; ++team)
         {
@@ -86,6 +112,30 @@ void BulletManager::UpdateOverride()
         }
 
         m_bulletRestoreElapsed = 0.0f;
+    }
+}
+
+void BulletManager::BulletSpeedEvent()
+{
+    if (m_speedModifier == 1.0f)
+    {
+        m_speedModifier = BULLET_BONUS_SPEED_MUL;
+    }
+    else
+    {
+        m_speedModifier = 1.0f;
+    }
+}
+
+void BulletManager::BulletRecoveryEvent()
+{
+    if (m_currentRestoreModifier != EVENT_RECOVERY_MODIFIER)
+    {
+		m_currentRestoreModifier = EVENT_RECOVERY_MODIFIER;
+    }
+    else
+    {
+		m_currentRestoreModifier = m_normalRestoreModifier;
     }
 }
 
