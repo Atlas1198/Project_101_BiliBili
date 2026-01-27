@@ -1,4 +1,6 @@
 #include "Spring.h"
+#include "EventManager.h"
+#include "Debug.h"
 #include <chrono>
 
 using namespace DirectX;
@@ -17,18 +19,18 @@ Spring::Spring(
 )
     : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::SPRING, CollisionData::COLLISION_LAYER::SPRING)
 {
-    // —”‰Šú‰»
+    // ä¹±æ•°åˆæœŸåŒ–
     const auto seed = static_cast<unsigned>(
         std::chrono::high_resolution_clock::now().time_since_epoch().count()
         );
     m_rng.seed(seed);
 
-    // ƒfƒtƒHƒ‹ƒg‚Íu’P”­ƒ^[ƒQƒbƒgv
+    // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯ã€Œå˜ç™ºã‚¿ãƒ¼ã‚²ãƒƒãƒˆã€
     m_launchTargets.clear();
     m_launchTargets.push_back(launchTarget);
     m_randomLaunch = false;
 
-    // Colliderì‚é‚È‚ç‚±‚±i‚ ‚È‚½‚ÌSpring‚ÌÀ‘•‚É‡‚í‚¹‚Äj
+    // Colliderä½œã‚‹ãªã‚‰ã“ã“ï¼ˆã‚ãªãŸã®Springã®å®Ÿè£…ã«åˆã‚ã›ã¦ï¼‰
     m_pColliderSet->AddCollider(
         ColliderType::BOX,
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -54,7 +56,7 @@ XMFLOAT3 Spring::ChooseLaunchTarget() const
 {
     if (m_launchTargets.empty())
     {
-        // ”O‚Ì‚½‚ßF–¢İ’è‚È‚ç©•ª‚ÌˆÊ’u‚Öi”ò‚Î‚È‚¢j
+        // å¿µã®ãŸã‚ï¼šæœªè¨­å®šãªã‚‰è‡ªåˆ†ã®ä½ç½®ã¸ï¼ˆé£›ã°ãªã„ï¼‰
         return GetPosition();
     }
 
@@ -67,5 +69,24 @@ XMFLOAT3 Spring::ChooseLaunchTarget() const
     return m_launchTargets[dist(m_rng)];
 }
 
-void Spring::UpdateOverride() {}
+void Spring::UpdateOverride() 
+{
+  m_nodeAnimatorSet.isAnimPlaying = true;
+
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
+	const double MAX_ANIM_TIME = 1.0 / 30.0; //slowest speed
+	if (m_isBlowing)
+	{
+		const double MAX_ANIM_TIME = 1.0 / 30.0; //slowest speed
+		m_animTime = (std::min)(m_animTime * 1.10, MAX_ANIM_TIME); //fast speed
+
+		m_blowCount++;
+		const float BLOW_DURATION = 60.0f; //frames
+		if (m_blowCount > BLOW_DURATION)
+		{
+			m_isBlowing = false;
+			m_blowCount = 0;
+		}
+	}
+}
 void Spring::ResolveCollisionsOverride() {}

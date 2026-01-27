@@ -58,7 +58,7 @@ void ObjectManagerBase::Finalize()
 //描画情報をシーンに提出
 void ObjectManagerBase::SubmitRenderInfo(
 	Renderer& renderer,				//シーンの参照
-	const ObjectBase& object,		//ゲームオブジェクト配列の参照
+	ObjectBase& object,		//ゲームオブジェクト配列の参照
 	std::vector<WorldRenderInfo>& info	//描画情報構造体
 )
 {
@@ -92,15 +92,27 @@ void ObjectManagerBase::SubmitRenderInfo(
 			}
 
 			//ワールド行列と色を設定
-			for(auto& i : submitInfos)
+			for(int i = 0; i < submitInfos.size(); i++)
 			{
-				i.world = object.GetWorldMatrix();
-				i.common.color =
+				submitInfos[i].world = object.GetWorldMatrix();
+
+				auto animator = object.GetNodeAnimatorSet();
+				if(animator->isAnimLoaded && animator->isAnimPlaying)
 				{
-					object.GetColor().x* i.common.color.x,
-					object.GetColor().y* i.common.color.y,
-					object.GetColor().z* i.common.color.z,
-					object.GetColor().w* i.common.color.w
+					const auto nodeWorld = animator->pNodeAnimator->GetMeshGlobalTransform(i);
+					submitInfos[i].world = XMMatrixMultiply(
+						AiMatrix4x4ToXMMatrix(nodeWorld),
+						submitInfos[i].world
+					);
+
+				}
+
+				submitInfos[i].common.color =
+				{
+					object.GetColor().x* submitInfos[i].common.color.x,
+					object.GetColor().y* submitInfos[i].common.color.y,
+					object.GetColor().z* submitInfos[i].common.color.z,
+					object.GetColor().w* submitInfos[i].common.color.w
 				};
 			}
 		}

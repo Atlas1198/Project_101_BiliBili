@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include "AssimpNodeTransformAnim.h"
 #include "SharedStruct.h"
 #include <vector>
 
@@ -56,6 +57,8 @@ struct WorldRenderInfo
 	bool lightingEnabled = true;			//ライティング有効フラグ
 	BILLBOARD_TYPE billboardType 
 		= BILLBOARD_TYPE::BILLBOARD_NONE;	//ビルボードタイプ
+
+	NodeAnimationAsset* pNodeAnimAsset = nullptr;	// Pointer to node animation asset
 };
 
 //エフェクト描画情報構造体
@@ -83,6 +86,7 @@ struct Mesh
 		1.0f,	//拡散反射色B
 		1.0f	//拡散反射色A
 	};
+	NodeAnimationAsset nodeAnimAsset{};	// ノードアニメーション資産
 };
 
 //モデルデータ構造体

@@ -33,7 +33,7 @@ MeshGPU::MeshGPU(ID3D12Device* pDevice, Mesh& src)
 		//å¥ì_Ç©ÇÁç≈Ç‡âìÇ¢ãóó£Çï€ë∂
 		const auto& p = src.vertices[i].position;
 		float len2 = p.x * p.x + p.y * p.y + p.z * p.z;
-		maxDistSq = max(maxDistSq, len2);
+		maxDistSq = (std::max)(maxDistSq, len2);
 	}
 	m_sortRadius = sqrt(maxDistSq);
 }

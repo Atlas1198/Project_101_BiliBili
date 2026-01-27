@@ -14,7 +14,7 @@ public:
         DirectX::XMFLOAT3 rotation,
         DirectX::XMFLOAT3 scale,
         DirectX::XMFLOAT3 velocity,
-        DirectX::XMFLOAT3 launchTarget,   // © ¡‚Ì‚ ‚È‚½‚ÌFieldManager‚É‡‚í‚¹‚ÄˆÛ
+        DirectX::XMFLOAT3 launchTarget,   // â† ä»Šã®ã‚ãªãŸã®FieldManagerã«åˆã‚ã›ã¦ç¶­æŒ
         bool isActive = true,
         ColliderType colliderType = ColliderType::BOX,
         DirectX::XMFLOAT3 collisionBoxSize = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
@@ -23,22 +23,30 @@ public:
 
     ~Spring() {}
 
-    // ’P”­iŒÅ’èj
+    // å˜ç™ºï¼ˆå›ºå®šï¼‰
     void SetLaunchTarget(const DirectX::XMFLOAT3& target);
 
-    // •¡”iƒ‰ƒ“ƒ_ƒ€‰Âj
+    // è¤‡æ•°ï¼ˆãƒ©ãƒ³ãƒ€ãƒ å¯ï¼‰
     void SetLaunchTargets(const std::vector<DirectX::XMFLOAT3>& targets, bool random = true);
 
-    // Player‚ªÕ“Ë‚ÉŒÄ‚Ôiƒ‰ƒ“ƒ_ƒ€‚È‚ç‚±‚±‚Å‘I‚Ôj
+    // PlayerãŒè¡çªæ™‚ã«å‘¼ã¶ï¼ˆãƒ©ãƒ³ãƒ€ãƒ ãªã‚‰ã“ã“ã§é¸ã¶ï¼‰
     DirectX::XMFLOAT3 ChooseLaunchTarget() const;
 
     void UpdateOverride() override;
     void ResolveCollisionsOverride() override;
+    
+     void SetIsBlowing(bool isBlowing) { m_isBlowing = isBlowing; } // Set is blowing flag
 
 private:
     std::vector<DirectX::XMFLOAT3> m_launchTargets;
     bool m_randomLaunch = false;
 
-    // ƒ‰ƒ“ƒ_ƒ€—pi–ˆ‰ñ¶¬‚µ‚È‚¢‚æ‚¤‚Éƒƒ“ƒo‚Éj
+    // ãƒ©ãƒ³ãƒ€ãƒ ç”¨ï¼ˆæ¯å›ç”Ÿæˆã—ãªã„ã‚ˆã†ã«ãƒ¡ãƒ³ãƒã«ï¼‰
     mutable std::mt19937 m_rng;
+
+	static constexpr double ANIM_TIME = 1.0 / 120.0; // Animation time
+	double m_animTime = ANIM_TIME; // Animation time
+
+	bool m_isBlowing = false; // Is blowing flag
+	int m_blowCount = 0; // Blow count
 };
