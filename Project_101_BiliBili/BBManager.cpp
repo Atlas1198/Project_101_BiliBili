@@ -85,7 +85,13 @@ void BBManager::InitializeOverride(
   		m_BBAreas[i]->SetActive(false);
 	}
 
-	bbAreaStartEventTimer.Mark();
+	EventManager::GetInstance()->Subscribe<void>(
+		EventType::SHOW_START_UI,
+		[this](std::shared_ptr<void> data)
+		{
+			bbAreaStartEventTimer.Mark();
+		}
+	);
 }
 
 void BBManager::OnItemPickup(int teamID)

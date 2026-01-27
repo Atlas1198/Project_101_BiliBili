@@ -90,6 +90,11 @@ void Player::UpdateOverride()
 			bbSlowMoveSpeed = true;
 		}
 
+		if (bbSlowMoveSpeed && (gameTimer.Peek() > 180.0f))
+		{
+			bbSlowMoveSpeed = false;
+		}
+
 		if (runTimerStarted)
 		{
 			if (runTimer.Peek() >= RUN_DELAY)
