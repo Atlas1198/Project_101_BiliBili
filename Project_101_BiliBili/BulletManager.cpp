@@ -16,7 +16,7 @@ void BulletManager::FireBullet(
 {
     if (teamBulletCount[ownerTeam] <= 0)
     {
-        return; // ’e‚ªŒ‚‚Ä‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+        return; // å¼¾ãŒæ’ƒã¦ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	}
 
 	teamBulletCount[ownerTeam]--;
@@ -57,6 +57,8 @@ void BulletManager::InitializeOverride(
             BulletRecoveryEvent();
         }
     );
+
+    Reset();
 }
 
 
@@ -70,11 +72,11 @@ void BulletManager::UpdateOverride()
         }
     }
 
-    // ’e‚Ìíœ
+    // å¼¾ã®å‰Šé™¤
     m_bullets.erase(
         std::remove_if
         ( m_bullets.begin(), m_bullets.end(),
-            [](const std::unique_ptr<Bullet>& b)        //[ƒLƒƒƒvƒ`ƒƒƒŠƒXƒg](ˆø”ƒŠƒXƒg)   ƒLƒƒƒvƒ`ƒƒƒŠƒXƒg‚ª‹óBŠO•”•Ï”‚ğƒ‰ƒ€ƒ_‚Ì’†‚Åg‚í‚È‚¢‚±‚Æ
+            [](const std::unique_ptr<Bullet>& b)        //[ã‚­ãƒ£ãƒ—ãƒãƒ£ãƒªã‚¹ãƒˆ](å¼•æ•°ãƒªã‚¹ãƒˆ)   ã‚­ãƒ£ãƒ—ãƒãƒ£ãƒªã‚¹ãƒˆãŒç©ºã€‚å¤–éƒ¨å¤‰æ•°ã‚’ãƒ©ãƒ ãƒ€ã®ä¸­ã§ä½¿ã‚ãªã„ã“ã¨
             {
                 return (!b->IsActive() || b->DeleteFlag());
             }
@@ -144,11 +146,11 @@ void BulletManager::SubmitDrawsOverride(Renderer& renderer)
 {
     for (auto &bullet : m_bullets)
     {
-        //•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+        //æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
         ObjectManagerBase::SubmitRenderInfo(
-            renderer,		//ƒV[ƒ“‚ÌQÆ
-            *bullet,		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg”z—ñ‚ÌQÆ
-            m_bulletInfo	//ƒvƒŒƒCƒ„[•`‰æî•ñ
+            renderer,		//ã‚·ãƒ¼ãƒ³ã®å‚ç…§
+            *bullet,		//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã®å‚ç…§
+            m_bulletInfo	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±
         );
     }
 }
@@ -171,15 +173,26 @@ void BulletManager::FinalizeOverride()
 
 void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
-    //•`‰æî•ñ¶¬ŠÖ”‚ğŒÄ‚Ño‚µA•`‰æî•ñ‚ğì¬
+    //æç”»æƒ…å ±ç”Ÿæˆé–¢æ•°ã‚’å‘¼ã³å‡ºã—ã€æç”»æƒ…å ±ã‚’ä½œæˆ
     CreateRenderInfo(
-        textureManager,					    //ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-        meshManager,					    //ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-        &m_bulletInfo,					    //•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-        MESH_TYPE::QUAD,	                //ƒƒbƒVƒ…ƒ^ƒCƒv
-        BLEND_MODE::BLEND_MASKED,		    //ƒuƒŒƒ“ƒhƒ‚[ƒh
-        texPath,						    //ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
-		false,							    //ƒ‰ƒCƒg–³Œø
-		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ƒrƒ‹ƒ{[ƒhƒ^ƒCƒv
+        textureManager,					    //ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+        meshManager,					    //ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+        &m_bulletInfo,					    //æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+        MESH_TYPE::QUAD,	                //ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+        BLEND_MODE::BLEND_MASKED,		    //ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+        texPath,						    //ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+		false,							    //ãƒ©ã‚¤ãƒˆç„¡åŠ¹
+		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—
     );
+}
+
+void BulletManager::Reset()
+{
+    m_bulletRestoreTimer.Mark();
+    m_totalTimer.Mark();
+    m_bulletRestoreElapsed = 0.0f;
+    m_currentRestoreModifier = 1.0f;
+    m_normalRestoreModifier = 1.0f;
+    m_speedModifier = 1.0f;
+    timeUntilBonusRestoreModifier = 75.0f;
 }

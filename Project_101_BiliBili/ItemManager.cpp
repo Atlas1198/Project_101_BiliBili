@@ -40,6 +40,9 @@ void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager
 			StartTimer();
 		}
 	);
+
+	applyNewSpawnRate = false;
+	nextItemIndex = 1;
 }
 
 void ItemManager::SpawnItem()
@@ -134,6 +137,11 @@ void ItemManager::ResolveCollisionsOverride()
 //終了
 void ItemManager::FinalizeOverride()
 {
+	for (auto &item : m_pItems)
+	{
+		delete item;
+		item = nullptr;
+	}
 	m_pItems.clear();
 
 	m_itemInfo.clear();
