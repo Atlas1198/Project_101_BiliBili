@@ -1,8 +1,12 @@
 #include "Player.h"
+#include "Spring.h"
 #include <DirectXMath.h>
 #include "App.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include <algorithm> // clamp
+#include <cmath>
+
 
 using namespace DirectX;
 using namespace CollisionData;
@@ -43,30 +47,30 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 	maxAnimIndex = 1;
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManager)
 {
-	m_pInputInfo = pInputManager->GetInputInfo();	//“ü—Íî•ñ\‘¢‘Ì‚Ìæ“¾
+	m_pInputInfo = pInputManager->GetInputInfo();	//å…¥åŠ›æƒ…å ±æ§‹é€ ä½“ã®å–å¾—
 	m_pBulletManager = pBulletManager;
 }
 
-//XV
+//æ›´æ–°
 void Player::UpdateOverride()
 {
 	if (App::GetInstance()->isOnline)
 	{
 		if (id == App::GetInstance()->descPlayer.uniqueID)
 		{
-			Move();		//ˆÚ“®
-			//Rotate();	//‰ñ“]
-			//Scale();	//ƒXƒP[ƒ‹
+			Move();		//ç§»å‹•
+			//Rotate();	//å›è»¢
+			//Scale();	//ã‚¹ã‚±ãƒ¼ãƒ«
 
 			App::GetInstance()->descPlayer.pos = { m_position.x, m_position.y, m_position.z };
 			App::GetInstance()->players[id].pos = { m_position.x, m_position.y, m_position.z };
 		}
 		else
 		{
-			for (const auto &desc : App::GetInstance()->players)
+			for (const auto& desc : App::GetInstance()->players)
 			{
 				if (desc.first == id)
 				{
@@ -84,7 +88,7 @@ void Player::UpdateOverride()
 			--m_ignoreCollisionFrame;
 		}
 
-		Move();		//ˆÚ“®
+		Move();		//ç§»å‹•
 
 		/*
 		Vec3 spawnPoses[4] = {
@@ -105,8 +109,8 @@ void Player::UpdateOverride()
 		//Scale();
 	}
 }
- 
-//Õ“Ë‰ğŒˆ
+
+//è¡çªè§£æ±º
 void Player::ResolveCollisionsOverride()
 {
 	if (m_ignoreCollisionFrame > 0)
@@ -114,21 +118,21 @@ void Player::ResolveCollisionsOverride()
 		return;
 	}
 
-	XMFLOAT3 pushVector{};	//‰Ÿ‚µo‚µƒxƒNƒgƒ‹
+	XMFLOAT3 pushVector{};	//æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«
 	auto& infos = m_pColliderSet->GetCollisionInfos();
 
 	pushVector = GetPushOutVector(
-		infos,	//Õ“Ëî•ñ”z—ñ
-		{//‘ÎÛƒ^ƒOƒŠƒXƒg(ƒŒƒCƒ„[ƒ}ƒXƒN‚É‚àŠÜ‚Ü‚ê‚Ä‚¢‚é•K—v‚ª‚ ‚é)
-			OBJECT_TAG::PLAYER,		//‘¼‚ÌƒvƒŒƒCƒ„[‚à‰Ÿ‚µo‚·
-			OBJECT_TAG::WALL,		//•Ç
-			OBJECT_TAG::WALLPASS,	//’eŠÑ’Ê•Ç
-			OBJECT_TAG::WALLCURVE,	//ƒJ[ƒu•Ç
-			OBJECT_TAG::GROUND		//’n–Ê
+		infos,	//è¡çªæƒ…å ±é…åˆ—
+		{//å¯¾è±¡ã‚¿ã‚°ãƒªã‚¹ãƒˆ(ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ã«ã‚‚å«ã¾ã‚Œã¦ã„ã‚‹å¿…è¦ãŒã‚ã‚‹)
+			OBJECT_TAG::PLAYER,		//ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚‚æŠ¼ã—å‡ºã™
+			OBJECT_TAG::WALL,		//å£
+			OBJECT_TAG::WALLPASS,	//å¼¾è²«é€šå£
+			OBJECT_TAG::WALLCURVE,	//ã‚«ãƒ¼ãƒ–å£
+			OBJECT_TAG::GROUND		//åœ°é¢
 		}
 	);
 
-	//Å‘å‰Ÿ‚µo‚µƒxƒNƒgƒ‹•ª‚¾‚¯ˆÚ“®
+	//æœ€å¤§æŠ¼ã—å‡ºã—ãƒ™ã‚¯ãƒˆãƒ«åˆ†ã ã‘ç§»å‹•
 	m_position.x += pushVector.x;
 	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
@@ -139,45 +143,73 @@ void Player::ResolveCollisionsOverride()
 	{
 		if (info.opponent->GetTag() == OBJECT_TAG::GROUND)
 		{
-			//’n–Ê‚ÉÚG‚µ‚Ä‚¢‚éê‡‚ÍYÀ•W‚ğ•â³
 			m_isGrounded = true;
+
+			// è½ä¸‹ã¯æ­¢ã‚ã‚‹
 			m_velocity.y = 0.0f;
+
+			// â˜…ã“ã“ï¼šç€åœ°æ™‚ã®æ»‘ã‚Šé˜²æ­¢ï¼ˆãƒãƒã‚¸ãƒ£ãƒ³ãƒ—å¾Œãªã‚‰æ°´å¹³é€Ÿåº¦ã‚‚æ­¢ã‚ã‚‹ï¼‰
+			if (m_isSpringJump)
+			{
+				m_velocity.x = 0.0f;
+				m_velocity.z = 0.0f;
+			}
+
 			m_isSpringJump = false;
 		}
 	}
 
 	for (auto& info : infos)
 	{
+		if (!info.opponent)      // â˜…NULLãƒã‚§ãƒƒã‚¯
+			continue;
+
 		if (info.opponent->GetTag() == OBJECT_TAG::SPRING)
 		{
 			if (!m_isSpringJump)
 			{
-				XMFLOAT3 currentPos = GetPosition();
-				XMFLOAT3 centerPos(0.0f, -4.0f, 5.0f);
-
-				XMFLOAT3 dir{
-					centerPos.x - currentPos.x,
-					centerPos.y - currentPos.y,
-					centerPos.z - currentPos.z
-				};
-
-				float length = std::sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
-				if (length > 0.0f)
+				Spring* spring = dynamic_cast<Spring*>(info.opponent);
+				if (!spring) continue;
+				if (spring)
 				{
-					dir.x /= length;
-					dir.y /= length;
-					dir.z /= length;
-				}
+					const XMFLOAT3 startPos = m_position;                 // â˜…ã“ã“é‡è¦
+					const XMFLOAT3 targetPos = spring->ChooseLaunchTarget();
 
-				m_velocity.x = dir.x * 1.15f;
-				m_velocity.y = 1.0f;   // ã•ûŒü‚É’µ‚Ë‚³‚¹‚½‚¢‚È‚ç
-				m_velocity.z = dir.z * 1.15f;
+					const float dx = targetPos.x - startPos.x;
+					const float dy = targetPos.y - startPos.y;
+					const float dz = targetPos.z - startPos.z;
 
-				m_isSpringJump = true;
+					// è·é›¢ã«å¿œã˜ã¦é£›è¡Œæ™‚é–“(ãƒ•ãƒ¬ãƒ¼ãƒ )ã‚’æ±ºã‚ã‚‹
+					// ç›®å®‰ï¼šæ°´å¹³é€Ÿåº¦ 0.9f ãã‚‰ã„ã§é£›ã°ã™
+					const float distXZ = std::sqrt(dx * dx + dz * dz);
 
-				if (Spring* spring = static_cast<Spring*>(info.opponent))
-				{
-					spring->SetIsBlowing(true);
+					const float desiredSpeedXZ = 0.1f; // å¥½ã¿ã§èª¿æ•´ï¼ˆå¤§ãã„ã»ã©é€ŸãçŸ­æ™‚é–“ï¼‰
+					float T = (desiredSpeedXZ > 0.0001f) ? (distXZ / desiredSpeedXZ) : 30.0f;
+
+					// æ—©ã™ã/é…ã™ãé˜²æ­¢ï¼ˆ15ï½60ãƒ•ãƒ¬ãƒ¼ãƒ ã«åˆ¶é™ï¼‰
+					T = std::clamp(T, 15.0f, 60.0f);
+
+					// ã‚ãªãŸã®é‡åŠ›é©ç”¨ï¼šæ¯ãƒ•ãƒ¬ãƒ¼ãƒ  vy -= GRAVITY
+					const float g = GRAVITY;
+
+					// ç›®æ¨™ï¼šTãƒ•ãƒ¬ãƒ¼ãƒ å¾Œã« target ã«åˆ°é”
+					// x,z ã¯ç­‰é€Ÿï¼š vx = dx/T, vz = dz/T
+					// y ã¯ç­‰åŠ é€Ÿåº¦ï¼š dy = vy0*T - 0.5*g*T^2  -> vy0 = (dy + 0.5*g*T^2)/T
+					const float vx = dx / T;
+					const float vz = dz / T;
+					const float vy = (dy + 0.5f * g * T * T) / T;
+
+					m_velocity.x = vx;
+					m_velocity.z = vz;
+					m_velocity.y = vy;
+
+					m_isGrounded = false;
+					m_isSpringJump = true;
+
+					// é€£ç¶šãƒ’ãƒƒãƒˆé˜²æ­¢ï¼ˆå¿…è¦ãªã‚‰ï¼‰
+					// m_ignoreCollisionFrame = 5;
+          
+          spring->SetIsBlowing(true);
 				}
 			}
 		}
@@ -201,23 +233,23 @@ void Player::SetBB(bool isActive)
 	}
 }
 
-//ˆÚ“®
+//ç§»å‹•
 void Player::Move()
 {
-	//‰ñ“]‚©‚çˆÚ“®•ûŒü‚ğŒˆ’è‚·‚é
+	//å›è»¢ã‹ã‚‰ç§»å‹•æ–¹å‘ã‚’æ±ºå®šã™ã‚‹
 	XMFLOAT3 direction{};
 	direction.x = sinf(XMConvertToRadians(m_rotation.y));
 	direction.y = 0.0f;
 	direction.z = cosf(XMConvertToRadians(m_rotation.y));
 
 	/*
-		ÔFWASD    +     F
-		ÂFUHJK    +     G
-		‰©Fª©«¨     +     ‰ECtrl
-		—ÎFƒeƒ“ƒL[‚Ì8456 + ‰E‚ÌPlusƒ{ƒ^ƒ“
+		èµ¤ï¼šWASD    +     F
+		é’ï¼šUHJK    +     G
+		é»„ï¼šâ†‘â†â†“â†’     +     å³Ctrl
+		ç·‘ï¼šãƒ†ãƒ³ã‚­ãƒ¼ã®8456 + å³ã®Plusãƒœã‚¿ãƒ³
 	*/
 
-	
+
 
 	bool up = m_pInputInfo->key.w.down;
 	bool down = m_pInputInfo->key.s.down;
@@ -231,7 +263,7 @@ void Player::Move()
 		switch (id)
 		{
 		case 0:
-			dir = m_pInputInfo->controller[0].leftStick; 
+			dir = m_pInputInfo->controller[0].leftStick;
 			up = m_pInputInfo->key.w.down;
 			down = m_pInputInfo->key.s.down;
 			left = m_pInputInfo->key.a.down;
@@ -270,32 +302,32 @@ void Player::Move()
 
 		if (up)
 		{
-			//‘Oi
+			//å‰é€²
 			m_position.x += direction.x * MOVE_SPEED;
 			m_position.y += direction.y * MOVE_SPEED;
 			m_position.z += direction.z * MOVE_SPEED;
 		}
 		if (down)
 		{
-			//Œã‘Ş
+			//å¾Œé€€
 			m_position.x -= direction.x * MOVE_SPEED;
 			m_position.y -= direction.y * MOVE_SPEED;
 			m_position.z -= direction.z * MOVE_SPEED;
 		}
 		if (left)
 		{
-			//¶ˆÚ“®
+			//å·¦ç§»å‹•
 			m_position.x -= direction.z * MOVE_SPEED;
 			m_position.z += direction.x * MOVE_SPEED;
 		}
 		if (right)
 		{
-			//‰EˆÚ“®
+			//å³ç§»å‹•
 			m_position.x += direction.z * MOVE_SPEED;
 			m_position.z -= direction.x * MOVE_SPEED;
 		}
 
-		
+
 		if (dir.x != 0.0f || dir.y != 0.0f)
 		{
 			down = dir.y < -0.5f;
@@ -303,7 +335,7 @@ void Player::Move()
 			left = dir.x < -0.5f;
 			right = dir.x > 0.5f;
 		}
-		
+
 		/*
 		if (down && left) this->direction = 1;
 		else if (down && right) this->direction = 7;
@@ -331,23 +363,23 @@ void Player::Move()
 		}
 		else
 		{
-			if (down && left) 
+			if (down && left)
 				this->direction = 1;
-			else if (down && right) 
+			else if (down && right)
 				this->direction = 7;
-			else if (up && right) 
+			else if (up && right)
 				this->direction = 5;
-			else if (up && left) 
+			else if (up && left)
 				this->direction = 3;
-			else if (up) 
+			else if (up)
 				this->direction = 4;
-			else if (down) 
+			else if (down)
 				this->direction = 0;
-			else if (left) 
+			else if (left)
 				this->direction = 2;
-			else if (right) 
+			else if (right)
 				this->direction = 6;
-			else 
+			else
 				isMoving = false;
 		}
 	}
@@ -356,9 +388,12 @@ void Player::Move()
 	m_position.y += m_velocity.y;
 	m_position.z += m_velocity.z;
 
-	m_velocity.x *= 0.95f;
-	m_velocity.y *= 0.95f;
-	m_velocity.z *= 0.95f;
+	if (!m_isSpringJump)
+	{
+		m_velocity.x *= 0.95f;
+		m_velocity.y *= 0.95f;
+		m_velocity.z *= 0.95f;
+	}
 
 	UpdateAnimation();
 
@@ -421,7 +456,7 @@ void Player::Shoot()
 		switch (id)
 		{
 		case 0:
-			shoot = m_pInputInfo->key.z.trigger|| m_pInputInfo->controller[0].B.trigger;
+			shoot = m_pInputInfo->key.z.trigger || m_pInputInfo->controller[0].B.trigger;
 			break;
 		case 1:
 			shoot = m_pInputInfo->key.c.trigger || m_pInputInfo->controller[1].B.trigger;
@@ -457,7 +492,7 @@ void Player::Shoot()
 		}
 		else
 		{
-			// –¡•û‚Æ“¯‚¶ˆÊ’u‚È‚ç‘O•û‚ÉŒ‚‚Â
+			// å‘³æ–¹ã¨åŒã˜ä½ç½®ãªã‚‰å‰æ–¹ã«æ’ƒã¤
 			dir = DirectX::XMFLOAT3{ 0.0f, 0.0f, 1.0f };
 		}
 
@@ -475,34 +510,34 @@ void Player::Shoot()
 	}
 }
 
-//‰ñ“]
+//å›è»¢
 void Player::Rotate()
 {
-	if(m_pInputInfo->key.left.down)
+	if (m_pInputInfo->key.left.down)
 	{
-		//¶‰ñ“]
+		//å·¦å›è»¢
 		m_rotation.y -= ROTATE_SPEED;
 	}
-	if(m_pInputInfo->key.right.down)
+	if (m_pInputInfo->key.right.down)
 	{
-		//‰E‰ñ“]
+		//å³å›è»¢
 		m_rotation.y += ROTATE_SPEED;
 	}
 }
 
-//ƒXƒP[ƒ‹
+//ã‚¹ã‚±ãƒ¼ãƒ«
 void Player::Scale()
 {
 	if (m_pInputInfo->key.up.down)
 	{
-		//Šg‘å
+		//æ‹¡å¤§
 		m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
 		m_scale.x = (std::min)(m_scale.x + 0.008f, 5.0f);
 		m_scale.z = (std::min)(m_scale.z + 0.008f, 5.0f);
 	}
 	if (m_pInputInfo->key.down.down)
 	{
-		//k¬
+		//ç¸®å°
 		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
 		m_scale.x = (std::max)(m_scale.x - 0.008f, 0.005f);
 		m_scale.z = (std::max)(m_scale.z - 0.008f, 0.005f);

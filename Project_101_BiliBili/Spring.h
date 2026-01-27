@@ -1,32 +1,49 @@
 #pragma once
 #include <d3d12.h>
 #include <DirectXMath.h>
+#include <vector>
+#include <random>
 #include "ObjectBase.h"
 
-//•ÇƒNƒ‰ƒX
 class Spring : public ObjectBase
 {
 public:
-	Spring(	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^(ˆø”‚ ‚è)
-		MESH_TYPE meshType,			//ƒƒbƒVƒ…ƒ^ƒCƒv
-		DirectX::XMFLOAT3 position,				//À•W
-		DirectX::XMFLOAT3 rotation,				//‰ñ“]
-		DirectX::XMFLOAT3 scale,				//ƒXƒP[ƒ‹
-		DirectX::XMFLOAT3 velocity,				//ˆÚ“®‘¬“x
-		bool isActive = true,					//ƒAƒNƒeƒBƒuƒtƒ‰ƒO
-		ColliderType colliderType =				//ƒRƒ‰ƒCƒ_[ƒ^ƒCƒv
-		ColliderType::BOX,
-		DirectX::XMFLOAT3 collisionBoxSize =	//ƒRƒ‰ƒCƒ_[‚Ìƒ{ƒbƒNƒXƒTƒCƒY
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-		bool collisionIsTrigger = true			//ƒRƒ‰ƒCƒ_[‚ÌƒgƒŠƒK[ƒtƒ‰ƒO
-	);
-	~Spring() {};	//ƒfƒXƒgƒ‰ƒNƒ^
+    Spring(
+        MESH_TYPE meshType,
+        DirectX::XMFLOAT3 position,
+        DirectX::XMFLOAT3 rotation,
+        DirectX::XMFLOAT3 scale,
+        DirectX::XMFLOAT3 velocity,
+        DirectX::XMFLOAT3 launchTarget,   // â† ä»Šã®ã‚ãªãŸã®FieldManagerã«åˆã‚ã›ã¦ç¶­æŒ
+        bool isActive = true,
+        ColliderType colliderType = ColliderType::BOX,
+        DirectX::XMFLOAT3 collisionBoxSize = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
+        bool collisionIsTrigger = true
+    );
 
-	void UpdateOverride() override;				//XV
-	void ResolveCollisionsOverride() override;	//Õ“Ë‰ğŒˆ
-	void SetIsBlowing(bool isBlowing) { m_isBlowing = isBlowing; } // Set is blowing flag
+    ~Spring() {}
+
+    // å˜ç™ºï¼ˆå›ºå®šï¼‰
+    void SetLaunchTarget(const DirectX::XMFLOAT3& target);
+
+    // è¤‡æ•°ï¼ˆãƒ©ãƒ³ãƒ€ãƒ å¯ï¼‰
+    void SetLaunchTargets(const std::vector<DirectX::XMFLOAT3>& targets, bool random = true);
+
+    // PlayerãŒè¡çªæ™‚ã«å‘¼ã¶ï¼ˆãƒ©ãƒ³ãƒ€ãƒ ãªã‚‰ã“ã“ã§é¸ã¶ï¼‰
+    DirectX::XMFLOAT3 ChooseLaunchTarget() const;
+
+    void UpdateOverride() override;
+    void ResolveCollisionsOverride() override;
+    
+     void SetIsBlowing(bool isBlowing) { m_isBlowing = isBlowing; } // Set is blowing flag
 
 private:
+    std::vector<DirectX::XMFLOAT3> m_launchTargets;
+    bool m_randomLaunch = false;
+
+    // ãƒ©ãƒ³ãƒ€ãƒ ç”¨ï¼ˆæ¯å›ç”Ÿæˆã—ãªã„ã‚ˆã†ã«ãƒ¡ãƒ³ãƒã«ï¼‰
+    mutable std::mt19937 m_rng;
+
 	static constexpr double ANIM_TIME = 1.0 / 120.0; // Animation time
 	double m_animTime = ANIM_TIME; // Animation time
 
