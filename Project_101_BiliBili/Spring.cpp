@@ -30,11 +30,19 @@ Spring::Spring(
     m_launchTargets.push_back(launchTarget);
     m_randomLaunch = false;
 
+    const float scaleFacttor = 1.5f;
+    XMFLOAT3 colliderScale =
+    {
+        scale.x * scaleFacttor,
+        scale.y * scaleFacttor,
+        scale.z * scaleFacttor,
+    };
+
     // Collider作るならここ（あなたのSpringの実装に合わせて）
     m_pColliderSet->AddCollider(
         ColliderType::BOX,
-        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-        scale,
+        DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f),
+        colliderScale,
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
     );
 }
@@ -88,5 +96,11 @@ void Spring::UpdateOverride()
 			m_blowCount = 0;
 		}
 	}
+    else
+    {
+        m_animTime = (std::max)(m_animTime * 0.98, ANIM_TIME); //fast speed
+    }
+
+    m_nodeAnimatorSet.pNodeAnimator->Update(m_animTime);
 }
 void Spring::ResolveCollisionsOverride() {}
