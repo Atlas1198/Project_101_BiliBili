@@ -204,15 +204,25 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 		info.farZ			//ファークリップ距離
 	);
 
+	//float orthoheight = XMConvertToDegrees(info.fov);
+	//float orthowidth = orthoheight * info.aspectRatio;
+
+	//m_worldProj = XMMatrixOrthographicLH(
+	//	orthowidth,		//画面幅
+	//	orthoheight,	//画面高さ
+	//	info.nearZ,		//ニアクリップ距離
+	//	info.farZ		//ファークリップ距離
+	//);
+
 	//スクリーンカメラ行列の更新
 	m_screenView = XMMatrixIdentity();					//カメラの上方
 
 	//スクリーンプロジェクション行列の更新
 	m_screenProj = XMMatrixOrthographicLH(
 		(int)App::WINDOW_WIDTH,	//画面幅
-		(int)App::WINDOW_HEIGHT,	//画面高さ
-		0.0f,									//ニアクリップ距離
-		1.0f);									//ファークリップ距離
+		(int)App::WINDOW_HEIGHT,//画面高さ
+		0.0f,					//ニアクリップ距離
+		1.0f);					//ファークリップ距離
 }
 
 //描画

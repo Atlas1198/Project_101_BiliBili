@@ -61,6 +61,8 @@ struct ControllerInputInfo
 
 	DirectX::XMFLOAT2 leftStick;	//Left stick(normalized)
 	DirectX::XMFLOAT2 rightStick;	//Right stick(normalized)
+	DirectX::XMFLOAT2 leftStickPast;	//Left stick(normalized)
+	DirectX::XMFLOAT2 rightStickPast;	//Right stick(normalized)
 };
 
 //“ü—Íî•ñ\‘¢‘Ì

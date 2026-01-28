@@ -12,99 +12,140 @@ void GameUIManager::InitializeOverride(
 	MeshManager& meshManager
 )
 {
-	m_pTeamUI1 = (new TeamUI(
-		DirectX::XMFLOAT3{ -530.0f, 400.0f, 0.0f },			//位置
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },				//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
-		0,													//描画順序
-		L"asset/texture/game_scene/UI_INGAME_L_frame.png",	//フレームテクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_L_gauge.png",	//ゲージテクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_L_back.png",	//背景テクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_L_alert.png",	//アラートテクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_L_icon.png",	//アイコンテクスチャパス
-		DIRECTION::LEFT										//オフセット方向
-	));
-
-	m_pTeamUI2 = (new TeamUI(
-		DirectX::XMFLOAT3{ 530.0f, 400.0f, 0.0f },			//位置
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },				//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
-		0,													//描画順序
-		L"asset/texture/game_scene/UI_INGAME_R_frame.png",	//フレームテクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_R_gauge.png",	//ゲージテクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_R_back.png",	//背景テクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_R_alert.png",	//アラートテクスチャパス
-		L"asset/texture/game_scene/UI_INGAME_R_icon.png",	//アイコンテクスチャパス
-		DIRECTION::RIGHT									//オフセット方向
-	));
-
-	const DirectX::XMFLOAT3 bulletUIBaseScale = { 110.0f, 104.5f, 1.0f }; // 弾数UIの基本スケール
-	const float scaleFactor = 1.5f; // スケール調整用の係数
-	const DirectX::XMFLOAT3 adjustedScale = { bulletUIBaseScale.x * scaleFactor, bulletUIBaseScale.y * scaleFactor, bulletUIBaseScale.z };
-	for (auto& bulletUI : m_pBulletCountUI1)
+	//チームUIの初期化
 	{
-		bulletUI = (new BulletCountUI(
-			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-			adjustedScale,	//スケール
-			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-			0											//描画順序
+		m_pTeamUI1 = (new TeamUI(
+			DirectX::XMFLOAT3{ -530.0f, 400.0f, 0.0f },			//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },				//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
+			0,													//描画順序
+			L"asset/texture/game_scene/UI_INGAME_L_frame.png",	//フレームテクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_L_gauge.png",	//ゲージテクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_L_back.png",	//背景テクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_L_alert.png",	//アラートテクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_L_icon.png",	//アイコンテクスチャパス
+			DIRECTION::LEFT										//オフセット方向
 		));
-		bulletUI->SetActive(false); // 初期状態では非表示にする
+
+		m_pTeamUI2 = (new TeamUI(
+			DirectX::XMFLOAT3{ 530.0f, 400.0f, 0.0f },			//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },				//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
+			0,													//描画順序
+			L"asset/texture/game_scene/UI_INGAME_R_frame.png",	//フレームテクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_R_gauge.png",	//ゲージテクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_R_back.png",	//背景テクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_R_alert.png",	//アラートテクスチャパス
+			L"asset/texture/game_scene/UI_INGAME_R_icon.png",	//アイコンテクスチャパス
+			DIRECTION::RIGHT									//オフセット方向
+		));
 	}
 
-	for (auto& bulletUI : m_pBulletCountUI2)
+	//弾数UIの初期化
 	{
-		bulletUI = (new BulletCountUI(
-			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-			adjustedScale,	//スケール
-			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-			0											//描画順序
-		));
-		bulletUI->SetActive(false); // 初期状態では非表示にする
+		const DirectX::XMFLOAT3 bulletUIBaseScale = { 110.0f, 104.5f, 1.0f }; // 弾数UIの基本スケール
+		const float scaleFactor = 1.5f; // スケール調整用の係数
+		const DirectX::XMFLOAT3 adjustedScale = { bulletUIBaseScale.x * scaleFactor, bulletUIBaseScale.y * scaleFactor, bulletUIBaseScale.z };
+		for (auto& bulletUI : m_pBulletCountUI1)
+		{
+			bulletUI = (new BulletCountUI(
+				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+				adjustedScale,	//スケール
+				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
+				0											//描画順序
+			));
+			bulletUI->SetActive(false); // 初期状態では非表示にする
+		}
+
+		for (auto& bulletUI : m_pBulletCountUI2)
+		{
+			bulletUI = (new BulletCountUI(
+				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+				adjustedScale,	//スケール
+				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
+				0											//描画順序
+			));
+			bulletUI->SetActive(false); // 初期状態では非表示にする
+		}
 	}
 
-	m_pCutInUI1 = (new CutInUI(
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0,										//描画順序
-		DIRECTION::LEFT							//カットインの方向
-	));
+	{
+		//プレイヤーポインター画像テクスチャパス配列
+		std::wstring playerPointerTexturePaths[4] =
+		{
+			L"asset/texture/game_scene/UI_INGAME_1p.png",
+			L"asset/texture/game_scene/UI_INGAME_2p.png",
+			L"asset/texture/game_scene/UI_INGAME_3p.png",
+			L"asset/texture/game_scene/UI_INGAME_4p.png"
+		};
 
-	m_pCutInUI2 = (new CutInUI(
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0,										//描画順序
-		DIRECTION::RIGHT						//カットインの方向
-	));
+		DirectX::XMFLOAT3 scale = { 76.0f, 79.0f, 1.0f };
 
-	const float sizeFactor = 0.75f; // サイズ調整用の係数
-	m_pOperationGuideImage = (new UIImage(
-		DirectX::XMFLOAT3{ 0.0f, 450.0f, 0.0f },				//位置
-		DirectX::XMFLOAT3{ 276.0f * sizeFactor, 128.0f * sizeFactor, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },					//回転
-		0,														//描画順序
-		L"asset/texture/game_scene/UI_INGAME_Operation.png",	//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT								//ブレンドモード
-	));
+		for(int i = 0 ; i < 4; ++i)
+		{
+			m_pPlayerPointerImage[i] = (new UIImage(
+				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//位置
+				scale,												//スケール
+				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
+				0,													//描画順序
+				playerPointerTexturePaths[i],						//テクスチャパス
+				BLEND_MODE::BLEND_MASKED							//ブレンドモード
+			));
+		}
+	}
+
+	//カットインUIの初期化
+	{
+		m_pCutInUI1 = (new CutInUI(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+			0,										//描画順序
+			DIRECTION::LEFT							//カットインの方向
+		));
+
+		m_pCutInUI2 = (new CutInUI(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+			0,										//描画順序
+			DIRECTION::RIGHT						//カットインの方向
+		));
+	}
+
+	//操作ガイド画像UIの初期化
+	{
+		const float sizeFactor = 0.75f; // サイズ調整用の係数
+		m_pOperationGuideImage = (new UIImage(
+			DirectX::XMFLOAT3{ 0.0f, 450.0f, 0.0f },				//位置
+			DirectX::XMFLOAT3{ 276.0f * sizeFactor, 128.0f * sizeFactor, 1.0f },	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },					//回転
+			0,														//描画順序
+			L"asset/texture/game_scene/UI_INGAME_Operation.png",	//テクスチャパス
+			BLEND_MODE::BLEND_TRANSPARENT								//ブレンドモード
+		));
+	}
 
 	//カウントUIの初期化
-	m_pCountUI = (new CountUI(
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0										//描画順序
-	));
+	{
+		m_pCountUI = (new CountUI(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+			0										//描画順序
+		));
+	}
 
 	//リザルトUIの初期化
-	m_pResultUI = (new ResultUI(
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0										//描画順序
-	));
-	m_pResultUI->SetActive(false); // 初期状態では非表示にする
+	{
+		m_pResultUI = (new ResultUI(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+			0										//描画順序
+		));
+		m_pResultUI->SetActive(false); // 初期状態では非表示にする
+	}
 
 	//チームUIの初期化
 	if(m_pTeamUI1)
@@ -142,6 +183,10 @@ void GameUIManager::InitializeOverride(
 	for (auto& bulletUI : m_pBulletCountUI2)
 	{
 		m_roots.push_back(std::unique_ptr<UIBase>(bulletUI));			//ルートUIオブジェクト配列に追加
+	}
+	for (auto& pointerImage : m_pPlayerPointerImage)
+	{
+		m_roots.push_back(std::unique_ptr<UIBase>(pointerImage));		//ルートUIオブジェクト配列に追加
 	}
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI1));			//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI2));			//ルートUIオブジェクト配列に追加
@@ -182,7 +227,7 @@ void GameUIManager::InitializeOverride(
 		EventType::SHOW_COUNT_UI,
 		[this](std::shared_ptr<int> data)
 		{
-			CountUIShow(*data);
+			ShowCountUI(*data);
 		}
 	);
 
@@ -225,10 +270,10 @@ void GameUIManager::InitializeOverride(
 
 	using bulletArgs = std::tuple<int, DirectX::XMFLOAT3, DirectX::XMFLOAT3>;
 	EventManager::GetInstance()->Subscribe<bulletArgs>(
-		EventType::SET_BULLET_UI_POSITION,
+		EventType::SET_PLAYER_CHASING_UI_POSITION,
 		[this](std::shared_ptr<bulletArgs> data)
 		{
-			SetBulletCountPosition(
+			SetPlayerChasingUIPosition(
 				std::get<0>(*data),
 				std::get<1>(*data),
 				std::get<2>(*data)
@@ -247,6 +292,14 @@ void GameUIManager::InitializeOverride(
 			);
 		}
 	);
+
+	EventManager::GetInstance()->Subscribe<void>(
+		EventType::INACTIVATE_PLAYER_POINTER_IMAGES,
+		[this](std::shared_ptr<void> data)
+		{
+			InactivatePlayerPointerImages();
+		}
+	);
 }
 
 //更新
@@ -259,7 +312,7 @@ void GameUIManager::FinalizeOverride()
 {
 }
 
-void GameUIManager::SetBulletCountPosition(int teamID, const DirectX::XMFLOAT3& position1, const DirectX::XMFLOAT3& position2)
+void GameUIManager::SetPlayerChasingUIPosition(int teamID, const DirectX::XMFLOAT3& position1, const DirectX::XMFLOAT3& position2)
 {
 	const float offsetY = 60.0f; // Y座標のオフセット値
 
@@ -270,21 +323,33 @@ void GameUIManager::SetBulletCountPosition(int teamID, const DirectX::XMFLOAT3& 
 	DirectX::XMFLOAT3 adjustedPosition2 = DirectX::XMFLOAT3{ screenPos2.x, screenPos2.y + offsetY, 0.0f };
 	if (teamID == 0)
 	{
-		auto transform1 = m_pBulletCountUI1[0]->GetLocalTransform();
-		transform1.position = adjustedPosition1;
-		m_pBulletCountUI1[0]->SetLocalTransform(transform1);
-		auto transform2 = m_pBulletCountUI1[1]->GetLocalTransform();
-		transform2.position = adjustedPosition2;
-		m_pBulletCountUI1[1]->SetLocalTransform(transform2);
+		auto transformBullet1 = m_pBulletCountUI1[0]->GetLocalTransform();
+		transformBullet1.position = adjustedPosition1;
+		m_pBulletCountUI1[0]->SetLocalTransform(transformBullet1);
+		auto transformBullet2 = m_pBulletCountUI1[1]->GetLocalTransform();
+		transformBullet2.position = adjustedPosition2;
+		m_pBulletCountUI1[1]->SetLocalTransform(transformBullet2);
+		auto transformPlayerPointer1 = m_pPlayerPointerImage[0]->GetLocalTransform();
+		transformPlayerPointer1.position = adjustedPosition1;
+		m_pPlayerPointerImage[0]->SetLocalTransform(transformPlayerPointer1);
+		auto transformPlayerPointer2 = m_pPlayerPointerImage[1]->GetLocalTransform();
+		transformPlayerPointer2.position = adjustedPosition2;
+		m_pPlayerPointerImage[1]->SetLocalTransform(transformPlayerPointer2);
 	}
 	else if (teamID == 1)
 	{
-		auto transform1 = m_pBulletCountUI2[0]->GetLocalTransform();
-		transform1.position = adjustedPosition1;
-		m_pBulletCountUI2[0]->SetLocalTransform(transform1);
-		auto transform2 = m_pBulletCountUI2[1]->GetLocalTransform();
-		transform2.position = adjustedPosition2;
-		m_pBulletCountUI2[1]->SetLocalTransform(transform2);
+		auto transformBullet1 = m_pBulletCountUI2[0]->GetLocalTransform();
+		transformBullet1.position = adjustedPosition1;
+		m_pBulletCountUI2[0]->SetLocalTransform(transformBullet1);
+		auto transformBullet2 = m_pBulletCountUI2[1]->GetLocalTransform();
+		transformBullet2.position = adjustedPosition2;
+		m_pBulletCountUI2[1]->SetLocalTransform(transformBullet2);
+		auto transformPlayerPointer3 = m_pPlayerPointerImage[2]->GetLocalTransform();
+		transformPlayerPointer3.position = adjustedPosition1;
+		m_pPlayerPointerImage[2]->SetLocalTransform(transformPlayerPointer3);
+		auto transformPlayerPointer4 = m_pPlayerPointerImage[3]->GetLocalTransform();
+		transformPlayerPointer4.position = adjustedPosition2;
+		m_pPlayerPointerImage[3]->SetLocalTransform(transformPlayerPointer4);
 	}
 }
 
@@ -334,7 +399,7 @@ void GameUIManager::CallCutIn(int teamID, int characterIndex)
 }
 
 //カウントUI表示関数
-void GameUIManager::CountUIShow(int count)
+void GameUIManager::ShowCountUI(int count)
 {
 	m_pCountUI->ShowCountDown(count);
 }
@@ -380,5 +445,14 @@ void GameUIManager::SetBulletCountActive(int teamID, bool isActive)
 		{
 			bulletUI->SetActive(isActive);
 		}
+	}
+}
+
+//プレイヤーポインター画像非アクティブ化関数
+void GameUIManager::InactivatePlayerPointerImages()
+{
+	for (auto& pointerImage : m_pPlayerPointerImage)
+	{
+		pointerImage->SetActive(false);
 	}
 }

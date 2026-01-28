@@ -72,7 +72,7 @@ void CharacterUIManager::InitializeOverride(
 			characterIconScale,//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
-			L"asset/texture/character_scene/UI_CHARACTER_Select_C.png",
+			L"asset/texture/character_scene/UI_CHARACTER_Select_1.png",
 			BLEND_MODE::BLEND_MASKED
 		);
 		m_pPlayerBackgroundsSelected[1] = new UIImage(
@@ -80,7 +80,7 @@ void CharacterUIManager::InitializeOverride(
 			characterIconScale,//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
-			L"asset/texture/character_scene/UI_CHARACTER_Select_M.png",
+			L"asset/texture/character_scene/UI_CHARACTER_Select_2.png",
 			BLEND_MODE::BLEND_MASKED
 		);
 		m_pPlayerBackgroundsSelected[2] = new UIImage(
@@ -88,7 +88,7 @@ void CharacterUIManager::InitializeOverride(
 			characterIconScale,//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
-			L"asset/texture/character_scene/UI_CHARACTER_Select_G.png",
+			L"asset/texture/character_scene/UI_CHARACTER_Select_3.png",
 			BLEND_MODE::BLEND_MASKED
 		);
 		m_pPlayerBackgroundsSelected[3] = new UIImage(
@@ -96,7 +96,7 @@ void CharacterUIManager::InitializeOverride(
 			characterIconScale,//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
-			L"asset/texture/character_scene/UI_CHARACTER_Select_Y.png",
+			L"asset/texture/character_scene/UI_CHARACTER_Select_4.png",
 			BLEND_MODE::BLEND_MASKED
 		);
 		//ルートUIオブジェクトに追加

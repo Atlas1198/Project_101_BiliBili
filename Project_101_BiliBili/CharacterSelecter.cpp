@@ -2,6 +2,8 @@
 #include "InputManager.h"
 #include "EventManager.h"
 
+using namespace DirectX;
+
 //初期化
 void CharacterSelecter::Initialize()
 {
@@ -71,6 +73,10 @@ void CharacterSelecter::Update(
 
 			int controllerID = sceneContext.playersInfo[i].controllerID;	//コントローラーID
 			auto& controller = controllers[controllerID];					//コントローラー入力情報
+			float leftStick = controller.leftStick.x;						//左スティック情報
+			float leftStickPast = controller.leftStickPast.x;				//左スティック情報
+			float deadZone = 0.5f;											//デッドゾーン
+			
 
 			if (m_isAllSelected)
 			{//全員選択済みの場合
@@ -95,13 +101,13 @@ void CharacterSelecter::Update(
 			}
 			else if (!state.isSelected)
 			{//未選択の場合
-				if (controller.LEFT.trigger)
+				if (controller.LEFT.trigger || (leftStick < -deadZone && fabs(leftStickPast) < deadZone))
 				{//左入力
 					state.characterIndex = (std::max)(state.characterIndex - 1, 0);
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 						EventType::CHARACTER_ICON_MOVE, { i, state.characterIndex });
 				}
-				else if (controller.RIGHT.trigger)
+				else if (controller.RIGHT.trigger || (leftStick > deadZone && fabs(leftStickPast) < deadZone))
 				{//右入力
 					state.characterIndex = (std::min)(state.characterIndex + 1, 3);
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(

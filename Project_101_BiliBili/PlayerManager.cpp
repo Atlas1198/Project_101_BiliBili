@@ -216,12 +216,12 @@ void PlayerManager::UpdateOverride()
 	}
 
 	EventManager::GetInstance()->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
-		EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
 		m_pPlayer[0]->GetTeamID(), m_pPlayer[0]->GetPosition(), m_pPlayer[1]->GetPosition()
 	));
 
 	EventManager::GetInstance()->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
-		EventType::SET_BULLET_UI_POSITION, std::make_tuple(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
 		m_pPlayer[2]->GetTeamID(), m_pPlayer[2]->GetPosition(), m_pPlayer[3]->GetPosition()
 	));
 

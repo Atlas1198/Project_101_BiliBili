@@ -16,7 +16,7 @@ public:	//公開定数
 
 	static constexpr float DEFAULT_FOV = DirectX::XM_PIDIV4;	//デフォルトの垂直視野角
 	static constexpr float DEFAULT_NEAR_Z = 0.1f;				//デフォルトのニアクリップ距離
-	static constexpr float DEFAULT_FAR_Z = 100.0f;				//デフォルトのファークリップ距離
+	static constexpr float DEFAULT_FAR_Z = 200.0f;				//デフォルトのファークリップ距離
 
 public:	//公開メンバ関数
 	Camera() {};	//デフォルトコンストラクタ

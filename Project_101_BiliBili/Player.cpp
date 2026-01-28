@@ -1,9 +1,10 @@
 #include "Player.h"
 #include "Spring.h"
-#include <DirectXMath.h>
 #include "App.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include "SharedStruct.h"
+#include <DirectXMath.h>
 #include <algorithm> // clamp
 #include <cmath>
 
@@ -269,8 +270,6 @@ void Player::Move()
 		緑：テンキーの8456 + 右のPlusボタン
 	*/
 
-
-
 	bool up = m_pInputInfo->key.w.down;
 	bool down = m_pInputInfo->key.s.down;
 	bool left = m_pInputInfo->key.a.down;
@@ -280,31 +279,29 @@ void Player::Move()
 
 	if (!App::GetInstance()->isOnline)
 	{
+		auto myController = m_pInputInfo->controller[id];
+
 		switch (id)
 		{
 		case 0:
-			dir = m_pInputInfo->controller[0].leftStick;
 			up = m_pInputInfo->key.w.down;
 			down = m_pInputInfo->key.s.down;
 			left = m_pInputInfo->key.a.down;
 			right = m_pInputInfo->key.d.down;
 			break;
 		case 1:
-			dir = m_pInputInfo->controller[1].leftStick;
 			up = m_pInputInfo->key.t.down;
 			down = m_pInputInfo->key.g.down;
 			left = m_pInputInfo->key.f.down;
 			right = m_pInputInfo->key.h.down;
 			break;
 		case 2:
-			dir = m_pInputInfo->controller[2].leftStick;
 			up = m_pInputInfo->key.i.down;
 			down = m_pInputInfo->key.k.down;
 			left = m_pInputInfo->key.j.down;
 			right = m_pInputInfo->key.l.down;
 			break;
 		case 3:
-			dir = m_pInputInfo->controller[3].leftStick;
 			up = m_pInputInfo->key.up.down;
 			down = m_pInputInfo->key.down.down;
 			left = m_pInputInfo->key.left.down;
@@ -313,6 +310,26 @@ void Player::Move()
 		default:
 			break;
 		}
+
+		//コントローラー入力
+		//十字キー入力
+		XMFLOAT2 crossInput{ 0.0f, 0.0f };
+		if (myController.LEFT.down) crossInput.x = (std::max)(-1.0f, crossInput.x - 1.0f);
+		if (myController.RIGHT.down) crossInput.x = (std::min)(1.0f, crossInput.x + 1.0f);
+		if (myController.UP.down) crossInput.y = (std::min)(1.0f, crossInput.y + 1.0f);
+		if (myController.DOWN.down) crossInput.y = (std::max)(-1.0f, crossInput.y - 1.0f);
+		crossInput.x = Normalize({crossInput.x, crossInput.y, 0.0f}).x;
+		crossInput.y = Normalize({ crossInput.x, crossInput.y, 0.0f }).y;
+		//左スティック入力
+		XMFLOAT2 leftStickInput = { 0.0f, 0.0f };
+		const float DEAD_ZONE = 0.2f;
+		if (fabs(myController.leftStick.x) > DEAD_ZONE) leftStickInput.x = myController.leftStick.x;
+		if (fabs(myController.leftStick.y) > DEAD_ZONE) leftStickInput.y = myController.leftStick.y;
+		leftStickInput.x = Normalize({ leftStickInput.x, leftStickInput.y, 0.0f }).x;
+		leftStickInput.y = Normalize({ leftStickInput.x, leftStickInput.y, 0.0f }).y;
+		//合成(-1.0f～1.0fにクランプ)
+		dir.x = std::clamp(crossInput.x + leftStickInput.x, -1.0f, 1.0f);
+		dir.y = std::clamp(crossInput.y + leftStickInput.y, -1.0f, 1.0f);
 	}
 
 	float modifier = 1.0f;
