@@ -135,13 +135,13 @@ void GameScene::InitializeOverride(
 	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
 
-	m_directionalLight.direction = XMFLOAT3(-0.2f, -1.0f, 0.2f);
+	m_directionalLight.direction = XMFLOAT3(-0.2f, -1.0f, 0.4f);
 	m_directionalLight.intensity = 1.1f;
 	m_directionalLight.ambient = 0.1f;
 
-	m_pCamera->SetPosition({ 0.0f, 40.0f, -14.0f });
-	m_pCamera->SetTarget({ 0.0f, 00.0f, 4.0f });
-	m_pCamera->SetFov(XMConvertToRadians(38.0f));
+	m_pCamera->SetPosition({ 0.0f, 70.0f, -50.0f });
+	m_pCamera->SetTarget({ 0.0f, 00.0f, 3.5f });
+	m_pCamera->SetFov(XMConvertToRadians(20.0f));
 
 	m_pGameUIManager->StartFadeIn(0.01f); // ゲームシーンフェードイン
 }
@@ -249,6 +249,18 @@ void GameScene::CountdownUpdate()
 	const int FRAMES_PER_SECOND = 60;	//1秒あたりのフレーム数
 	const int COUNTDOWN_START = 30;		//カウントダウン開始フレーム数（1秒間）
 
+	auto eventManager = EventManager::GetInstance();
+	auto players = m_pPlayerManager->GetPlayers();
+
+	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
+			players[0]->GetTeamID(), players[0]->GetPosition(), players[1]->GetPosition()
+		));
+	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
+			players[2]->GetTeamID(), players[2]->GetPosition(), players[3]->GetPosition()
+		));
+
 	//カウントダウンタイマーの更新
 	m_timer++;
 
@@ -256,15 +268,13 @@ void GameScene::CountdownUpdate()
 	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
 	{// 1秒ごとにUIを更新
 		int second = (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND;
-		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_COUNT_UI, second);
+		eventManager->TriggerEvent(EventType::SHOW_COUNT_UI, second);
 
 		//残り１秒で弾UIを表示
 		const int showBulletUISecond = 1;
 		if (second == showBulletUISecond)
 		{
-			auto players = m_pPlayerManager->GetPlayers();
 			//弾UI表示イベントをトリガー
-			auto eventManager = EventManager::GetInstance();
 			eventManager->TriggerEvent<std::pair<int, bool>>(
 				EventType::SET_BULLET_UI_ACTIVE,
 				{ players[0]->GetTeamID(), true}
@@ -273,16 +283,9 @@ void GameScene::CountdownUpdate()
 				EventType::SET_BULLET_UI_ACTIVE,
 				{ players[2]->GetTeamID(), true}
 			);
-			//弾UI位置設定イベントをトリガー
-			eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
-				EventType::SET_BULLET_UI_POSITION, std::make_tuple(
-					players[0]->GetTeamID(), players[0]->GetPosition(), players[1]->GetPosition()
-				));
 
-			eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
-				EventType::SET_BULLET_UI_POSITION, std::make_tuple(
-					players[2]->GetTeamID(), players[2]->GetPosition(), players[3]->GetPosition()
-				));
+			//プレイヤーポインター画像非アクティブ化イベントをトリガー
+			eventManager->TriggerEvent(EventType::INACTIVATE_PLAYER_POINTER_IMAGES);
 		}
 	}
 

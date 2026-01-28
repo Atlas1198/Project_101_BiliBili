@@ -82,12 +82,6 @@ void Camera::SetFarZ(float farZ)
 	m_farZ = farZ;
 }
 
-//ビューモードを設定
-void Camera::SetViewMode(VIEW_MODE viewType)
-{
-	m_viewType = viewType;
-}
-
 //カメラ情報構造体を取得
 CameraInfo* Camera::GetCameraInfo()
 {

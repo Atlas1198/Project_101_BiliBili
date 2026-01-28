@@ -29,7 +29,7 @@ public:	//公開関数
 	) override;
 	void UpdateOverride() override;						//更新
 	void FinalizeOverride() override;					//終了
-	void SetBulletCountPosition(						//弾数UI位置設定関数
+	void SetPlayerChasingUIPosition(						//弾数UI位置設定関数
 		int teamID,									//チームID
 		const DirectX::XMFLOAT3& position1,		//弾数UI1位置
 		const DirectX::XMFLOAT3& position2		//弾数UI2位置
@@ -41,6 +41,8 @@ private:
 
 	BulletCountUI* m_pBulletCountUI1[2] = { nullptr }; //弾数UIポインタ
 	BulletCountUI* m_pBulletCountUI2[2] = { nullptr }; //弾数UIポインタ
+
+	UIImage* m_pPlayerPointerImage[4] = { nullptr }; //プレイヤーポインター画像UIポインタ配列
 
 	CutInUI* m_pCutInUI1 = nullptr; //カットインUIポインタ
 	CutInUI* m_pCutInUI2 = nullptr; //カットインUIポインタ
@@ -55,10 +57,11 @@ private:
 	void OnHPChanged(int teamID, float newHP);							//HP変更時の処理
 	void OnBulletCountChanged(int teamID, int newCount);				//弾数変更時の処理
 	void CallCutIn(int teamID, int characterIndex);						//カットイン呼び出し関数
-	void CountUIShow(int count);										//カウントUI表示関数
+	void ShowCountUI(int count);										//カウントUI表示関数
 	void ShowStartUI();													//スタートUI表示関数
 	void ShowFinishUI();												//フィニッシュUI表示関数
 	void HideCountUI();													//カウントUI非表示関数
 	void ShowResultUI(int winner, int character1ID, int character2ID);	//リザルトUI表示関数
 	void SetBulletCountActive(int teamID, bool isActive);				//弾数UIアクティブ設定関数
+	void InactivatePlayerPointerImages();								//プレイヤーポインター画像非アクティブ化関数
 };

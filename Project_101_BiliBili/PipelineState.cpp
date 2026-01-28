@@ -41,12 +41,17 @@ PipelineState::PipelineState(ID3D12Device* pDevice)
 
 	auto& rt0 = m_desc.BlendState.RenderTarget[0];				//レンダーターゲット0のブレンドステート設定
 	rt0.BlendEnable = TRUE;										//ブレンドを有効にする
+	rt0.LogicOpEnable = FALSE;										//ブレンドを有効にする
 	rt0.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;	//RGBA全てのチャンネルを書き込む
-	rt0.SrcBlend = D3D12_BLEND_SRC_ALPHA;						//ソースのブレンド係数
-	rt0.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;					//デスティネーションのブレンド係数
+	rt0.SrcBlend = D3D12_BLEND_ONE;						//ソースのブレンド係数
+	rt0.DestBlend = D3D12_BLEND_ONE;					//デスティネーションのブレンド係数
+	//rt0.SrcBlend = D3D12_BLEND_SRC_ALPHA;						//ソースのブレンド係数
+	//rt0.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;					//デスティネーションのブレンド係数
 	rt0.BlendOp = D3D12_BLEND_OP_ADD;							//ブレンド演算
-	rt0.SrcBlendAlpha = D3D12_BLEND_ONE;						//アルファ値のソースのブレンド係数
-	rt0.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;				//アルファ値のデスティネーションのブレンド係数
+	rt0.SrcBlendAlpha = D3D12_BLEND_ZERO;						//アルファ値のソースのブレンド係数
+	rt0.DestBlendAlpha = D3D12_BLEND_ONE;				//アルファ値のデスティネーションのブレンド係数
+	//rt0.SrcBlendAlpha = D3D12_BLEND_ONE;						//アルファ値のソースのブレンド係数
+	//rt0.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;				//アルファ値のデスティネーションのブレンド係数
 	rt0.BlendOpAlpha = D3D12_BLEND_OP_ADD;						//アルファ値のブレンド演算
 }
 

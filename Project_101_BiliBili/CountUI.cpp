@@ -180,9 +180,6 @@ void CountUI::UpdateNumberImage(UIImage& image, XMFLOAT3 baseSize)
 	float t = Clamp01(m_mainTimer / 60.0f);
 	t = EaseOutCubic(t);
 
-	float rotationZ = 0.0f;
-	rotationZ = Lerpf(-30.0f, 10.0f, t);
-
 	XMFLOAT3 scale = { 0.0f, 0.0f, 0.0f };
 	XMFLOAT3 startScale =
 	{
@@ -202,7 +199,7 @@ void CountUI::UpdateNumberImage(UIImage& image, XMFLOAT3 baseSize)
 		Transform3D(
 			image.GetLocalTransform().position,
 			scale,
-			DirectX::XMFLOAT3{ 0.0f, 0.0f, rotationZ }
+			image.GetLocalTransform().rotation
 		)
 	);
 }
