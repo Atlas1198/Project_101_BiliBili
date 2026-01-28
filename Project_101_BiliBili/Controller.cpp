@@ -191,6 +191,9 @@ void Controller::UpdateStickState(ControllerState& contState, ControllerInputInf
 {
 	XINPUT_GAMEPAD& pad = contState.state.Gamepad;	//Get current gamepad state
 
+	inputInfo.leftStickPast = inputInfo.leftStick;		//Store previous left stick state
+	inputInfo.rightStickPast = inputInfo.rightStick;	//Store previous right stick state
+
 	// Process left and right stick inputs with deadzone handling
 	inputInfo.leftStick = ProcessStickInput(
 		pad.sThumbLX,

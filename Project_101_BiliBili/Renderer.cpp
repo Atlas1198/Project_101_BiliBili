@@ -210,9 +210,9 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 	//スクリーンプロジェクション行列の更新
 	m_screenProj = XMMatrixOrthographicLH(
 		(int)App::WINDOW_WIDTH,	//画面幅
-		(int)App::WINDOW_HEIGHT,	//画面高さ
-		0.0f,									//ニアクリップ距離
-		1.0f);									//ファークリップ距離
+		(int)App::WINDOW_HEIGHT,//画面高さ
+		0.0f,					//ニアクリップ距離
+		1.0f);					//ファークリップ距離
 }
 
 //描画
