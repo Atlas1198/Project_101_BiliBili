@@ -113,10 +113,21 @@ struct PlayerInfo
 	int characterID = -1;	//キャラクターID
 };
 
+//ステージ種別列挙体
+enum class STAGE_TYPE
+{
+	STATGE_GREEN,
+	STATGE_RED,
+	STATGE_BULE,
+	STAGE_MAX,
+	STAGE_NONE
+};
+
 //シーンコンテキスト構造体
 struct SceneContext
 {
-	PlayerInfo playersInfo[4];	//プレイヤー情報配列
+	PlayerInfo playersInfo[4];						//プレイヤー情報配列
+	STAGE_TYPE stageType = STAGE_TYPE::STAGE_NONE;	//選択ステージ種別
 };
 
 //タグ列挙体
@@ -142,6 +153,7 @@ enum class SCENE_TYPE
 	SCENE_NONE = 0,		//シーン無し
 	SCENE_TITLE,		//タイトルシーン
 	SCENE_CONTROLLER,	//コントローラー設定シーン
+	SCENE_STAGE,		//ステージ選択シーン
 	SCENE_CHARACTER,	//キャラクター選択シーン
 	SCENE_GAME,			//ゲームシーン
 	SCENE_RESULT,		//リザルトシーン

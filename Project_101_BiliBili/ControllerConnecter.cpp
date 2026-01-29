@@ -28,7 +28,7 @@ void ControllerConnecter::Update(InputManager& inputManager)
 		{
 			//キャラクター選択シーンへの遷移イベント発行
 			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
-				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CHARACTER);
+				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_STAGE);
 		}
 	}
 	else
@@ -71,7 +71,7 @@ void ControllerConnecter::Update(InputManager& inputManager)
 			{//いずれかのコントローラーでL+R同時押し検知
 				//キャラクター選択シーンへの遷移イベント発行
 				EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
-					EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CHARACTER);
+					EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_STAGE);
 			}
 			else
 			{//それ以外の入力処理

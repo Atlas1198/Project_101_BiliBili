@@ -11,6 +11,7 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 {
 	m_pTitleScene = new TitleScene(windowWidth, windowHeight);				//タイトルシーンクラスの生成
 	m_pControllerScene = new ControllerScene(windowWidth, windowHeight);	//コントローラーシーンクラスの生成
+	m_pStageScene = new StageScene(windowWidth, windowHeight);				//ステージ選択シーンクラスの生成
 	m_pCharacterScene = new CharacterScene(windowWidth, windowHeight);		//キャラクターシーンクラスの生成
 	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ゲームシーンクラスの生成
 
@@ -23,6 +24,7 @@ SceneManager::~SceneManager()
 {
 	delete m_pTitleScene;
 	delete m_pControllerScene;
+	delete m_pStageScene;
 	delete m_pCharacterScene;
 	delete m_pGameScene;
 }
@@ -88,6 +90,10 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 
 	case SCENE_TYPE::SCENE_CONTROLLER:
 		m_pCurrentScene = m_pControllerScene;
+		break;
+
+	case SCENE_TYPE::SCENE_STAGE:
+		m_pCurrentScene = m_pStageScene;
 		break;
 
 	case SCENE_TYPE::SCENE_CHARACTER:
