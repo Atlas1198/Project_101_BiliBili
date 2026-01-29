@@ -12,55 +12,62 @@ class Player;
 class GameUIManager;
 class CollisionManager;
 
-//BBマネージャークラス
 class BBManager : public ObjectManagerBase
 {
 public:
-	static constexpr int BB_NUM = 2; //BBの数
+	static constexpr int BB_NUM = 2;
 	static constexpr int BB_AREA_NUM = 4;
 	const wchar_t* lineBBTexPath = L"asset/texture/line.png";
 	const wchar_t* electricityBBTexPath = L"asset/texture/effect/bilibili.png";
 
+	const wchar_t* electricityBBRedTexPath = L"asset/texture/effect/line_R_EF.png";
+	const wchar_t* electricityBBBlueTexPath = L"asset/texture/effect/line_B_EF.png";
+
+	const wchar_t* areaBBRedTexPath = L"asset/texture/effect/circle_R_EF.png";
+	const wchar_t* areaBBBlueTexPath = L"asset/texture/effect/circle_B_EF.png";
+
 	inline static float BB_DURATION = 5.0f;
 
 public:
-	BBManager();		//コンストラクタ
-	~BBManager();	//デストラクタ
-	//メイン処理関数
-	void InitializeOverride(	//初期化
+	BBManager();
+	~BBManager();
+	
+	void InitializeOverride(
 		InputManager* pInputManager,
 		TextureManager& textureManager,
 		MeshManager& meshManager,
 		CollisionManager& collisionManager
 	) override;
-	void UpdateOverride() override;					//更新
-	void SubmitDrawsOverride(Renderer& renderer) override;		//描画要求提出
-	void ResolveCollisionsOverride() override;		//衝突解決
-	void FinalizeOverride() override;					//終了
 
-	void SetPlayerData(std::vector<Player*>& players);				//プレイヤー情報の設定
-	void SetGameUIManager(GameUIManager* pUIManager);				//UIマネージャーの設定
-	void SetCollisionManager(CollisionManager* pCollisionManager);	//衝突マネージャーの設定
-	void SetBB(int teamID, bool activate);						//BBの発動・無効化設定
-	void OnItemPickup(int teamID);								//アイテム取得コールバック
+	void UpdateOverride() override;
+	void SubmitDrawsOverride(Renderer& renderer) override;
+	void ResolveCollisionsOverride() override;
+	void FinalizeOverride() override;
+
+	void SetPlayerData(std::vector<Player*>& players);
+	void SetGameUIManager(GameUIManager* pUIManager);
+	void SetCollisionManager(CollisionManager* pCollisionManager);
+	void SetBB(int teamID, bool activate);
+	void OnItemPickup(int teamID);
 
 private:
-	BB* m_BB[BB_NUM] = { nullptr }; //BB配列
+	BB* m_BB[BB_NUM] = { nullptr };
 	BilibiliArea *m_BBAreas[BB_AREA_NUM] = { nullptr };
-	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBライン描画情報
-	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
-	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BBエリア描画情報
 
-	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
+	std::vector<WorldRenderInfo> m_LineBBInfo;
+	std::vector<WorldRenderInfo> m_ElectricityBBRedInfo;
+	std::vector<WorldRenderInfo> m_ElectricityBBBlueInfo;
+	std::vector<WorldRenderInfo> m_BBAreaRedInfo;
+	std::vector<WorldRenderInfo> m_BBAreaBlueInfo;
+	float m_BBTimer[BB_NUM] = { 0.0f };
 	FrameTimer m_frameTimer[BB_NUM];
 	FrameTimer bbAreaStartEventTimer;
 
-	std::vector<int> m_activationCalledBBIndex; //BB�����R�}���h(�C���f�b�N�X�w��)
-
-	GameUIManager* m_pUIManager = nullptr; //UIマネージャーへのポインタ
-	CollisionManager* m_pCollisionManager = nullptr; //衝突マネージャーへのポインタ
+	std::vector<int> m_activationCalledBBIndex; 
+	GameUIManager* m_pUIManager = nullptr;
+	CollisionManager* m_pCollisionManager = nullptr;
 private:
-	void PrepareRenderInfo(	//BB描画情報生成
+	void PrepareRenderInfo(
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	) override;
