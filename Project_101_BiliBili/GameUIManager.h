@@ -8,6 +8,7 @@
 #include "CutInUI.h"
 #include "CountUI.h"
 #include "ResultUI.h"
+#include "EventAnounceUI.h"
 
 //ゲームUI管理クラス
 class GameUIManager : public UIManagerBase
@@ -50,6 +51,8 @@ private:
 	UIImage* m_pOperationGuideImage = nullptr; //操作ガイド画像UIポインタ
 
 	CountUI* m_pCountUI = nullptr; //カウントUIポインタ
+
+	EventAnounceUI* m_pEventAnounceUI = nullptr; //イベントアナウンスUIポインタ
 
 	ResultUI* m_pResultUI = nullptr; //リザルトUIポインタ
 	

@@ -40,6 +40,7 @@ enum EventType
 	SET_PLAYER_CHASING_UI_POSITION, // int teamID, XMFLOAT3 position1, XMFLOAT3 position2
 	SET_BULLET_UI_ACTIVE, // int teamID, bool isActive
 	INACTIVATE_PLAYER_POINTER_IMAGES, // void
+	SHOW_ANOUNCE_UI, // EventType eventType
 
 	//ランダムイベント
 	EVENT_BULLET_SPEED, // void
