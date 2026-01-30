@@ -30,10 +30,17 @@ Bullet::Bullet(
 {
     SetActive(true);
 
+	const XMFLOAT3 COLLIDER_SCALE =
+    {
+        m_scale.x * 0.6f,
+        m_scale.y * 0.6f,
+		m_scale.z * 0.6f
+    };
+
     m_pColliderSet->AddCollider(
         ColliderType::SPHERE,
         XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(2.5f, 2.5f, 2.5f),
+        COLLIDER_SCALE,
         XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 

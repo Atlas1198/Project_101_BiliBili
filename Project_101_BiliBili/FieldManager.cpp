@@ -694,12 +694,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX					//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -711,12 +705,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,							//アクティブフラグ
 				ColliderType::BOX					//コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -730,12 +718,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX					//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -747,12 +729,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,							//アクティブフラグ
 				ColliderType::BOX					//コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -766,12 +742,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX					//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -783,12 +753,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,							//アクティブフラグ	
 				ColliderType::BOX					//コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -802,12 +766,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX					//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -819,12 +777,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,							//アクティブフラグ	
 				ColliderType::BOX					//コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -838,12 +790,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX					//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -855,12 +801,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,							//アクティブフラグ	
 				ColliderType::BOX					//コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -874,12 +814,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX					//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -891,12 +825,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,							//アクティブフラグ	
 				ColliderType::BOX					//コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		//-------------
@@ -1743,12 +1671,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX				//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -1760,12 +1682,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,							//アクティブフラグ
 				ColliderType::BOX				//コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -1779,12 +1695,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX				//コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -1796,12 +1706,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,						  //アクティブフラグ
 				ColliderType::BOX			  //コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.4f, 1.0f, 0.4f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -1815,12 +1719,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX			  //コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.4f, 1.0f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWallPasses.push_back(
 			new WallPass(
@@ -1832,12 +1730,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,						 //アクティブフラグ
 				ColliderType::BOX			 //コライダータイプ
 			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWallPasses.push_back(
@@ -1851,12 +1743,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX			 //コライダータイプ
 			)
 		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
 		m_pWalls.push_back(
 			new Wall(
@@ -1868,12 +1754,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,						  //アクティブフラグ
 				ColliderType::BOX			  //コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.1f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 
 		m_pWalls.push_back(
@@ -1887,13 +1767,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				ColliderType::BOX			  //コライダータイプ
 			)
 		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.1f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
 
 		m_pWalls.push_back(
 			new Wall(
@@ -1905,12 +1778,6 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 				true,						  //アクティブフラグ
 				ColliderType::BOX			  //コライダータイプ
 			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.1f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
 		);
 		break;
 
