@@ -59,31 +59,44 @@ void EventAnounceUI::UpdateOverride()
 		{
 
 			const int BLINK_COUNT = 3;
-			if (m_blinkCount < BLINK_COUNT)
-			{
-				const float ALPHA_DECREMENT = 0.07f;
-				auto color = child->GetColor();
-				if (color.w == 1.0f)
+			auto color = child->GetColor();
+			if (m_timer <= DISPLAY_TIME)
+			{//表示時間内は点滅処理
+				if (m_blinkCount < BLINK_COUNT)
 				{
-					//点滅音再生
+					const float ALPHA_DECREMENT = 0.06f;
+					if (color.w == 1.0f)
+					{
+						//点滅音再生
+					}
+					color.w -= ALPHA_DECREMENT;
+					if (color.w < 0.0f)
+					{
+						color.w = 1.0f;
+						m_blinkCount++;
+					}
+					child->SetColor(color);
 				}
-				color.w -= ALPHA_DECREMENT;
+				else
+				{
+					//点滅終了後は不透明に戻す
+					auto color = child->GetColor();
+					color.w = 1.0f;
+					child->SetColor(color);
+				}
+			}
+			else
+			{//表示時間経過後はフェードアウト
+				const float ALPHA_INCREMENT = 0.03f;
+				color.w -= ALPHA_INCREMENT;
+				child->SetColor(color);
 				if (color.w < 0.0f)
 				{
 					color.w = 1.0f;
-					m_blinkCount++;
+					child->SetColor(color);
+					child->SetActive(false);
 				}
-				child->SetColor(color);
 			}
-			else
-			{
-				//点滅終了後は不透明に戻す
-				auto color = child->GetColor();
-				color.w = 1.0f;
-				child->SetColor(color);
-			}
-
-			if(m_timer > DISPLAY_TIME) child->SetActive(false);
 		}
 	}
 }
@@ -111,4 +124,5 @@ void EventAnounceUI::ShowAnounce(EventType type)
 	}
 
 	m_timer = 0;
+	m_blinkCount = 0;
 }
