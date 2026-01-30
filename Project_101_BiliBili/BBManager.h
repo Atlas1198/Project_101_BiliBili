@@ -25,9 +25,9 @@ public:
 
 public:
 	BBManager();		//コンストラクタ
-	~BBManager();	//デストラクタ
-	//メイン処理関数
-	void InitializeOverride(	//初期化
+	~BBManager();	//チE��トラクタ
+	//メイン処琁E��数
+	void InitializeOverride(	//初期匁E
 		InputManager* pInputManager,
 		TextureManager& textureManager,
 		MeshManager& meshManager,
@@ -36,31 +36,31 @@ public:
 	void UpdateOverride() override;					//更新
 	void SubmitDrawsOverride(Renderer& renderer) override;		//描画要求提出
 	void ResolveCollisionsOverride() override;		//衝突解決
-	void FinalizeOverride() override;					//終了
+	void FinalizeOverride() override;					//終亁E
 
-	void SetPlayerData(std::vector<Player*>& players);				//プレイヤー情報の設定
-	void SetGameUIManager(GameUIManager* pUIManager);				//UIマネージャーの設定
-	void SetCollisionManager(CollisionManager* pCollisionManager);	//衝突マネージャーの設定
-	void SetBB(int teamID, bool activate);						//BBの発動・無効化設定
-	void OnItemPickup(int teamID);								//アイテム取得コールバック
+	void SetPlayerData(std::vector<Player*>& players);				//プレイヤー惁E��の設宁E
+	void SetGameUIManager(GameUIManager* pUIManager);				//UIマネージャーの設宁E
+	void SetCollisionManager(CollisionManager* pCollisionManager);	//衝突�Eネ�Eジャーの設宁E
+	void SetBB(int teamID, bool activate);						//BBの発動�E無効化設宁E
+	void OnItemPickup(int teamID);								//アイチE��取得コールバック
 
 private:
-	BB* m_BB[BB_NUM] = { nullptr }; //BB配列
+	BB* m_BB[BB_NUM] = { nullptr }; //BB配�E
 	BilibiliArea *m_BBAreas[BB_AREA_NUM] = { nullptr };
-	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBライン描画情報
-	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB電気描画情報
-	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BBエリア描画情報
+	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBライン描画惁E��
+	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB電気描画惁E��
+	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BBエリア描画惁E��
 
-	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマー
+	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマ�E
 	FrameTimer m_frameTimer[BB_NUM];
 	FrameTimer bbAreaStartEventTimer;
 
 	std::vector<int> m_activationCalledBBIndex; //BB�����R�}���h(�C���f�b�N�X�w��)
 
 	GameUIManager* m_pUIManager = nullptr; //UIマネージャーへのポインタ
-	CollisionManager* m_pCollisionManager = nullptr; //衝突マネージャーへのポインタ
+	CollisionManager* m_pCollisionManager = nullptr; //衝突�Eネ�Eジャーへのポインタ
 private:
-	void PrepareRenderInfo(	//BB描画情報生成
+	void PrepareRenderInfo(	//BB描画惁E��生�E
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	) override;

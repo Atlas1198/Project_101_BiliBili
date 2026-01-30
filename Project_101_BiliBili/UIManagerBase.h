@@ -14,6 +14,14 @@ class Renderer;
 class TextureManager;
 class MeshManager;
 
+enum class FADE_STATE
+{
+	FADE_NONE = 0,	//フェードなし
+	FADE_IN,		//フェードイン
+	FADE_OUT,		//フェードアウト
+	FADE_COMPLETE	//フェード完了
+};
+
 //UI管理クラス
 class UIManagerBase
 {
@@ -41,10 +49,10 @@ public:	//公開関数
 	void Finalize();										//終了
 
 	//フェード関連関数
-	void StartFadeIn(float duration);	//フェードイン開始
-	void StartFadeOut(float duration);	//フェードアウト開始
-	bool IsFading() const;				//フェード中かどうかを取得
-	bool IsFadeEnd() const;				//フェード終了かどうかを取得
+	void StartFadeIn(float duration, int delay = 0);	//フェードイン開始
+	void StartFadeOut(float duration, int delay = 0);	//フェードアウト開始
+	bool IsFading();				//フェード中かどうかを取得
+	bool IsFadeEnd();				//フェード終了かどうかを取得
 
 protected:
 	virtual void InitializeOverride(							//初期化(派生クラスでオーバーライド)
@@ -69,10 +77,11 @@ protected:
 	float m_screenWidth = 0.0f;	//画面幅
 	float m_screenHeight = 0.0f;	//画面高さ
 
-	UIImage* m_pFadeImage = nullptr; //フェード画像UIポインタ
-	bool m_isFading = false;		//フェード中フラグ
-	bool m_isFadeEnd = false;		//フェード終了フラグ
-	float m_fadeDuration = 0.0f;	//フェード時間
+	UIImage* m_pFadeImage = nullptr;				//フェード画像UIポインタ
+	float m_fadeDuration = 0.0f;					//フェード時間
+	float m_fadeDelay = 0.0f;						//フェード遅延時間
+	int m_fadeTimer = 0;							//フェードタイマー
+	FADE_STATE m_fadeState = FADE_STATE::FADE_NONE; //フェード状態
 
 	CameraInfo* m_pCameraInfo = nullptr;		//カメラ情報構造体参照
 

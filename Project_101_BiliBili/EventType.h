@@ -19,6 +19,9 @@ enum EventType
 	CONTROLLER_CONNECTED, // int controllerIndex
 	CONTROLLER_ICON_REACTION, // int controllerIndex, InputInfo inputInfo
 
+	//ステージ選択画面関連イベント
+	CHANGE_STAGE_UI, // STAGE_TYPE stageType
+
 	//キャラクター選択画面関連イベント
 	CHARACTER_ICON_MOVE, // int playerIndex, DIRECTION direction
 	SHOW_SELECTED_ICON, // int playerIndex
