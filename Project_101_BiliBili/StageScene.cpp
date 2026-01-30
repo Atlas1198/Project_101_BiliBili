@@ -50,7 +50,18 @@ void StageScene::UpdateOverride()
 	m_pUIManager->Update();
 
 	//選択完了後処理
-	if (m_pStageSelector->IsSelected())
+	if (!m_pUIManager->IsFading())
+	{
+		if (m_pStageSelector->IsSelected())
+		{
+			m_pUIManager->StartFadeOut(0.05f, 60);	//1秒後にフェードアウト開始
+			m_pUIManager->StartSelectAnimation();	//ステージ選択アニメーション開始
+
+			//↓↓↓選択時サウンド再生↓↓↓
+		}
+	}
+
+	if (m_pUIManager->IsFadeEnd())
 	{
 		//ゲームシーンへの遷移イベント発行
 		EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(

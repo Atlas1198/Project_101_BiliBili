@@ -17,7 +17,8 @@ public:
 	{};	//コンストラクタ
 	~StageUIManager();	//デストラクタ
 
-	void ChangeStageUI(STAGE_TYPE stageType); //ステージUI変更関数
+	void ChangeStageUI(STAGE_TYPE stageType);	//ステージUI変更関数
+	void StartSelectAnimation();						//ステージ選択アニメーション開始関数
 
 private:
 	UIImage* m_pBackGround[STAGE_NUM] { nullptr };
@@ -30,9 +31,12 @@ private:
 	UIImage* m_pNameBack = nullptr;
 
 	float m_explanationDestinationX = 0.0f;
+	DirectX::XMFLOAT3 m_explanationOriginalPosition{ 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 m_nameBackOriginalScale{ 1.0f, 1.0f, 1.0f };
 
 	int m_timer = 0;
+	int m_selectAnimationTimer = 0;
+	bool m_isSelectAnimationStarted = false;
 
 private:
 	//メイン処理関数

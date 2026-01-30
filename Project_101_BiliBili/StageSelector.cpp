@@ -30,16 +30,18 @@ void StageSelector::Update(
 	//コントローラー入力取得
 	for (int i = 0; i < CONTROLLERS_MAX; i++)
 	{
+		auto controller = input.controller[i];
+
 		//決定(B)
-		select = input.controller->B.trigger;
+		select |= controller.B.trigger;
 
 		//カーソル操作
 		//十字キー
-		left |= input.controller->LEFT.trigger;
-		right |= input.controller->RIGHT.trigger;
+		left |= controller.LEFT.trigger;
+		right |= controller.RIGHT.trigger;
 		//コントローラー
-		float leftStickX = input.controller->leftStick.x;
-		float leftStickPastX = input.controller->leftStickPast.x;
+		float leftStickX = controller.leftStick.x;
+		float leftStickPastX = controller.leftStickPast.x;
 		if (fabs(leftStickX) < DEAD_ZONE || fabs(leftStickPastX) >= DEAD_ZONE) continue;	//トリガー入力なし
 		left = leftStickX < 0.0f;
 		right = leftStickX > 0.0f;
@@ -60,6 +62,7 @@ void StageSelector::Update(
 	}
 	m_cursor = m_cursor % static_cast<int>(STAGE_TYPE::STAGE_MAX);
 
+	//カーソル位置が変化した場合
 	if(m_cursor != m_previousCursor)
 	{
 		//ステージUI変更イベント発行
@@ -67,6 +70,9 @@ void StageSelector::Update(
 			EventType::CHANGE_STAGE_UI,
 			static_cast<STAGE_TYPE>(m_cursor)
 		);
+
+		//↓↓↓マップ切替時サウンド再生↓↓↓
+
 	}
 
 	//決定処理
