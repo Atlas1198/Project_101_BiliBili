@@ -66,11 +66,63 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dist(1, 5);
+	std::uniform_int_distribution<> dist(1, 7);
 
 	int Stagenum = dist(gen);
 
-	Stagenum = 2;
+	//Stagenum = 7; //テスト用
+
+	//==============================
+   // 共通ヘルパ
+   //==============================
+
+	auto Walls = [&](const XMFLOAT3& pos, const XMFLOAT3& rotate)
+	{
+		auto* w = new Wall(
+			MESH_TYPE::CUBE,
+			pos,
+			rotate,
+			XMFLOAT3(1.0f, 1.0f, 1.0f),
+			XMFLOAT3(0, 0, 0),
+			true,
+			ColliderType::BOX
+		);	
+		m_pWalls.push_back(w);
+	};
+
+	auto WallPasses = [&](const XMFLOAT3& pos)
+	{
+		auto* wp = new WallPass(
+			MESH_TYPE::CUBE,
+			pos,
+			XMFLOAT3(0.0f, 0.0f, 0.0f),
+			XMFLOAT3(1.0f, 0.0f, 1.0f),
+			XMFLOAT3(0, 0, 0),
+			true,
+			ColliderType::BOX
+		);
+		m_pWallPasses.push_back(wp);
+	};
+
+	auto Springs = [&](const XMFLOAT3& pos, const std::vector<XMFLOAT3>& targets, bool random)
+	{
+		auto* sp = new Spring(
+			MESH_TYPE::CUBE,
+			pos,//位置
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+			XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
+			XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+			XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
+			true,					  //アクティブフラグ
+			ColliderType::BOX			  //コライダータイプ
+		);
+		m_pSprings.push_back(sp);
+
+		m_pSprings.back()->SetLaunchTargets({
+			targets
+			}, random);
+	};
+
 
 	m_pWallPasses.push_back(
 		new WallPass(
@@ -80,7 +132,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(2.0f, 10.0f, 30.0f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 			true,						 //アクティブフラグ
-			ColliderType::BOX			 //コライダータイプ
+			ColliderType::BOX,			 //コライダータイプ
+			false
 		)
 	);
 	m_pWallPasses.back()->GetColliderSet()->AddCollider(
@@ -98,7 +151,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(2.0f, 10.0f, 30.0f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 			true,						 //アクティブフラグ
-			ColliderType::BOX			 //コライダータイプ
+			ColliderType::BOX,			 //コライダータイプ
+			false
 		)
 	);
 	m_pWallPasses.back()->GetColliderSet()->AddCollider(
@@ -116,7 +170,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(48.0f, 10.0f, 2.0f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 			true,						 //アクティブフラグ
-			ColliderType::BOX			 //コライダータイプ
+			ColliderType::BOX,			 //コライダータイプ
+			false
 		)
 	);
 	m_pWallPasses.back()->GetColliderSet()->AddCollider(
@@ -134,7 +189,8 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 			XMFLOAT3(48.0f, 10.0f, 2.0f),//スケール
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
 			true,						 //アクティブフラグ
-			ColliderType::BOX			 //コライダータイプ
+			ColliderType::BOX,			 //コライダータイプ
+			false
 		)
 	);
 	m_pWallPasses.back()->GetColliderSet()->AddCollider(
@@ -192,972 +248,135 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//バネ
 		//-------------
 
-		m_pSprings.push_back(
-				new Spring(
-					MESH_TYPE::CUBE,
-					XMFLOAT3(24.0f, -6.0f, 18.5f),//位置
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-					XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-					XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-					XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
-					true,					  //アクティブフラグ
-					ColliderType::BOX			  //コライダータイプ
-				)
-			);
-		// 4地点ランダム	
-		m_pSprings.back()->SetLaunchTargets({
+		Springs(
+			XMFLOAT3(23.0f, -6.0f, 17.5f),
+			std::vector<XMFLOAT3>{
 			XMFLOAT3(1.0f, -4.0f, 12.0f),
 			XMFLOAT3(0.0f, -4.0f, -1.0f),
 			XMFLOAT3(-9.0f, -4.0f, 3.0f),
-			XMFLOAT3(14.0f, -4.0f, -5.0f),
-			}, true);	
-		
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-22.0f, -6.0f, -0.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+			XMFLOAT3(14.0f, -4.0f, -5.0f), },
+			true
 		);
-		// 4地点ランダム
-		m_pSprings.back()->SetLaunchTargets({
+
+		Springs(
+			XMFLOAT3(-22.0f, -6.0f, -0.5f),
+			std::vector<XMFLOAT3>{
 			XMFLOAT3(-14.0f, -4.0f, 16.0f),
 			XMFLOAT3(7.0f, -4.0f, 2.0f),
 			XMFLOAT3(-7.0f, -4.0f, -3.0f),
-			XMFLOAT3(12.0f, -4.0f, 7.0f),
-			}, true);
+			XMFLOAT3(12.0f, -4.0f, 7.0f), },
+			true
+		);
 
 		//-------------
 		//壁
 		//-------------
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-10.0f, -5.0f, 13.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-12.5f, -5.0f, 13.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-15.0f, -5.0f, 13.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		///////////////////////////////////
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-19.0f, -5.0f, -3.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-19.0f, -5.0f, -0.5f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-19.0f, -5.0f, 2.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		///////////////////////////////////
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(10.0f, -5.0f, -3.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(12.5f, -5.0f, -3.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(15.0f, -5.0f, -3.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		///////////////////////////////////
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(19.0f, -5.0f, 13.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(19.0f, -5.0f, 10.5f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(19.0f, -5.0f, 8.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		///////////////////////////////////
+		Walls(XMFLOAT3(-10.0f, -5.0f, 13.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-12.5f, -5.0f, 13.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-15.0f, -5.0f, 13.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+			
+		Walls(XMFLOAT3(-19.0f, -5.0f, -3.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(-19.0f, -5.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(-19.0f, -5.0f, 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+			
+		Walls(XMFLOAT3(10.0f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(12.5f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(15.0f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+			
+		Walls(XMFLOAT3(19.0f, -5.0f, 13.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(19.0f, -5.0f, 10.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(19.0f, -5.0f, 8.0f) , XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		//-------------
 		//穴
 		//-------------
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(4.0f, -5.5f, -2.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(1.5f, -5.5f, -2.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		///////////////////////////////////
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(7.0f, -5.5f, 10.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(4.0f, -5.5f, -2.0f));
+		WallPasses(XMFLOAT3(1.5f, -5.5f, -2.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(7.0f, -5.5f, 7.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(7.0f, -5.5f, 10.0f));
+		WallPasses(XMFLOAT3(7.0f, -5.5f, 7.5f));
+		WallPasses(XMFLOAT3(7.0f, -5.5f, 5.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(7.0f, -5.5f, 5.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		///////////////////////////////////
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-4.0f, -5.5f, 12.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(-4.0f, -5.5f, 12.0f));
+		WallPasses(XMFLOAT3(-1.5f, -5.5f, 12.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-1.5f, -5.5f, 12.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		///////////////////////////////////
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-7.0f, -5.5f, 5.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(-7.0f, -5.5f, 5.0f));
+		WallPasses(XMFLOAT3(-7.0f, -5.5f, 2.5f));
+		WallPasses(XMFLOAT3(-7.0f, -5.5f, 0.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-7.0f, -5.5f, 2.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-7.0f, -5.5f, 0.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 		break;
 	case 2:	//赤基盤
 		//-------------
 		//バネ
 		//-------------
 
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -6.0f, 17.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		// 4地点ランダム	
-		m_pSprings.back()->SetLaunchTargets({
+		Springs(
+			XMFLOAT3(0.0f, -6.0f, 17.5f),
+			std::vector<XMFLOAT3>{
 			XMFLOAT3(-6.0f, -4.0f, 14.0f),
 			XMFLOAT3(6.0f, -4.0f, 14.0f),
 			XMFLOAT3(-17.0f, -4.0f, -4.0f),
-			XMFLOAT3(17.0f, -4.0f, 13.5f),
-			}, true);
-
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -6.0f, -8.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+			XMFLOAT3(17.0f, -4.0f, 13.5f), },
+			true
 		);
-		// 4地点ランダム
-		m_pSprings.back()->SetLaunchTargets({
+
+		Springs(
+			XMFLOAT3(0.0f, -6.0f, -8.0f),
+			std::vector<XMFLOAT3>{
 			XMFLOAT3(-6.0f, -4.0f, -4.5f),
 			XMFLOAT3(6.0f, -4.0f, -4.5f),
 			XMFLOAT3(-10.0f, -4.0f, 5.0f),
-			XMFLOAT3(10.0f, -4.0f, 9.0f),
-			}, true);
+			XMFLOAT3(10.0f, -4.0f, 9.0f), },
+			true
+		);
 
 		//-------------
 		//壁
 		//-------------
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -5.0f, 15.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -5.0f, -5.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(0.0f, -5.0f, 15.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(0.0f, -5.0f, -5.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-10.0f, -5.0f, -8.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-10.0f, -5.0f, -8.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(10.0f, -5.0f, 17.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(10.0f, -5.0f, 17.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-14.0f, -5.0f, -2.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(14.0f, -5.0f, 11.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-14.0f, -5.0f, -2.0f),//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-11.0f, -5.5f, 10.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(11.0f, -5.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(14.0f, -5.0f, 11.5f),//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ	
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-13.5f, -5.0f, 7.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(13.5f, -5.0f, 2.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -5.5f, 10.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ	
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -5.0f, -0.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ	
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-13.5f, -5.0f, 7.5f),//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ	
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(13.5f, -5.0f, 2.0f),//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ	
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -5.0f, 7.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ	
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -5.0f, 2.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ	
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-5.0f, -5.0f, 7.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(5.0f, -5.0f, 2.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		//-------------
 		//穴
 		//-------------
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-23.0f, -5.5f, 2.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-20.5f, -5.5f, 2.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
-		/////////////////////////////////////////
+		WallPasses(XMFLOAT3(-23.0f, -5.5f, 2.0f));
+		WallPasses(XMFLOAT3(-20.5f, -5.5f, 2.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(23.0f, -5.5f, 8.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(20.5f, -5.5f, 8.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(23.0f, -5.5f, 8.0f));
+		WallPasses(XMFLOAT3(20.5f, -5.5f, 8.0f));
 
-		/////////////////////////////////////////////
+		WallPasses(XMFLOAT3(-18.0f, -5.5f, 12.5f));
+		WallPasses(XMFLOAT3(18.0f, -5.5f, -3.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-18.0f, -5.5f, 12.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(-11.0f, -5.5f, 12.5f));
+		WallPasses(XMFLOAT3(-11.0f, -5.5f, 15.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(18.0f, -5.5f, -3.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(11.0f, -5.5f, -3.0f));
+		WallPasses(XMFLOAT3(11.0f, -5.5f, -5.5f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -5.5f, 12.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(-5.0f, -5.5f, 5.0f));
+		WallPasses(XMFLOAT3(-5.0f, -5.5f, 2.5f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -5.5f, 15.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -5.5f, -3.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -5.5f, -5.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		////////////////////////////////////////////////////////
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -5.5f, 5.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-5.0f, -5.5f, 2.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		/////////////////////////////////////////
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -5.5f, 5.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(5.0f, -5.5f, 7.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		//////////////////////////////////////////
+		WallPasses(XMFLOAT3(5.0f, -5.5f, 5.0f));
+		WallPasses(XMFLOAT3(5.0f, -5.5f, 7.5f));
 
 		break;
 	case 3: //あお基盤
@@ -1165,753 +384,657 @@ void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManage
 		//バネ
 		//-------------
 
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -6.0f, 17.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+		Springs(
+			XMFLOAT3(-15.0f, -6.0f, 17.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 14.0f),
+			XMFLOAT3(14.0f, -4.0f, 2.0f), },
+			true
 		);
-		// 4地点ランダム	
-		m_pSprings.back()->SetLaunchTargets({
-			XMFLOAT3(-6.0f, -4.0f, 14.0f),
-			XMFLOAT3(6.0f, -4.0f, 14.0f),
-			XMFLOAT3(-17.0f, -4.0f, -4.0f),
-			XMFLOAT3(17.0f, -4.0f, 13.5f),
-			}, true);
 
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -6.0f, -8.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(-13.0f, -4.0f, 18.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+		Springs(
+			XMFLOAT3(15.0f, -6.0f, -8.0f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, -4.5f),
+			XMFLOAT3(-12.0f, -4.0f, 7.5f), },
+			true
 		);
-		// 4地点ランダム
-		m_pSprings.back()->SetLaunchTargets({
-			XMFLOAT3(-6.0f, -4.0f, -4.5f),
-			XMFLOAT3(6.0f, -4.0f, -4.5f),
-			XMFLOAT3(-10.0f, -4.0f, 5.0f),
-			XMFLOAT3(10.0f, -4.0f, 9.0f),
-			}, true);
 
 		//-------------
 		//壁
 		//-------------
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(0.0f, -5.0f, 15.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
+		Walls(XMFLOAT3(-17.5f, -5.0f, 15.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-11.0f, -5.0f, -2.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(15.0f, -5.0f, -5.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(11.0f, -5.0f, 12.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		
+		
 
 		//-------------
 		//穴
 		//-------------
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-23.0f, -5.5f, 2.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
+
+		WallPasses(XMFLOAT3(-15.0f, -5.5f, 15.0f));
+
+		WallPasses(XMFLOAT3(-23.5f, -5.5f, 0.0f));
+		WallPasses(XMFLOAT3(23.5f, -5.5f, 9.5f));
+
+		WallPasses(XMFLOAT3(-13.5f, -5.5f, 0.0f));
+		WallPasses(XMFLOAT3(-11.0f, -5.5f, 0.0f));
+		WallPasses(XMFLOAT3(-11.0f, -5.5f, 2.5f));
+
+		WallPasses(XMFLOAT3(13.5f, -5.5f, 9.5f));
+		WallPasses(XMFLOAT3(11.0f, -5.5f, 9.5f));
+		WallPasses(XMFLOAT3(11.0f, -5.5f, 7.0f));
+
+		WallPasses(XMFLOAT3(-6.0f, -5.5f, 17.5f));
+		WallPasses(XMFLOAT3(-6.0f, -5.5f, 15.0f));
+
+		WallPasses(XMFLOAT3(6.0f, -5.5f, -8.0f));
+		WallPasses(XMFLOAT3(6.0f, -5.5f, -5.5f));
+
+		WallPasses(XMFLOAT3(12.5f, -5.0f, -5.5f));
+
+		//-------------
+		//回転壁
+		//-------------
+
+		m_pWallCurves.push_back(
+			new WallCurve(
+				MESH_TYPE::IMPORT,
+				XMFLOAT3(0.0f, -4.5f, 10.0f),
+				XMFLOAT3(0.0f, 90.0f, 0.0f),
+				XMFLOAT3(1.0f, 1.0f, 1.0f),
+				XMFLOAT3(0.0f, 0.0f, 0.0f),
+				true,
+				ColliderType::BOX,
+				XMFLOAT3(-1.5f, 1.5f, -2.5f),
+				true,
+				1.0f,
+				true,
+				6.0f,
+				XMFLOAT3(0.0f, -4.5f, 5.0f),
+				-90.0f   // ※モデル正面補正（必要なら調整）
 			)
 		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
+		m_pWallCurves.back()->SetDrawn(true);
+		m_pWallCurves.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
+			XMFLOAT3(0.0f, 0.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.1f, 2.5f),
+			XMFLOAT3(0.0f, -90.0f, 0.0f)
 		);
 
+		m_pWallCurves.push_back(
+			new WallCurve(
+				MESH_TYPE::IMPORT,
+				XMFLOAT3(0.0f, -4.5f, 0.0f),
+				XMFLOAT3(0.0f, 90.0f, 0.0f),
+				XMFLOAT3(1.0f, 1.0f, 1.0f),
+				XMFLOAT3(0.0f, 0.0f, 0.0f),
+				true,
+				ColliderType::BOX,
+				XMFLOAT3(-1.5f, 1.5f, -2.5f),
+				true,
+				1.0f,
+				true,
+				6.0f,
+				XMFLOAT3(0.0f, -4.5f, 5.0f),
+				-90.0f   // ★こっちも同じでOK（対面目的なら）
+			)
+		);
+		m_pWallCurves.back()->SetDrawn(true);
+		m_pWallCurves.back()->GetColliderSet()->AddCollider(
+			ColliderType::BOX,
+			XMFLOAT3(0.0f, 0.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.1f, 2.5f),
+			XMFLOAT3(0.0f, -90.0f, 0.0f)
+		);
+
+
 		break;
-	case 4: //ステージ4
+	case 4: //劉星案１
+		//-------------
+		//バネ
+		//-------------
+
+		Springs(
+			XMFLOAT3(-19.0f, -6.0f, 1.0f),
+			std::vector<XMFLOAT3>{ 
+			XMFLOAT3(-7.5f, -5.0f, 16.0f),
+			XMFLOAT3(-6.5f, -5.0f, 10.5f),
+			XMFLOAT3(0.0f, -5.0f, 12.5f),
+			XMFLOAT3(7.5f, -5.0f, -6.5f),
+			XMFLOAT3(6.5f, -5.0f, 0.0f),
+			XMFLOAT3(0.0f, -5.0f, -3.0f), },
+			true
+		);
+
+		Springs(
+			XMFLOAT3(19.0f, -6.0f, 8.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(-7.5f, -5.0f, 16.0f),
+				XMFLOAT3(-6.5f, -5.0f, 10.5f),
+				XMFLOAT3(0.0f, -5.0f, 12.5f),
+				XMFLOAT3(7.5f, -5.0f, -6.5f),
+				XMFLOAT3(6.5f, -5.0f, 0.0f),
+				XMFLOAT3(0.0f, -5.0f, -3.0f), },
+			true
+		);
+
+		//-------------
+		//壁
+		//-------------
+
+		Walls(XMFLOAT3(-15.0f, -5.0f, 12.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(-15.0f, -5.0f, 10.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(-15.0f, -5.0f, 7.5f),  XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(-15.0f, -5.0f, 5.0f),  XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+		Walls(XMFLOAT3(15.0f, -5.0f, -3.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(15.0f, -5.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(15.0f, -5.0f, 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(15.0f, -5.0f, 4.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+		Walls(XMFLOAT3(0.0f, -5.0f, 6.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(0.0f, -5.0f, 3.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+		Walls(XMFLOAT3(-15.0f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-12.5f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		Walls(XMFLOAT3(15.0f, -5.0f, 12.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(12.5f, -5.0f, 12.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		//-------------
+		//穴
+		//-------------
+
+		WallPasses(XMFLOAT3(-10.0f, -5.0f, -3.0f));
+		WallPasses(XMFLOAT3(-7.5f, -5.0f, -3.0f));
+		WallPasses(XMFLOAT3(-5.0f, -5.0f, -3.0f));
+
+		WallPasses(XMFLOAT3(10.0f, -5.0f, 12.5f));
+		WallPasses(XMFLOAT3(7.5f, -5.0f, 12.5f));
+		WallPasses(XMFLOAT3(5.0f, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(-7.5f, -5.0f, 12.5f));
+		WallPasses(XMFLOAT3(-5.0f, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(7.5f, -5.0f, -3.0f));
+		WallPasses(XMFLOAT3(5.0f, -5.0f, -3.0f));
+
+
 		break;
 
-	case 5:	//ステージ5
+	case 5://劉星案２
+		//-------------
+		//バネ
+		//-------------
+
+		Springs(
+			XMFLOAT3(-20.0f, -6.0f, 5.0f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(-10.0f, -5.0f, 5.0f),
+			XMFLOAT3(10.0f, -5.0f, 5.0f),
+			XMFLOAT3(-5.0f, -5.0f, 15.0f),
+			XMFLOAT3(5.0f, -5.0f, 15.0f),
+			XMFLOAT3(-5.0f, -5.0f, -5.5f),
+			XMFLOAT3(5.0f, -5.0f, -5.5f),},
+			true
+		);
+
+		Springs(
+			XMFLOAT3(20.0f, -6.0f, 5.0f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(-10.0f, -5.0f, 5.0f),
+			XMFLOAT3(10.0f, -5.0f, 5.0f),
+			XMFLOAT3(-5.0f, -5.0f, 15.0f),
+			XMFLOAT3(5.0f, -5.0f, 15.0f),
+			XMFLOAT3(-5.0f, -5.0f, -5.5f),
+			XMFLOAT3(5.0f, -5.0f, -5.5f), },
+			true
+		);
+
+		//-------------
+		//壁
+		//-------------
+
+		Walls(XMFLOAT3(-15.0f, -5.0f, 5.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-12.5f, -5.0f, 5.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-7.5f, -5.0f, 5.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		Walls(XMFLOAT3(15.0f, -5.0f, 5.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(12.5f, -5.0f, 5.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(7.5f, -5.0f, 5.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		//-------------
+		//穴
+		//-------------
+
+		WallPasses(XMFLOAT3(-15.0f, -5.0f, 10.0f));
+		WallPasses(XMFLOAT3(-15.0f, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(-15.0f, -5.0f, -0.5f));
+		WallPasses(XMFLOAT3(-15.0f, -5.0f, -3.0f));
+
+		WallPasses(XMFLOAT3(-7.5f, -5.0f, 10.0f));
+		WallPasses(XMFLOAT3(-7.5f, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(-7.5f, -5.0f, -0.5f));
+		WallPasses(XMFLOAT3(-7.5f, -5.0f, -3.0f));
+
+		WallPasses(XMFLOAT3(15.0f, -5.0f, 10.0f));
+		WallPasses(XMFLOAT3(15.0f, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(15.0f, -5.0f, -0.5f));
+		WallPasses(XMFLOAT3(15.0f, -5.0f, -3.0f));
+
+		WallPasses(XMFLOAT3(7.5f, -5.0f, 10.0f));
+		WallPasses(XMFLOAT3(7.5f, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(7.5f, -5.0f, -0.5f));
+		WallPasses(XMFLOAT3(7.5f, -5.0f, -3.0f));
+
+		break;
+
+	case 6://劉星案３
+		//-------------
+		//バネ
+		//-------------
+
+		Springs(
+			XMFLOAT3(23.0f, -6.0f, 17.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 10.0f),
+				XMFLOAT3(0.0f, -4.0f, -0.5f),
+				XMFLOAT3(7.5f, -4.0f, 5.0f),
+				XMFLOAT3(12.5f, -4.0f, 5.0f),
+				XMFLOAT3(-7.5f, -4.0f, 5.0f),
+				XMFLOAT3(-12.5f, -4.0f, 5.0f)},
+			true
+		);
+
+		Springs(
+			XMFLOAT3(-23.0f, -6.0f, -8.0f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 10.0f),
+			XMFLOAT3(0.0f, -4.0f, -0.5f),
+			XMFLOAT3(7.5f, -4.0f, 5.0f),
+			XMFLOAT3(12.5f, -4.0f, 5.0f),
+			XMFLOAT3(-7.5f, -4.0f, 5.0f),
+			XMFLOAT3(-12.5f, -4.0f, 5.0f)},
+			true
+		);
+
+		Springs(
+			XMFLOAT3(23.0f, -6.0f, -8.0f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 10.0f),
+			XMFLOAT3(0.0f, -4.0f, -0.5f),
+			XMFLOAT3(7.5f, -4.0f, 5.0f),
+			XMFLOAT3(12.5f, -4.0f, 5.0f),
+			XMFLOAT3(-7.5f, -4.0f, 5.0f),
+			XMFLOAT3(-12.5f, -4.0f, 5.0f)},
+			true
+		);
+
+		Springs(
+			XMFLOAT3(-23.0f, -6.0f, 17.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 10.0f),
+			XMFLOAT3(0.0f, -4.0f, -0.5f),
+			XMFLOAT3(7.5f, -4.0f, 5.0f),
+			XMFLOAT3(12.5f, -4.0f, 5.0f),
+			XMFLOAT3(-7.5f, -4.0f, 5.0f),
+			XMFLOAT3(-12.5f, -4.0f, 5.0f)},
+			true
+		);
+
+		//-------------
+		//壁
+		//-------------
+
+		WallPasses(XMFLOAT3(-17.5f, -5.0f, 5.0f));
+
+		WallPasses(XMFLOAT3(-17.5f, -5.0f, 10.0f));
+		WallPasses(XMFLOAT3(-15.0, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(-17.5f, -5.0f, -0.5f));
+		WallPasses(XMFLOAT3(-15.0, -5.0f, -3.0f));
+
+		WallPasses(XMFLOAT3(-2.5f, -5.0f, 5.0f));
+
+		WallPasses(XMFLOAT3(17.5f, -5.0f, 5.0f));
+
+		WallPasses(XMFLOAT3(17.5f, -5.0f, 10.0f));
+		WallPasses(XMFLOAT3(15.0, -5.0f, 12.5f));
+
+		WallPasses(XMFLOAT3(17.5f, -5.0f, -0.5f));
+		WallPasses(XMFLOAT3(15.0, -5.0f, -3.0f));
+
+		WallPasses(XMFLOAT3(2.5f, -5.0f, 5.0f));
+
+		WallPasses(XMFLOAT3(0.0f, -5.0f, 2.5f));
+		WallPasses(XMFLOAT3(0.0f, -5.0f, 7.5f));
+
+		WallPasses(XMFLOAT3(0.0f, -5.0f, -3.0f));
+		WallPasses(XMFLOAT3(0.0f, -5.0f, 12.5f));
+
+		//-------------
+		//穴
+		//-------------
+
+		Walls(XMFLOAT3(-17.5f, -5.0f, 12.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-17.5f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		Walls(XMFLOAT3(17.5f, -5.0f, 12.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(17.5f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		Walls(XMFLOAT3(0.0f, -5.0f, 5.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+		Walls(XMFLOAT3(-7.5f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-7.5f, -5.0f, 12.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		Walls(XMFLOAT3(7.5f, -5.0f, -3.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(7.5f, -5.0f, 12.5f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+
+		break;
+
+	case 7:	//ステージ7
 
 		//-------------
 		//バネ
 		//-------------
 
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(24.0f, -6.0f, 18.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+		Springs(
+			XMFLOAT3(23.0f, -6.0f, 18.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 5.0f)},
+			true
 		);
 
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-24.0f, -6.0f, -7.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+		Springs(
+			XMFLOAT3(-23.0f, -6.0f, -7.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 5.0f)},
+			true
 		);
 
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(24.0f, -6.0f, -7.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+		Springs(
+			XMFLOAT3(23.0f, -6.0f, -7.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 5.0f)},
+			true
 		);
 
-		m_pSprings.push_back(
-			new Spring(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-24.0f, -6.0f, 18.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				XMFLOAT3(0.0f, -4.0f, 5.0f),	  //発射ターゲット（このスプリング固有）
-				true,					  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
+		Springs(
+			XMFLOAT3(-23.0f, -6.0f, 18.5f),
+			std::vector<XMFLOAT3>{
+			XMFLOAT3(0.0f, -4.0f, 5.0f)},
+			true
 		);
-		//-------------
-		//真ん中側
-		//-------------
+
+		////-------------
+		////真ん中側
+		////-------------
+		//m_pWallCurves.push_back(
+		//	new WallCurve(
+		//		MESH_TYPE::IMPORT,
+		//		XMFLOAT3(0.0f, -4.5f, 8.0f),  //位置
+		//		XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+		//		XMFLOAT3(3.0f, 3.0f, 3.0f),	  //スケール
+		//		XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+		//		true,						  //アクティブフラグ
+		//		ColliderType::BOX,			  //コライダータイプ
+		//		XMFLOAT3(-1.5f, 1.5f, -2.5f), //コライダーボックスサイズ
+		//		false,						  //コライダーのトリガーフラグ
+		//		1.0f,						  //回転速度	
+		//		true,						  //回転フラグ
+		//		6.0f,						  //回転半径
+		//		XMFLOAT3(0.0f, -4.5f, 5.0f),  //回転中心座標
+		//		-180.0f
+		//	)
+		//);
+		//m_pWallCurves.back()->SetDrawn(false);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-1.5f, 1.5f, -2.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -90.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-1.5f, 1.5f, -1.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -90.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-1.3f, 1.5f, -0.75f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -60.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-0.75f, 1.5f, -0.2f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -30.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
+		//	ColliderType::BOX,
+		//	XMFLOAT3(0.0f, 1.5f, 0.0f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 0.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
+		//	ColliderType::BOX,
+		//	XMFLOAT3(1.0f, 1.5f, 0.0f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 0.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(1.75f, 1.5f, -0.2f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 30.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(2.3f, 1.5f, -0.75f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 60.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(2.5f, 1.5f, -1.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 90.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(2.5f, 1.5f, -2.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 90.0f, 0.0f)
+		//);
+
+		//m_pWallCurves.push_back(
+		//	new WallCurve(
+		//		MESH_TYPE::IMPORT,
+		//		XMFLOAT3(0.0f, -4.5f, 2.0f),  //位置
+		//		XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
+		//		XMFLOAT3(3.0f, 3.0f, 3.0f),	  //スケール
+		//		XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
+		//		true,						  //アクティブフラグ
+		//		ColliderType::BOX,			  //コライダータイプ
+		//		XMFLOAT3(-1.5f, 1.5f, -2.5f), //コライダーボックスサイズ
+		//		false,						  //コライダーのトリガーフラグ
+		//		1.0f,						  //回転速度	
+		//		true,						  //回転フラグ
+		//		6.0f,						  //回転半径
+		//		XMFLOAT3(0.0f, -4.5f, 5.0f),  //回転中心座標
+		//		-180.0f
+		//	)
+		//);
+		//m_pWallCurves.back()->SetDrawn(false);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-1.5f, 1.5f, -2.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -90.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-1.5f, 1.5f, -1.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -90.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-1.3f, 1.5f, -0.75f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -60.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(-0.75f, 1.5f, -0.2f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, -30.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
+		//	ColliderType::BOX,
+		//	XMFLOAT3(0.0f, 1.5f, 0.0f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 0.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
+		//	ColliderType::BOX,
+		//	XMFLOAT3(1.0f, 1.5f, 0.0f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 0.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(1.75f, 1.5f, -0.2f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 30.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(2.3f, 1.5f, -0.75f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 60.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(2.5f, 1.5f, -1.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 90.0f, 0.0f)
+		//);
+		//m_pWallCurves.back()->GetColliderSet()->AddCollider(
+		//	ColliderType::BOX,
+		//	XMFLOAT3(2.5f, 1.5f, -2.5f),
+		//	XMFLOAT3(1.1f, 3.1f, 1.1f),
+		//	XMFLOAT3(0.0f, 90.0f, 0.0f)
+		//);
+		
 		m_pWallCurves.push_back(
 			new WallCurve(
 				MESH_TYPE::IMPORT,
-				XMFLOAT3(0.0f, -4.5f, 8.0f),  //位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(3.0f, 3.0f, 3.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX,			  //コライダータイプ
-				XMFLOAT3(-1.5f, 1.5f, -2.5f), //コライダーボックスサイズ
-				false,						  //コライダーのトリガーフラグ
-				1.0f,						  //回転速度	
-				true,						  //回転フラグ
-				6.0f,						  //回転半径
-				XMFLOAT3(0.0f, -4.5f, 5.0f),  //回転中心座標
-				-180.0f
+				XMFLOAT3(0.0f, -4.5f, 10.0f),
+				XMFLOAT3(0.0f, 90.0f, 0.0f),
+				XMFLOAT3(1.0f, 1.0f, 1.0f),
+				XMFLOAT3(0.0f, 0.0f, 0.0f),
+				true,
+				ColliderType::BOX,
+				XMFLOAT3(-1.5f, 1.5f, -2.5f),
+				true,
+				1.0f,
+				true,
+				6.0f,
+				XMFLOAT3(0.0f, -4.5f, 5.0f),
+				-90.0f   // ※モデル正面補正（必要なら調整）
 			)
 		);
-		m_pWallCurves.back()->SetDrawn(false);
 		m_pWallCurves.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(-1.5f, 1.5f, -2.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.1f, 2.5f),
 			XMFLOAT3(0.0f, -90.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-1.5f, 1.5f, -1.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, -90.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-1.3f, 1.5f, -0.75f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, -60.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-0.75f, 1.5f, -0.2f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, -30.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
-			ColliderType::BOX,
-			XMFLOAT3(1.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(1.75f, 1.5f, -0.2f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 30.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(2.3f, 1.5f, -0.75f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 60.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(2.5f, 1.5f, -1.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 90.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(2.5f, 1.5f, -2.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 90.0f, 0.0f)
 		);
 
 		m_pWallCurves.push_back(
 			new WallCurve(
 				MESH_TYPE::IMPORT,
-				XMFLOAT3(0.0f, -4.5f, 2.0f),  //位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(3.0f, 3.0f, 3.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX,			  //コライダータイプ
-				XMFLOAT3(-1.5f, 1.5f, -2.5f), //コライダーボックスサイズ
-				false,						  //コライダーのトリガーフラグ
-				1.0f,						  //回転速度	
-				true,						  //回転フラグ
-				6.0f,						  //回転半径
-				XMFLOAT3(0.0f, -4.5f, 5.0f),  //回転中心座標
-				-180.0f
+				XMFLOAT3(0.0f, -4.5f, 0.0f),
+				XMFLOAT3(0.0f, 90.0f, 0.0f),
+				XMFLOAT3(1.0f, 1.0f, 1.0f),
+				XMFLOAT3(0.0f, 0.0f, 0.0f),
+				true,
+				ColliderType::BOX,
+				XMFLOAT3(-1.5f, 1.5f, -2.5f),
+				true,
+				1.0f,
+				true,
+				6.0f,
+				XMFLOAT3(0.0f, -4.5f, 5.0f),
+				-90.0f   // ★こっちも同じでOK（対面目的なら）
 			)
 		);
-		m_pWallCurves.back()->SetDrawn(false);
 		m_pWallCurves.back()->GetColliderSet()->AddCollider(
 			ColliderType::BOX,
-			XMFLOAT3(-1.5f, 1.5f, -2.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
+			XMFLOAT3(0.0f, 0.0f, 0.0f),
+			XMFLOAT3(2.5f, 3.1f, 2.5f),
 			XMFLOAT3(0.0f, -90.0f, 0.0f)
 		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-1.5f, 1.5f, -1.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, -90.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-1.3f, 1.5f, -0.75f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, -60.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-0.75f, 1.5f, -0.2f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, -30.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(	//真ん中
-			ColliderType::BOX,
-			XMFLOAT3(1.0f, 1.5f, 0.0f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(1.75f, 1.5f, -0.2f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 30.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(2.3f, 1.5f, -0.75f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 60.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(2.5f, 1.5f, -1.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 90.0f, 0.0f)
-		);
-		m_pWallCurves.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(2.5f, 1.5f, -2.5f),
-			XMFLOAT3(1.1f, 3.1f, 1.1f),
-			XMFLOAT3(0.0f, 90.0f, 0.0f)
-		);
+
 		///////////////////////////////
 		//-------------
 		//左側
 		//-------------
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-7.5f, -5.0f, 12.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX					//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-0.5f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-7.5f, -5.0f, 12.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(-10.0f, -5.0f, 12.0f), XMFLOAT3(0.0f, 90.0f, 0.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-10.0f, -5.0f, 12.0f),	//位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),	//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(-0.5f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-17.0f, -5.0f, 5.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(-17.0f, -5.0f, 2.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-12.5f, -5.5f, 12.5f), //位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-11.0f, -5.0f, -8.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(-11.0f, -5.0f, -5.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-12.5f, -5.5f, 10.0f), //位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-12.5f, -5.5f, 7.5f), //位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-15.0f, -5.5f, 7.5f), //位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.5f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(-11.0f, -5.0f, -3.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-17.5f, -5.5f, 7.5f), //位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.5f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(-12.5f, -5.5f, 12.5f));
+		WallPasses(XMFLOAT3(-12.5f, -5.5f, 10.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-17.0f, -5.0f, 5.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(-12.5f, -5.5f, 7.5f));
+		WallPasses(XMFLOAT3(-15.0f, -5.5f, 7.5f));
+		WallPasses(XMFLOAT3(-17.5f, -5.5f, 7.5f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-17.0f, -5.0f, 2.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -5.0f, -8.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -5.0f, -5.5f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(-11.0f, -5.0f, -3.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		/////////////////////////////////
 
 		//-------------
 		//右側
 		//-------------
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(8.0f, -5.5f, -3.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(12.5f, -5.0f, 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(12.5f, -5.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(12.5f, -5.0f, -3.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(10.5f, -5.5f, -3.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(14.6f, -5.0f, 2.4f), XMFLOAT3(0.0f, 90.0f, 0.0f));
+		Walls(XMFLOAT3(17.0f, -5.0f, 2.4f), XMFLOAT3(0.0f, 90.0f, 0.0f));
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(12.5f, -5.0f, 2.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(12.5f, -5.0f, -0.5f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(12.5f, -5.0f, -3.0f),	//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),		//スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),		//移動速度
-				true,							//アクティブフラグ
-				ColliderType::BOX				//コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(14.6f, -5.0f, 2.4f), //位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.4f, 1.0f, 0.4f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(17.0f, -5.0f, 2.4f), //位置
-				XMFLOAT3(0.0f, 90.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.4f, 1.0f, 0.5f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(17.5f, -5.5f, 4.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWallPasses.push_back(
-			new WallPass(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(17.5f, -5.5f, 7.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //回転
-				XMFLOAT3(1.0f, 0.0f, 1.0f),	 //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	 //移動速度
-				true,						 //アクティブフラグ
-				ColliderType::BOX			 //コライダータイプ
-			)
-		);
-		m_pWallPasses.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.5f, 0.0f),
-			XMFLOAT3(2.5f, 3.0f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -5.0f, 17.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.1f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
-
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -5.0f, 15.0f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.1f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		Walls(XMFLOAT3(11.0f, -5.0f, 17.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(11.0f, -5.0f, 15.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(11.0f, -5.0f, 12.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 
-		m_pWalls.push_back(
-			new Wall(
-				MESH_TYPE::CUBE,
-				XMFLOAT3(11.0f, -5.0f, 12.5f),//位置
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //回転
-				XMFLOAT3(1.0f, 1.0f, 1.0f),	  //スケール
-				XMFLOAT3(0.0f, 0.0f, 0.0f),	  //移動速度
-				true,						  //アクティブフラグ
-				ColliderType::BOX			  //コライダータイプ
-			)
-		);
-		m_pWalls.back()->GetColliderSet()->AddCollider(
-			ColliderType::BOX,
-			XMFLOAT3(0.0f, 1.0f, 0.0f),
-			XMFLOAT3(2.5f, 3.1f, 2.5f),
-			XMFLOAT3(0.0f, 0.0f, 0.0f)
-		);
+		WallPasses(XMFLOAT3(8.0f, -5.5f, -3.0f));
+		WallPasses(XMFLOAT3(10.5f, -5.5f, -3.0f));
+
+		WallPasses(XMFLOAT3(17.5f, -5.5f, 4.5f));
+		WallPasses(XMFLOAT3(17.5f, -5.5f, 7.0f));
+
 		break;
 
 	}
@@ -2103,7 +1226,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		&m_wallCurveInfo,				//描画情報構造体配列へのポインタ
 		m_pWallCurves[0]->GetMeshType(),//メッシュタイプ
 		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
-		L"asset/fbx/wall_curve_ST.fbx",		//テクスチャのファイル名
+		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",		//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
 		false,
@@ -2120,7 +1243,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		true
 	);
 	//バネのアニメーションをバインド
-	for(auto& spring : m_pSprings)
+	for (auto& spring : m_pSprings)
 	{
 		auto* set = spring->GetNodeAnimatorSet();          // Spring内部の実体
 		auto* asset = m_springInfo[0].pNodeAnimAsset;
