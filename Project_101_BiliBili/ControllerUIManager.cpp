@@ -84,7 +84,6 @@ void ControllerUIManager::InitializeOverride(
 	{
 		icon->SetActive(false);
 		m_roots.push_back(std::unique_ptr<UIBase>(icon));
-		icon->Initialize(textureManager, meshManager);
 	}
 
 	m_pGoToNextSceneIcon = new UIImage(
