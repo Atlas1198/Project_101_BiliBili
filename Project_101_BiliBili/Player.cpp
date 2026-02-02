@@ -257,6 +257,13 @@ void Player::SetBB(bool isActive)
 	}
 }
 
+//コントローラーを振動させる
+void Player::ShakeController(float leftMotor, float rightMotor, int duration)
+{
+	auto myController = m_pInputInfo->controller[id];
+	myController.SetVibration(leftMotor, rightMotor, duration);
+}
+
 //移動
 void Player::Move()
 {

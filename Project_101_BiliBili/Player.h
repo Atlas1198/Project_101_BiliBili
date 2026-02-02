@@ -82,6 +82,7 @@ public:	//公開関数
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
 	void SetBB(bool isActive); // BBセット
+	void ShakeController(float leftMotor = 1.0f, float rightMotor = 1.0f, int duration = 5); //コントローラー振動 
 
 private:	//非公開関数
 	void Move();	//移動

@@ -82,7 +82,8 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 		break;
 	case CollisionData::COLLISION_LAYER::GROUND:
 		return MakeMask({
-			COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
+			COLLISION_LAYER::PLAYER,			//プレイヤーレイヤー
+			COLLISION_LAYER::ITEM_TRANSFORM,	//アイテム変身レイヤー
 			});
 		break;
 	case CollisionData::COLLISION_LAYER::BULLET:
@@ -108,7 +109,8 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 		break;
     case CollisionData::COLLISION_LAYER::ITEM_TRANSFORM:
 	return MakeMask({
-		COLLISION_LAYER::PLAYER		//プレイヤーレイヤー
+		COLLISION_LAYER::PLAYER,	//プレイヤーレイヤー
+		COLLISION_LAYER::GROUND		//地面レイヤー
 		});
 	break;
 	case CollisionData::COLLISION_LAYER::SPRING:
