@@ -5,7 +5,7 @@
 #include "MeshManager.h"
 #include "EventManager.h"
 #include "SceneManager.h"
-
+#include "AudioManager.h"
 
 //コンストラクタ
 TitleScene::TitleScene(float window_width, float window_height)
@@ -32,6 +32,8 @@ void TitleScene::InitializeOverride(
 )
 {
 	m_pTitleUIManager->Initialize(pTextureManager, pMeshManager);
+	AudioManager::GetInstance()->StopBGM();
+	AudioManager::GetInstance()->PlayBGM("TITLE_BGM");
 }
 
 //更新
@@ -46,6 +48,8 @@ void TitleScene::UpdateOverride()
 		{
 			//フェードアウト開始
 			m_pTitleUIManager->StartFadeOut(0.05f);
+			AudioManager::GetInstance()->PlaySE("TITLE_NEXT");
+			AudioManager::GetInstance()->StopBGM();
 		}
 		//コントローラーの任意のボタン入力でコントローラー設定シーンへ遷移
 		for (auto& controller : m_pInputManager->GetInputInfo()->controller)
@@ -54,6 +58,8 @@ void TitleScene::UpdateOverride()
 			{
 				//フェードアウト開始
 				m_pTitleUIManager->StartFadeOut(0.05f);
+				AudioManager::GetInstance()->PlaySE("TITLE_NEXT");
+				AudioManager::GetInstance()->StopBGM();
 			}
 		}
 	}

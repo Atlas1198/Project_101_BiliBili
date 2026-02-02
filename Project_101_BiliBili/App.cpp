@@ -9,6 +9,7 @@
 #include "json.hpp"
 #include <fstream>
 #include "EventManager.h"
+#include "AudioResources.h"
 
 using json = nlohmann::json;
 
@@ -267,6 +268,8 @@ void App::PrepareInstance()
 	);
 	m_pTextureManager = new TextureManager();	//テクスチャ管理クラスの生成
 	m_pMeshManager = new MeshManager();			//メッシュ管理クラスの生成
+	m_pAudioManager = AudioManager::GetInstance();		//オーディオ管理クラスの生成
+
 }
 
 //インスタンス初期化
@@ -304,6 +307,13 @@ void App::InitInstance()
 	//レンダーを開始してコマンドリストをオープン
 	m_pEngine->RenderBegin();	
 
+	//オーディオ管理クラス初期化
+	if (m_pAudioManager)
+	{
+		m_pAudioManager->Initialize();
+		LoadAllGameSounds(*m_pAudioManager);	//カタログ関数を呼ぶ
+	}
+
 	//シーン管理クラス初期化
 	m_pSceneManager->Initialize(
 		m_pInputManager,	//入力管理クラス
@@ -333,6 +343,8 @@ void App::Update()
 		m_pInputManager->Update();			//入力管理クラスの更新
 		m_pSceneManager->Update();			//ゲームの更新
 	}
+
+	if (m_pAudioManager) { m_pAudioManager->Update(); }	//オーディオの更新
 
 	m_pRenderer->Update(backIdx, *m_pSceneManager->GetCameraInfo());		//レンダラーの更新
 }

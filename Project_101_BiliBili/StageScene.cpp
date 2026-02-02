@@ -1,6 +1,7 @@
 #include "StageScene.h"
 #include "EventManager.h"
 #include "EventType.h"
+#include "AudioManager.h"
 
 //コンストラクタ
 StageScene::StageScene(float window_width, float window_height)
@@ -37,6 +38,7 @@ void StageScene::InitializeOverride(
 			ChangeStageUI(*data);
 		}
 	);
+	AudioManager::GetInstance()->PlayBGM("CHARA_BGM");
 }
 
 //シーン固有の更新
@@ -58,6 +60,7 @@ void StageScene::UpdateOverride()
 			m_pUIManager->StartSelectAnimation();	//ステージ選択アニメーション開始
 
 			//↓↓↓選択時サウンド再生↓↓↓
+			AudioManager::GetInstance()->PlaySE("STAGE_SET");
 		}
 	}
 

@@ -233,6 +233,8 @@ void Player::ResolveCollisionsOverride()
 					spring->SetIsBlowing(true);
 				}
 			}
+			AudioManager::GetInstance()->PlaySE("BANE_JUMP");
+
 		}
 	}
 
@@ -460,6 +462,7 @@ void Player::Move()
 		m_velocity.z *= 0.95f;
 	}
 
+
 	UpdateAnimation();
 
 	if (!m_isGrounded)
@@ -572,6 +575,7 @@ void Player::Shoot()
 		isShooting = true;
 		m_texSplitInfo.frameCount = 0;
 		UpdateAnimation();
+	
 	}
 }
 

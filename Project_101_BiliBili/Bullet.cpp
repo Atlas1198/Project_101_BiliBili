@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -110,6 +111,7 @@ void Bullet::ResolveCollisionsOverride()
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
 				);
+                AudioManager::GetInstance()->PlaySE("HIT");
             }
         }
 
