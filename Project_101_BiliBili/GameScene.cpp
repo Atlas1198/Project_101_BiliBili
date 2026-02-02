@@ -7,6 +7,7 @@
 #include "App.h"
 #include "EventManager.h"
 #include "GameEventManager.h"
+#include "AudioManager.h"
 
 
 using namespace DirectX;
@@ -248,6 +249,7 @@ void GameScene::CountdownUpdate()
 	auto eventManager = EventManager::GetInstance();
 	auto players = m_pPlayerManager->GetPlayers();
 
+
 	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
 		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
 			players[0]->GetTeamID(), players[0]->GetPosition(), players[1]->GetPosition()
@@ -261,15 +263,20 @@ void GameScene::CountdownUpdate()
 	m_timer++;
 
 	//カウントダウンUIの表示
-	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
+  	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
 	{// 1秒ごとにUIを更新
 		int second = (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND;
 		eventManager->TriggerEvent(EventType::SHOW_COUNT_UI, second);
-
+		
+		if (90 <= m_timer && m_timer <= 210)
+		{
+   			AudioManager::GetInstance()->PlaySE("GAME_COUNT1");
+		}
 		//残り１秒で弾UIを表示
 		const int showBulletUISecond = 1;
 		if (second == showBulletUISecond)
 		{
+
 			//弾UI表示イベントをトリガー
 			eventManager->TriggerEvent<std::pair<int, bool>>(
 				EventType::SET_BULLET_UI_ACTIVE,
@@ -279,7 +286,7 @@ void GameScene::CountdownUpdate()
 				EventType::SET_BULLET_UI_ACTIVE,
 				{ players[2]->GetTeamID(), true}
 			);
-
+		
 			//プレイヤーポインター画像非アクティブ化イベントをトリガー
 			eventManager->TriggerEvent(EventType::INACTIVATE_PLAYER_POINTER_IMAGES);
 		}
@@ -290,6 +297,8 @@ void GameScene::CountdownUpdate()
 	{
 		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
+		AudioManager::GetInstance()->PlaySE("GAME_COUNT2");
+		AudioManager::GetInstance()->PlayBGM("GAME_BGM");
 		m_pGameEventManager->Start(); // イベントマネージャー開始
 	}
 }
@@ -332,12 +341,22 @@ void GameScene::ResultUpdate()
 {
 	const int WAIT_DURATION = 150; // リザルトUI表示までの待機フレーム数（2.5秒間）
 
+	if (m_timer == 0)
+	{
+		AudioManager::GetInstance()->StopAll();
+		AudioManager::GetInstance()->PlaySE("RESULT");
+	}
+
 	m_timer++;
+
+
 
 	if (m_timer == WAIT_DURATION)
 	{
 		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, {m_winner, m_character1ID, m_character2ID});
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
+		AudioManager::GetInstance()->StopAll();
+		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");	
 	}
 	else if (m_timer > WAIT_DURATION)
 	{

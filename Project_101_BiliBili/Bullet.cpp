@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 

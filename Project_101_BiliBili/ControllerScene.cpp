@@ -1,5 +1,5 @@
 #include "ControllerScene.h"
-
+#include "AudioManager.h"
 //コンストラクタ
 ControllerScene::ControllerScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
@@ -21,6 +21,7 @@ void ControllerScene::InitializeOverride(TextureManager& pTextureManager, MeshMa
 	m_pControllerConnecter->Initialize();
 	m_pUIManager->Initialize(pTextureManager, pMeshManager);
 	m_pUIManager->StartFadeIn(0.01f);
+	AudioManager::GetInstance()->PlayBGM("CON_BGM");
 }
 
 //シーン固有の更新
@@ -28,7 +29,7 @@ void ControllerScene::UpdateOverride()
 {
 	m_pControllerConnecter->Update(*m_pSceneContext);
 	m_pUIManager->Update();
-}
+} 
 
 //シーン固有の描画
 void ControllerScene::DrawOverride(Renderer& pRenderer)

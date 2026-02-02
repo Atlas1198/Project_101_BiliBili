@@ -11,19 +11,29 @@ WallPass::WallPass(MESH_TYPE meshType,
     DirectX::XMFLOAT3 velocity,
     bool isActive,
     ColliderType colliderType,
-    DirectX::XMFLOAT3 collisionBoxSize,
     bool collisionIsTrigger,
     float rotationSpeed,
     bool orbit,
     float orbitRadius,
     DirectX::XMFLOAT3 orbitCenter)
     : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALLPASS, COLLISION_LAYER::WALLPASS)
+    , m_collder(collisionIsTrigger)
     , m_rotationSpeed(rotationSpeed)
     , m_orbit(orbit)
     , m_orbitRadius(orbitRadius)
     , m_orbitCenter(orbitCenter)
 {
     m_isDrawn = true;
+
+    if(m_collder == true)
+    {
+        GetColliderSet()->AddCollider(
+            ColliderType::BOX,
+            XMFLOAT3(0.0f, 1.5f, 0.0f),
+            XMFLOAT3(2.5f, 3.0f, 2.5f),
+            XMFLOAT3(0.0f, 0.0f, 0.0f)
+        );
+    }
 
     // orbit ”¼Œa‚ª 0 ‚Ìê‡‚ÍA‰ŠúˆÊ’u‚Æ orbitCenter ‚©‚ç”¼Œa‚ğŒvZ‚·‚é
     if (m_orbit)

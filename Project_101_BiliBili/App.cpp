@@ -9,6 +9,7 @@
 #include "json.hpp"
 #include <fstream>
 #include "EventManager.h"
+#include "AudioResources.h"
 
 using json = nlohmann::json;
 
@@ -19,7 +20,7 @@ void LoadParametersJSON();
 
 DatabaseManager* dbManager = DatabaseManager::GetInstance();
 
-//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -34,22 +35,22 @@ LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			SWP_NOZORDER);
 
 		break;
-	case WM_ACTIVATEAPP:	//ƒAƒNƒeƒBƒuƒEƒBƒ“ƒhƒE‚ªØ‚è‘Ö‚í‚Á‚½
-	case WM_SYSKEYDOWN:		//ƒVƒXƒeƒ€ƒL[‚ª‰Ÿ‚³‚ê‚½
-	case WM_KEYUP:			//ƒL[‚ª—£‚³‚ê‚½
-	case WM_SYSKEYUP:		//ƒVƒXƒeƒ€ƒL[‚ª—£‚³‚ê‚½
-		//ƒL[ƒ{[ƒhƒƒbƒZ[ƒWˆ—
+	case WM_ACTIVATEAPP:	//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒåˆ‡ã‚Šæ›¿ã‚ã£ãŸ
+	case WM_SYSKEYDOWN:		//ã‚·ã‚¹ãƒ†ãƒ ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸ
+	case WM_KEYUP:			//ã‚­ãƒ¼ãŒé›¢ã•ã‚ŒãŸ
+	case WM_SYSKEYUP:		//ã‚·ã‚¹ãƒ†ãƒ ã‚­ãƒ¼ãŒé›¢ã•ã‚ŒãŸ
+		//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
 		Keyboard_ProcessMessage(msg, wParam, lParam);
 		break;
 
-	case WM_KEYDOWN:		//ƒL[‚ª‰Ÿ‚³‚ê‚½
-		if (wParam == VK_ESCAPE)//‰Ÿ‚³‚ê‚½‚Ì‚ÍESCƒL[
+	case WM_KEYDOWN:		//ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸ
+		if (wParam == VK_ESCAPE)//æŠ¼ã•ã‚ŒãŸã®ã¯ESCã‚­ãƒ¼
 		{
-			//ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚½‚¢ƒŠƒNƒGƒXƒg‚ğWindows‚É‘—‚é
+			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ãŸã„ãƒªã‚¯ã‚¨ã‚¹ãƒˆã‚’Windowsã«é€ã‚‹
 			SendMessage(hwnd, WM_CLOSE, 0, 0);
 		}
 
-		//ƒL[ƒ{[ƒhƒƒbƒZ[ƒWˆ—
+		//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
 		Keyboard_ProcessMessage(msg, wParam, lParam);
 		break;
 
@@ -57,63 +58,63 @@ LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		dbManager->ApplyFirebaseStreamData();
 		break;
 
-	case WM_DESTROY:		//ƒEƒBƒ“ƒhƒE”j‰ó
-		PostQuitMessage(0);	//OS‚É‘Î‚·‚éI—¹ƒƒbƒZ[ƒW
+	case WM_DESTROY:		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç ´å£Šæ™‚
+		PostQuitMessage(0);	//OSã«å¯¾ã™ã‚‹çµ‚äº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 		return 0;
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-//ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒXæ“¾
+//ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å–å¾—
 App* App::GetInstance()
 {
-	static App instance; //ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+	static App instance; //ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	return &instance;
 }
 
-//‰Šú‰»
+//åˆæœŸåŒ–
 bool App::Initialize()
 {
-	CreateMainWindow(hwnd, wc);	//ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ì¶¬
+	CreateMainWindow(hwnd, wc);	//ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç”Ÿæˆ
 
-	PrepareInstance(); // ƒCƒ“ƒXƒ^ƒ“ƒX€”õ
+	PrepareInstance(); // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹æº–å‚™
 
-	InitInstance(); // ƒCƒ“ƒXƒ^ƒ“ƒX‰Šú‰»
+	InitInstance(); // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åˆæœŸåŒ–
 
 	return true;
 }
 
-//Às
+//å®Ÿè¡Œ
 void App::Run()
 {
-	//ƒEƒBƒ“ƒhƒE‚Ì•\¦
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è¡¨ç¤º
 	ShowWindow(hwnd, SW_SHOW);	
 
-	//ƒƒbƒZ[ƒWƒ‹[ƒv
-	MSG msg = {};	//ƒƒbƒZ[ƒW
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—
+	MSG msg = {};	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 
-	//ƒtƒŒ[ƒ€ƒŒ[ƒgŒv‘ª—p•Ï”
-	DWORD	dwExecLastTime;	//‘O‰ñ‚ÌÀsŠÔ
-	DWORD	dwFPSLastTime;	//‘O‰ñ‚ÌFPSŒv‘ªŠÔ
-	DWORD	dwCurrentTime;	//Œ»İ‚ÌŠÔ
-	DWORD	dwFrameCount;	//ƒtƒŒ[ƒ€ƒJƒEƒ“ƒg
+	//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆè¨ˆæ¸¬ç”¨å¤‰æ•°
+	DWORD	dwExecLastTime;	//å‰å›ã®å®Ÿè¡Œæ™‚é–“
+	DWORD	dwFPSLastTime;	//å‰å›ã®FPSè¨ˆæ¸¬æ™‚é–“
+	DWORD	dwCurrentTime;	//ç¾åœ¨ã®æ™‚é–“
+	DWORD	dwFrameCount;	//ãƒ•ãƒ¬ãƒ¼ãƒ ã‚«ã‚¦ãƒ³ãƒˆ
 
-#ifdef _DEBUG	//ƒfƒoƒbƒOƒrƒ‹ƒh‚Ì‚İFPS•\¦
-	int		countFPS = {};		//FPSƒJƒEƒ“ƒ^[
-	char	debugStr[2048];	//FPS•\¦•¶š—ñ
+#ifdef _DEBUG	//ãƒ‡ãƒãƒƒã‚°ãƒ“ãƒ«ãƒ‰æ™‚ã®ã¿FPSè¡¨ç¤º
+	int		countFPS = {};		//FPSã‚«ã‚¦ãƒ³ã‚¿ãƒ¼
+	char	debugStr[2048];	//FPSè¡¨ç¤ºæ–‡å­—åˆ—
 #endif
 
-	//ƒtƒŒ[ƒ€ƒŒ[ƒgŒv‘ª‰Šú‰»
-	timeBeginPeriod(1);								//ƒ^ƒCƒ}[‚Ì¸“x‚ğİ’è
-	dwExecLastTime = dwFPSLastTime = timeGetTime();	//Œ»İ‚Ìƒ^ƒCƒ}[’l
-	dwCurrentTime = dwFrameCount = 0;				//‰Šú‰»
+	//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆè¨ˆæ¸¬åˆæœŸåŒ–
+	timeBeginPeriod(1);								//ã‚¿ã‚¤ãƒãƒ¼ã®ç²¾åº¦ã‚’è¨­å®š
+	dwExecLastTime = dwFPSLastTime = timeGetTime();	//ç¾åœ¨ã®ã‚¿ã‚¤ãƒãƒ¼å€¤
+	dwCurrentTime = dwFrameCount = 0;				//åˆæœŸåŒ–
 
 	players.clear();
 
 	int msgboxID = MessageBox(
 		NULL,
-		"ƒIƒ“ƒ‰ƒCƒ“ƒ‚[ƒh‚É“ü‚è‚Ü‚·‚©H",
-		"ƒ‚[ƒh‘I‘ğ",
+		"ã‚ªãƒ³ãƒ©ã‚¤ãƒ³ãƒ¢ãƒ¼ãƒ‰ã«å…¥ã‚Šã¾ã™ã‹ï¼Ÿ",
+		"ãƒ¢ãƒ¼ãƒ‰é¸æŠ",
 		MB_ICONQUESTION | MB_YESNO
 	);
 
@@ -132,8 +133,8 @@ void App::Run()
 
 		int msgboxID = MessageBox(
 			NULL,
-			"ƒrƒŠƒrƒŠƒAƒvƒŠg‚¢‚Ü‚·‚©H",
-			"ƒpƒ‰ƒ[ƒ^[’²®",
+			"ãƒ“ãƒªãƒ“ãƒªã‚¢ãƒ—ãƒªä½¿ã„ã¾ã™ã‹ï¼Ÿ",
+			"ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼èª¿æ•´",
 			MB_ICONQUESTION | MB_YESNO
 		);
 
@@ -153,209 +154,219 @@ void App::Run()
 	do 
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{//ƒƒbƒZ[ƒW‚ª‚ ‚éê‡
-			TranslateMessage(&msg);	//ƒƒbƒZ[ƒW‚Ì•ÏŠ·
-			DispatchMessage(&msg);	//ƒƒbƒZ[ƒW‚Ì‘—o
+		{//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒã‚ã‚‹å ´åˆ
+			TranslateMessage(&msg);	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å¤‰æ›
+			DispatchMessage(&msg);	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®é€å‡º
 		}
 		else
-		{//ƒƒbƒZ[ƒW‚ª–³‚¢ê‡
-			dwCurrentTime = timeGetTime();	//Œ»İ‚Ìƒ^ƒCƒ}[’læ“¾
+		{//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒç„¡ã„å ´åˆ
+			dwCurrentTime = timeGetTime();	//ç¾åœ¨ã®ã‚¿ã‚¤ãƒãƒ¼å€¤å–å¾—
 
 			if ((dwCurrentTime - dwFPSLastTime) >= 1000)
 			{
 #ifdef _DEBUG
-				countFPS = dwFrameCount;	//FPSƒJƒEƒ“ƒg•Û‘¶
+				countFPS = dwFrameCount;	//FPSã‚«ã‚¦ãƒ³ãƒˆä¿å­˜
 #endif
-				dwFPSLastTime = dwCurrentTime;	//Œ»İ‚Ìƒ^ƒCƒ}[’l•Û‘¶
-				dwFrameCount = 0;				//ƒtƒŒ[ƒ€ƒJƒEƒ“ƒg‰Šú‰»
+				dwFPSLastTime = dwCurrentTime;	//ç¾åœ¨ã®ã‚¿ã‚¤ãƒãƒ¼å€¤ä¿å­˜
+				dwFrameCount = 0;				//ãƒ•ãƒ¬ãƒ¼ãƒ ã‚«ã‚¦ãƒ³ãƒˆåˆæœŸåŒ–
 			}
 
 			if ((dwCurrentTime - dwExecLastTime) >= ((float)1000 / 60))
-			{//60FPS‚Å“®ì‚³‚¹‚é
-				dwExecLastTime = dwCurrentTime;	//Œ»İ‚Ìƒ^ƒCƒ}[‚Æ•Û‘¶
-				dwFrameCount++;					//ƒtƒŒ[ƒ€ƒJƒEƒ“ƒgƒAƒbƒv
+			{//60FPSã§å‹•ä½œã•ã›ã‚‹
+				dwExecLastTime = dwCurrentTime;	//ç¾åœ¨ã®ã‚¿ã‚¤ãƒãƒ¼ã¨ä¿å­˜
+				dwFrameCount++;					//ãƒ•ãƒ¬ãƒ¼ãƒ ã‚«ã‚¦ãƒ³ãƒˆã‚¢ãƒƒãƒ—
 #ifdef _DEBUG
-				//ƒEƒBƒ“ƒhƒEƒLƒƒƒvƒVƒ‡ƒ“‚ÖŒ»İ‚ÌFPS‚ğ•\¦
-				wsprintf(debugStr, "DX21 ƒvƒƒWƒFƒNƒg ");	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹•¶š—ñ
+				//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã¸ç¾åœ¨ã®FPSã‚’è¡¨ç¤º
+				wsprintf(debugStr, "DX21 ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆ ");	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«æ–‡å­—åˆ—
 				wsprintf(
-					&debugStr[strlen(debugStr)],	//•¶š—ñ˜AŒ‹
+					&debugStr[strlen(debugStr)],	//æ–‡å­—åˆ—é€£çµ
 					" FPS : %d", countFPS			//FPS
 				);
-				SetWindowText(hwnd, debugStr);	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹‚Ìİ’è
+				SetWindowText(hwnd, debugStr);	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«ã®è¨­å®š
 #endif
 				UpdateParameters();
 
 				ReadMessages();
-				//XVˆ—
-				Update();	//XV
+				//æ›´æ–°å‡¦ç†
+				Update();	//æ›´æ–°
 				WriteMessages();
 
-				//•`‰æˆ—
-				Draw();		//•`‰æ
+				//æç”»å‡¦ç†
+				Draw();		//æç”»
 
-				//ƒtƒŒ[ƒ€I—¹Œãˆ—
-				m_pInputManager->Copy(); //“ü—ÍŠÇ—ƒNƒ‰ƒX‚ÌƒL[î•ñƒRƒs[
+				//ãƒ•ãƒ¬ãƒ¼ãƒ çµ‚äº†å¾Œå‡¦ç†
+				m_pInputManager->Copy(); //å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ã‚­ãƒ¼æƒ…å ±ã‚³ãƒ”ãƒ¼
 			}
 		}
-	} while (msg.message != WM_QUIT);	//I—¹ƒƒbƒZ[ƒW‚ª—ˆ‚é‚Ü‚Å
+	} while (msg.message != WM_QUIT);	//çµ‚äº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒæ¥ã‚‹ã¾ã§
 }
 
-//I—¹
+//çµ‚äº†
 void App::Terminate()
 {
 	// Stop the Firebase streaming thread before tearing down other systems
 	dbManager->StopFirebaseStream();
 
-	m_pEngine->Terminate(); //DirectX12ƒGƒ“ƒWƒ“‚ÌI—¹
+	m_pEngine->Terminate(); //DirectX12ã‚¨ãƒ³ã‚¸ãƒ³ã®çµ‚äº†
 
-	//delete m_pCamera;		//ƒJƒƒ‰‚Ì‰ğ•ú
-	delete m_pRenderer;		//ƒŒƒ“ƒ_ƒ‰[‚Ì‰ğ•ú
-	delete m_pSceneManager;	//ƒV[ƒ“ŠÇ—‚Ì‰ğ•ú
+	//delete m_pCamera;		//ã‚«ãƒ¡ãƒ©ã®è§£æ”¾
+	delete m_pRenderer;		//ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã®è§£æ”¾
+	delete m_pSceneManager;	//ã‚·ãƒ¼ãƒ³ç®¡ç†ã®è§£æ”¾
 
-	UnregisterClass(wc.lpszClassName, wc.hInstance);	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^‰ğœ
+	UnregisterClass(wc.lpszClassName, wc.hInstance);	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²è§£é™¤
 }
 
-//ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ì¶¬
+//ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç”Ÿæˆ
 void App::CreateMainWindow(HWND& hwnd, WNDCLASSEX& wc)
 {
 	HINSTANCE hInst = GetModuleHandle(nullptr);
-	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX¶¬•“o˜^
-	wc.cbSize = sizeof(WNDCLASSEX);							//\‘¢‘Ì‚ÌƒTƒCƒY
-	wc.style = CS_HREDRAW | CS_VREDRAW;						//ƒXƒ^ƒCƒ‹
-	wc.lpfnWndProc = (WNDPROC)WindowProcedure;				//ƒR[ƒ‹ƒoƒbƒNŠÖ”‚Ìw’è
-	wc.hIcon = LoadIcon(hInstance, IDI_APPLICATION);		//ƒAƒCƒRƒ“‚Ìw’è
-	wc.hCursor = LoadCursor(hInstance, IDC_ARROW);			//ƒJ[ƒ\ƒ‹‚Ìw’è
-	wc.hbrBackground = GetSysColorBrush(COLOR_BACKGROUND);	//”wŒiF‚Ìw’è
-	wc.lpszMenuName = nullptr;								//ƒƒjƒ…[‚Ìw’è
-	wc.lpszClassName = _T("101_engine");					//ƒNƒ‰ƒX–¼‚Ìw’è
-	wc.hInstance = GetModuleHandle(NULL);					//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚Ìw’è
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ç”Ÿæˆï¼†ç™»éŒ²
+	wc.cbSize = sizeof(WNDCLASSEX);							//æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+	wc.style = CS_HREDRAW | CS_VREDRAW;						//ã‚¹ã‚¿ã‚¤ãƒ«
+	wc.lpfnWndProc = (WNDPROC)WindowProcedure;				//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã®æŒ‡å®š
+	wc.hIcon = LoadIcon(hInstance, IDI_APPLICATION);		//ã‚¢ã‚¤ã‚³ãƒ³ã®æŒ‡å®š
+	wc.hCursor = LoadCursor(hInstance, IDC_ARROW);			//ã‚«ãƒ¼ã‚½ãƒ«ã®æŒ‡å®š
+	wc.hbrBackground = GetSysColorBrush(COLOR_BACKGROUND);	//èƒŒæ™¯è‰²ã®æŒ‡å®š
+	wc.lpszMenuName = nullptr;								//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®æŒ‡å®š
+	wc.lpszClassName = _T("101_engine");					//ã‚¯ãƒ©ã‚¹åã®æŒ‡å®š
+	wc.hInstance = GetModuleHandle(NULL);					//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã®æŒ‡å®š
 
-	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ç™»éŒ²
 	RegisterClassEx(&wc);
 
-	RECT wrc = { 0,0, WINDOW_WIDTH, WINDOW_HEIGHT };//ƒEƒBƒ“ƒhƒEƒTƒCƒY‚ğŒˆ‚ß‚é
+	RECT wrc = { 0,0, WINDOW_WIDTH, WINDOW_HEIGHT };//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’æ±ºã‚ã‚‹
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒY‚ğ•â³
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’è£œæ­£
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
-	//ƒEƒBƒ“ƒhƒEƒIƒuƒWƒFƒNƒg‚Ì¶¬
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
 	hwnd = CreateWindowEx(
-		0,						// Šg’£ƒXƒ^ƒCƒ‹
-		wc.lpszClassName,		//ƒNƒ‰ƒX–¼‚Ìw’è
-		_T("DX12_Application"),	//ƒ^ƒCƒgƒ‹ƒo[‚Ì•¶š
-		WS_OVERLAPPEDWINDOW,	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹
-		CW_USEDEFAULT,			//•\¦XÀ•W‚ÍOS‚É‚¨”C‚¹‚µ‚Ü‚·
-		CW_USEDEFAULT,			//•\¦YÀ•W‚ÍOS‚É‚¨”C‚¹‚µ‚Ü‚·
-		wrc.right - wrc.left,	//ƒEƒBƒ“ƒhƒE‰¡•
-		wrc.bottom - wrc.top,	//ƒEƒBƒ“ƒhƒEc•
-		NULL,					//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-		NULL,					//ƒƒjƒ…[ƒnƒ“ƒhƒ‹
-		hInstance,				//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-		NULL					//ƒIƒvƒVƒ‡ƒ“
+		0,						// æ‹¡å¼µã‚¹ã‚¿ã‚¤ãƒ«
+		wc.lpszClassName,		//ã‚¯ãƒ©ã‚¹åã®æŒ‡å®š
+		_T("DX12_Application"),	//ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®æ–‡å­—
+		WS_OVERLAPPEDWINDOW,	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«
+		CW_USEDEFAULT,			//è¡¨ç¤ºXåº§æ¨™ã¯OSã«ãŠä»»ã›ã—ã¾ã™
+		CW_USEDEFAULT,			//è¡¨ç¤ºYåº§æ¨™ã¯OSã«ãŠä»»ã›ã—ã¾ã™
+		wrc.right - wrc.left,	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æ¨ªå¹…
+		wrc.bottom - wrc.top,	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç¸¦å¹…
+		NULL,					//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+		NULL,					//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«
+		hInstance,				//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+		NULL					//ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 	);
 }
 
 void App::PrepareInstance()
 {
-	m_pEngine = new Engine();					//DirectX12ƒGƒ“ƒWƒ“‚Ì¶¬
-	m_pRenderer = new Renderer();				//ƒŒƒ“ƒ_ƒ‰[‚Ì¶¬
-	m_pInputManager = new InputManager();		//“ü—ÍŠÇ—ƒNƒ‰ƒX‚Ì¶¬
-	m_pSceneManager = new SceneManager(			//ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX‚Ì¶¬
+	m_pEngine = new Engine();					//DirectX12ã‚¨ãƒ³ã‚¸ãƒ³ã®ç”Ÿæˆ
+	m_pRenderer = new Renderer();				//ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã®ç”Ÿæˆ
+	m_pInputManager = new InputManager();		//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
+	m_pSceneManager = new SceneManager(			//ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
 		static_cast<float>(WINDOW_WIDTH),
 		static_cast<float>(WINDOW_HEIGHT)
 	);
-	m_pTextureManager = new TextureManager();	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚Ì¶¬
-	m_pMeshManager = new MeshManager();			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚Ì¶¬
+	m_pTextureManager = new TextureManager();	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
+	m_pMeshManager = new MeshManager();			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
+	m_pAudioManager = AudioManager::GetInstance();		//ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªç®¡ç†ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆ
+
 }
 
-//ƒCƒ“ƒXƒ^ƒ“ƒX‰Šú‰»
+//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åˆæœŸåŒ–
 void App::InitInstance()
 {
 	m_pEventManager = EventManager::GetInstance();
 
-	//DirectX12ƒGƒ“ƒWƒ“‰Šú‰»
+	//DirectX12ã‚¨ãƒ³ã‚¸ãƒ³åˆæœŸåŒ–
 	m_pEngine->Initialize(
-		hwnd,			//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-		WINDOW_WIDTH,	//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•
-		WINDOW_HEIGHT	//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³
+		hwnd,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+		WINDOW_WIDTH,	//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®å¹…
+		WINDOW_HEIGHT	//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•
 	);
 
-	//ƒfƒoƒCƒX‚Ìæ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹ã®å–å¾—
 	auto pDevice = m_pEngine->GetDevice();
 
-	//ƒŒƒ“ƒ_ƒ‰[‰Šú‰»
+	//ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼åˆæœŸåŒ–
 	m_pRenderer->Initialize(
-		pDevice,							//ƒfƒoƒCƒX
-		m_pSceneManager->GetCameraInfo()	//ƒJƒƒ‰î•ñ\‘¢‘Ì
+		pDevice,							//ãƒ‡ãƒã‚¤ã‚¹
+		m_pSceneManager->GetCameraInfo()	//ã‚«ãƒ¡ãƒ©æƒ…å ±æ§‹é€ ä½“
 	);
 
-	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‰Šú‰»
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
 	m_pTextureManager->Initialize(
-		pDevice,	//ƒfƒoƒCƒX
-		512			//Å‘åƒfƒBƒXƒNƒŠƒvƒ^”
+		pDevice,	//ãƒ‡ãƒã‚¤ã‚¹
+		512			//æœ€å¤§ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿æ•°
 	);
 
-	//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‰Šú‰»
+	//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
 	m_pMeshManager->Initialize(
-		pDevice	//ƒfƒoƒCƒX
+		pDevice	//ãƒ‡ãƒã‚¤ã‚¹
 	);
 
-	//ƒŒƒ“ƒ_[‚ğŠJn‚µ‚ÄƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğƒI[ƒvƒ“
+	//ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚’é–‹å§‹ã—ã¦ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 	m_pEngine->RenderBegin();	
 
-	//“ü—ÍŠÇ—ƒNƒ‰ƒX‰Šú‰»
-	m_pInputManager->Initialize();
+  m_pInputManager->Initialize();
+  
+	//ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªç®¡ç†ã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
+	if (m_pAudioManager)
+	{
+		m_pAudioManager->Initialize();
+		LoadAllGameSounds(*m_pAudioManager);	//ã‚«ã‚¿ãƒ­ã‚°é–¢æ•°ã‚’å‘¼ã¶
+	}
 
-	//ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX‰Šú‰»
+	//ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
 	m_pSceneManager->Initialize(
-		m_pInputManager,	//“ü—ÍŠÇ—ƒNƒ‰ƒX
-		m_pTextureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX
-		m_pMeshManager		//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX
+		m_pInputManager,	//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹
+		m_pTextureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹
+		m_pMeshManager		//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹
 	);
 
-	//ƒŒƒ“ƒ_[‚ğI—¹‚µ‚ÄƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğƒNƒ[ƒY
+	//ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚’çµ‚äº†ã—ã¦ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒ­ãƒ¼ã‚º
 	m_pEngine->RenderEnd();
 }
 
-//XV
+//æ›´æ–°
 void App::Update()
 {
 	if (isOnline && waitingForConnection) return;
-	//Œ»İ‚ÌƒoƒbƒNƒoƒbƒtƒ@ƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	//ç¾åœ¨ã®ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	const UINT backIdx = m_pEngine->GetCurrentBufferIndex();
 
-	//ŠeíXVˆ—
-	m_pRenderer->BeginFrame(backIdx);	//ƒtƒŒ[ƒ€ŠJni“à•”ƒLƒ…[‚ğƒNƒŠƒAj
+	//å„ç¨®æ›´æ–°å‡¦ç†
+	m_pRenderer->BeginFrame(backIdx);	//ãƒ•ãƒ¬ãƒ¼ãƒ é–‹å§‹ï¼ˆå†…éƒ¨ã‚­ãƒ¥ãƒ¼ã‚’ã‚¯ãƒªã‚¢ï¼‰
 
 	if (!isGameOver)
 	{
-		m_pInputManager->Update();			//“ü—ÍŠÇ—ƒNƒ‰ƒX‚ÌXV
-		m_pSceneManager->Update();			//ƒQ[ƒ€‚ÌXV
+		m_pInputManager->Update();			//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®æ›´æ–°
+		m_pSceneManager->Update();			//ã‚²ãƒ¼ãƒ ã®æ›´æ–°
 	}
 
-	m_pRenderer->Update(backIdx, *m_pSceneManager->GetCameraInfo());		//ƒŒƒ“ƒ_ƒ‰[‚ÌXV
+	if (m_pAudioManager) { m_pAudioManager->Update(); }	//ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã®æ›´æ–°
+
+	m_pRenderer->Update(backIdx, *m_pSceneManager->GetCameraInfo());		//ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã®æ›´æ–°
 }
 
-//•`‰æ
+//æç”»
 void App::Draw()
 {
-	//•`‰æŠJn
+	//æç”»é–‹å§‹
 	m_pEngine->RenderBegin();
 
-	//•Û—¯’†‚ÌƒeƒNƒXƒ`ƒƒ‚ğƒAƒbƒvƒ[ƒh
+	//ä¿ç•™ä¸­ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰
 	m_pTextureManager->UploadPendingTextures(m_pEngine->GetCommandList());
 
-	//ƒQ[ƒ€ƒV[ƒ“‚Ì•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã®æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 	m_pSceneManager->SubmitDraws(*m_pRenderer);
 
-	//ƒV[ƒ“‚Ì•`‰æ
+	//ã‚·ãƒ¼ãƒ³ã®æç”»
 	m_pRenderer->Draw(
-		m_pEngine->GetCurrentBufferIndex(),	//ƒoƒbƒtƒ@ƒCƒ“ƒfƒbƒNƒX
-		m_pEngine->GetCommandList(),		//ƒRƒ}ƒ“ƒhƒŠƒXƒg
-		*m_pTextureManager					//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX
+		m_pEngine->GetCurrentBufferIndex(),	//ãƒãƒƒãƒ•ã‚¡ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		m_pEngine->GetCommandList(),		//ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ
+		*m_pTextureManager					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹
 	);
 
-	//•`‰æI—¹
+	//æç”»çµ‚äº†
 	m_pEngine->RenderEnd();
 }
 
