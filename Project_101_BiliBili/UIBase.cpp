@@ -27,6 +27,8 @@ void UIBase::Initialize(
 // 更新
 void UIBase::Update() 
 {
+	if (m_isActive == false) return;	//非アクティブなら何もしない
+
 	UpdateOverride();
 	for(auto& child : m_children) 
 	{

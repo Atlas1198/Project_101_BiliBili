@@ -1,6 +1,7 @@
 #include "CharacterSelecter.h"
 #include "InputManager.h"
 #include "EventManager.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -18,12 +19,10 @@ void CharacterSelecter::Initialize()
 }
 
 //更新
-void CharacterSelecter::Update(
-	InputManager& inputManager,
-	SceneContext& sceneContext
-	)
+void CharacterSelecter::Update(SceneContext& sceneContext)
 {
-	auto controllers = inputManager.GetInputInfo()->controller;
+	auto inputInfo = sceneContext.pInputInfo;
+	auto controllers = inputInfo->controller;
 
 	if (m_isCalledGoToNextScene)
 	{//次のシーンへ進む処理
@@ -33,12 +32,13 @@ void CharacterSelecter::Update(
 			//ゲームシーンへの遷移イベント発行
 			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
 				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_GAME);
+			AudioManager::GetInstance()->StopBGM();
 		}
 	}
 	else
 	{
 		//テスト用キーボード入力処理
-		auto keyboard = inputManager.GetInputInfo()->key;
+		auto keyboard = inputInfo->key;
 		if (keyboard.space.trigger)
 		{
 			if (m_isAllSelected)
@@ -47,6 +47,7 @@ void CharacterSelecter::Update(
 				m_countToNextScene = 0;
 				EventManager::GetInstance()->TriggerEvent(
 					EventType::GO_TO_GAME_SCENE);
+				AudioManager::GetInstance()->PlaySE("CHARA_NEXT");
 			}
 			else
 			{
@@ -62,6 +63,7 @@ void CharacterSelecter::Update(
 						//選択済みアイコン表示イベント発行
 						EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 							EventType::SHOW_SELECTED_ICON, { i, state.characterIndex });
+						AudioManager::GetInstance()->PlaySE("CHARA_SET");
 					}
 				}
 			}
@@ -83,9 +85,12 @@ void CharacterSelecter::Update(
 				if (controller.B.trigger)
 				{
 					m_isCalledGoToNextScene = true;
+					sceneContext.pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30); //バイブレーション
 					m_countToNextScene = 0;
 					EventManager::GetInstance()->TriggerEvent(
 						EventType::GO_TO_GAME_SCENE);
+					AudioManager::GetInstance()->PlaySE("CHARA_NEXT");
+					AudioManager::GetInstance()->StopBGM();
 				}
 			}
 
@@ -97,6 +102,7 @@ void CharacterSelecter::Update(
 					//選択済みアイコン非表示イベント発行
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 						EventType::HIDE_SELECTED_ICON, { i, state.characterIndex });
+					AudioManager::GetInstance()->PlaySE("CHARA_RESET");
 				}
 			}
 			else if (!state.isSelected)
@@ -106,12 +112,14 @@ void CharacterSelecter::Update(
 					state.characterIndex = (std::max)(state.characterIndex - 1, 0);
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 						EventType::CHARACTER_ICON_MOVE, { i, state.characterIndex });
+					AudioManager::GetInstance()->PlaySE("CURSOR_MOVE");
 				}
 				else if (controller.RIGHT.trigger || (leftStick > deadZone && fabs(leftStickPast) < deadZone))
 				{//右入力
 					state.characterIndex = (std::min)(state.characterIndex + 1, 3);
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 						EventType::CHARACTER_ICON_MOVE, { i, state.characterIndex });
+					AudioManager::GetInstance()->PlaySE("CURSOR_MOVE");
 				}
 				else if (controller.B.trigger)
 				{//決定入力
@@ -131,9 +139,11 @@ void CharacterSelecter::Update(
 					if (!selectedByOther)
 					{
 						state.isSelected = true;
+						controller.SetVibration(1.0f, 1.0f, 10); //バイブレーション
 						//選択済みアイコン表示イベント発行
 						EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 							EventType::SHOW_SELECTED_ICON, { i, state.characterIndex });
+						AudioManager::GetInstance()->PlaySE("CHARA_SET");
 					}
 				}
 			}

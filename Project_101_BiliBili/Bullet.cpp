@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -117,18 +118,31 @@ void Bullet::ResolveCollisionsOverride()
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
 				);
+                EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+                    EventType::ADD_EFFECT,
+                    EffectCommand{
+                        EFFECT_TYPE::EXPLOSION,
+                        m_position,
+                        XMFLOAT2{ 2.5f,2.5f },
+                    }
+                    );
+                //コントローラー振動
+                otherPlayer->ShakeController(1.0f, 1.0f, 20);
             }
         }
+        else
+        {
+            //消滅
+            EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+                EventType::ADD_EFFECT,
+                EffectCommand{
+                    EFFECT_TYPE::FIRE_FLASH,
+                    m_position,
+                    XMFLOAT2{ 2.5f,2.5f },
+                }
+                );
+        }
 
-        //消滅
-        EventManager::GetInstance()->TriggerEvent<EffectCommand>(
-            EventType::ADD_EFFECT,
-            EffectCommand{
-                EFFECT_TYPE::FIRE_FLASH,
-                m_position,
-                XMFLOAT2{ 2.5f,2.5f },
-            }
-            );
         m_deleteFlag = true;
         SetActive(false);
         break;

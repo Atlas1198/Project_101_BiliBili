@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -30,11 +31,11 @@ void BulletManager::FireBullet(
 		bullet->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
     }
     m_bullets.push_back(std::move(bullet));
+    AudioManager::GetInstance()->PlaySE("Shoot");
 }
 
 
 void BulletManager::InitializeOverride(
-    InputManager* pInputManager,
     TextureManager& textureManager,
     MeshManager& meshManager,
     CollisionManager& collisionManager

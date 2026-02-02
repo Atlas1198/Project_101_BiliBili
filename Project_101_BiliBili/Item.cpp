@@ -1,11 +1,12 @@
 #include "Item.h"
 #include "EventManager.h"
 #include "Player.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 using namespace CollisionData;
 
-//繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
+//コンストラクタ
 Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
 	: ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::ITEM_TRANSFORM, COLLISION_LAYER::ITEM_TRANSFORM)
 {
@@ -33,12 +34,13 @@ Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rot
 	m_texSplitInfo = texInfo;
 }
 
-//譖ｴ譁ｰ
+//更新
 void Item::UpdateOverride()
 {
+	m_position.y += m_velocity.y;
 }
 
-//陦晉ｪ∬ｧ｣豎ｺ
+//衝突解決
 void Item::ResolveCollisionsOverride()
 {
 	auto& infos = m_pColliderSet->GetCollisionInfos();
@@ -56,7 +58,26 @@ void Item::ResolveCollisionsOverride()
 				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
 				//アイテム取得エフェクトの発生
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::BB_CUT_IN, std::make_pair(player->GetTeamID(), player->GetCharacterID()));
+				//アイテム取得時再生
+				AudioManager::GetInstance()->PlaySE("GAME_TF");
+				//コントローラー振動
+				player->ShakeController(1.0f, 1.0f, 10);
 			}
+		}
+
+		if (info.opponent && info.opponent->GetTag() == OBJECT_TAG::GROUND)
+		{
+			auto pushVector = GetPushOutVector(
+				infos,	//衝突情報配列
+				{//対象タグリスト(レイヤーマスクにも含まれている必要がある)
+					OBJECT_TAG::GROUND		//地面
+				}
+			);
+
+			m_position.x += pushVector.x;
+			m_position.y += pushVector.y;
+			m_position.z += pushVector.z;
+			m_velocity.y = 0.0f;
 		}
 	}
 }
