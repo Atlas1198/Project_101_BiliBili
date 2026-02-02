@@ -18,12 +18,10 @@ void CharacterSelecter::Initialize()
 }
 
 //更新
-void CharacterSelecter::Update(
-	InputManager& inputManager,
-	SceneContext& sceneContext
-	)
+void CharacterSelecter::Update(SceneContext& sceneContext)
 {
-	auto controllers = inputManager.GetInputInfo()->controller;
+	auto inputInfo = sceneContext.pInputInfo;
+	auto controllers = inputInfo->controller;
 
 	if (m_isCalledGoToNextScene)
 	{//次のシーンへ進む処理
@@ -38,7 +36,7 @@ void CharacterSelecter::Update(
 	else
 	{
 		//テスト用キーボード入力処理
-		auto keyboard = inputManager.GetInputInfo()->key;
+		auto keyboard = inputInfo->key;
 		if (keyboard.space.trigger)
 		{
 			if (m_isAllSelected)
@@ -83,6 +81,7 @@ void CharacterSelecter::Update(
 				if (controller.B.trigger)
 				{
 					m_isCalledGoToNextScene = true;
+					sceneContext.pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30); //バイブレーション
 					m_countToNextScene = 0;
 					EventManager::GetInstance()->TriggerEvent(
 						EventType::GO_TO_GAME_SCENE);
@@ -131,6 +130,7 @@ void CharacterSelecter::Update(
 					if (!selectedByOther)
 					{
 						state.isSelected = true;
+						controller.SetVibration(1.0f, 1.0f, 10); //バイブレーション
 						//選択済みアイコン表示イベント発行
 						EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 							EventType::SHOW_SELECTED_ICON, { i, state.characterIndex });

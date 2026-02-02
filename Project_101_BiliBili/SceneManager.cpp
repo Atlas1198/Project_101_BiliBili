@@ -1,6 +1,6 @@
 #include "SceneManager.h"
 #include "Renderer.h"
-#include "InputManager.h"
+#include "InputInfo.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "EventManager.h"
@@ -43,8 +43,11 @@ void SceneManager::Initialize(
 
 	SubscribeEvent();
 
+	//シーンコンテキスト構造体初期化
+	m_sceneContext.pInputInfo = m_pInputManager->GetInputInfo(); //入力情報構造体をコピーして保存
+
 	//最初のシーン初期化
-	m_pCurrentScene->Initialize(&m_sceneContext, pInputManager,*m_pTextureManager, *m_pMeshManager);
+	m_pCurrentScene->Initialize(&m_sceneContext,*m_pTextureManager, *m_pMeshManager);
 }
 
 //更新
@@ -114,8 +117,7 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 	SubscribeEvent();
 	//シーン変更後の初期化処理
 	m_pCurrentScene->Initialize(	//新しいシーン初期化
-		&m_sceneContext,		//シーンコンテキスト構造体
-		m_pInputManager,	//入力管理クラスのポインタ
+		&m_sceneContext,	//シーンコンテキスト構造体
 		*m_pTextureManager,	//テクスチャ管理クラスのポインタ
 		*m_pMeshManager		//メッシュ管理クラスのポインタ
 		); 

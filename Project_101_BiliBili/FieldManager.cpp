@@ -62,7 +62,7 @@ FieldManager::~FieldManager()
 }
 
 //初期化
-void FieldManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
+void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());

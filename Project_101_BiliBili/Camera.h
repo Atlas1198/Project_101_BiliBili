@@ -23,8 +23,8 @@ public:	//公開メンバ関数
 	Camera(float window_width, float window_height);	//コンストラクタ
 	~Camera() {};	// デストラクタ
 
-	void Initialize(InputManager* pInputManager);	//初期化
-	void Update();									//カメラ更新
+	void Initialize();	//初期化
+	void Update();		//カメラ更新
 
 	void SetPosition(const DirectX::XMFLOAT3& position);	//カメラの位置を設定
 	void SetTarget(const DirectX::XMFLOAT3& target);		//カメラの注視点を設定
@@ -48,8 +48,6 @@ private:	//非公開メンバ変数
 	float m_farZ = 0.0f;		//ファークリップ距離
 
 	CameraInfo m_cameraInfo{};	//カメラ情報構造体
-
-	InputInfo* m_pInputInfo = nullptr;	//入力管理クラスのポインタ
 
 private:	//非公開メンバ関数
 	void UpdateCameraInfo();	//カメラ情報構造体を更新

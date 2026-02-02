@@ -27,7 +27,6 @@ public:
 private:	//非公開メンバ変数
 	//メイン処理関数
 	void InitializeOverride(	//初期化
-		InputManager* pInputManager,		//入力マネージャーのポインタ
 		TextureManager& textureManager,		//テクスチャ管理クラスの参照
 		MeshManager& meshManager,			//メッシュ管理クラスの参照
 		CollisionManager& collisionManager	//衝突管理クラスの参照

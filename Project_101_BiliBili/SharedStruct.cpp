@@ -8,6 +8,7 @@
 #include "MeshManager.h"
 #include "Collider.h"
 #include "ObjectBase.h"
+#include "InputInfo.h"
 
 using namespace DirectX;
 

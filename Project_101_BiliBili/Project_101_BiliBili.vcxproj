@@ -165,8 +165,10 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="Context.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="ControllerConnecter.h" />
+    <ClInclude Include="ControllerIconUI.h" />
     <ClInclude Include="ControllerScene.h" />
     <ClInclude Include="ControllerUIManager.h" />
     <ClInclude Include="CountUI.h" />
@@ -189,6 +191,7 @@
     <ClInclude Include="Ground.h" />
     <ClInclude Include="HPBarUI.h" />
     <ClInclude Include="IconUI.h" />
+    <ClInclude Include="InputInfo.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="json.hpp" />
@@ -255,6 +258,7 @@
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="ControllerConnecter.cpp" />
+    <ClCompile Include="ControllerIconUI.cpp" />
     <ClCompile Include="ControllerScene.cpp" />
     <ClCompile Include="ControllerUIManager.cpp" />
     <ClCompile Include="CountUI.cpp" />
@@ -272,6 +276,7 @@
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="HPBarUI.cpp" />
     <ClCompile Include="IconUI.cpp" />
+    <ClCompile Include="InputInfo.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="LineBB.cpp" />

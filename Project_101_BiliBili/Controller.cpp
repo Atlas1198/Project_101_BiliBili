@@ -39,7 +39,19 @@ void Controller::Update(ControllerInputInfo* inputInfo)
 			// 離下情報の更新
 			UpdateUpState(cs, inputInfo[i]);		//現在の状態と前回の状態を比較して離下判定をする
 			// スティック情報の更新
-			UpdateStickState(cs, inputInfo[i]);	//スティックの状態を更新
+			UpdateStickState(cs, inputInfo[i]);		//スティックの状態を更新
+			// バイブレーションの状態を更新
+			XInputSetState(i, &cs.vibration);
+			// バイブレーションの継続時間を減少
+			if(cs.vibrationDuration > 0)
+			{
+				cs.vibrationDuration--;
+				if(cs.vibrationDuration <= 0)
+				{
+					// バイブレーション停止
+					StopVibration(i);
+				}
+			}
 		}
 		else
 		{
@@ -48,7 +60,12 @@ void Controller::Update(ControllerInputInfo* inputInfo)
 			// 状態をクリア　（古い状態が残らないよう初期化）
 			cs.state = {};
 			cs.prevState = {};
+
+			int index = inputInfo[i].index;
+			auto pInputManager = inputInfo[i].pInputManager;
 			inputInfo[i] = ControllerInputInfo{};
+			inputInfo[i].SetIndex(index);
+			inputInfo[i].SetInputManager(pInputManager);
 		}
 	}
 }
@@ -65,6 +82,46 @@ void Controller::CopyState()
 			cs.prevState = cs.state;
 		}
 		// 接続されていない場合はUpdateでクリアされているため処理は不要
+	}
+}
+
+// Set Vibration for selected controller
+void Controller::SetVibration(int index, float leftMotor, float rightMotor, int duration)
+{
+	if (m_controllers[index].vibrationDuration > 0) return;
+
+	XINPUT_VIBRATION vibration = {};
+	vibration.wLeftMotorSpeed = static_cast<WORD>(leftMotor * 65535.0f);
+	vibration.wRightMotorSpeed = static_cast<WORD>(rightMotor * 65535.0f);
+	m_controllers[index].vibration = vibration;
+	m_controllers[index].vibrationDuration = duration;
+}
+
+// Set Vibration for all controllers
+void Controller::SetAllVibrations(float leftMotor, float rightMotor, int duration)
+{
+	for (int i = 0; i < CONTROLLERS_MAX; ++i)
+	{
+		SetVibration(i, leftMotor, rightMotor, duration);
+	}
+}
+
+// Stop Vibration for selected controller
+void Controller::StopVibration(int index)
+{
+	XINPUT_VIBRATION vibration = {};
+	vibration.wLeftMotorSpeed = 0;
+	vibration.wRightMotorSpeed = 0;
+	m_controllers[index].vibration = vibration;
+	m_controllers[index].vibrationDuration = 0;
+}
+
+// Stop Vibration for all controllers
+void Controller::StopAllVibrations()
+{
+	for (int i = 0; i < CONTROLLERS_MAX; ++i)
+	{
+		StopVibration(i);
 	}
 }
 

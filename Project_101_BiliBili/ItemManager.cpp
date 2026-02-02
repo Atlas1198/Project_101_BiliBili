@@ -29,7 +29,7 @@ ItemManager::~ItemManager()
 }
 
 //初期化
-void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
+void ItemManager::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
 	m_pCollisionManager = &collisionManager;
 

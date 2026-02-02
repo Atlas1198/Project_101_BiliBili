@@ -3,6 +3,7 @@
 #include "SharedStruct.h"
 #include "RenderData.h"
 #include "UIimage.h"
+#include "ControllerIconUI.h"
 
 //ëOï˚êÈåæ
 struct InputInfo;
@@ -31,7 +32,9 @@ private:
 	UIImage* m_pBackgroundImage = nullptr;
 	UIImage* m_pHeaderImage = nullptr;
 	UIImage* m_pControllerIconBase = nullptr;
-	UIImage* m_pControllerIcons[4] = { nullptr, nullptr, nullptr, nullptr };
+
+	ControllerIconUI* m_pControllerIconUIs[4] = { nullptr, nullptr, nullptr, nullptr };
+
 	UIImage* m_pGoToNextSceneIcon = nullptr;
 
 	int m_passedFrameCount = 0;

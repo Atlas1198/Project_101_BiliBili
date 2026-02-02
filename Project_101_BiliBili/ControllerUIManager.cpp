@@ -43,48 +43,48 @@ void ControllerUIManager::InitializeOverride(
 
 	float edge = 1777.0f * 0.5f;
 	float posEdge = edge - 415.0f * 0.5f;
-	const float scaleFactor = 1.4f;
 
-	m_pControllerIcons[0] = new UIImage(
+	m_pControllerIconUIs[0] = new ControllerIconUI(
 		{ -posEdge, 0.0f, 0.0f },	//位置
-		{ 415.0f * scaleFactor, 414.0f * scaleFactor, 1.0f },//スケール
+		{ 1.0f, 1.0f, 1.0f },//スケール
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		3,						//描画順序
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_1.png",
 		BLEND_MODE::BLEND_TRANSPARENT
 	);
 
-	m_pControllerIcons[1] = new UIImage(
+	m_pControllerIconUIs[1] = new ControllerIconUI(
 		{ -posEdge + 39 + 415.0f, 0.0f, 0.0f },	//位置
-		{ 415.0f * scaleFactor, 414.0f * scaleFactor, 1.0f },//スケール
+		{ 1.0f, 1.0f, 1.0f },//スケール
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		3,						//描画順序
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_2.png",
 		BLEND_MODE::BLEND_TRANSPARENT
 	);
 
-	m_pControllerIcons[2] = new UIImage(
+	m_pControllerIconUIs[2] = new ControllerIconUI(
 		{ 39 * 0.5f + 415.0f * 0.5f, 0.0f, 0.0f },	//位置
-		{ 415.0f * scaleFactor, 414.0f * scaleFactor, 1.0f },//スケール
+		{ 1.0f, 1.0f, 1.0f },//スケール
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		3,						//描画順序
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_3.png",
 		BLEND_MODE::BLEND_TRANSPARENT
 	);
 
-	m_pControllerIcons[3] = new UIImage(
+	m_pControllerIconUIs[3] = new ControllerIconUI(
 		{ posEdge, 0.0f, 0.0f },	//位置
-		{ 415.0f * scaleFactor, 414.0f * scaleFactor, 1.0f },	//スケール
+		{ 1.0f, 1.0f, 1.0f },//スケール
 		{ 0.0f, 0.0f, 0.0f },		//回転
 		3,							//描画順序
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_4.png",
 		BLEND_MODE::BLEND_TRANSPARENT
 	);
 
-	for(auto& icon : m_pControllerIcons)
+	for(auto& icon : m_pControllerIconUIs)
 	{
 		icon->SetActive(false);
 		m_roots.push_back(std::unique_ptr<UIBase>(icon));
+		icon->Initialize(textureManager, meshManager);
 	}
 
 	m_pGoToNextSceneIcon = new UIImage(
@@ -96,7 +96,6 @@ void ControllerUIManager::InitializeOverride(
 		BLEND_MODE::BLEND_TRANSPARENT
 	);
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pGoToNextSceneIcon));
-
 
 	//テスト用エフェクトコマンド追加
 	using args = int;
@@ -125,32 +124,7 @@ void ControllerUIManager::UpdateOverride()
 {
 	m_passedFrameCount++;
 
-	//接続済みコントローラーアイコンのスケール調整
-	for(auto& controller : m_pControllerIcons)
-	{
-		if(controller->IsActive())
-		{
-			auto scale = controller->GetLocalTransform().scale;
-			scale.x *= 0.95f;
-			scale.y *= 0.95f;
-
-			XMFLOAT3 setScale =
-			{
-				(std::max)(415.0f, scale.x),
-				(std::max)(414.0f, scale.y),
-				1.0f
-			};
-
-			controller->SetLocalTransform(
-				{
-					controller->GetLocalTransform().position,
-					setScale,
-					controller->GetLocalTransform().rotation
-				}
-			);
-		}
-	}
-
+	//次のシーンへ進むアイコンのスケールアニメーション
 	float scaleFactor = 1.0f + 0.05f * std::sin(static_cast<float>(m_passedFrameCount) * 0.04f);
 	m_pGoToNextSceneIcon->SetLocalTransform(
 		{
@@ -173,11 +147,16 @@ void ControllerUIManager::SetIconConnected(int index)
 	{
 		return;
 	}
-	m_pControllerIcons[index]->SetActive(true);
+
+	m_pControllerIconUIs[index]->SetActive(true);
 }
 
 //コントローラー接続アイコンの入力リアクション
 void ControllerUIManager::ConnectedIconReaction(int index, const InputInfo& inputInfo)
 {
-
+	if (index < 0 || index >= 4)
+	{
+		return;
+	}
+	m_pControllerIconUIs[index]->ActivateReaction(inputInfo);
 }

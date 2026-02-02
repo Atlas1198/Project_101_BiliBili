@@ -26,7 +26,6 @@ TitleScene::~TitleScene()
 
 //初期化
 void TitleScene::InitializeOverride(
-	InputManager* pInputManager,		//入力管理クラスのポインタ
 	TextureManager& pTextureManager,	//テクスチャ管理クラスの参照
 	MeshManager& pMeshManager			//メッシュ管理クラスの参照
 )
@@ -39,19 +38,19 @@ void TitleScene::UpdateOverride()
 {
 	if (!m_pTitleUIManager->IsFading())
 	{
+		auto inputInfo = m_pSceneContext->pInputInfo;
 		//スペースキーでタイトルシーンへ遷移(テスト用)
-		if (m_pInputManager != nullptr &&
-			m_pInputManager->GetInputInfo() != nullptr &&
-			m_pInputManager->GetInputInfo()->key.space.trigger)
+		if (inputInfo->key.space.trigger)
 		{
 			//フェードアウト開始
 			m_pTitleUIManager->StartFadeOut(0.05f);
 		}
 		//コントローラーの任意のボタン入力でコントローラー設定シーンへ遷移
-		for (auto& controller : m_pInputManager->GetInputInfo()->controller)
+		for (auto& controller : inputInfo->controller)
 		{
 			if (controller.anyButton.trigger)
 			{
+				controller.SetVibration(1.0f, 1.0f, 30); //振動セット
 				//フェードアウト開始
 				m_pTitleUIManager->StartFadeOut(0.05f);
 			}

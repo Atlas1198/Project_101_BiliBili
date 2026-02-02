@@ -49,9 +49,9 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 }
 
 //初期化
-void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManager)
+void Player::Initialize(InputInfo* inputInfo, BulletManager* pBulletManager)
 {
-	m_pInputInfo = pInputManager->GetInputInfo();	//入力情報構造体の取得
+	m_pInputInfo = inputInfo;	//入力情報構造体の取得
 	m_pBulletManager = pBulletManager;
 	gameTimer.Mark();
 	Reset();
@@ -231,6 +231,7 @@ void Player::ResolveCollisionsOverride()
 					// m_ignoreCollisionFrame = 5;
 
 					spring->SetIsBlowing(true);
+					m_pSceneContext->pInputInfo->controller[controllerID].SetVibration(1.0f, 1.0f, 10);
 				}
 			}
 		}
@@ -522,6 +523,7 @@ void Player::Shoot()
 		{
 		case 0:
 			shoot = m_pInputInfo->key.z.trigger || m_pInputInfo->controller[0].B.trigger;
+			
 			break;
 		case 1:
 			shoot = m_pInputInfo->key.c.trigger || m_pInputInfo->controller[1].B.trigger;

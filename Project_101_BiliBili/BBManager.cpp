@@ -22,7 +22,6 @@ BBManager::~BBManager()
 }
 
 void BBManager::InitializeOverride(
-	InputManager* pInputManager,
 	TextureManager& textureManager,
 	MeshManager& meshManager,
 	CollisionManager& collisionManager

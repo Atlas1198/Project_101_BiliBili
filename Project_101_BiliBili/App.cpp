@@ -209,7 +209,6 @@ void App::Terminate()
 	m_pEngine->Terminate(); //DirectX12エンジンの終了
 
 	//delete m_pCamera;		//カメラの解放
-	delete m_pInputManager;	//入力管理クラスの解放
 	delete m_pRenderer;		//レンダラーの解放
 	delete m_pSceneManager;	//シーン管理の解放
 
@@ -304,15 +303,15 @@ void App::InitInstance()
 	//レンダーを開始してコマンドリストをオープン
 	m_pEngine->RenderBegin();	
 
+	//入力管理クラス初期化
+	m_pInputManager->Initialize();
+
 	//シーン管理クラス初期化
 	m_pSceneManager->Initialize(
 		m_pInputManager,	//入力管理クラス
 		m_pTextureManager,	//テクスチャ管理クラス
 		m_pMeshManager		//メッシュ管理クラス
 	);
-
-	//入力管理クラス初期化
-	m_pInputManager->Initialize();
 
 	//レンダーを終了してコマンドリストをクローズ
 	m_pEngine->RenderEnd();
