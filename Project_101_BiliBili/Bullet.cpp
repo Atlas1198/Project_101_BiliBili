@@ -111,19 +111,29 @@ void Bullet::ResolveCollisionsOverride()
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
 				);
-                AudioManager::GetInstance()->PlaySE("HIT");
+                EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+                    EventType::ADD_EFFECT,
+                    EffectCommand{
+                        EFFECT_TYPE::EXPLOSION,
+                        m_position,
+                        XMFLOAT2{ 2.5f,2.5f },
+                    }
+                    );
             }
         }
+        else
+        {
+            //消滅
+            EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+                EventType::ADD_EFFECT,
+                EffectCommand{
+                    EFFECT_TYPE::FIRE_FLASH,
+                    m_position,
+                    XMFLOAT2{ 2.5f,2.5f },
+                }
+                );
+        }
 
-        //消滅
-        EventManager::GetInstance()->TriggerEvent<EffectCommand>(
-            EventType::ADD_EFFECT,
-            EffectCommand{
-                EFFECT_TYPE::FIRE_FLASH,
-                m_position,
-                XMFLOAT2{ 2.5f,2.5f },
-            }
-            );
         m_deleteFlag = true;
         SetActive(false);
         break;

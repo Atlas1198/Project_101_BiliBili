@@ -279,7 +279,16 @@
     <ClInclude Include="StageUIManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="AudioManager.h">
+    <ClInclude Include="InputInfo.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Context.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerIconUI.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+      <ClInclude Include="AudioManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="AudioResources.h">
@@ -518,7 +527,13 @@
     <ClCompile Include="StageUIManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="AudioResources.cpp">
+    <ClCompile Include="InputInfo.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ControllerIconUI.cpp">
+       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+      <ClCompile Include="AudioResources.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="AudioManager.cpp">

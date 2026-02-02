@@ -36,7 +36,6 @@ void BulletManager::FireBullet(
 
 
 void BulletManager::InitializeOverride(
-    InputManager* pInputManager,
     TextureManager& textureManager,
     MeshManager& meshManager,
     CollisionManager& collisionManager

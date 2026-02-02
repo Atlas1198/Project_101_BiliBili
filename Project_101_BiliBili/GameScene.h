@@ -32,13 +32,12 @@ public:	//公開関数
 
 	//メイン処理関数
 	void InitializeOverride(									//初期化
-		InputManager* pInputManager,		//入力マネージャーのポインタ
 		TextureManager& pTextureManager,	//テクスチャ管理クラスの参照
 		MeshManager& pMeshManager			//メッシュ管理クラスの参照
 	) override;
-	void UpdateOverride() override;						//更新
-	void ResolveCollisions() override;					//衝突後処理
-	void DrawOverride(Renderer& pRenderer) override;	//描画
+	void UpdateOverride() override;								//更新
+	void ResolveCollisions() override;							//衝突後処理
+	void DrawOverride(Renderer& pRenderer) override;			//描画
 	void FinalizeOverride() override;							//終了
 	void AddPlayer(uint32_t id, InputManager *pInputManager);
 	void SpawnPlayers(InputManager *pInputManager);

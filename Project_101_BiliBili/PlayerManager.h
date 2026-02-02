@@ -30,7 +30,6 @@ private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
 	std::vector<WorldRenderInfo> m_playerInfo[4];					//プレイヤー描画情報
 	std::vector<WorldRenderInfo> m_playerTransformInfo[4];			//プレイヤー変身描画情報
-	InputManager* m_pInputManager = nullptr;					//入力マネージャーポインタ
 	float teamHP[2] = { 1.0f, 1.0f };							//チームの体力
 	bool teamBBActive[2] = { false, false };					//チームのBBアクティブフラグ
 
@@ -42,7 +41,6 @@ public:
 
 	//メイン処理関数
 	void InitializeOverride(	//初期化
-		InputManager* pInputManager,		//入力マネージャーのポインタ
 		TextureManager& pTextureManager,	//テクスチャ管理クラスのポインタ
 		MeshManager& pMeshManager,			//メッシュ管理クラスのポインタ
 		CollisionManager& collisionManager	//衝突管理クラスの参照

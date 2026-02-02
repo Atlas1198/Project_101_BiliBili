@@ -1,7 +1,7 @@
 #include "TransformItemManager.h"
 #include "Renderer.h"
 
-void TransformItemManager::InitializeOverride(InputManager* pInputManager,
+void TransformItemManager::InitializeOverride(
     TextureManager& textureManager,
     MeshManager& meshManager,
     CollisionManager& collisionManager)

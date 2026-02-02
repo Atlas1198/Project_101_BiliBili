@@ -68,14 +68,12 @@ GameScene::~GameScene()
 
 //初期化
 void GameScene::InitializeOverride(
-	InputManager* pInputManager,		//入力マネージャーのポインタ
 	TextureManager& pTextureManager,	//テクスチャ管理クラスのポインタ
 	MeshManager& pMeshManager			//メッシュ管理クラスのポインタ
 )
 {
 	m_pPlayerManager->Initialize(	//プレイヤー管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -83,7 +81,6 @@ void GameScene::InitializeOverride(
 
 	m_pFieldManager->Initialize(	//フィールド管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -96,7 +93,6 @@ void GameScene::InitializeOverride(
 
 	m_pBulletManager->Initialize( //弾管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -104,7 +100,6 @@ void GameScene::InitializeOverride(
 
 	m_pItemManager->Initialize(		//アイテム管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -116,7 +111,6 @@ void GameScene::InitializeOverride(
 	m_pBBManager->SetCollisionManager(m_pCollisionManager);
 	m_pBBManager->Initialize(			//BB管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -245,6 +239,8 @@ void GameScene::FinalizeOverride()
 //カウントダウン中の更新処理
 void GameScene::CountdownUpdate()
 {
+	m_pFieldManager->Update();	//フィールド管理クラス更新
+
 	//定数定義
 	const int COUNTDOWN_DURATION = 240;	//カウントダウンの総フレーム数（4秒間）
 	const int FRAMES_PER_SECOND = 60;	//1秒あたりのフレーム数
@@ -319,7 +315,7 @@ void GameScene::PlayUpdate()
 	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
 	m_pBBManager->Update();		//BB管理クラス更新
 
-	if (m_pInputManager->GetInputInfo()->key.enter.trigger)
+	if (m_pSceneContext->pInputInfo->key.enter.trigger)
 	{
 		if (m_pCamera->GetCameraInfo()->position.y == 0.0f)
 		{
@@ -364,8 +360,8 @@ void GameScene::ResultUpdate()
 	}
 	else if (m_timer > WAIT_DURATION)
 	{
-		auto& controllers = m_pInputManager->GetInputInfo()->controller;
-		auto& keyInput = m_pInputManager->GetInputInfo()->key;
+		auto& controllers = m_pSceneContext->pInputInfo->controller;
+		auto& keyInput = m_pSceneContext->pInputInfo->key;
 
 		for (size_t i = 0; i < 4; ++i)
 		{
@@ -373,6 +369,7 @@ void GameScene::ResultUpdate()
 
 			if (controller.anyButton.trigger || keyInput.space.trigger)
 			{
+				m_pSceneContext->pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30);
 				EventManager::GetInstance()->TriggerEvent(EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE);
 			}
 		}

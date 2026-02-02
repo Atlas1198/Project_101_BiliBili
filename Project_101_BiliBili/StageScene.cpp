@@ -23,7 +23,6 @@ StageScene::~StageScene()
 
 //シーン固有の初期化
 void StageScene::InitializeOverride(
-	InputManager* pInputManager,		//入力管理クラスのポインタ
 	TextureManager& pTextureManager,	//テクスチャ管理クラスの参照
 	MeshManager& pMeshManager			//メッシュ管理クラスの参照
 )
@@ -44,10 +43,7 @@ void StageScene::InitializeOverride(
 //シーン固有の更新
 void StageScene::UpdateOverride()
 {
-	m_pStageSelector->Update(
-		*m_pInputManager->GetInputInfo(),
-		*m_pSceneContext
-	);
+	m_pStageSelector->Update(*m_pSceneContext);
 
 	m_pUIManager->Update();
 

@@ -15,7 +15,6 @@ SceneBase::SceneBase(float window_width, float window_height)
 //初期化
 void SceneBase::Initialize(
 	SceneContext* pSceneContext,
-	InputManager* pInputManager,
 	TextureManager& pTextureManager,
 	MeshManager& pMeshManager
 )
@@ -23,11 +22,8 @@ void SceneBase::Initialize(
 	//シーンコンテキスト保存
 	m_pSceneContext = pSceneContext;
 
-	//入力管理クラス保存
-	m_pInputManager = pInputManager;
-
 	//カメラ初期化
-	m_pCamera->Initialize(pInputManager);
+	m_pCamera->Initialize();
 
 	//初期化
 	m_pCollisionManager->Initialize(pTextureManager, pMeshManager);
@@ -36,14 +32,13 @@ void SceneBase::Initialize(
 	m_pEffectManager->Initialize(pTextureManager, pMeshManager);
 
 	//シーン固有の初期化呼び出し
-	InitializeOverride(pInputManager, pTextureManager, pMeshManager);
-
+	InitializeOverride(pTextureManager, pMeshManager);
 }
 
 //更新
 void SceneBase::Update()
 {
-	if(m_pInputManager->GetInputInfo()->key.p.trigger)
+	if(m_pSceneContext->pInputInfo->key.p.trigger)
 	{
 		m_drawColliders = !m_drawColliders;
 	}

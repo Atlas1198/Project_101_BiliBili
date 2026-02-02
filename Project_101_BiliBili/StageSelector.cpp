@@ -13,10 +13,7 @@ void StageSelector::Initialize()
 }
 
 //更新
-void StageSelector::Update(
-	InputInfo& input,
-	SceneContext& context
-)
+void StageSelector::Update(SceneContext& context)
 {
 	if (m_isSelected) return;	//選択済みの場合は処理をスキップ
 
@@ -31,10 +28,11 @@ void StageSelector::Update(
 	//コントローラー入力取得
 	for (int i = 0; i < CONTROLLERS_MAX; i++)
 	{
-		auto controller = input.controller[i];
+		auto& controller = context.pInputInfo->controller[i];
 
 		//決定(B)
 		select |= controller.B.trigger;
+		if (select) controller.SetVibration(1.0f, 1.0f, 10); //バイブレーション
 
 		//カーソル操作
 		//十字キー
@@ -49,9 +47,10 @@ void StageSelector::Update(
 	}
 
 	//キーボード入力
-	select |= input.key.space.trigger;
-	left |= input.key.left.trigger;
-	right |= input.key.right.trigger;
+	auto& keyInput = context.pInputInfo->key;
+	select |= keyInput.space.trigger;
+	left |= keyInput.left.trigger;
+	right |= keyInput.right.trigger;
 
 	if (left) m_cursor--;
 	if (right) m_cursor++;

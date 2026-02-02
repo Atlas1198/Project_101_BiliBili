@@ -17,7 +17,6 @@ SelectionScene::~SelectionScene()
 
 //初期化
 void SelectionScene::InitializeOverride(
-	InputManager* pInputManager,		//入力管理クラスのポインタ
 	TextureManager& pTextureManager,	//テクスチャ管理クラスの参照
 	MeshManager& pMeshManager			//メッシュ管理クラスの参照
 )

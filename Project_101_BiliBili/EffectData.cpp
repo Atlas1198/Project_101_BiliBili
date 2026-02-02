@@ -26,10 +26,30 @@ const EffectTemplate g_effectTemplateListGame[] =
          { 1.0f,1.0f },								//基本サイズ
          { 1.0f,1.0f,1.0f,1.0f },					//基本色RGBA
          20.0f,										//寿命
+    },
+    {
+         EFFECT_TYPE::EXPLOSION,				    //エフェクトタイプ
+         MESH_TYPE::QUAD,					        //メッシュデータ
+         L"asset/texture/effect/explosion_EF.png",	//テクスチャパス
+         { 0, 9, 1, 9, 0, 2 },						//テクスチャ分割情報
+         BLEND_MODE::BLEND_TRANSPARENT,				//ブレンドモード
+         { 1.0f,1.0f },								//基本サイズ
+         { 1.0f,1.0f,1.0f,1.0f },					//基本色RGBA
+         18.0f,										//寿命
+    },
+    {
+         EFFECT_TYPE::WIND,				            //エフェクトタイプ
+         MESH_TYPE::QUAD,					        //メッシュデータ
+         L"asset/texture/effect/wind_EF.png",	    //テクスチャパス
+         { 0, 6, 5, 30, 0, 2 },						//テクスチャ分割情報
+         BLEND_MODE::BLEND_TRANSPARENT,				//ブレンドモード
+         { 1.0f,1.0f },								//基本サイズ
+         { 1.0f,1.0f,1.0f,1.0f },					//基本色RGBA
+         -1.0f,										//寿命
     }
 };
 
-//シーン別エフェクトテンプレートリスト
+//エフェクトテンプレートリスト
 EffectTemplateSet GetEffectTemplate()
 {
     EffectTemplateSet set;

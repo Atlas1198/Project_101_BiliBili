@@ -26,7 +26,6 @@ CharacterScene::~CharacterScene()
 
 //シーン固有の初期化
 void CharacterScene::InitializeOverride(
-	InputManager* pInputManager,		//入力管理クラスのポインタ
 	TextureManager& pTextureManager,	//テクスチャ管理クラスの参照
 	MeshManager& pMeshManager			//メッシュ管理クラスの参照
 )
@@ -40,7 +39,7 @@ void CharacterScene::InitializeOverride(
 //シーン固有の更新
 void CharacterScene::UpdateOverride()
 {
-	m_pCharacterSelecter->Update(*m_pInputManager, *m_pSceneContext);
+	m_pCharacterSelecter->Update(*m_pSceneContext);
 	m_pCharacterUIManager->Update();
 }
 

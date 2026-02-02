@@ -28,7 +28,6 @@ public:
 	~BBManager();	//チE��トラクタ
 	//メイン処琁E��数
 	void InitializeOverride(	//初期匁E
-		InputManager* pInputManager,
 		TextureManager& textureManager,
 		MeshManager& meshManager,
 		CollisionManager& collisionManager

@@ -37,7 +37,7 @@ public:
 	static constexpr int MAX_BULLETS_PER_TEAM = 6;
 
 protected:
-    void InitializeOverride(InputManager* pInputManager,
+    void InitializeOverride(
         TextureManager& textureManager,
         MeshManager& meshManager,
         CollisionManager& collisionManager) override;

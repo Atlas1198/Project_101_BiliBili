@@ -2,24 +2,23 @@
 #include <d3d12.h>  // DirectX12を使用するため
 #include <Xinput.h> // Xboxこんとろーらー入力を可能にする
 #include <array>	// std::arrayを使用するため
+#include "InputInfo.h"
 
 // XInput.libをリンク	あるならいらない
 #pragma comment(lib, "xinput.lib")
 
-//前方宣言
-struct ControllerInputInfo;
-
 // コントローラーが接続できる最大数　
-static constexpr int CONTROLLERS_MAX = 4;
 static constexpr float DEADZONE_L = 0.4f;
 static constexpr float DEADZONE_R = 0.4f;
 
 // 1つのコントローラーの状態を表す構造体
 struct ControllerState
 {
-	bool isConnected = false;		// 接続状態
-	XINPUT_STATE state = {};		// 現在フレームの状態データ
-	XINPUT_STATE prevState = {};	// １フレーム前の状態データ
+	bool isConnected = false;			// 接続状態
+	XINPUT_STATE state = {};			// 現在フレームの状態データ
+	XINPUT_STATE prevState = {};		// １フレーム前の状態データ
+	XINPUT_VIBRATION vibration = {};	// バイブレーション状態
+	int vibrationDuration = 0;			// バイブレーションの継続時間（ミリ秒）
 };
 
 // コントローラー管理クラス
@@ -44,6 +43,12 @@ public:
 
 	// 指定したインデックスのコントローラー状態を取得（0~3）
 	const ControllerState& GetState(int index) const;
+
+	// Vibration Functions
+	void SetVibration(int index, float leftMotor, float rightMotor, int duration);
+	void SetAllVibrations(float leftMotor, float rightMotor, int duration);
+	void StopVibration(int index);
+	void StopAllVibrations();
 
 private:
 	//Update Input State Functions

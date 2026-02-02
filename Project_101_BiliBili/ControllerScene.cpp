@@ -16,7 +16,7 @@ ControllerScene::~ControllerScene()
 }
 
 //シーン固有の初期化
-void ControllerScene::InitializeOverride(InputManager* pInputManager, TextureManager& pTextureManager, MeshManager& pMeshManager)
+void ControllerScene::InitializeOverride(TextureManager& pTextureManager, MeshManager& pMeshManager)
 {
 	m_pControllerConnecter->Initialize();
 	m_pUIManager->Initialize(pTextureManager, pMeshManager);
@@ -27,7 +27,7 @@ void ControllerScene::InitializeOverride(InputManager* pInputManager, TextureMan
 //シーン固有の更新
 void ControllerScene::UpdateOverride()
 {
-	m_pControllerConnecter->Update(*m_pInputManager);
+	m_pControllerConnecter->Update(*m_pSceneContext);
 	m_pUIManager->Update();
 } 
 

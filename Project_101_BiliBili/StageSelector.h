@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "SharedStruct.h"
+#include "Context.h"
 
 //‘O•ûéŒ¾
 struct InputInfo;
@@ -10,10 +11,7 @@ class StageSelector
 {
 public:
 	void Initialize();
-	void Update(
-		InputInfo& input,
-		SceneContext& context
-	);
+	void Update(SceneContext& context);
 	void Finalize();
 
 	bool IsSelected() { return m_isSelected; }

@@ -4,8 +4,15 @@
 //初期化
 void InputManager::Initialize()
 {
-	Keyboard_Initialize(); //キーボード初期化
+	Keyboard_Initialize();		//キーボード初期化
 	m_controller.Initialize();	//追加コントローラー初期化
+
+	//コントローラーインデックスセット
+	for (int i = 0; i < CONTROLLERS_MAX; ++i)
+	{
+		m_inputInfo.controller[i].SetIndex(i);
+		m_inputInfo.controller[i].SetInputManager(this);
+	}
 }
 
 //更新
@@ -16,7 +23,6 @@ void InputManager::Update()
 	UpdateUpKeyInfo();		// Update Up Key Info
 
 	m_controller.Update(m_inputInfo.controller);	// Update Controller Info
-
 }
 
 //キー情報コピー
@@ -30,6 +36,30 @@ void InputManager::Copy()
 InputInfo* InputManager::GetInputInfo()
 {
 	return &m_inputInfo;
+}
+
+//コントローラー振動セット
+void InputManager::SetControllerVibration(int index, float leftMotor, float rightMotor, int duration)
+{
+	m_controller.SetVibration(index, leftMotor, rightMotor, duration);
+}
+
+//全コントローラー振動セット
+void InputManager::SetAllControllerVibrations(float leftMotor, float rightMotor, int duration)
+{
+	m_controller.SetAllVibrations(leftMotor, rightMotor, duration);
+}
+
+//コントローラー振動停止
+void InputManager::StopControllerVibration(int index)
+{
+	m_controller.StopVibration(index);
+}
+
+//全コントローラー振動停止
+void InputManager::StopAllControllerVibrations()
+{
+	m_controller.StopAllVibrations();
 }
 
 
@@ -48,16 +78,18 @@ void InputManager::UpdateTriggerKeyInfo()
 	m_inputInfo.key.j.trigger = Keyboard_IsKeyDownTrigger(KK_J);
 	m_inputInfo.key.k.trigger = Keyboard_IsKeyDownTrigger(KK_K);
 	m_inputInfo.key.l.trigger = Keyboard_IsKeyDownTrigger(KK_L);
+	m_inputInfo.key.p.trigger = Keyboard_IsKeyDownTrigger(KK_P);
+	m_inputInfo.key.z.trigger = Keyboard_IsKeyDownTrigger(KK_Z);
+	m_inputInfo.key.c.trigger = Keyboard_IsKeyDownTrigger(KK_C);
+	m_inputInfo.key.n.trigger = Keyboard_IsKeyDownTrigger(KK_N);
+	m_inputInfo.key.q.trigger = Keyboard_IsKeyDownTrigger(KK_Q);
+	m_inputInfo.key.e.trigger = Keyboard_IsKeyDownTrigger(KK_E);
 	m_inputInfo.key.up.trigger = Keyboard_IsKeyDownTrigger(KK_UP);
 	m_inputInfo.key.down.trigger = Keyboard_IsKeyDownTrigger(KK_DOWN);
 	m_inputInfo.key.left.trigger = Keyboard_IsKeyDownTrigger(KK_LEFT);
 	m_inputInfo.key.right.trigger = Keyboard_IsKeyDownTrigger(KK_RIGHT);
 	m_inputInfo.key.space.trigger = Keyboard_IsKeyDownTrigger(KK_SPACE);
 	m_inputInfo.key.enter.trigger = Keyboard_IsKeyDownTrigger(KK_ENTER);
-	m_inputInfo.key.p.trigger = Keyboard_IsKeyDownTrigger(KK_P);
-	m_inputInfo.key.z.trigger = Keyboard_IsKeyDownTrigger(KK_Z);
-	m_inputInfo.key.c.trigger = Keyboard_IsKeyDownTrigger(KK_C);
-	m_inputInfo.key.n.trigger = Keyboard_IsKeyDownTrigger(KK_N);
 	m_inputInfo.key.rightCtrl.trigger = Keyboard_IsKeyDownTrigger(KK_RIGHTCONTROL);
 	m_inputInfo.key.one.trigger = Keyboard_IsKeyDownTrigger(KK_D1);
 	m_inputInfo.key.two.trigger = Keyboard_IsKeyDownTrigger(KK_D2);
@@ -75,16 +107,18 @@ void InputManager::UpdateTriggerKeyInfo()
 		m_inputInfo.key.j.trigger ||
 		m_inputInfo.key.k.trigger ||
 		m_inputInfo.key.l.trigger ||
+		m_inputInfo.key.p.trigger ||
+		m_inputInfo.key.z.trigger ||
+		m_inputInfo.key.c.trigger ||
+		m_inputInfo.key.n.trigger ||
+		m_inputInfo.key.q.trigger ||
+		m_inputInfo.key.e.trigger ||
 		m_inputInfo.key.up.trigger ||
 		m_inputInfo.key.down.trigger ||
 		m_inputInfo.key.left.trigger ||
 		m_inputInfo.key.right.trigger ||
 		m_inputInfo.key.space.trigger ||
 		m_inputInfo.key.enter.trigger ||
-		m_inputInfo.key.p.trigger ||
-		m_inputInfo.key.z.trigger ||
-		m_inputInfo.key.c.trigger ||
-		m_inputInfo.key.n.trigger ||
 		m_inputInfo.key.rightCtrl.trigger;
 }
 
@@ -103,16 +137,18 @@ void InputManager::UpdateDownKeyInfo()
 	m_inputInfo.key.j.down = Keyboard_IsKeyDown(KK_J);
 	m_inputInfo.key.k.down = Keyboard_IsKeyDown(KK_K);
 	m_inputInfo.key.l.down = Keyboard_IsKeyDown(KK_L);
+	m_inputInfo.key.p.down = Keyboard_IsKeyDown(KK_P);
+	m_inputInfo.key.z.down = Keyboard_IsKeyDown(KK_Z);
+	m_inputInfo.key.c.down = Keyboard_IsKeyDown(KK_C);
+	m_inputInfo.key.n.down = Keyboard_IsKeyDown(KK_N);
+	m_inputInfo.key.q.down = Keyboard_IsKeyDown(KK_Q);
+	m_inputInfo.key.e.down = Keyboard_IsKeyDown(KK_E);
 	m_inputInfo.key.up.down = Keyboard_IsKeyDown(KK_UP);
 	m_inputInfo.key.down.down = Keyboard_IsKeyDown(KK_DOWN);
 	m_inputInfo.key.left.down = Keyboard_IsKeyDown(KK_LEFT);
 	m_inputInfo.key.right.down = Keyboard_IsKeyDown(KK_RIGHT);
 	m_inputInfo.key.space.down = Keyboard_IsKeyDown(KK_SPACE);
 	m_inputInfo.key.enter.down = Keyboard_IsKeyDown(KK_ENTER);
-	m_inputInfo.key.p.down = Keyboard_IsKeyDown(KK_P);
-	m_inputInfo.key.z.down = Keyboard_IsKeyDown(KK_Z);
-	m_inputInfo.key.c.down = Keyboard_IsKeyDown(KK_C);
-	m_inputInfo.key.n.down = Keyboard_IsKeyDown(KK_N);
 	m_inputInfo.key.rightCtrl.down = Keyboard_IsKeyDown(KK_RIGHTCONTROL);
 	m_inputInfo.key.one.trigger = Keyboard_IsKeyDown(KK_D1);
 	m_inputInfo.key.two.trigger = Keyboard_IsKeyDown(KK_D2);
@@ -130,16 +166,18 @@ void InputManager::UpdateDownKeyInfo()
 		m_inputInfo.key.j.down ||
 		m_inputInfo.key.k.down ||
 		m_inputInfo.key.l.down ||
+		m_inputInfo.key.p.down ||
+		m_inputInfo.key.z.down ||
+		m_inputInfo.key.c.down ||
+		m_inputInfo.key.n.down ||
+		m_inputInfo.key.q.down ||
+		m_inputInfo.key.e.down ||
 		m_inputInfo.key.up.down ||
 		m_inputInfo.key.down.down ||
 		m_inputInfo.key.left.down ||
 		m_inputInfo.key.right.down ||
 		m_inputInfo.key.space.down ||
 		m_inputInfo.key.enter.down ||
-		m_inputInfo.key.p.down ||
-		m_inputInfo.key.z.down ||
-		m_inputInfo.key.c.down ||
-		m_inputInfo.key.n.down ||
 		m_inputInfo.key.rightCtrl.down;
 }
 
@@ -158,16 +196,18 @@ void InputManager::UpdateUpKeyInfo()
 	m_inputInfo.key.j.up = Keyboard_IsKeyUp(KK_J);
 	m_inputInfo.key.k.up = Keyboard_IsKeyUp(KK_K);
 	m_inputInfo.key.l.up = Keyboard_IsKeyUp(KK_L);
+	m_inputInfo.key.p.up = !Keyboard_IsKeyUp(KK_P);
+	m_inputInfo.key.z.up = Keyboard_IsKeyUp(KK_Z);
+	m_inputInfo.key.c.up = Keyboard_IsKeyUp(KK_C);
+	m_inputInfo.key.n.up = Keyboard_IsKeyUp(KK_N);
+	m_inputInfo.key.q.up = Keyboard_IsKeyUp(KK_Q);
+	m_inputInfo.key.e.up = Keyboard_IsKeyUp(KK_E);
 	m_inputInfo.key.up.up = !Keyboard_IsKeyUp(KK_UP);
 	m_inputInfo.key.down.up = !Keyboard_IsKeyUp(KK_DOWN);
 	m_inputInfo.key.left.up = !Keyboard_IsKeyUp(KK_LEFT);
 	m_inputInfo.key.right.up = !Keyboard_IsKeyUp(KK_RIGHT);
 	m_inputInfo.key.space.up = !Keyboard_IsKeyUp(KK_SPACE);
 	m_inputInfo.key.enter.up = !Keyboard_IsKeyUp(KK_ENTER);
-	m_inputInfo.key.p.up = !Keyboard_IsKeyUp(KK_P);
-	m_inputInfo.key.z.up = Keyboard_IsKeyUp(KK_Z);
-	m_inputInfo.key.c.up = Keyboard_IsKeyUp(KK_C);
-	m_inputInfo.key.n.up = Keyboard_IsKeyUp(KK_N);
 	m_inputInfo.key.rightCtrl.up = Keyboard_IsKeyUp(KK_RIGHTCONTROL);
 	m_inputInfo.key.one.trigger = Keyboard_IsKeyDownTrigger(KK_D1);
 	m_inputInfo.key.two.trigger = Keyboard_IsKeyDownTrigger(KK_D2);
@@ -185,15 +225,17 @@ void InputManager::UpdateUpKeyInfo()
 		m_inputInfo.key.j.up ||
 		m_inputInfo.key.k.up ||
 		m_inputInfo.key.l.up ||
+		m_inputInfo.key.p.up ||
+		m_inputInfo.key.z.up ||
+		m_inputInfo.key.c.up ||
+		m_inputInfo.key.n.up ||
+		m_inputInfo.key.q.up ||
+		m_inputInfo.key.e.up ||
 		m_inputInfo.key.up.up ||
 		m_inputInfo.key.down.up ||
 		m_inputInfo.key.left.up ||
 		m_inputInfo.key.right.up ||
 		m_inputInfo.key.space.up ||
 		m_inputInfo.key.enter.up ||
-		m_inputInfo.key.p.up ||
-		m_inputInfo.key.z.up ||
-		m_inputInfo.key.c.up ||
-		m_inputInfo.key.n.up ||
 		m_inputInfo.key.rightCtrl.up;
 }
