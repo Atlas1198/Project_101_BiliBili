@@ -119,6 +119,8 @@ void Bullet::ResolveCollisionsOverride()
                         XMFLOAT2{ 2.5f,2.5f },
                     }
                     );
+                //コントローラー振動
+                otherPlayer->ShakeController(1.0f, 1.0f, 20);
             }
         }
         else

@@ -30,6 +30,7 @@ void ElectricityBB::ResolveCollisionsOverride()
 					m_hasHitPlayer = true;	//プレイヤーに当たったフラグを立てる
 					m_hitNum++;				//当たった回数をカウント
 				}
+				player->ShakeController(1.0f, 1.0f, 20);
 			}
 		}
 	}
