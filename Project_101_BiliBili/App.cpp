@@ -1,4 +1,4 @@
-#include "App.h"
+﻿#include "App.h"
 #include <algorithm>
 #include <mmsystem.h>
 #include <tchar.h>
@@ -10,7 +10,7 @@
 #include <fstream>
 #include "EventManager.h"
 #include "AudioResources.h"
-
+ 
 using json = nlohmann::json;
 
 #pragma comment(lib, "winmm.lib")
