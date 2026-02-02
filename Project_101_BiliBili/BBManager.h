@@ -22,6 +22,7 @@ public:
 	const wchar_t* electricityBBTexPath = L"asset/texture/effect/bilibili.png";
 
 	inline static float BB_DURATION = 5.0f;
+	static constexpr float BB_ENHANCE_TIME = 120.0f;
 
 public:
 	BBManager();		//繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
@@ -58,6 +59,9 @@ private:
 
 	GameUIManager* m_pUIManager = nullptr; //UI繝槭ロ繝ｼ繧ｸ繝｣繝ｼ縺ｸ縺ｮ繝昴う繝ｳ繧ｿ
 	CollisionManager* m_pCollisionManager = nullptr; //陦晉ｪ√・繝阪・繧ｸ繝｣繝ｼ縺ｸ縺ｮ繝昴う繝ｳ繧ｿ
+
+	bool m_isBBEnhanced = false; //BB強化中フラグ
+
 private:
 	void PrepareRenderInfo(	//BB謠冗判諠・ｱ逕滓・
 		TextureManager& textureManager,

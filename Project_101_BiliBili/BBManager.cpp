@@ -91,6 +91,8 @@ void BBManager::InitializeOverride(
 			bbAreaStartEventTimer.Mark();
 		}
 	);
+
+	m_isBBEnhanced = false;
 }
 
 void BBManager::OnItemPickup(int teamID)
@@ -103,7 +105,7 @@ void BBManager::OnItemPickup(int teamID)
 	{
 		SetBB(teamID, true);
 
-		if (bbAreaStartEventTimer.Peek() >= 120.0f)
+		if (m_isBBEnhanced)
 		{
 			m_BBAreas[teamID * 2]->SetActive(true);
 			m_BBAreas[teamID * 2 + 1]->SetActive(true);
@@ -124,6 +126,12 @@ void BBManager::UpdateOverride()
 		//AudioManager::GetInstance()->PlayBGM("GAME_TF");
 	}
 	m_activationCalledBBIndex.clear();
+
+	if(!m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
+	{
+		m_isBBEnhanced = true;
+		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, EVENT_BB_ENHANCE);
+	}
 
 	//BB時間管理
 	for(int i = 0; i < BB_NUM; i++)

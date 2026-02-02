@@ -69,6 +69,7 @@ private:
 		currentEventIndex = index;
 
 		EventManager::GetInstance()->TriggerEvent(event);
+		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, event);
 	}
 
 	void StopCurrentEvent()

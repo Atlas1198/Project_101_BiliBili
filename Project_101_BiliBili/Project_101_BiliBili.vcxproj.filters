@@ -279,6 +279,9 @@
     <ClInclude Include="StageUIManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="EventAnounceUI.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="InputInfo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -526,6 +529,9 @@
     </ClCompile>
     <ClCompile Include="StageUIManager.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="EventAnounceUI.cpp">
+       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="InputInfo.cpp">
       <Filter>ソース ファイル</Filter>

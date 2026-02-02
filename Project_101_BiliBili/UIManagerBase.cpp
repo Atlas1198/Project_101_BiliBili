@@ -32,6 +32,11 @@ void UIManagerBase::Initialize(
 	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f }); //‰Šú“§–¾
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pFadeImage));
 
+	for(auto& root : m_roots) 
+	{
+		root->Initialize(textureManager, meshManager);
+	}
+
 	PrepareRenderInfo(textureManager, meshManager);
 
 	using args = std::pair<float, int>;

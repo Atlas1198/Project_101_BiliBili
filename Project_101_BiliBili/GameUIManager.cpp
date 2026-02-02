@@ -136,6 +136,16 @@ void GameUIManager::InitializeOverride(
 		));
 	}
 
+	//イベントアナウンスUIの初期化
+	{
+		m_pEventAnounceUI = (new EventAnounceUI(
+			DirectX::XMFLOAT3{ 0.0f, 200.0f, 0.0f },	//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+			0										//描画順序
+		));
+	}
+
 	//リザルトUIの初期化
 	{
 		m_pResultUI = (new ResultUI(
@@ -145,32 +155,6 @@ void GameUIManager::InitializeOverride(
 			0										//描画順序
 		));
 		m_pResultUI->SetActive(false); // 初期状態では非表示にする
-	}
-
-	//チームUIの初期化
-	if(m_pTeamUI1)
-	{
-		m_pTeamUI1->Initialize(textureManager, meshManager);
-	}
-	if(m_pTeamUI2)
-	{
-		m_pTeamUI2->Initialize(textureManager, meshManager);
-	}
-
-
-	for(auto& bulletUI : m_pBulletCountUI1)
-	{
-		bulletUI->Initialize(textureManager, meshManager);
-	}
-	for(auto& bulletUI : m_pBulletCountUI2)
-	{
-		bulletUI->Initialize(textureManager, meshManager);
-	}
-
-	//カットインUIの初期化
-	if (m_pResultUI)
-	{
-		m_pResultUI->Initialize(textureManager, meshManager);
 	}
 
 	//操作ガイド画像UIの初期化
@@ -193,7 +177,8 @@ void GameUIManager::InitializeOverride(
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pOperationGuideImage));	//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCountUI));				//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pResultUI));			//ルートUIオブジェクト配列に追加
-	
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pEventAnounceUI));		//ルートUIオブジェクト配列に追加
+
 	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
 		EventType::UPDATE_HP_UI,
 		[this](std::shared_ptr<std::pair<int, float>> data)
@@ -298,6 +283,15 @@ void GameUIManager::InitializeOverride(
 		[this](std::shared_ptr<void> data)
 		{
 			InactivatePlayerPointerImages();
+		}
+	);
+
+	using eventType = EventType;
+	EventManager::GetInstance()->Subscribe<eventType>(
+		EventType::SHOW_ANOUNCE_UI,
+		[this](std::shared_ptr<eventType> data)
+		{
+			m_pEventAnounceUI->ShowAnounce(*data);
 		}
 	);
 }
