@@ -21,7 +21,7 @@ enum class STAGE_TYPE
 //シーンコンテキスト構造体
 struct SceneContext
 {
-	InputInfo* pInputInfo{};							//入力情報
+	InputInfo* pInputInfo{};						//入力情報
 	PlayerInfo playersInfo[4]{};					//プレイヤー情報配列
 	STAGE_TYPE stageType = STAGE_TYPE::STAGE_NONE;	//選択ステージ種別
 };

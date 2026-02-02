@@ -110,7 +110,6 @@ void Bullet::ResolveCollisionsOverride()
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
 				);
-
             }
         }
 
