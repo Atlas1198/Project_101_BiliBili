@@ -25,12 +25,12 @@ Wall::Wall(MESH_TYPE meshType,
 {
     m_isDrawn = true;
 
-    GetColliderSet()->AddCollider(
-        ColliderType::BOX,
-        XMFLOAT3(0.0f, 1.5f, 0.0f),
-        XMFLOAT3(2.5f, 3.0f, 2.5f),
-        XMFLOAT3(0.0f, 0.0f, 0.0f)
-    );
+    //GetColliderSet()->AddCollider(
+    //    ColliderType::BOX,
+    //    XMFLOAT3(0.0f, 1.5f, 0.0f),
+    //    XMFLOAT3(2.5f, 3.0f, 2.5f),
+    //    XMFLOAT3(0.0f, 0.0f, 0.0f)
+    //);
 
     // orbit ”¼Œa‚ª 0 ‚Ìê‡‚ÍA‰ŠúˆÊ’u‚Æ orbitCenter ‚©‚ç”¼Œa‚ğŒvZ‚·‚é
     if (m_orbit)

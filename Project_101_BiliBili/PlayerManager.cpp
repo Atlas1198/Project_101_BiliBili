@@ -33,6 +33,8 @@ void PlayerManager::InitializeOverride(
 {
 	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
 	{
+		(*it)->Reset();
+		(*it)->Update();
 		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
 		(*it)->SetSceneContext(m_pSceneContext);
 	}

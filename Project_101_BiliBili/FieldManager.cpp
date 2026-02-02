@@ -68,7 +68,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dist(1, 7);
 
-	int Stagenum = dist(gen);
+	auto Stagenum = m_pSceneContext->stageType;
 
 	//Stagenum = 7; //テスト用
 
@@ -243,7 +243,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 
 	switch (Stagenum)
 	{
-	case 1:	//緑基盤
+	case STAGE_TYPE::STATGE_GREEN:	//緑基盤
 		//-------------
 		//バネ
 		//-------------
@@ -306,7 +306,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		WallPasses(XMFLOAT3(-7.0f, -5.5f, 0.0f));
 
 		break;
-	case 2:	//赤基盤
+	case STAGE_TYPE::STATGE_RED:	//赤基盤
 		//-------------
 		//バネ
 		//-------------
@@ -379,7 +379,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		WallPasses(XMFLOAT3(5.0f, -5.5f, 7.5f));
 
 		break;
-	case 3: //あお基盤
+	case STAGE_TYPE::STATGE_BLUE: //あお基盤
 		//-------------
 		//バネ
 		//-------------
@@ -494,7 +494,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 
 
 		break;
-	case 4: //劉星案１
+	case static_cast<STAGE_TYPE>(4): //劉星案１
 		//-------------
 		//バネ
 		//-------------
@@ -567,7 +567,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 
 		break;
 
-	case 5://劉星案２
+	case static_cast<STAGE_TYPE>(5)://劉星案２
 		//-------------
 		//バネ
 		//-------------
@@ -638,7 +638,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 
 		break;
 
-	case 6://劉星案３
+	case static_cast<STAGE_TYPE>(6)://劉星案３
 		//-------------
 		//バネ
 		//-------------
@@ -741,7 +741,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 
 		break;
 
-	case 7:	//ステージ7
+	case static_cast<STAGE_TYPE>(7):	//ステージ7
 
 		//-------------
 		//バネ
