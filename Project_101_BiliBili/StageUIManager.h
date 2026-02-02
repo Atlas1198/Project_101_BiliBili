@@ -1,6 +1,7 @@
 #pragma once
 #include "UIManagerBase.h"
 #include "SharedStruct.h"
+#include "Context.h"
 
 // ステージ選択シーンUI管理クラス
 class StageUIManager : public UIManagerBase

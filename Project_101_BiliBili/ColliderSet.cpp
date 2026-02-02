@@ -105,9 +105,16 @@ void ColliderSet::AddCollider(
 	ColliderType type,							//コライダータイプ
 	DirectX::XMFLOAT3 localCenter,				//ローカル中心座標
 	DirectX::XMFLOAT3 localScale,				//ローカルスケール
-	DirectX::XMFLOAT3 localRotation				//ローカル回転
+	DirectX::XMFLOAT3 localRotation,			//ローカル回転
+	COLLISION_LAYER layer
 )
 {
+	COLLISION_LAYER layerToUse = layer;
+	if(layer == COLLISION_LAYER::DEFAULT)
+	{
+		layerToUse = m_layer;
+	}
+
 	m_colliders.push_back(
 		new Collider(
 			this,
@@ -116,7 +123,7 @@ void ColliderSet::AddCollider(
 			localRotation,
 			type,
 			m_ownerTag,
-			m_layer,
+			layerToUse,
 			m_isTrigger
 		)
 	);

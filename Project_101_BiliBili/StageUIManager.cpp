@@ -1,5 +1,6 @@
 #include "StageUIManager.h"
 
+
 using namespace DirectX;
 
 //デストラクタ

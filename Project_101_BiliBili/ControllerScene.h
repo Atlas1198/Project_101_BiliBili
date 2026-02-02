@@ -22,7 +22,6 @@ private:
 
 private:
 	void InitializeOverride(					//ƒV[ƒ“ŒÅ—L‚Ì‰Šú‰»
-		InputManager* pInputManager,
 		TextureManager& pTextureManager,
 		MeshManager& pMeshManager
 	) override;

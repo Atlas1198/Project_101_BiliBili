@@ -7,6 +7,7 @@
 #include "App.h"
 #include "EventManager.h"
 #include "GameEventManager.h"
+#include "AudioManager.h"
 
 
 using namespace DirectX;
@@ -67,14 +68,12 @@ GameScene::~GameScene()
 
 //初期化
 void GameScene::InitializeOverride(
-	InputManager* pInputManager,		//入力マネージャーのポインタ
 	TextureManager& pTextureManager,	//テクスチャ管理クラスのポインタ
 	MeshManager& pMeshManager			//メッシュ管理クラスのポインタ
 )
 {
 	m_pPlayerManager->Initialize(	//プレイヤー管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -82,7 +81,6 @@ void GameScene::InitializeOverride(
 
 	m_pFieldManager->Initialize(	//フィールド管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -95,7 +93,6 @@ void GameScene::InitializeOverride(
 
 	m_pBulletManager->Initialize( //弾管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -103,7 +100,6 @@ void GameScene::InitializeOverride(
 
 	m_pItemManager->Initialize(		//アイテム管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -115,7 +111,6 @@ void GameScene::InitializeOverride(
 	m_pBBManager->SetCollisionManager(m_pCollisionManager);
 	m_pBBManager->Initialize(			//BB管理クラス初期化
 		m_pSceneContext,
-		pInputManager,
 		pTextureManager,
 		pMeshManager,
 		*m_pCollisionManager
@@ -244,6 +239,8 @@ void GameScene::FinalizeOverride()
 //カウントダウン中の更新処理
 void GameScene::CountdownUpdate()
 {
+	m_pFieldManager->Update();	//フィールド管理クラス更新
+
 	//定数定義
 	const int COUNTDOWN_DURATION = 240;	//カウントダウンの総フレーム数（4秒間）
 	const int FRAMES_PER_SECOND = 60;	//1秒あたりのフレーム数
@@ -251,6 +248,7 @@ void GameScene::CountdownUpdate()
 
 	auto eventManager = EventManager::GetInstance();
 	auto players = m_pPlayerManager->GetPlayers();
+
 
 	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
 		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
@@ -265,15 +263,20 @@ void GameScene::CountdownUpdate()
 	m_timer++;
 
 	//カウントダウンUIの表示
-	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
+  	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
 	{// 1秒ごとにUIを更新
 		int second = (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND;
 		eventManager->TriggerEvent(EventType::SHOW_COUNT_UI, second);
-
+		
+		if (90 <= m_timer && m_timer <= 210)
+		{
+   			AudioManager::GetInstance()->PlaySE("GAME_COUNT1");
+		}
 		//残り１秒で弾UIを表示
 		const int showBulletUISecond = 1;
 		if (second == showBulletUISecond)
 		{
+
 			//弾UI表示イベントをトリガー
 			eventManager->TriggerEvent<std::pair<int, bool>>(
 				EventType::SET_BULLET_UI_ACTIVE,
@@ -283,7 +286,7 @@ void GameScene::CountdownUpdate()
 				EventType::SET_BULLET_UI_ACTIVE,
 				{ players[2]->GetTeamID(), true}
 			);
-
+		
 			//プレイヤーポインター画像非アクティブ化イベントをトリガー
 			eventManager->TriggerEvent(EventType::INACTIVATE_PLAYER_POINTER_IMAGES);
 		}
@@ -294,6 +297,8 @@ void GameScene::CountdownUpdate()
 	{
 		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
+		AudioManager::GetInstance()->PlaySE("GAME_COUNT2");
+		AudioManager::GetInstance()->PlayBGM("GAME_BGM");
 		m_pGameEventManager->Start(); // イベントマネージャー開始
 	}
 }
@@ -310,7 +315,7 @@ void GameScene::PlayUpdate()
 	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
 	m_pBBManager->Update();		//BB管理クラス更新
 
-	if (m_pInputManager->GetInputInfo()->key.enter.trigger)
+	if (m_pSceneContext->pInputInfo->key.enter.trigger)
 	{
 		if (m_pCamera->GetCameraInfo()->position.y == 0.0f)
 		{
@@ -336,17 +341,27 @@ void GameScene::ResultUpdate()
 {
 	const int WAIT_DURATION = 150; // リザルトUI表示までの待機フレーム数（2.5秒間）
 
+	if (m_timer == 0)
+	{
+		AudioManager::GetInstance()->StopAll();
+		AudioManager::GetInstance()->PlaySE("RESULT");
+	}
+
 	m_timer++;
+
+
 
 	if (m_timer == WAIT_DURATION)
 	{
 		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, {m_winner, m_character1ID, m_character2ID});
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
+		AudioManager::GetInstance()->StopAll();
+		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");	
 	}
 	else if (m_timer > WAIT_DURATION)
 	{
-		auto& controllers = m_pInputManager->GetInputInfo()->controller;
-		auto& keyInput = m_pInputManager->GetInputInfo()->key;
+		auto& controllers = m_pSceneContext->pInputInfo->controller;
+		auto& keyInput = m_pSceneContext->pInputInfo->key;
 
 		for (size_t i = 0; i < 4; ++i)
 		{
@@ -354,6 +369,7 @@ void GameScene::ResultUpdate()
 
 			if (controller.anyButton.trigger || keyInput.space.trigger)
 			{
+				m_pSceneContext->pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30);
 				EventManager::GetInstance()->TriggerEvent(EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE);
 			}
 		}

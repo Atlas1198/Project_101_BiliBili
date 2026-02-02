@@ -1,7 +1,18 @@
 #include "WallCurve.h"
+#include <cmath>
 
 using namespace DirectX;
 using namespace CollisionData;
+
+namespace
+{
+    inline float NormalizeDeg(float deg)
+    {
+        deg = std::fmod(deg, 360.0f);
+        if (deg < 0.0f) deg += 360.0f;
+        return deg;
+    }
+}
 
 WallCurve::WallCurve(
     MESH_TYPE meshType,
@@ -15,79 +26,65 @@ WallCurve::WallCurve(
     bool collisionIsTrigger,
     float rotationSpeed,
     bool orbit,
-    float orbitRadius,
+    float orbitRadius,          // © ”¼Œa‚Ìg•ÛŒ¯h‚Æ‚µ‚Ä‚¾‚¯Žg‚¤
     XMFLOAT3 orbitCenter,
     float forwardOffsetDeg
 )
-    : ObjectBase(meshType, position, rotation, scale, velocity, isActive, OBJECT_TAG::WALLCURVE, COLLISION_LAYER::WALLCURVE)
+    : ObjectBase(meshType, position, rotation, scale, velocity, isActive,
+        OBJECT_TAG::WALLCURVE, COLLISION_LAYER::WALLCURVE)
     , m_rotationSpeed(rotationSpeed)
     , m_orbit(orbit)
-    , m_orbitRadius(orbitRadius)
+    , m_orbitRadius(0.0f)
     , m_orbitCenter(orbitCenter)
     , m_forwardOffsetDeg(forwardOffsetDeg)
 {
     m_isDrawn = true;
 
-    if (m_orbit)
+    if (!m_orbit)
+        return;
+
+    // ‰ŠúˆÊ’u‚©‚ç’†S‚Ö‚ÌƒIƒtƒZƒbƒg
+    const float ox = m_position.x - m_orbitCenter.x;
+    const float oz = m_position.z - m_orbitCenter.z;
+
+    // ”¼Œa‚Í g’†S‚©‚ç‰ŠúˆÊ’u‚Ü‚Å‚Ì‹——£h ‚ð•K‚¸Ì—p
+    const float r = std::sqrt(ox * ox + oz * oz);
+
+    if (r > 0.0001f)
     {
-        XMVECTOR pos = XMLoadFloat3(&m_position);
-        XMVECTOR center = XMLoadFloat3(&m_orbitCenter);
-        XMVECTOR offset = XMVectorSubtract(pos, center);
-
-        XMFLOAT3 o;
-        XMStoreFloat3(&o, offset);
-
-        float radius = sqrtf(o.x * o.x + o.z * o.z);
-        if (m_orbitRadius <= 0.0f)
-        {
-            m_orbitRadius = radius;
-        }
-
-        if (radius > 0.0001f)
-        {
-            m_currentOrbitAngleDeg =
-                XMConvertToDegrees(atan2f(o.x, o.z));
-        }
+        m_orbitRadius = r;
+        m_currentOrbitAngleDeg = NormalizeDeg(XMConvertToDegrees(std::atan2f(ox, oz)));
     }
-
+    else
+    {
+        // ‰ŠúˆÊ’u‚ª’†S‚Æ“¯‚¶”¼Œa‚ªì‚ê‚È‚¢‚Ì‚ÅAˆø”‚ð•ÛŒ¯‚Æ‚µ‚ÄŽg‚¤
+        m_orbitRadius = (orbitRadius > 0.0f) ? orbitRadius : 0.0f;
+        m_currentOrbitAngleDeg = 0.0f;
+    }
 }
 
 void WallCurve::UpdateOverride()
 {
     if (m_orbit)
     {
-        // ---- orbit ˆÚ“® ----
-        m_currentOrbitAngleDeg += m_rotationSpeed;
-        if (m_currentOrbitAngleDeg >= 360.0f) m_currentOrbitAngleDeg -= 360.0f;
-        if (m_currentOrbitAngleDeg < 0.0f)    m_currentOrbitAngleDeg += 360.0f;
+        m_currentOrbitAngleDeg = NormalizeDeg(m_currentOrbitAngleDeg + m_rotationSpeed);
+        const float rad = XMConvertToRadians(m_currentOrbitAngleDeg);
 
-        float rad = XMConvertToRadians(m_currentOrbitAngleDeg);
+        // ‰ñ“]
+        m_position.x = m_orbitCenter.x + std::sinf(rad) * m_orbitRadius;
+        m_position.z = m_orbitCenter.z + std::cosf(rad) * m_orbitRadius;
 
-        m_position.x = m_orbitCenter.x + sinf(rad) * m_orbitRadius;
-        m_position.z = m_orbitCenter.z + cosf(rad) * m_orbitRadius;
+        // ’†S‚ðŒ©‚é
+        const float dx = m_orbitCenter.x - m_position.x;
+        const float dz = m_orbitCenter.z - m_position.z;
 
-        // ---- ’†S‚ðŒ©‚é ----
-        float dx = m_orbitCenter.x - m_position.x;
-        float dz = m_orbitCenter.z - m_position.z;
-
-        float yawDeg = XMConvertToDegrees(atan2f(dx, dz));
-
-        // š ³–Ê•â³‚ð‰Á‚¦‚é
-        m_rotation.y = yawDeg + m_forwardOffsetDeg;
-
-        // ³‹K‰»
-        if (m_rotation.y >= 360.0f) m_rotation.y -= 360.0f;
-        if (m_rotation.y < 0.0f)    m_rotation.y += 360.0f;
+        const float yawDeg = XMConvertToDegrees(std::atan2f(dx, dz));
+        m_rotation.y = NormalizeDeg(yawDeg + m_forwardOffsetDeg);
     }
     else
     {
-        // ’Êí‰ñ“]
         if (m_rotationSpeed != 0.0f)
-        {
-            m_rotation.y += m_rotationSpeed;
-            if (m_rotation.y >= 360.0f) m_rotation.y -= 360.0f;
-            if (m_rotation.y < 0.0f)    m_rotation.y += 360.0f;
-        }
+            m_rotation.y = NormalizeDeg(m_rotation.y + m_rotationSpeed);
     }
 }
 

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "EventManager.h"
 #include "EffectData.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -30,10 +31,17 @@ Bullet::Bullet(
 {
     SetActive(true);
 
+	const XMFLOAT3 COLLIDER_SCALE =
+    {
+        m_scale.x * 0.6f,
+        m_scale.y * 0.6f,
+		m_scale.z * 0.6f
+    };
+
     m_pColliderSet->AddCollider(
         ColliderType::SPHERE,
         XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(2.5f, 2.5f, 2.5f),
+        COLLIDER_SCALE,
         XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
@@ -110,18 +118,31 @@ void Bullet::ResolveCollisionsOverride()
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
 				);
+                EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+                    EventType::ADD_EFFECT,
+                    EffectCommand{
+                        EFFECT_TYPE::EXPLOSION,
+                        m_position,
+                        XMFLOAT2{ 2.5f,2.5f },
+                    }
+                    );
+                //コントローラー振動
+                otherPlayer->ShakeController(1.0f, 1.0f, 20);
             }
         }
+        else
+        {
+            //消滅
+            EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+                EventType::ADD_EFFECT,
+                EffectCommand{
+                    EFFECT_TYPE::FIRE_FLASH,
+                    m_position,
+                    XMFLOAT2{ 2.5f,2.5f },
+                }
+                );
+        }
 
-        //消滅
-        EventManager::GetInstance()->TriggerEvent<EffectCommand>(
-            EventType::ADD_EFFECT,
-            EffectCommand{
-                EFFECT_TYPE::FIRE_FLASH,
-                m_position,
-                XMFLOAT2{ 2.5f,2.5f },
-            }
-            );
         m_deleteFlag = true;
         SetActive(false);
         break;

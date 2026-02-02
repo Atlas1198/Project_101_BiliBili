@@ -6,6 +6,7 @@
 #include "StageScene.h"
 #include "CharacterScene.h"
 #include "SharedStruct.h"
+#include "Context.h"
 
 //前方宣言
 class Renderer;			//レンダラー

@@ -2,6 +2,7 @@
 #include "AssimpLoader.h"
 #include "ObjectBase.h"
 #include "RenderData.h"
+#include "Context.h"
 
 //前方宣言
 class Renderer;
@@ -21,7 +22,6 @@ public:
 
 	void Initialize(	//初期化
 		SceneContext* sceneContext,		//シーンコンテキスト構造体の参照
-		InputManager* pInputManager,		//入力マネージャーのポインタ
 		TextureManager& textureManager,		//テクスチャ管理クラスの参照
 		MeshManager& meshManager,			//メッシュ管理クラスの参照
 		CollisionManager& collisionManager	//衝突管理クラスの参照
@@ -36,7 +36,6 @@ protected:	//非公開メンバ変数
 
 protected:
 	virtual void InitializeOverride(	//初期化
-		InputManager* pInputManager,		//入力マネージャーのポインタ
 		TextureManager& textureManager,		//テクスチャ管理クラスの参照
 		MeshManager& meshManager,			//メッシュ管理クラスの参照
 		CollisionManager& collisionManager	//衝突管理クラスの参照

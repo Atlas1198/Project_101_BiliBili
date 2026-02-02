@@ -14,7 +14,6 @@ public:	//公開関数
 
 	//メイン処理関数
 	void InitializeOverride(									//初期化
-		InputManager* pInputManager,		//入力管理クラスのポインタ
 		TextureManager& pTextureManager,	//テクスチャ管理クラスの参照
 		MeshManager& pMeshManager			//メッシュ管理クラスの参照
 	) override;

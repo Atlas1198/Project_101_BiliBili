@@ -17,9 +17,7 @@ public:
         bool isActive = true,                   // アクティブフラグ
         ColliderType colliderType =             // コライダータイプ
         ColliderType::BOX,
-        DirectX::XMFLOAT3 collisionBoxSize =    // コライダーのボックスサイズ
-        DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-        bool collisionIsTrigger = false,        // コライダーのトリガーフラグ
+        bool collisionIsTrigger = true,        // コライダーのトリガーフラグ
         float rotationSpeed = 0.0f,             // 回転速度（度／フレーム）
         bool orbit = false,                     // orbit: trueなら中心周りを回る（位置が動く）
         float orbitRadius = 0.0f,               // orbit の半径（ワールド単位）。0なら初期位置から計算
@@ -38,4 +36,5 @@ private:
     DirectX::XMFLOAT3 m_orbitCenter =
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);      // orbit 中心
     float m_currentOrbitAngleDeg = 0.0f;          // 現在の orbit 角度（度）
+    bool m_collder = true;
 };

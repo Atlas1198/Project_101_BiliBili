@@ -16,9 +16,8 @@ Camera::Camera(float window_width, float window_height)
 }
 
 //初期化
-void Camera::Initialize(InputManager* pInputManager)
+void Camera::Initialize()
 {
-	m_pInputInfo = pInputManager->GetInputInfo();	//入力情報構造体の取得
 }
 
 //カメラ更新

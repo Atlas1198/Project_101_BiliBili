@@ -13,7 +13,7 @@ public:
     const wchar_t *texPath = L"asset/texture/change_item.png";
 
 protected:
-    void InitializeOverride(InputManager* pInputManager,
+    void InitializeOverride(
         TextureManager& textureManager,
         MeshManager& meshManager,
         CollisionManager& collisionManager) override;

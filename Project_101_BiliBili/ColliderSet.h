@@ -28,10 +28,12 @@ public:
 	void BuildObjectCollisionInfos();		//衝突情報を収集
 
 	void AddCollider(	//コライダー追加
-		ColliderType type,				//コライダータイプ
-		DirectX::XMFLOAT3 localCenter,	//ローカル中心座標
-		DirectX::XMFLOAT3 localScale,	//ローカルスケール
-		DirectX::XMFLOAT3 localRotation	//ローカル回転
+		ColliderType type,							//コライダータイプ
+		DirectX::XMFLOAT3 localCenter,				//ローカル中心座標
+		DirectX::XMFLOAT3 localScale,				//ローカルスケール
+		DirectX::XMFLOAT3 localRotation,			//ローカル回転
+		CollisionData::COLLISION_LAYER layer 
+		= CollisionData::COLLISION_LAYER::DEFAULT	//衝突レイヤー
 	);
 
 	//ゲッター

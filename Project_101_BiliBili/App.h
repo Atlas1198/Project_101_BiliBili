@@ -11,6 +11,7 @@
 #include "ToolbarControl.h"
 #include "DatabaseManager.h"
 #include "EventManager.h"
+#include "AudioManager.h"
 
 //アプリケーションクラス
 class App : public olc::net::client_interface<GameMsg>
@@ -36,6 +37,7 @@ private:
 	TextureManager* m_pTextureManager = nullptr;	//テクスチャ管理クラスのポインタ
 	MeshManager* m_pMeshManager = nullptr;			//メッシュ管理クラスのポインタ
 	EventManager *m_pEventManager = nullptr;			//イベント管理クラスのポインタ
+	AudioManager* m_pAudioManager = nullptr;		//オーディオ管理クラスのポインタ
 
 public:
 	App() {};	//コンストラクタ
