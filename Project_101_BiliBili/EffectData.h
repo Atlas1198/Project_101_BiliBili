@@ -9,6 +9,8 @@ enum class EFFECT_TYPE
 	PARTICLE_POINT,	//パーティクルポイント
 	PARTICLE_SPREAD,//パーティクルスプレッド
 	FIRE_FLASH,		//火花
+	EXPLOSION,		//爆発
+	WIND,			//風
 	MAX				//最大数
 };
 

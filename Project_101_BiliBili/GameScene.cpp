@@ -238,6 +238,8 @@ void GameScene::FinalizeOverride()
 //カウントダウン中の更新処理
 void GameScene::CountdownUpdate()
 {
+	m_pFieldManager->Update();	//フィールド管理クラス更新
+
 	//定数定義
 	const int COUNTDOWN_DURATION = 240;	//カウントダウンの総フレーム数（4秒間）
 	const int FRAMES_PER_SECOND = 60;	//1秒あたりのフレーム数

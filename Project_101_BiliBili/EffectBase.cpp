@@ -38,6 +38,8 @@ void EffectBase::Destroy()
 //寿命更新
 void EffectBase::UpdateLifeTime()
 {
+	if (m_lifeTime <= -1.0f) return; //無限寿命の場合は処理しない
+
 	if (m_elapsedTime <= m_lifeTime)
 	{
 		m_elapsedTime++; //経過時間をインクリメント
