@@ -122,6 +122,10 @@ void EventAnounceUI::ShowAnounce(EventType type)
 	{
 		m_pRecover->SetActive(true);
 	}
+	else if(type == EVENT_BB_ENHANCE)
+	{
+		m_pBB->SetActive(true);
+	}
 
 	m_timer = 0;
 	m_blinkCount = 0;

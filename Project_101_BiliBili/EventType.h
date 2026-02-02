@@ -45,6 +45,7 @@ enum EventType
 	//ランダムイベント
 	EVENT_BULLET_SPEED, // void
 	EVENT_BULLET_RECOVERY, // void
+	EVENT_BB_ENHANCE, // void
 	//フェード関連イベント
 	START_FADE_IN, // float duration
 	START_FADE_OUT, // float duration
