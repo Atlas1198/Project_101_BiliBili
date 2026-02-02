@@ -2,6 +2,7 @@
 #include "InputManager.h"
 #include "EventManager.h"
 #include "SceneManager.h"
+#include "AudioManager.h"
 
 //初期化
 void ControllerConnecter::Initialize()
@@ -29,6 +30,8 @@ void ControllerConnecter::Update(InputManager& inputManager)
 			//キャラクター選択シーンへの遷移イベント発行
 			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
 				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_STAGE);
+			AudioManager::GetInstance()->PlaySE("CON_NEXT");
+			AudioManager::GetInstance()->StopBGM();
 		}
 	}
 	else
@@ -43,6 +46,7 @@ void ControllerConnecter::Update(InputManager& inputManager)
 				//コントローラー接続イベント発行
 				EventManager::GetInstance()->TriggerEvent<int>(
 					EventType::CONTROLLER_CONNECTED, i);
+				AudioManager::GetInstance()->PlaySE("CON_SET");
 			}
 		}
 
@@ -57,6 +61,7 @@ void ControllerConnecter::Update(InputManager& inputManager)
 				//コントローラー接続イベント発行
 				EventManager::GetInstance()->TriggerEvent<int>(
 					EventType::CONTROLLER_CONNECTED, i);
+				AudioManager::GetInstance()->PlaySE("CON_SET");
 				break;
 			}
 		}
@@ -72,8 +77,10 @@ void ControllerConnecter::Update(InputManager& inputManager)
 				//キャラクター選択シーンへの遷移イベント発行
 				EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
 					EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_STAGE);
+				AudioManager::GetInstance()->PlaySE("CON_NEXT");
+				AudioManager::GetInstance()->StopBGM();
 			}
-			else
+			else 
 			{//それ以外の入力処理
 				//ボタン入力がなければスルー
 				if (!info->controller[i].anyButton.trigger || !info->controller[i].anyButton.down) continue;
@@ -96,6 +103,7 @@ void ControllerConnecter::Update(InputManager& inputManager)
 					//コントローラー接続イベント発行
 					EventManager::GetInstance()->TriggerEvent<int>(
 						EventType::CONTROLLER_CONNECTED, i);
+					AudioManager::GetInstance()->PlaySE("CON_SET");
 				}
 			}
 			else
@@ -111,7 +119,7 @@ void ControllerConnecter::Update(InputManager& inputManager)
 	}
 
 	//全コントローラー接続済み判定更新
-	bool allConnected = true;
+	bool allConnected = true; 
 
 	for (auto& state : m_connectionStatuses)
 	{

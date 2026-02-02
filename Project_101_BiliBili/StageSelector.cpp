@@ -3,6 +3,7 @@
 #include "EventManager.h"
 #include "EventType.h"
 #include <algorithm>
+#include "AudioManager.h"
 
 //初期化
 void StageSelector::Initialize()
@@ -72,7 +73,7 @@ void StageSelector::Update(
 		);
 
 		//↓↓↓マップ切替時サウンド再生↓↓↓
-
+		AudioManager::GetInstance()->PlaySE("CURSOR_MOVE");
 	}
 
 	//決定処理

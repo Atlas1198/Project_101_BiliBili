@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "GameUIManager.h"
 #include "EventManager.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -108,6 +109,7 @@ void BBManager::OnItemPickup(int teamID)
 			m_BBAreas[teamID * 2]->SetActive(true);
 			m_BBAreas[teamID * 2 + 1]->SetActive(true);
 		}
+
 	}
 	m_BBTimer[teamID] = BB_DURATION;
 	m_frameTimer[teamID].Mark();
@@ -120,6 +122,7 @@ void BBManager::UpdateOverride()
 	for (auto& index : m_activationCalledBBIndex)
 	{
 		OnItemPickup(index);
+		//AudioManager::GetInstance()->PlayBGM("GAME_TF");
 	}
 	m_activationCalledBBIndex.clear();
 
@@ -137,7 +140,10 @@ void BBManager::UpdateOverride()
 				m_BBTimer[i] = 0.0f;
 				m_BBAreas[i * 2]->SetActive(false);
 				m_BBAreas[i * 2 + 1]->SetActive(false);
+
+				//AudioManager::GetInstance()->StopBGM();
 			}
+			
 		}
 
 		m_BB[i]->Update();

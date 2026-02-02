@@ -1,6 +1,7 @@
 #include "Item.h"
 #include "EventManager.h"
 #include "Player.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 using namespace CollisionData;
@@ -56,6 +57,8 @@ void Item::ResolveCollisionsOverride()
 				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
 				//アイテム取得エフェクトの発生
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::BB_CUT_IN, std::make_pair(player->GetTeamID(), player->GetCharacterID()));
+				//アイテム取得時再生
+				AudioManager::GetInstance()->PlaySE("GAME_TF");
 			}
 		}
 	}

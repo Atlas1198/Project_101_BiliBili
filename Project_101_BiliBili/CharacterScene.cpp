@@ -1,4 +1,5 @@
 #include "CharacterScene.h"
+#include "AudioManager.h"
 
 //コンストラクタ
 CharacterScene::CharacterScene(float window_width, float window_height)
@@ -30,9 +31,10 @@ void CharacterScene::InitializeOverride(
 	MeshManager& pMeshManager			//メッシュ管理クラスの参照
 )
 {
-	m_pCharacterSelecter->Initialize();
+	m_pCharacterSelecter->Initialize(); 
 	m_pCharacterUIManager->Initialize(pTextureManager, pMeshManager);
 	m_pCharacterUIManager->StartFadeIn(0.05f);
+
 }
 
 //シーン固有の更新
