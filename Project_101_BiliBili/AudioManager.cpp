@@ -63,8 +63,6 @@ bool AudioManager::LoadWav(const std::string& label, const wchar_t* filename)
     //‚·‚Å‚É“¯‚¶ƒ‰ƒxƒ‹‚Å“Ç‚İ‚İÏ‚İ‚È‚çA¬Œ÷‚Æ‚µ‚Äˆ—‚ğ”²‚¯‚é
     if (soundLibrary.find(label) != soundLibrary.end()) { return true; }
 
-	}
-
     std::ifstream file(filename, std::ios::binary);
     if (!file) return false;
 
@@ -115,8 +113,6 @@ IXAudio2SourceVoice* AudioManager::CreateVoice(const std::string& label) {
     return pVoice;
 }
 
-void AudioManager::Update()
-{
 
 //BGMÄ¶
 void AudioManager::PlayBGM(const std::string& label, bool loop) {

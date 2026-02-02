@@ -33,7 +33,7 @@ void TitleScene::InitializeOverride(
 {
 	m_pTitleUIManager->Initialize(pTextureManager, pMeshManager);
 	AudioManager::GetInstance()->StopBGM();
-	AudioManager::GetInstance()->PlayBGM("TITLE_BGM");
+	//AudioManager::GetInstance()->PlayBGM("TITLE_BGM");
 }
 
 //XV
