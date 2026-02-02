@@ -3,6 +3,7 @@
 #include "EventManager.h"
 #include "EffectData.h"
 #include "Player.h"
+#include "App.h"
 
 using namespace DirectX;
 
@@ -12,10 +13,10 @@ BilibiliArea::BilibiliArea(
     float damage)
 
     : ObjectBase(
-        MESH_TYPE::CUBE,
+        MESH_TYPE::QUAD,
         pos,
         { 0,0,0 },
-        { 2.0f,2.0f,2.0f },
+        { 10.0f,10.0f,10.0f },
         { 0,0,0 },
         true,
         OBJECT_TAG::BULLET,
@@ -26,16 +27,28 @@ BilibiliArea::BilibiliArea(
 
     m_pColliderSet->AddCollider(
         ColliderType::SPHERE,
-        XMFLOAT3(0.0f, 0.0f, 0.0f),
+        XMFLOAT3(0.0f, -4.0f, 0.0f),
         XMFLOAT3(8.0f, 8.0f, 8.0f),
         XMFLOAT3(0.0f, 0.0f, 0.0f)
     );
+
+    TexSplitInfo texInfo{};
+    texInfo.cols = 6;
+    texInfo.rows = 5;
+    texInfo.total = texInfo.cols * texInfo.rows;
+    texInfo.index = 0;
+    texInfo.updateRate = 5;
+
+    m_texSplitInfo = texInfo;
 }
 
 //プレイヤー位置の設定
 void BilibiliArea::SetPlayerPos(const DirectX::XMFLOAT3& position)
 {
     m_position = position;
+	m_position.y += 2.0f; // 少し上にずらす
+	m_position.z -= 1.0f; // 少し手前にずらす
+	m_position.x -= position.x / App::WINDOW_WIDTH * 40.0f; // 画面のX位置に応じて調整
 }
 
 void SetBB(int teamID, bool active)

@@ -172,7 +172,7 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 
 	for (int i = 0; i < BB_AREA_NUM; i++)
 	{
-		SubmitRenderInfo(renderer, *m_BBAreas[i], i % 2 == 0 ? m_BBAreaBlueInfo : m_BBAreaRedInfo);
+		SubmitRenderInfo(renderer, *m_BBAreas[i], i < 2 ? m_BBAreaBlueInfo : m_BBAreaRedInfo);
 	}
 }
 
@@ -291,7 +291,8 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		&m_BBAreaBlueInfo,
 		m_BBAreas[0]->GetMeshType(),
 		BLEND_MODE::BLEND_MASKED,
-		areaBBBlueTexPath
+		areaBBBlueTexPath,
+		false
 	);
 
 	CreateRenderInfo(
@@ -300,6 +301,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		&m_BBAreaRedInfo,
 		m_BBAreas[0]->GetMeshType(),
 		BLEND_MODE::BLEND_MASKED,
-		areaBBRedTexPath
+		areaBBRedTexPath,
+		false
 	);
 }
