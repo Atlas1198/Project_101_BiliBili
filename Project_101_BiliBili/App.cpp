@@ -324,9 +324,6 @@ void App::InitInstance()
 	//入力管理クラス初期化
 	m_pInputManager->Initialize();
 
-	//オーディオ管理クラス初期化
-	m_pAudioManager->Initialize();
-
 	//レンダーを終了してコマンドリストをクローズ
 	m_pEngine->RenderEnd();
 }
