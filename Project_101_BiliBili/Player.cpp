@@ -27,10 +27,17 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 	id(id)
 
 {
+	const XMFLOAT3 COLLIDER_SCALE =
+	{
+		m_scale.x * 0.7f,
+		m_scale.y * 0.7f,
+		m_scale.z * 0.7f
+	};
+
 	m_pColliderSet->AddCollider(
 		ColliderType::SPHERE,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f),
+		COLLIDER_SCALE,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
