@@ -1,5 +1,6 @@
 #include "AudioManager.h"
 #include <fstream>
+#include <algorithm>
 
 AudioManager::AudioManager() {}	//コンストラクタ
 
@@ -13,9 +14,9 @@ AudioManager::~AudioManager()	//デストラクタ
 //初期化処理
 bool AudioManager::Initialize() {
     // COMの初期化
-    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     if (FAILED(hr)) return false;
-
+		
     // XAudio2エンジンのインスタンス作成
     hr = XAudio2Create(&pXAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
     if (FAILED(hr)) return false;
@@ -25,7 +26,7 @@ bool AudioManager::Initialize() {
     if (FAILED(hr)) return false;
 
     return true;
-}
+	}
 
 void AudioManager::Update() {
     // SEリストの巡回と自動削除
@@ -58,10 +59,11 @@ void AudioManager::Update() {
 
 //音声データの読み込み
 bool AudioManager::LoadWav(const std::string& label, const wchar_t* filename)
-{
+	{
     //すでに同じラベルで読み込み済みなら、成功として処理を抜ける
     if (soundLibrary.find(label) != soundLibrary.end()) { return true; }
 
+	}
 
     std::ifstream file(filename, std::ios::binary);
     if (!file) return false;
@@ -74,14 +76,14 @@ bool AudioManager::LoadWav(const std::string& label, const wchar_t* filename)
 
     SoundData data;
     while (file.read(chunkId, 4))
-    {
+	{
         unsigned int chunkSize;
         file.read((char*)&chunkSize, 4);
 
         if (strncmp(chunkId, "fmt ", 4) == 0)
         {//フォーマットの読み込み
             file.read((char*)&data.wfx, chunkSize);
-        }
+	}
         else if (strncmp(chunkId, "data", 4) == 0)
         {//音声波形データ本体のも見込み
             data.buffer.resize(chunkSize);
@@ -113,6 +115,8 @@ IXAudio2SourceVoice* AudioManager::CreateVoice(const std::string& label) {
     return pVoice;
 }
 
+void AudioManager::Update()
+{
 
 //BGM再生
 void AudioManager::PlayBGM(const std::string& label, bool loop) {
@@ -134,7 +138,7 @@ void AudioManager::PlayBGM(const std::string& label, bool loop) {
 
 
 void AudioManager::PlaySE(const std::string& label)
-{
+	{
     IXAudio2SourceVoice* pVoice = CreateVoice(label);
     if (!pVoice) return;
 
@@ -148,14 +152,14 @@ void AudioManager::PlaySE(const std::string& label)
 
     // SEは多重再生したいので multimap に追加（既存の音は消さない）
     SEVoices.insert(std::make_pair(label, pVoice));
-}
+	}
 
 //BGM停止
 void AudioManager::StopBGM() {
     for (auto& pair : BGMVoices) {
         pair.second->Stop();
         pair.second->DestroyVoice();
-    }
+}
     BGMVoices.clear();
 }
 
@@ -164,7 +168,7 @@ void AudioManager::StopAllSE() {
     for (auto& pair : SEVoices) {
         pair.second->Stop();
         pair.second->DestroyVoice();
-    }
+}
     SEVoices.clear();
 }
 
@@ -198,7 +202,7 @@ void AudioManager::PauseAll()
 void AudioManager::ResumeBGM()
 {// 一時停止していた箇所からBGM再開
     for (auto& pair : BGMVoices) pair.second->Start(0);
-}
+	}
 
 //SE再開
 void AudioManager::ResumeSE()

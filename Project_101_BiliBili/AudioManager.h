@@ -1,4 +1,5 @@
 #pragma once
+
 #include <xaudio2.h>
 #include <wrl/client.h> 
 #include <map>
@@ -8,7 +9,7 @@
 // 音声データを保持する構造体
 struct SoundData {
     WAVEFORMATEX wfx;
-    std::vector<BYTE> buffer;
+	std::vector<BYTE> buffer;
 };
 
 class AudioManager {
@@ -20,6 +21,9 @@ public:
     void Update();  //　再生終了したボイスを解放
     bool LoadWav(const std::string& label, const wchar_t* filename);//wavファイル読み込み（名前を付け保存）
 
+public:
+	AudioManager();	//コンストラクタ
+	~AudioManager();	//デストラクタ
 
 
     // 再生
@@ -60,6 +64,7 @@ private:
     // 再生中のSE管理
     std::multimap<std::string, IXAudio2SourceVoice*> SEVoices;
 
+	std::vector<WaveData> m_waveDataList;
 
     // 内部的なボイス作成用ヘルパー
     IXAudio2SourceVoice* CreateVoice(const std::string& label);
