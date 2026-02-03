@@ -42,8 +42,10 @@ private:	//非公開メンバ変数
 	bool canRun = false;
 	bool runTimerStarted = false;
 	bool bbSlowMoveSpeed = false;
+	bool damageAnimation = false;
 	FrameTimer runTimer; // 走行タイマー
 	FrameTimer gameTimer;
+	FrameTimer damageAnimTimer;
 
 public:	//公開関数
 	Player(	//コンストラクタ
@@ -82,7 +84,8 @@ public:	//公開関数
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
 	void SetBB(bool isActive); // BBセット
-	void ShakeController(float leftMotor = 1.0f, float rightMotor = 1.0f, int duration = 5); //コントローラー振動 
+	void ShakeController(float leftMotor = 1.0f, float rightMotor = 1.0f, int duration = 5); //コントローラー振動
+	void StartDamageAnimation();
 
 private:	//非公開関数
 	void Move();	//移動

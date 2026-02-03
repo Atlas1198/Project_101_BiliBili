@@ -62,6 +62,14 @@ void Player::Initialize(InputInfo* inputInfo, BulletManager* pBulletManager)
 	m_pBulletManager = pBulletManager;
 	gameTimer.Mark();
 	Reset();
+
+	EventManager::GetInstance()->Subscribe<uint32_t>(
+		EventType::DAMAGE_ANIMATION,
+		[this](std::shared_ptr<uint32_t> data)
+		{
+			StartDamageAnimation();
+		}
+	);
 }
 
 //更新
@@ -115,6 +123,19 @@ void Player::UpdateOverride()
 				canRun = true;
 				runTimerStarted = false;
 			}
+		}
+
+		if (damageAnimation)
+		{
+			if (damageAnimTimer.Peek() >= 2.0f)
+			{
+				damageAnimation = false;
+				m_color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			}
+
+			float colors = std::sin(damageAnimTimer.Peek() * 10.0f) * 0.5f + 0.5f;
+
+			m_color = { 1.0f, colors, colors, 1.0f };
 		}
 
 		Move();		//移動
@@ -269,6 +290,12 @@ void Player::ShakeController(float leftMotor, float rightMotor, int duration)
 {
 	auto myController = m_pInputInfo->controller[id];
 	myController.SetVibration(leftMotor, rightMotor, duration);
+}
+
+void Player::StartDamageAnimation()
+{
+	damageAnimation = true;
+	damageAnimTimer.Mark();
 }
 
 //移動
