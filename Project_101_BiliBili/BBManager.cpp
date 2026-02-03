@@ -177,14 +177,15 @@ void BBManager::SubmitDrawsOverride(Renderer& renderer)
 		{
 			if (electricityBB[j])
 			{
-				SubmitRenderInfo(renderer, *electricityBB[j], m_ElectricityBBInfo);
+				SubmitRenderInfo(renderer, *electricityBB[j], 
+					i == 0 ? m_ElectricityBBBlueInfo : m_ElectricityBBRedInfo);
 			}
 		}
 	}
 
 	for (int i = 0; i < BB_AREA_NUM; i++)
 	{
-		SubmitRenderInfo(renderer, *m_BBAreas[i], m_BBAreaInfo);
+		SubmitRenderInfo(renderer, *m_BBAreas[i], i < 2 ? m_BBAreaBlueInfo : m_BBAreaRedInfo);
 	}
 }
 
@@ -280,19 +281,40 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
-		&m_ElectricityBBInfo,
+		&m_ElectricityBBBlueInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
 		BLEND_MODE::BLEND_MASKED,
-		electricityBBTexPath,
+		electricityBBBlueTexPath,
 		false
 	);
 
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
-		&m_BBAreaInfo,
+		&m_ElectricityBBRedInfo,
+		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
+		BLEND_MODE::BLEND_MASKED,
+		electricityBBRedTexPath,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,
+		meshManager,
+		&m_BBAreaBlueInfo,
 		m_BBAreas[0]->GetMeshType(),
 		BLEND_MODE::BLEND_MASKED,
-		electricityBBTexPath
+		areaBBBlueTexPath,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,
+		meshManager,
+		&m_BBAreaRedInfo,
+		m_BBAreas[0]->GetMeshType(),
+		BLEND_MODE::BLEND_MASKED,
+		areaBBRedTexPath,
+		false
 	);
 }

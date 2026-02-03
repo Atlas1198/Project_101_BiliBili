@@ -58,9 +58,9 @@ void BB::Initialize()
 
 		m_electricityBB[i]->SetTexSplitInfo({
 				0,
-				10,
-				6,
-				60,
+				8,
+				4,
+				30,
 				0,
 				5
 			});

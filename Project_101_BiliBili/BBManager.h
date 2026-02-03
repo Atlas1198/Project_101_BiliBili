@@ -12,58 +12,63 @@ class Player;
 class GameUIManager;
 class CollisionManager;
 
-//BBマネージャークラス
 class BBManager : public ObjectManagerBase
 {
 public:
-	static constexpr int BB_NUM = 2; //BBの数
+	static constexpr int BB_NUM = 2;
 	static constexpr int BB_AREA_NUM = 4;
 	const wchar_t* lineBBTexPath = L"asset/texture/line.png";
 	const wchar_t* electricityBBTexPath = L"asset/texture/effect/bilibili.png";
+
+	const wchar_t* electricityBBRedTexPath = L"asset/texture/effect/line_R_EF.png";
+	const wchar_t* electricityBBBlueTexPath = L"asset/texture/effect/line_B_EF.png";
+
+	const wchar_t* areaBBRedTexPath = L"asset/texture/effect/circle_R_EF.png";
+	const wchar_t* areaBBBlueTexPath = L"asset/texture/effect/circle_B_EF.png";
 
 	inline static float BB_DURATION = 5.0f;
 	static constexpr float BB_ENHANCE_TIME = 120.0f;
 
 public:
-	BBManager();		//コンストラクタ
-	~BBManager();	//チE��トラクタ
-	//メイン処琁E��数
-	void InitializeOverride(	//初期匁E
+	BBManager();		//繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
+	~BBManager();	//繝・せ繝医Λ繧ｯ繧ｿ
+	//繝｡繧､繝ｳ蜃ｦ逅・未謨ｰ
+	void InitializeOverride(	//蛻晄悄蛹・
 		TextureManager& textureManager,
 		MeshManager& meshManager,
 		CollisionManager& collisionManager
 	) override;
-	void UpdateOverride() override;					//更新
-	void SubmitDrawsOverride(Renderer& renderer) override;		//描画要求提出
-	void ResolveCollisionsOverride() override;		//衝突解決
-	void FinalizeOverride() override;					//終亁E
+	void UpdateOverride() override;					//譖ｴ譁ｰ
+	void SubmitDrawsOverride(Renderer& renderer) override;		//謠冗判隕∵ｱよ署蜃ｺ
+	void ResolveCollisionsOverride() override;		//陦晉ｪ∬ｧ｣豎ｺ
+	void FinalizeOverride() override;					//邨ゆｺ・
 
-	void SetPlayerData(std::vector<Player*>& players);				//プレイヤー惁E��の設宁E
-	void SetGameUIManager(GameUIManager* pUIManager);				//UIマネージャーの設宁E
-	void SetCollisionManager(CollisionManager* pCollisionManager);	//衝突�Eネ�Eジャーの設宁E
-	void SetBB(int teamID, bool activate);						//BBの発動�E無効化設宁E
-	void OnItemPickup(int teamID);								//アイチE��取得コールバック
+	void SetPlayerData(std::vector<Player*>& players);				//繝励Ξ繧､繝､繝ｼ諠・ｱ縺ｮ險ｭ螳・
+	void SetGameUIManager(GameUIManager* pUIManager);				//UI繝槭ロ繝ｼ繧ｸ繝｣繝ｼ縺ｮ險ｭ螳・
+	void SetCollisionManager(CollisionManager* pCollisionManager);	//陦晉ｪ√・繝阪・繧ｸ繝｣繝ｼ縺ｮ險ｭ螳・
+	void SetBB(int teamID, bool activate);						//BB縺ｮ逋ｺ蜍輔・辟｡蜉ｹ蛹冶ｨｭ螳・
+	void OnItemPickup(int teamID);								//繧｢繧､繝・Β蜿門ｾ励さ繝ｼ繝ｫ繝舌ャ繧ｯ
 
 private:
-	BB* m_BB[BB_NUM] = { nullptr }; //BB配�E
+	BB* m_BB[BB_NUM] = { nullptr }; //BB驟榊・
 	BilibiliArea *m_BBAreas[BB_AREA_NUM] = { nullptr };
-	std::vector<WorldRenderInfo> m_LineBBInfo;			//BBライン描画惁E��
-	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB電気描画惁E��
-	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BBエリア描画惁E��
+	std::vector<WorldRenderInfo> m_LineBBInfo;			//BB繝ｩ繧､繝ｳ謠冗判諠・ｱ
+	std::vector<WorldRenderInfo> m_ElectricityBBInfo;	//BB髮ｻ豌玲緒逕ｻ諠・ｱ
+	std::vector<WorldRenderInfo> m_BBAreaInfo;	//BB繧ｨ繝ｪ繧｢謠冗判諠・ｱ
 
-	float m_BBTimer[BB_NUM] = { 0.0f }; //BBタイマ�E
+	float m_BBTimer[BB_NUM] = { 0.0f }; //BB繧ｿ繧､繝槭・
 	FrameTimer m_frameTimer[BB_NUM];
 	FrameTimer bbAreaStartEventTimer;
 
-	std::vector<int> m_activationCalledBBIndex; //BB�����R�}���h(�C���f�b�N�X�w��)
+	std::vector<int> m_activationCalledBBIndex; //BB発動コマンド(インデックス指定)
 
-	GameUIManager* m_pUIManager = nullptr; //UIマネージャーへのポインタ
-	CollisionManager* m_pCollisionManager = nullptr; //衝突�Eネ�Eジャーへのポインタ
+	GameUIManager* m_pUIManager = nullptr; //UI繝槭ロ繝ｼ繧ｸ繝｣繝ｼ縺ｸ縺ｮ繝昴う繝ｳ繧ｿ
+	CollisionManager* m_pCollisionManager = nullptr; //陦晉ｪ√・繝阪・繧ｸ繝｣繝ｼ縺ｸ縺ｮ繝昴う繝ｳ繧ｿ
 
-	bool m_isBBEnhanced = false; //BB�������t���O
+	bool m_isBBEnhanced = false; //BB強化中フラグ
 
 private:
-	void PrepareRenderInfo(	//BB描画惁E��生�E
+	void PrepareRenderInfo(	//BB謠冗判諠・ｱ逕滓・
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	) override;
