@@ -1,5 +1,7 @@
 #include "Spring.h"
 #include "EventManager.h"
+#include "EventType.h"
+#include "EffectData.h"
 #include "Debug.h"
 #include <chrono>
 
@@ -45,6 +47,22 @@ Spring::Spring(
         colliderScale,
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
     );
+
+  //  XMFLOAT3 windPosition =
+  //  {
+  //      m_position.x,
+		//m_position.y +2.5f,
+		//m_position.z,
+  //  };
+
+  //  EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+  //      EventType::ADD_EFFECT,
+  //      EffectCommand{
+  //          EFFECT_TYPE::WIND,
+  //          windPosition,
+  //          XMFLOAT2{ 4.0f,4.0f },
+  //      }
+  //      );
 }
 
 void Spring::SetLaunchTarget(const XMFLOAT3& target)

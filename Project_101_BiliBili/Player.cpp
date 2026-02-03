@@ -27,10 +27,17 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 	id(id)
 
 {
+	const XMFLOAT3 COLLIDER_SCALE =
+	{
+		m_scale.x * 0.7f,
+		m_scale.y * 0.7f,
+		m_scale.z * 0.7f
+	};
+
 	m_pColliderSet->AddCollider(
 		ColliderType::SPHERE,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f),
+		COLLIDER_SCALE,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
 
@@ -49,9 +56,9 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 }
 
 //初期化
-void Player::Initialize(InputManager* pInputManager, BulletManager* pBulletManager)
+void Player::Initialize(InputInfo* inputInfo, BulletManager* pBulletManager)
 {
-	m_pInputInfo = pInputManager->GetInputInfo();	//入力情報構造体の取得
+	m_pInputInfo = inputInfo;	//入力情報構造体の取得
 	m_pBulletManager = pBulletManager;
 	gameTimer.Mark();
 	Reset();
@@ -231,8 +238,11 @@ void Player::ResolveCollisionsOverride()
 					// m_ignoreCollisionFrame = 5;
 
 					spring->SetIsBlowing(true);
+					m_pSceneContext->pInputInfo->controller[controllerID].SetVibration(1.0f, 1.0f, 10);
 				}
 			}
+			AudioManager::GetInstance()->PlaySE("BANE_JUMP");
+
 		}
 	}
 
@@ -252,6 +262,13 @@ void Player::SetBB(bool isActive)
 		m_texSplitInfo.cols = 3;
 		m_texSplitInfo.frameCount = 0;
 	}
+}
+
+//コントローラーを振動させる
+void Player::ShakeController(float leftMotor, float rightMotor, int duration)
+{
+	auto myController = m_pInputInfo->controller[id];
+	myController.SetVibration(leftMotor, rightMotor, duration);
 }
 
 //移動
@@ -460,6 +477,7 @@ void Player::Move()
 		m_velocity.z *= 0.95f;
 	}
 
+
 	UpdateAnimation();
 
 	if (!m_isGrounded)
@@ -522,6 +540,7 @@ void Player::Shoot()
 		{
 		case 0:
 			shoot = m_pInputInfo->key.z.trigger || m_pInputInfo->controller[0].B.trigger;
+			
 			break;
 		case 1:
 			shoot = m_pInputInfo->key.c.trigger || m_pInputInfo->controller[1].B.trigger;
@@ -572,6 +591,7 @@ void Player::Shoot()
 		isShooting = true;
 		m_texSplitInfo.frameCount = 0;
 		UpdateAnimation();
+	
 	}
 }
 

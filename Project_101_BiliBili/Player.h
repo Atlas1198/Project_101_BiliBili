@@ -4,6 +4,7 @@
 #include "BulletManager.h"
 #include "SharedStruct.h"
 #include "FrameTimer.h"
+#include "InputInfo.h"
 
 //プレイヤークラス
 class Player : public ObjectBase
@@ -25,6 +26,7 @@ private:	//非公開メンバ変数
 	Player* teammate = nullptr;
 	int teamID = -1;
 	int characterID = -1;
+	int controllerID = -1;
 	BulletManager *m_pBulletManager = nullptr;
 	bool m_isGrounded = false;
 	bool m_isSpringJump = false;
@@ -64,7 +66,7 @@ public:	//公開関数
 	~Player() {}	//デストラクタ
 
 	//メイン処理関数
-	void Initialize(InputManager* pInputManager, BulletManager* pBulletManager);	//初期化
+	void Initialize(InputInfo* inputInfo, BulletManager* pBulletManager);	//初期化
 	void UpdateOverride() override;					//更新
 	void ResolveCollisionsOverride() override;		//衝突解決
 	void SetTeamID(int team) { teamID = team; } //チームIDセット
@@ -72,6 +74,7 @@ public:	//公開関数
 	int GetTeamID() const { return teamID; } //チームID取得
 
 	void SetCharacterID(int character) { characterID = character; } //キャラクターIDセット
+	void SetControllerID(int controller) { controllerID = controller; } //コントローラーIDセット
 	void SetPlayerInfo(const PlayerInfo& info) { this->info = info; }	//プレイヤー情報構造体セット
 
 	void Reset();
@@ -79,6 +82,7 @@ public:	//公開関数
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
 	void SetBB(bool isActive); // BBセット
+	void ShakeController(float leftMotor = 1.0f, float rightMotor = 1.0f, int duration = 5); //コントローラー振動 
 
 private:	//非公開関数
 	void Move();	//移動

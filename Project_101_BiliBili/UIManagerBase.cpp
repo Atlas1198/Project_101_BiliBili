@@ -32,26 +32,30 @@ void UIManagerBase::Initialize(
 	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f }); //初期透明
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pFadeImage));
 
+	for(auto& root : m_roots) 
+	{
+		root->Initialize(textureManager, meshManager);
+	}
+
 	PrepareRenderInfo(textureManager, meshManager);
 
-	using args = float;
+	using args = std::pair<float, int>;
 	m_fadeStartEventID = EventManager::GetInstance()->Subscribe<args>(
 		EventType::START_FADE_IN,
 		[this](std::shared_ptr<args> data){
-			StartFadeIn(*data);
+			StartFadeIn(data->first, data->second);
 		}
 	);
 
 	m_fadeEndEventID = EventManager::GetInstance()->Subscribe<args>(
 		EventType::START_FADE_OUT,
 		[this](std::shared_ptr<args> data){
-			StartFadeOut(*data);
+			StartFadeOut(data->first, data->second);
 		}
 	);
 
 	//フェード関連の初期化
-	m_isFading = false;
-	m_isFadeEnd = false;
+	m_fadeState = FADE_STATE::FADE_NONE;
 }
 
 //更新
@@ -137,53 +141,64 @@ void UIManagerBase::PrepareRenderInfo(
 }
 
 //フェードイン開始
-void UIManagerBase::StartFadeIn(float duration)
+void UIManagerBase::StartFadeIn(float duration, int delay)
 {
-	m_isFading = true;
-	m_isFadeEnd = false;
-	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+	if (m_fadeState != FADE_STATE::FADE_NONE) return;
+	m_fadeState = FADE_STATE::FADE_IN;
+	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f});
 	m_fadeDuration = -duration;
+	m_fadeDelay = delay;
+	m_fadeTimer = 0;
 }
 
 //フェードアウト開始
-void UIManagerBase::StartFadeOut(float duration)
+void UIManagerBase::StartFadeOut(float duration, int delay)
 {
-	m_isFading = true;
-	m_isFadeEnd = false;
-	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+	if (m_fadeState != FADE_STATE::FADE_NONE) return;
+	m_fadeState = FADE_STATE::FADE_OUT;
+	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f});
 	m_fadeDuration = duration;
+	m_fadeDelay = delay;
+	m_fadeTimer = 0;
 }
 
 //フェード中判定
-bool UIManagerBase::IsFading() const
+bool UIManagerBase::IsFading()
 {
-	return m_isFading;
+	return m_fadeState == FADE_STATE::FADE_IN || m_fadeState == FADE_STATE::FADE_OUT;
 }
 
 //フェード終了判定
-bool UIManagerBase::IsFadeEnd() const
+bool UIManagerBase::IsFadeEnd()
 {
-	return m_isFadeEnd;
+	if(m_fadeState == FADE_STATE::FADE_COMPLETE)
+	{
+		m_fadeState = FADE_STATE::FADE_NONE;
+		return true;
+	}
+	return false;
 }
 
 //フェード更新関数
 void UIManagerBase::UpdateFade()
 {
-	if(!m_isFading) return;
+	if(m_fadeState == FADE_STATE::FADE_NONE || m_fadeState == FADE_STATE::FADE_COMPLETE) return;
+
+	m_fadeTimer++;
+	if (m_fadeTimer <= m_fadeDelay) return;
+
 	XMFLOAT4 color = m_pFadeImage->GetColor();
 	color.w += m_fadeDuration;
 
 	if(color.w < 0.0f)
-	{
+	{//フェードイン完了
 		color.w = 0.0f;
-		m_isFading = false;
-		m_isFadeEnd = true;
+		m_fadeState = FADE_STATE::FADE_COMPLETE;
 	}
 	else if(color.w > 1.0f)
-	{
+	{//フェードアウト完了
 		color.w = 1.0f;
-		m_isFading = false;
-		m_isFadeEnd = true;
+		m_fadeState = FADE_STATE::FADE_COMPLETE;
 	}
 
 	m_pFadeImage->SetColor(color);

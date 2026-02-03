@@ -26,7 +26,6 @@ PlayerManager::~PlayerManager()
 
 //初期化
 void PlayerManager::InitializeOverride(
-	InputManager* pInputManager,		//入力マネージャーのポインタ
 	TextureManager& textureManager,		//テクスチャ管理クラスの参照
 	MeshManager& meshManager,			//メッシュ管理クラスの参照
 	CollisionManager& collisionManager	//衝突管理クラスの参照
@@ -34,7 +33,10 @@ void PlayerManager::InitializeOverride(
 {
 	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
 	{
+		(*it)->Reset();
+		(*it)->Update();
 		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
+		(*it)->SetSceneContext(m_pSceneContext);
 	}
 
 	m_subscribedEvents.push_back(
@@ -103,11 +105,9 @@ void PlayerManager::InitializeOverride(
 			break;
 		}
 
-		//m_pPlayer[i]->SetColor(color);
 		m_pPlayer[i]->SetCharacterID(m_pSceneContext->playersInfo[i].characterID);
+		m_pPlayer[i]->SetControllerID(m_pSceneContext->playersInfo[i].controllerID);
 	}
-
-	m_pInputManager = pInputManager;
 }
 
 Player* PlayerManager::AddPlayer(
@@ -146,13 +146,13 @@ Player* PlayerManager::AddPlayer(
 		//プレイヤーオブジェクトの初期化
 		if (id == selfID)
 		{
-			m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //入力情報構造体の取得
+			m_pPlayer.back()->Initialize(pInputManager->GetInputInfo(), pBulletManager); //入力情報構造体の取得
 		}
 	}
 	else
 	{
 		//プレイヤーオブジェクトの初期化
-		m_pPlayer.back()->Initialize(pInputManager, pBulletManager); //入力情報構造体の取得
+		m_pPlayer.back()->Initialize(pInputManager->GetInputInfo(), pBulletManager); //入力情報構造体の取得
 	}
 
 	return newPlayer;
@@ -227,7 +227,7 @@ void PlayerManager::UpdateOverride()
 
 #ifdef _DEBUG
 	{
-		auto keyInput = m_pInputManager->GetInputInfo()->key;
+		auto keyInput = m_pSceneContext->pInputInfo->key;
 		if (keyInput.one.trigger)
 		{
 			OnTakeDamage(0, 100.0f);

@@ -106,19 +106,6 @@ struct CameraInfo
 	) const;
 };
 
-//プレイヤー情報構造体
-struct PlayerInfo
-{
-	int controllerID = -1;	//コントローラーID
-	int characterID = -1;	//キャラクターID
-};
-
-//シーンコンテキスト構造体
-struct SceneContext
-{
-	PlayerInfo playersInfo[4];	//プレイヤー情報配列
-};
-
 //タグ列挙体
 enum class OBJECT_TAG
 {
@@ -142,6 +129,7 @@ enum class SCENE_TYPE
 	SCENE_NONE = 0,		//シーン無し
 	SCENE_TITLE,		//タイトルシーン
 	SCENE_CONTROLLER,	//コントローラー設定シーン
+	SCENE_STAGE,		//ステージ選択シーン
 	SCENE_CHARACTER,	//キャラクター選択シーン
 	SCENE_GAME,			//ゲームシーン
 	SCENE_RESULT,		//リザルトシーン

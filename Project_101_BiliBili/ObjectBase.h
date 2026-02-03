@@ -5,6 +5,7 @@
 #include "ColliderSet.h"
 #include "SharedStruct.h"
 #include "RenderData.h"
+#include "Context.h"
 
 // Node Animator Set Structure
 struct NodeAnimatorSet

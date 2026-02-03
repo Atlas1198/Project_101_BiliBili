@@ -150,6 +150,8 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="AssimpLoader.h" />
     <ClInclude Include="AssimpNodeTransformAnim.h" />
+    <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="AudioResources.h" />
     <ClInclude Include="BB.h" />
     <ClInclude Include="BBManager.h" />
     <ClInclude Include="BilibiliArea.h" />
@@ -165,8 +167,10 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="Context.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="ControllerConnecter.h" />
+    <ClInclude Include="ControllerIconUI.h" />
     <ClInclude Include="ControllerScene.h" />
     <ClInclude Include="ControllerUIManager.h" />
     <ClInclude Include="CountUI.h" />
@@ -180,6 +184,7 @@
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="ElectricityBB.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="EventAnounceUI.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="EventType.h" />
     <ClInclude Include="FieldManager.h" />
@@ -189,6 +194,7 @@
     <ClInclude Include="Ground.h" />
     <ClInclude Include="HPBarUI.h" />
     <ClInclude Include="IconUI.h" />
+    <ClInclude Include="InputInfo.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="json.hpp" />
@@ -196,6 +202,9 @@
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SelectionScene.h" />
     <ClInclude Include="Spring.h" />
+    <ClInclude Include="StageScene.h" />
+    <ClInclude Include="StageSelector.h" />
+    <ClInclude Include="StageUIManager.h" />
     <ClInclude Include="TeamUI.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="TitleUIManager.h" />
@@ -236,6 +245,8 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="AssimpLoader.cpp" />
+    <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="AudioResources.cpp" />
     <ClCompile Include="BB.cpp" />
     <ClCompile Include="BBManager.cpp" />
     <ClCompile Include="BilibiliArea.cpp" />
@@ -252,6 +263,7 @@
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="ControllerConnecter.cpp" />
+    <ClCompile Include="ControllerIconUI.cpp" />
     <ClCompile Include="ControllerScene.cpp" />
     <ClCompile Include="ControllerUIManager.cpp" />
     <ClCompile Include="CountUI.cpp" />
@@ -262,6 +274,7 @@
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="ElectricityBB.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="EventAnounceUI.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="FieldManager.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
@@ -269,6 +282,7 @@
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="HPBarUI.cpp" />
     <ClCompile Include="IconUI.cpp" />
+    <ClCompile Include="InputInfo.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="LineBB.cpp" />
@@ -293,6 +307,9 @@
     <ClCompile Include="SelectionScene.cpp" />
     <ClCompile Include="SharedStruct.cpp" />
     <ClCompile Include="Spring.cpp" />
+    <ClCompile Include="StageScene.cpp" />
+    <ClCompile Include="StageSelector.cpp" />
+    <ClCompile Include="StageUIManager.cpp" />
     <ClCompile Include="TeamUI.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />

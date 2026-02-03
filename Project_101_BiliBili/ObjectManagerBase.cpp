@@ -11,7 +11,6 @@ using namespace DirectX;
 //初期化
 void ObjectManagerBase::Initialize(
 	SceneContext* pSceneContext,
-	InputManager* pInputManager, 
 	TextureManager& textureManager,
 	MeshManager& meshManager, 
 	CollisionManager& collisionManager
@@ -21,7 +20,7 @@ void ObjectManagerBase::Initialize(
 	m_pSceneContext = pSceneContext;
 	
 	//派生クラスでオーバーライドされた初期化関数を呼び出し
-	InitializeOverride(pInputManager, textureManager, meshManager, collisionManager);
+	InitializeOverride(textureManager, meshManager, collisionManager);
 
 	//オブジェクト描画情報生成
 	PrepareRenderInfo(textureManager, meshManager);

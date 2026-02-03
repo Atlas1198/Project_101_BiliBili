@@ -6,6 +6,7 @@
 #include "RenderData.h"
 #include "CollisionManager.h"
 #include "EffectManager.h"
+#include "Context.h"
 
 //前方宣言
 class Renderer;
@@ -24,7 +25,6 @@ public:	//公開関数
 	//メイン処理関数	
 	void Initialize(	//初期化
 		SceneContext* pSceneContext,
-		InputManager* pInputManager,
 		TextureManager& pTextureManager,
 		MeshManager& pMeshManager
 	);
@@ -38,7 +38,6 @@ public:	//公開関数
 
 protected:	//非公開メンバ変数
 	Camera* m_pCamera = nullptr;						//カメラ
-	InputManager* m_pInputManager = nullptr;			//入力管理クラス
 	CollisionManager* m_pCollisionManager = nullptr;	//衝突管理クラス
 	EffectManager* m_pEffectManager = nullptr;			//エフェクト管理クラス
 
@@ -50,7 +49,6 @@ protected:	//非公開メンバ変数
 
 protected:	//非公開メンバ関数
 	virtual void InitializeOverride(					//シーン固有の初期化
-		InputManager* pInputManager,
 		TextureManager& pTextureManager,
 		MeshManager& pMeshManager
 	) = 0;

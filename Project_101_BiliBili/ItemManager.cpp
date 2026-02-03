@@ -29,7 +29,7 @@ ItemManager::~ItemManager()
 }
 
 //初期化
-void ItemManager::InitializeOverride(InputManager* pInputManager, TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
+void ItemManager::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager, CollisionManager& collisionManager)
 {
 	m_pCollisionManager = &collisionManager;
 
@@ -58,13 +58,14 @@ void ItemManager::SpawnItem()
 	m_pItems.push_back(
 		new Item(
 			MESH_TYPE::QUAD,
-			XMFLOAT3(xDist(gen), -4.0f, zDist(gen)),	//位置
+			XMFLOAT3(xDist(gen), 4.0f, zDist(gen)),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
 			XMFLOAT3(3.0f, 3.0f, 3.0f),	//スケール
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//移動速度
+			XMFLOAT3(0.0f, -1.0f, 0.0f),//移動速度
 			true						//アクティブフラグ
 		)
 	);
+	m_pItems.back()->SetColor(XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
 
 	m_pItems.back()->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
 }

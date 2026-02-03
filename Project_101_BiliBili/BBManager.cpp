@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "GameUIManager.h"
 #include "EventManager.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -22,7 +23,6 @@ BBManager::~BBManager()
 }
 
 void BBManager::InitializeOverride(
-	InputManager* pInputManager,
 	TextureManager& textureManager,
 	MeshManager& meshManager,
 	CollisionManager& collisionManager
@@ -91,6 +91,8 @@ void BBManager::InitializeOverride(
 			bbAreaStartEventTimer.Mark();
 		}
 	);
+
+	m_isBBEnhanced = false;
 }
 
 void BBManager::OnItemPickup(int teamID)
@@ -103,11 +105,12 @@ void BBManager::OnItemPickup(int teamID)
 	{
 		SetBB(teamID, true);
 
-		if (bbAreaStartEventTimer.Peek() >= 120.0f)
+		if (m_isBBEnhanced)
 		{
 			m_BBAreas[teamID * 2]->SetActive(true);
 			m_BBAreas[teamID * 2 + 1]->SetActive(true);
 		}
+
 	}
 	m_BBTimer[teamID] = BB_DURATION;
 	m_frameTimer[teamID].Mark();
@@ -120,8 +123,15 @@ void BBManager::UpdateOverride()
 	for (auto& index : m_activationCalledBBIndex)
 	{
 		OnItemPickup(index);
+		//AudioManager::GetInstance()->PlayBGM("GAME_TF");
 	}
 	m_activationCalledBBIndex.clear();
+
+	if(!m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
+	{
+		m_isBBEnhanced = true;
+		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, EVENT_BB_ENHANCE);
+	}
 
 	//BB時間管理
 	for(int i = 0; i < BB_NUM; i++)
@@ -137,7 +147,10 @@ void BBManager::UpdateOverride()
 				m_BBTimer[i] = 0.0f;
 				m_BBAreas[i * 2]->SetActive(false);
 				m_BBAreas[i * 2 + 1]->SetActive(false);
+
+				//AudioManager::GetInstance()->StopBGM();
 			}
+			
 		}
 
 		m_BB[i]->Update();

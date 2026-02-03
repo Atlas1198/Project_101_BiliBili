@@ -131,7 +131,6 @@ void BB::ResolveCollisions()
 				BB::DAMAGE * eb->GetHitNum()
 			));
 
-
 			//リセット
 			eb->SetHasHitPlayer(false);
 			eb->SetHitNum(0);

@@ -19,6 +19,9 @@ enum EventType
 	CONTROLLER_CONNECTED, // int controllerIndex
 	CONTROLLER_ICON_REACTION, // int controllerIndex, InputInfo inputInfo
 
+	//ステージ選択画面関連イベント
+	CHANGE_STAGE_UI, // STAGE_TYPE stageType
+
 	//キャラクター選択画面関連イベント
 	CHARACTER_ICON_MOVE, // int playerIndex, DIRECTION direction
 	SHOW_SELECTED_ICON, // int playerIndex
@@ -37,10 +40,12 @@ enum EventType
 	SET_PLAYER_CHASING_UI_POSITION, // int teamID, XMFLOAT3 position1, XMFLOAT3 position2
 	SET_BULLET_UI_ACTIVE, // int teamID, bool isActive
 	INACTIVATE_PLAYER_POINTER_IMAGES, // void
+	SHOW_ANOUNCE_UI, // EventType eventType
 
 	//ランダムイベント
 	EVENT_BULLET_SPEED, // void
 	EVENT_BULLET_RECOVERY, // void
+	EVENT_BB_ENHANCE, // void
 	//フェード関連イベント
 	START_FADE_IN, // float duration
 	START_FADE_OUT, // float duration

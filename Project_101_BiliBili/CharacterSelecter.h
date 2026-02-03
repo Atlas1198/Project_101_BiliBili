@@ -1,5 +1,6 @@
 #pragma once
 #include "SharedStruct.h"
+#include "Context.h"
 
 //前方宣言
 class InputManager;
@@ -19,10 +20,7 @@ public:
 	~CharacterSelecter() = default;	//デストラクタ
 
 	void Initialize();							//初期化
-	void Update(								//更新
-		InputManager& inputManager,
-		SceneContext& sceneContext
-	);
+	void Update(SceneContext& sceneContext);	//更新
 	void Finalize(SceneContext& sceneContext);	//終了
 
 private:

@@ -3,8 +3,10 @@
 #include "GameScene.h"
 #include "TitleScene.h"
 #include "ControllerScene.h"
+#include "StageScene.h"
 #include "CharacterScene.h"
 #include "SharedStruct.h"
+#include "Context.h"
 
 //前方宣言
 class Renderer;			//レンダラー
@@ -45,6 +47,7 @@ private:	//メンバ変数
 
 	TitleScene* m_pTitleScene = nullptr;			//タイトルシーンクラスのポインタ
 	ControllerScene* m_pControllerScene = nullptr;	//コントローラーシーンクラスのポインタ
+	StageScene* m_pStageScene = nullptr;			//ステージ選択シーン
 	CharacterScene* m_pCharacterScene = nullptr;	//キャラクターシーンクラスのポインタ
 	GameScene* m_pGameScene = nullptr;				//ゲームシーンクラスのポインタ
 

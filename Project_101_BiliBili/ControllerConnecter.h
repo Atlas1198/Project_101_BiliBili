@@ -1,5 +1,6 @@
 #pragma once
 #include "SharedStruct.h"
+#include "Context.h"
 
 class InputManager;
 
@@ -18,7 +19,7 @@ public:
 	~ControllerConnecter() = default;
 
 	void Initialize();							//初期化
-	void Update(InputManager& inputManager);	//更新
+	void Update(SceneContext& sceneContext);	//更新
 	void Finalize(SceneContext& sceneContext);	//終了
 
 	bool IsAllConnected() const { return m_isAllConnected; }	//全コントローラー接続判定

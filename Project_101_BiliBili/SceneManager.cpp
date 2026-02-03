@@ -1,6 +1,6 @@
 #include "SceneManager.h"
 #include "Renderer.h"
-#include "InputManager.h"
+#include "InputInfo.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "EventManager.h"
@@ -11,6 +11,7 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 {
 	m_pTitleScene = new TitleScene(windowWidth, windowHeight);				//タイトルシーンクラスの生成
 	m_pControllerScene = new ControllerScene(windowWidth, windowHeight);	//コントローラーシーンクラスの生成
+	m_pStageScene = new StageScene(windowWidth, windowHeight);				//ステージ選択シーンクラスの生成
 	m_pCharacterScene = new CharacterScene(windowWidth, windowHeight);		//キャラクターシーンクラスの生成
 	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ゲームシーンクラスの生成
 
@@ -23,6 +24,7 @@ SceneManager::~SceneManager()
 {
 	delete m_pTitleScene;
 	delete m_pControllerScene;
+	delete m_pStageScene;
 	delete m_pCharacterScene;
 	delete m_pGameScene;
 }
@@ -41,8 +43,11 @@ void SceneManager::Initialize(
 
 	SubscribeEvent();
 
+	//シーンコンテキスト構造体初期化
+	m_sceneContext.pInputInfo = m_pInputManager->GetInputInfo(); //入力情報構造体をコピーして保存
+
 	//最初のシーン初期化
-	m_pCurrentScene->Initialize(&m_sceneContext, pInputManager,*m_pTextureManager, *m_pMeshManager);
+	m_pCurrentScene->Initialize(&m_sceneContext,*m_pTextureManager, *m_pMeshManager);
 }
 
 //更新
@@ -90,6 +95,10 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 		m_pCurrentScene = m_pControllerScene;
 		break;
 
+	case SCENE_TYPE::SCENE_STAGE:
+		m_pCurrentScene = m_pStageScene;
+		break;
+
 	case SCENE_TYPE::SCENE_CHARACTER:
 		m_pCurrentScene = m_pCharacterScene;
 		break;
@@ -108,8 +117,7 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 	SubscribeEvent();
 	//シーン変更後の初期化処理
 	m_pCurrentScene->Initialize(	//新しいシーン初期化
-		&m_sceneContext,		//シーンコンテキスト構造体
-		m_pInputManager,	//入力管理クラスのポインタ
+		&m_sceneContext,	//シーンコンテキスト構造体
 		*m_pTextureManager,	//テクスチャ管理クラスのポインタ
 		*m_pMeshManager		//メッシュ管理クラスのポインタ
 		); 
