@@ -11,7 +11,7 @@ class Player : public ObjectBase
 {
 public:	//公開定数
 	inline static float MOVE_SPEED = 0.2f;		//移動速度
-	inline static float BULLET_SPEED = 0.2f;
+	inline static float BULLET_SPEED = 0.3f;
 	static constexpr float ROTATE_SPEED = 3.0f;	//回転速度
 	static constexpr float GRAVITY = 0.02f;		//重力
 	static constexpr float RUN_DELAY = 0.5f;

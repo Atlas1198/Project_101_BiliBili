@@ -45,7 +45,7 @@ protected:	//非公開メンバ変数
 
 	DirectionalLight m_directionalLight;		//平行光源
 
-	bool m_drawColliders = true; // コライダー描画フラグ
+	bool m_drawColliders = false; // コライダー描画フラグ
 
 protected:	//非公開メンバ関数
 	virtual void InitializeOverride(					//シーン固有の初期化

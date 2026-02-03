@@ -22,7 +22,7 @@ const EffectTemplate g_effectTemplateListGame[] =
          MESH_TYPE::QUAD,					        //メッシュデータ
          L"asset/texture/effect/FireFlash.png",	    //テクスチャパス
          { 0, 5, 2, 10, 0, 2 },						//テクスチャ分割情報
-         BLEND_MODE::BLEND_TRANSPARENT,				//ブレンドモード
+         BLEND_MODE::BLEND_MASKED,				    //ブレンドモード
          { 1.0f,1.0f },								//基本サイズ
          { 1.0f,1.0f,1.0f,1.0f },					//基本色RGBA
          20.0f,										//寿命
@@ -32,7 +32,7 @@ const EffectTemplate g_effectTemplateListGame[] =
          MESH_TYPE::QUAD,					        //メッシュデータ
          L"asset/texture/effect/explosion_EF.png",	//テクスチャパス
          { 0, 9, 1, 9, 0, 2 },						//テクスチャ分割情報
-         BLEND_MODE::BLEND_TRANSPARENT,				//ブレンドモード
+         BLEND_MODE::BLEND_MASKED,				    //ブレンドモード
          { 1.0f,1.0f },								//基本サイズ
          { 1.0f,1.0f,1.0f,1.0f },					//基本色RGBA
          18.0f,										//寿命

@@ -140,7 +140,7 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo)
 	m_pPipelineStateWorldLight[BLEND_TRANSPARENT]->Create();											//生成
 
 	//エフェクト用パイプラインステートの設定
-//不透明設定
+	//不透明設定
 	m_pPipelineStateEffect[BLEND_OPAQUE]->SetPixelShader(L"PixelShader.hlsl", "EffectPS");	//ピクセルシェーダーの設定
 	m_pPipelineStateEffect[BLEND_OPAQUE]->EnableAlphaBlend(false);							//不透明設定
 	m_pPipelineStateEffect[BLEND_OPAQUE]->EnableDepthWrite(true);							//深度書き込み有効
@@ -156,7 +156,7 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo)
 	m_pPipelineStateEffect[BLEND_MASKED]->Create();													//生成
 	//透明設定
 	m_pPipelineStateEffect[BLEND_TRANSPARENT]->SetPixelShader(L"PixelShader.hlsl", "EffectPS");		//ピクセルシェーダーの設定
-	m_pPipelineStateEffect[BLEND_TRANSPARENT]->EnableAlphaBlend(true);								//透明設定
+	m_pPipelineStateEffect[BLEND_TRANSPARENT]->EnableAlphaBlend(true, ALPHA_MODE::PREMULTIPLIED);	//透明設定
 	m_pPipelineStateEffect[BLEND_TRANSPARENT]->EnableDepthWrite(false);								//深度書き込み無効
 	m_pPipelineStateEffect[BLEND_TRANSPARENT]->EnableDepthTest(true);								//深度テスト無効
 	m_pPipelineStateEffect[BLEND_TRANSPARENT]->SetCullMode(D3D12_CULL_MODE_NONE);					//カリング無効化
