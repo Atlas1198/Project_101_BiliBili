@@ -89,6 +89,7 @@ void BBManager::InitializeOverride(
 		[this](std::shared_ptr<void> data)
 		{
 			bbAreaStartEventTimer.Mark();
+			timerStarted = true;
 		}
 	);
 
@@ -127,7 +128,7 @@ void BBManager::UpdateOverride()
 	}
 	m_activationCalledBBIndex.clear();
 
-	if(!m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
+	if(timerStarted && !m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
 	{
 		m_isBBEnhanced = true;
 		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, EVENT_BB_ENHANCE);
@@ -207,6 +208,8 @@ void BBManager::FinalizeOverride()
 	{
 		m_BB[i]->Finalize();
 	}
+
+	timerStarted = false;
 }
 
 void BBManager::SetPlayerData(std::vector<Player*>& players)

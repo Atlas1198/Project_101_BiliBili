@@ -67,7 +67,8 @@ private:
 	GameUIManager* m_pUIManager = nullptr; 
 	CollisionManager* m_pCollisionManager = nullptr; 
 
-	bool m_isBBEnhanced = false; 
+	bool m_isBBEnhanced = false;
+	bool timerStarted = false;
 
 private:
 	void PrepareRenderInfo(	
