@@ -240,6 +240,8 @@ void GameScene::FinalizeOverride()
 void GameScene::CountdownUpdate()
 {
 	m_pFieldManager->Update();	//フィールド管理クラス更新
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();		//BB管理クラス更新
 
 	//定数定義
 	const int COUNTDOWN_DURATION = 240;	//カウントダウンの総フレーム数（4秒間）

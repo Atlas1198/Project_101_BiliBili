@@ -60,7 +60,7 @@ Spring::Spring(
         EffectCommand{
             EFFECT_TYPE::WIND,
             windPosition,
-            XMFLOAT2{ 6.0f,6.0f },
+            XMFLOAT2{ 5.0f,5.0f },
         }
         );
 }

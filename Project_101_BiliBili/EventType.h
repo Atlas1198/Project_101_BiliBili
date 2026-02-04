@@ -42,10 +42,11 @@ enum EventType
 	INACTIVATE_PLAYER_POINTER_IMAGES, // void
 	SHOW_ANOUNCE_UI, // EventType eventType
 
-	//ランダムイベント
-	EVENT_BULLET_SPEED, // void
-	EVENT_BULLET_RECOVERY, // void
-	EVENT_BB_ENHANCE, // void
+	//ゲーム内イベント(UI表示と併用)
+	EVENT_BULLET_SPEED,		// void
+	EVENT_BULLET_RECOVERY,	// void
+	EVENT_BB_ENHANCE,		// void
+	EVENT_ITEM_SPAWN,		// void
 	//フェード関連イベント
 	START_FADE_IN, // float duration
 	START_FADE_OUT, // float duration

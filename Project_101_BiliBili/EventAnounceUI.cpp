@@ -23,7 +23,6 @@ void EventAnounceUI::InitializeOverride(TextureManager& textureManager, MeshMana
 		m_order,
 		L"asset/texture/game_scene/UI_INGAME_Announce_bilibili.png"
 	);
-	m_pBB->SetActive(false);
 	//‘¬“xã¸‰æ‘œUI‚Ìì¬
 	m_pSpeed = AddChild<UIImage>(
 		POSITION,
@@ -32,7 +31,6 @@ void EventAnounceUI::InitializeOverride(TextureManager& textureManager, MeshMana
 		m_order,
 		L"asset/texture/game_scene/UI_INGAME_Announce_speed.png"
 	);
-	m_pSpeed->SetActive(false);
 	//‰ñ•œ‰æ‘œUI‚Ìì¬
 	m_pRecover = AddChild<UIImage>(
 		POSITION,
@@ -41,8 +39,17 @@ void EventAnounceUI::InitializeOverride(TextureManager& textureManager, MeshMana
 		m_order,
 		L"asset/texture/game_scene/UI_INGAME_Announce_tama.png"
 	);
-	m_pRecover->SetActive(false);
-
+	m_pItemSpawn = AddChild<UIImage>(
+		POSITION,
+		SCALE,
+		ROTATION,
+		m_order,
+		L"asset/texture/game_scene/UI_INGAME_Announce_henshin.png"
+	);
+	for(auto& child : m_children)
+	{
+		child->SetActive(false);
+	}
 	m_timer = 0;
 }
 
@@ -125,6 +132,10 @@ void EventAnounceUI::ShowAnounce(EventType type)
 	else if(type == EVENT_BB_ENHANCE)
 	{
 		m_pBB->SetActive(true);
+	}
+	else if (type == EVENT_ITEM_SPAWN)
+	{
+		m_pItemSpawn->SetActive(true);
 	}
 
 	m_timer = 0;

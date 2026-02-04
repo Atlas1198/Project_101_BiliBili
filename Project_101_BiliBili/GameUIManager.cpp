@@ -308,7 +308,7 @@ void GameUIManager::FinalizeOverride()
 
 void GameUIManager::SetPlayerChasingUIPosition(int teamID, const DirectX::XMFLOAT3& position1, const DirectX::XMFLOAT3& position2)
 {
-	const float offsetY = 60.0f; // Y座標のオフセット値
+	const float offsetY = 90.0f; // Y座標のオフセット値
 
 	//取得座標をスクリーン座標に変換
 	DirectX::XMFLOAT2 screenPos1 = m_pCameraInfo->ConvertWorldToScreen(position1, m_screenWidth, m_screenHeight);

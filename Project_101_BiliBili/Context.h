@@ -11,9 +11,9 @@ struct PlayerInfo
 //ステージ種別列挙体
 enum class STAGE_TYPE
 {
-	STATGE_GREEN,
-	STATGE_RED,
-	STATGE_BLUE,
+	STAGE_GREEN,
+	STAGE_RED,
+	STAGE_BLUE,
 	STAGE_MAX,
 	STAGE_NONE
 };

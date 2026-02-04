@@ -10,9 +10,9 @@ BulletCountUI::BulletCountUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale
 void BulletCountUI::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager)
 {
 	DirectX::XMFLOAT3 scale = { 105.0f, 117.0f, 1.0f };
-	const float scaleFactor = 0.0013f; // スケール調整用係数
+	const float scaleFactor = 0.0016f; // スケール調整用係数
 	const DirectX::XMFLOAT3 adjustedScale = { scale.x * scaleFactor, scale.y * scaleFactor, scale.z };
-	const float spacing = -0.03f; // 弾画像間のスペース
+	const float spacing = -0.05f; // 弾画像間のスペース
 
 	//弾数画像UIの作成
 	for(int i = 0; i < m_bulletCountMax; ++i)
