@@ -118,6 +118,9 @@ void Bullet::ResolveCollisionsOverride()
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
 				);
+
+				otherPlayer->StartDamageAnimation();
+
                 EventManager::GetInstance()->TriggerEvent<EffectCommand>(
                     EventType::ADD_EFFECT,
                     EffectCommand{
