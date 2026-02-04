@@ -6,6 +6,11 @@ using namespace DirectX;
 CountUI::CountUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order)
 	: UIBase(position, scale, rotation, order)
 {
+}
+
+//初期化
+void CountUI::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager)
+{
 	//カウント3画像UI生成
 	m_pCountImage3 = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
@@ -17,7 +22,7 @@ CountUI::CountUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::X
 	//カウント2画像UI生成
 	m_pCountImage2 = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 446.0f, 499.0f, 1.0f },//スケール
+		DirectX::XMFLOAT3{ 466.0f, 499.0f, 1.0f },//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
 		1,										//描画順序
 		L"asset/texture/game_scene/UI_INGAME_2.png"//テクスチャパス
@@ -25,7 +30,7 @@ CountUI::CountUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::X
 	//カウント1画像UI生成
 	m_pCountImage1 = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-		DirectX::XMFLOAT3{ 421.0f, 513.0f, 1.0f },//スケール
+		DirectX::XMFLOAT3{ 266.0f, 500.0f, 1.0f },//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
 		1,										//描画順序
 		L"asset/texture/game_scene/UI_INGAME_1.png"//テクスチャパス
@@ -58,11 +63,6 @@ CountUI::CountUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::X
 	m_countImageBaseSize[0] = m_pCountImage1->GetLocalTransform().scale;
 	m_countImageBaseSize[1] = m_pCountImage2->GetLocalTransform().scale;
 	m_countImageBaseSize[2] = m_pCountImage3->GetLocalTransform().scale;
-}
-
-//初期化
-void CountUI::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager)
-{
 }
 
 //更新

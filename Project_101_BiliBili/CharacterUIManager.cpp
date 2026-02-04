@@ -40,9 +40,10 @@ void CharacterUIManager::InitializeOverride(
 
 	//キャラクターアイコン関連定数
 	const float characterIconPosY = -100.0f;	//キャラクターアイコンY位置
-	const XMFLOAT3 characterIconScale = { 471.0f, 732.0f, 1.0f };	//キャラクターアイコンスケール
-	const float characterIconBaseScaleX = 1908.0f;	//キャラクターアイコンベースUIオブジェクトのXスケール
+	const XMFLOAT3 characterIconScale = { 474.0f, 732.0f, 1.0f };	//キャラクターアイコンスケール
+	const float characterIconBaseScaleX = 1909.0f;	//キャラクターアイコンベースUIオブジェクトのXスケール
 	const float positionOffsetX = (characterIconBaseScaleX - characterIconScale.x * 4) / 3.0f; //キャラクターアイコン間のX位置オフセット
+	const float iconScaleFactor = 0.99f; //キャラクターアイコンスケール倍率
 
 	//プレイヤー背景UIオブジェクト配列生成
 	{
@@ -50,11 +51,11 @@ void CharacterUIManager::InitializeOverride(
 
 		for (int i = 0; i < 4; ++i)
 		{
-			float positionX = basePositionX + i * characterIconScale.x + positionOffsetX * i;
+			float positionX = basePositionX + i * (characterIconScale.x + positionOffsetX);
 
 			m_pPlayerBackgroundsNormal[i] = new UIImage(
 				{ positionX, characterIconPosY, 0.0f },	//位置
-				characterIconScale,//スケール
+				XMFLOAT3(characterIconScale.x * iconScaleFactor, characterIconScale.y * iconScaleFactor, 1.0f),//スケール
 				{ 0.0f, 0.0f, 0.0f },	//回転
 				2,						//描画順序
 				L"asset/texture/character_scene/UI_CHARACTER_Select_N.png",
@@ -69,7 +70,7 @@ void CharacterUIManager::InitializeOverride(
 	{
 		m_pPlayerBackgroundsSelected[0] = new UIImage(
 			{ 0.0f, characterIconPosY, 0.0f },	//位置
-			characterIconScale,//スケール
+			XMFLOAT3(characterIconScale.x * iconScaleFactor, characterIconScale.y * iconScaleFactor, 1.0f),//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_1.png",
@@ -77,7 +78,7 @@ void CharacterUIManager::InitializeOverride(
 		);
 		m_pPlayerBackgroundsSelected[1] = new UIImage(
 			{ 0.0f, characterIconPosY, 0.0f },	//位置
-			characterIconScale,//スケール
+			XMFLOAT3(characterIconScale.x * iconScaleFactor, characterIconScale.y * iconScaleFactor, 1.0f),//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_2.png",
@@ -85,7 +86,7 @@ void CharacterUIManager::InitializeOverride(
 		);
 		m_pPlayerBackgroundsSelected[2] = new UIImage(
 			{ 0.0f, characterIconPosY, 0.0f },	//位置
-			characterIconScale,//スケール
+			XMFLOAT3(characterIconScale.x * iconScaleFactor, characterIconScale.y * iconScaleFactor, 1.0f),//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_3.png",
@@ -93,7 +94,7 @@ void CharacterUIManager::InitializeOverride(
 		);
 		m_pPlayerBackgroundsSelected[3] = new UIImage(
 			{ 0.0f, characterIconPosY, 0.0f },	//位置
-			characterIconScale,//スケール
+			XMFLOAT3(characterIconScale.x * iconScaleFactor, characterIconScale.y * iconScaleFactor, 1.0f),//スケール
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_4.png",

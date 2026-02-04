@@ -89,6 +89,7 @@ void ItemManager::UpdateOverride()
 		if (!skipped)
 		{
 			SpawnItem();
+			EventManager::GetInstance()->TriggerEvent<EventType>(EventType::SHOW_ANOUNCE_UI, EventType::EVENT_ITEM_SPAWN);
 		}
 
 		nextItemIndex++;

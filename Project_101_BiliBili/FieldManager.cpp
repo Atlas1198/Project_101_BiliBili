@@ -243,7 +243,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 
 	switch (Stagenum)
 	{
-	case STAGE_TYPE::STATGE_GREEN:	//緑基盤
+	case STAGE_TYPE::STAGE_GREEN:	//緑基盤
 		//-------------
 		//バネ
 		//-------------
@@ -306,7 +306,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		WallPasses(XMFLOAT3(-7.0f, -5.5f, 0.0f));
 
 		break;
-	case STAGE_TYPE::STATGE_RED:	//赤基盤
+	case STAGE_TYPE::STAGE_RED:	//赤基盤
 		//-------------
 		//バネ
 		//-------------
@@ -379,7 +379,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		WallPasses(XMFLOAT3(5.0f, -5.5f, 7.5f));
 
 		break;
-	case STAGE_TYPE::STATGE_BLUE: //あお基盤
+	case STAGE_TYPE::STAGE_BLUE: //あお基盤
 		//-------------
 		//バネ
 		//-------------
@@ -1253,13 +1253,27 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		set->isAnimPlaying = true;
 	}
 
+	std::wstring groundTexPath = L"";
+	switch (m_pSceneContext->stageType)
+	{
+	case STAGE_TYPE::STAGE_GREEN:
+		groundTexPath = L"asset/fbx/stageG/ST_stage_G.fbx";
+		break;
+	case STAGE_TYPE::STAGE_BLUE:
+		groundTexPath = L"asset/fbx/stageB/ST_stage_B.fbx";
+		break;
+	case STAGE_TYPE::STAGE_RED:
+		groundTexPath = L"asset/fbx/stageR/ST_stage_R.fbx";
+		break;
+	}
+
 	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
 		&m_groundInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
 		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
-		L"asset/fbx/stage/ST_stage.fbx",	//テクスチャのファイル名
+		groundTexPath.c_str(),	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
 		false,

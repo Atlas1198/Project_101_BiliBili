@@ -28,6 +28,7 @@ private:
 	UIImage* m_pBB = nullptr;
 	UIImage* m_pSpeed = nullptr;
 	UIImage* m_pRecover = nullptr;
+	UIImage* m_pItemSpawn = nullptr;
 
 	int m_timer = 0;
 	int m_blinkCount = 0;
