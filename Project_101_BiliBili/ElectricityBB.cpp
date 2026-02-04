@@ -5,80 +5,81 @@
 using namespace DirectX;
 using namespace CollisionData;
 
-//XV
+//æ›´æ–°
 void ElectricityBB::UpdateOverride()
 {
 	UpdateGeometry();
 }
 
-//Õ“Ë‰ğŒˆ
+//è¡çªè§£æ±º
 void ElectricityBB::ResolveCollisionsOverride()
 {
 	for(auto& info : m_pColliderSet->GetCollisionInfos())
 	{
-		auto opponentOwner = info.opponent;			//Õ“Ë‘Šè‚ÌƒIƒuƒWƒFƒNƒgæ“¾
-		OBJECT_TAG tag = opponentOwner->GetTag();	//Õ“Ë‘Šè‚Ìƒ^ƒOæ“¾
+		auto opponentOwner = info.opponent;			//è¡çªç›¸æ‰‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå–å¾—
+		OBJECT_TAG tag = opponentOwner->GetTag();	//è¡çªç›¸æ‰‹ã®ã‚¿ã‚°å–å¾—
 
-		//Õ“Ë‘Šè‚ªƒvƒŒƒCƒ„[‚Ìê‡
+		//è¡çªç›¸æ‰‹ãŒãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å ´åˆ
 		if(tag == OBJECT_TAG::PLAYER)
 		{
-			auto player = dynamic_cast<Player*>(opponentOwner);	//ƒvƒŒƒCƒ„[‚ÉƒLƒƒƒXƒg
+			auto player = dynamic_cast<Player*>(opponentOwner);	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ã‚­ãƒ£ã‚¹ãƒˆ
 			if (player->GetTeamID() != m_teamId)
 			{
 				if (player->GetTeamID() != m_teamId && info.state == COLLISION_STATE::COLLISION_STAY)
-				{//ƒ`[ƒ€ID‚ªˆá‚¤‚©AÕ“ËŠJn‚Ìê‡
-					m_hasHitPlayer = true;	//ƒvƒŒƒCƒ„[‚É“–‚½‚Á‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
-					m_hitNum++;				//“–‚½‚Á‚½‰ñ”‚ğƒJƒEƒ“ƒg
+				{//ãƒãƒ¼ãƒ IDãŒé•ã†ã‹ã€è¡çªé–‹å§‹ã®å ´åˆ
+					m_hasHitPlayer = true;	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å½“ãŸã£ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
+					m_hitNum++;				//å½“ãŸã£ãŸå›æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 				}
 				player->ShakeController(1.0f, 1.0f, 20);
+				player->StartDamageAnimation();
 			}
 		}
 	}
 }
 
-//ƒvƒŒƒCƒ„[‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©æ“¾
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å½“ãŸã£ãŸã‹ã©ã†ã‹å–å¾—
 bool ElectricityBB::HasHitPlayer() const
 {
 	return m_hasHitPlayer;
 }
 
-//“–‚½‚Á‚½‰ñ”æ“¾
+//å½“ãŸã£ãŸå›æ•°å–å¾—
 int ElectricityBB::GetHitNum() const
 {
 	return m_hitNum;
 }
 
-//ŠJn’n“_‚Ìİ’è
+//é–‹å§‹åœ°ç‚¹ã®è¨­å®š
 void ElectricityBB::SetStartPos(DirectX::XMFLOAT3 position)
 {
 	m_startPos = position;
 }
 
-//I—¹’n“_‚Ìİ’è
+//çµ‚äº†åœ°ç‚¹ã®è¨­å®š
 void ElectricityBB::SetEndPos(DirectX::XMFLOAT3 position)
 {
 	m_endPos = position;
 }
 
-//ƒ`[ƒ€ID‚Ìİ’è
+//ãƒãƒ¼ãƒ IDã®è¨­å®š
 void ElectricityBB::SetTeamId(int id)
 {
 	m_teamId = id;
 }
 
-//ƒvƒŒƒCƒ„[‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©ƒtƒ‰ƒO‚Ìİ’è
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å½“ãŸã£ãŸã‹ã©ã†ã‹ãƒ•ãƒ©ã‚°ã®è¨­å®š
 void ElectricityBB::SetHasHitPlayer(bool hasHit)
 {
 	m_hasHitPlayer = hasHit;
 }
 
-//“–‚½‚Á‚½‰ñ”‚Ìİ’è
+//å½“ãŸã£ãŸå›æ•°ã®è¨­å®š
 void ElectricityBB::SetHitNum(int num)
 {
 	m_hitNum = num;
 }
 
-//ƒWƒIƒƒgƒŠXV
+//ã‚¸ã‚ªãƒ¡ãƒˆãƒªæ›´æ–°
 void ElectricityBB::UpdateGeometry()
 {
 	float length = LengthBetween(m_startPos, m_endPos);

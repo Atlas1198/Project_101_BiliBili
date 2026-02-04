@@ -127,15 +127,15 @@ void Player::UpdateOverride()
 
 		if (damageAnimation)
 		{
-			if (damageAnimTimer.Peek() >= 2.0f)
+			float colors = std::sin(3.14f + damageAnimTimer.Peek() * 20.0f);
+
+			m_color = { 1.0f, colors, colors, 1.0f };
+
+			if (damageAnimTimer.Peek() >= 1.0f)
 			{
 				damageAnimation = false;
 				m_color = { 1.0f, 1.0f, 1.0f, 1.0f };
 			}
-
-			float colors = std::sin(damageAnimTimer.Peek() * 10.0f) * 0.5f + 0.5f;
-
-			m_color = { 1.0f, colors, colors, 1.0f };
 		}
 
 		Move();		//移動
