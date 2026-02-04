@@ -52,7 +52,7 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	//ルートシグネチャの設定
-	CD3DX12_ROOT_SIGNATURE_DESC desc = {};	//設定構造体
+	CD3DX12_ROOT_SIGNATURE_DESC desc = {};		//設定構造体
 	desc.NumParameters = _countof(rootParam);	//ルートパラメータの数
 	desc.NumStaticSamplers = 1;					//スタティックサンプラーの数
 	desc.pParameters = rootParam;				//ルートパラメータ
