@@ -100,7 +100,7 @@ void Spring::UpdateOverride()
   m_nodeAnimatorSet.isAnimPlaying = true;
 
 	//アニメーション更新
-	const double MAX_ANIM_TIME = 1.0 / 30.0; //slowest speed
+	const double MAX_ANIM_TIME = 1.0 / 15.0; //slowest speed
 	if (m_isBlowing)
 	{
 		const double MAX_ANIM_TIME = 1.0 / 30.0; //slowest speed

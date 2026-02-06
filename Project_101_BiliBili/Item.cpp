@@ -61,7 +61,7 @@ void Item::ResolveCollisionsOverride()
 				//アイテム取得時再生
 				AudioManager::GetInstance()->PlaySE("GAME_TF");
 				//コントローラー振動
-				player->ShakeController(1.0f, 1.0f, 10);
+				player->ShakeController(1.0f, 1.0f, 20);
 			}
 		}
 

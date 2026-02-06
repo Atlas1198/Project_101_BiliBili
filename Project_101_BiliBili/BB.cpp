@@ -62,7 +62,7 @@ void BB::Initialize()
 				4,
 				30,
 				0,
-				5
+				3
 			});
 	}
 
