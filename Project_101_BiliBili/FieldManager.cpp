@@ -13,7 +13,7 @@ using namespace DirectX;
 //コンストラクタ
 FieldManager::FieldManager()
 {
-	//TODO: 地面と壁オブジェクトの生成
+	
 }
 
 //デストラクタ
