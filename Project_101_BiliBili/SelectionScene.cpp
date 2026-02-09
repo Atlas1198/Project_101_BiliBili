@@ -41,5 +41,5 @@ void SelectionScene::FinalizeOverride()
 //ƒJƒƒ‰î•ñŽæ“¾
 CameraInfo* SelectionScene::GetCameraInfo() const
 {
-	return m_pCamera->GetCameraInfo();
+	return &m_pCamera->GetCameraInfo();
 }

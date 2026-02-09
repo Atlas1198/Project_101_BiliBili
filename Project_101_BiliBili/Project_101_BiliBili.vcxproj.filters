@@ -291,10 +291,13 @@
     <ClInclude Include="ControllerIconUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-      <ClInclude Include="AudioManager.h">
+    <ClInclude Include="AudioManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="AudioResources.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLibrary.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -503,7 +506,7 @@
     <ClCompile Include="TeamUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="CutInUIh.cpp">
+    <ClCompile Include="CutInUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="CountUI.cpp">
@@ -531,18 +534,21 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="EventAnounceUI.cpp">
-       <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="InputInfo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ControllerIconUI.cpp">
-       <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
-      <ClCompile Include="AudioResources.cpp">
+    <ClCompile Include="AudioResources.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="AudioManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderLibrary.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

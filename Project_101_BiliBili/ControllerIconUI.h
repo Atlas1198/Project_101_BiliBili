@@ -14,7 +14,7 @@ class ControllerIconUI : public UIBase
 		DirectX::XMFLOAT3 rotation = { 0,0,0 },
 		UINT order = 0,
 		const std::wstring& textureFilePath = L"",
-		BLEND_MODE blendMode = BLEND_MODE::BLEND_TRANSPARENT
+		PSOKey psoKey = PSO_KEY_TRANSPARENT
 	);
 	~ControllerIconUI() = default;	//デストラクタ
 

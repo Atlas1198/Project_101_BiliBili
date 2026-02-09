@@ -16,7 +16,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//âÒì]
 		0,						//ï`âÊèáèò
 		L"asset/texture/white.png",
-		BLEND_MODE::BLEND_OPAQUE
+		PSO_KEY_OPAQUE
 	);
 	m_pBackgroundImage->SetColor({ 0.9f, 0.9f, 0.9f, 1.0f });
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pBackgroundImage));
@@ -27,7 +27,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//âÒì]
 		1,						//ï`âÊèáèò
 		L"asset/texture/controller_scene/UI_CONTROLLER_Header.png",
-		BLEND_MODE::BLEND_MASKED
+		PSO_KEY_MASKED
 	);
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pHeaderImage));
 
@@ -37,7 +37,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//âÒì]
 		2,						//ï`âÊèáèò
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con.png",
-		BLEND_MODE::BLEND_MASKED
+		PSO_KEY_MASKED
 	);
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pControllerIconBase));
 
@@ -50,7 +50,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//âÒì]
 		3,						//ï`âÊèáèò
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_1.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 
 	m_pControllerIconUIs[1] = new ControllerIconUI(
@@ -59,7 +59,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//âÒì]
 		3,						//ï`âÊèáèò
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_2.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 
 	m_pControllerIconUIs[2] = new ControllerIconUI(
@@ -68,7 +68,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//âÒì]
 		3,						//ï`âÊèáèò
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_3.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 
 	m_pControllerIconUIs[3] = new ControllerIconUI(
@@ -77,7 +77,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },		//âÒì]
 		3,							//ï`âÊèáèò
 		L"asset/texture/controller_scene/UI_CONTROLLER_Con_4.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 
 	for(auto& icon : m_pControllerIconUIs)
@@ -92,7 +92,7 @@ void ControllerUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//âÒì]
 		4,						//ï`âÊèáèò
 		L"asset/texture/controller_scene/UI_CONTROLLER_Go.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pGoToNextSceneIcon));
 

@@ -60,7 +60,7 @@ void ItemManager::SpawnItem()
 			MESH_TYPE::QUAD,
 			XMFLOAT3(xDist(gen), 4.0f, zDist(gen)),	//位置
 			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(3.0f, 3.0f, 3.0f),	//スケール
+			XMFLOAT3(3.5f, 3.5f, 3.5f),	//スケール
 			XMFLOAT3(0.0f, -1.0f, 0.0f),//移動速度
 			true						//アクティブフラグ
 		)
@@ -158,7 +158,7 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 		meshManager,						//メッシュマネージャへの参照
 		&m_itemInfo,						//描画情報構造体配列へのポインタ
 		MESH_TYPE::QUAD,					//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,			//ブレンドモード
+		PSO_KEY_MASKED,			//ブレンドモード
 		itemTexPath,						//テクスチャのファイル名
 		false,								//ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ

@@ -5,7 +5,7 @@ ControllerScene::ControllerScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
 {
 	m_pControllerConnecter = new ControllerConnecter();
-	m_pUIManager = new ControllerUIManager(m_pCamera->GetCameraInfo(), window_width, window_height);
+	m_pUIManager = new ControllerUIManager(&m_pCamera->GetCameraInfo(), window_width, window_height);
 }
 
 //デストラクタ

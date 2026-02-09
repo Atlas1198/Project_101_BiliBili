@@ -93,5 +93,5 @@ void SceneBase::Finalize()
 //ƒJƒƒ‰î•ñŽæ“¾
 CameraInfo* SceneBase::GetCameraInfo() const
 {
-	return m_pCamera->GetCameraInfo();
+	return &m_pCamera->GetCameraInfo();
 }

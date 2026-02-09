@@ -72,7 +72,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 			{ 0.0f, 0.0f, 0.0f },
 			0,
 			BACKGROUND_PATH[i].c_str(),
-			BLEND_MODE::BLEND_MASKED
+			PSO_KEY_MASKED
 		);
 		m_pExplanation[i] = new UIImage(
 			EXPLANATION_POSITION,
@@ -80,7 +80,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 			{ 0.0f, 0.0f, 0.0f },
 			2,
 			EXPLANATION_PATH[i].c_str(),
-			BLEND_MODE::BLEND_TRANSPARENT
+			PSO_KEY_TRANSPARENT
 		);
 		m_pName[i] = new UIImage(
 			NAME_POSITION,
@@ -88,7 +88,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 			{ 0.0f, 0.0f, 0.0f },
 			3,
 			NAME_PATH[i].c_str(),
-			BLEND_MODE::BLEND_MASKED
+			PSO_KEY_MASKED
 		);
 
 		m_roots.push_back(std::unique_ptr<UIImage>(m_pBackGround[i]));
@@ -111,7 +111,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		100,
 		L"asset/texture/stage_scene/UI_STAGE_Header.png",
-		BLEND_MODE::BLEND_MASKED
+		PSO_KEY_MASKED
 	);
 
 	m_pOperation = new UIImage(
@@ -120,7 +120,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		100,
 		L"asset/texture/stage_scene/UI_STAGE_Operation.png",
-		BLEND_MODE::BLEND_MASKED
+		PSO_KEY_MASKED
 	);
 
 	m_pArrow = new UIImage(
@@ -129,7 +129,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		100,
 		L"asset/texture/stage_scene/UI_STAGE_Select.png",
-		BLEND_MODE::BLEND_MASKED
+		PSO_KEY_MASKED
 	);
 	const XMFLOAT2 NAME_BACK_POSITION_OFFSET = { 4.0f, -6.0f };
 	m_pNameBack = new UIImage(
@@ -142,7 +142,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		1,
 		L"asset/texture/stage_scene/UI_STAGE_Name_EF.png",
-		BLEND_MODE:: BLEND_MASKED
+		PSO_KEY_MASKED
 	);
 	m_nameBackOriginalScale = m_pNameBack->GetLocalTransform().scale;
 

@@ -13,7 +13,7 @@ using namespace DirectX;
 //コンストラクタ
 FieldManager::FieldManager()
 {
-	//TODO: 地面と壁オブジェクトの生成
+	
 }
 
 //デストラクタ
@@ -1199,7 +1199,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		PSO_KEY_MASKED,		//ブレンドモード
 		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
@@ -1212,7 +1212,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallPassInfo,				//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		PSO_KEY_MASKED,		//ブレンドモード
 		L"asset/fbx/hole/ST_hole.fbx",	//テクスチャのファイル名
 		false,
 		BILLBOARD_NONE,
@@ -1225,7 +1225,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallCurveInfo,				//描画情報構造体配列へのポインタ
 		m_pWallCurves[0]->GetMeshType(),//メッシュタイプ
-		BLEND_MODE::BLEND_OPAQUE,		//ブレンドモード
+		PSO_KEY_OPAQUE,		//ブレンドモード
 		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",		//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
@@ -1238,7 +1238,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_springInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,				//メッシュタイプ
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		PSO_KEY_MASKED,		//ブレンドモード
 		springTexPath,
 		true
 	);
@@ -1272,7 +1272,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_groundInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
-		BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+		PSO_KEY_MASKED,		//ブレンドモード
 		groundTexPath.c_str(),	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,

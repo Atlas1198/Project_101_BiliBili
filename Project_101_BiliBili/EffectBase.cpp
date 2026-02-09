@@ -1,7 +1,7 @@
 #include "EffectBase.h"
 
 //コンストラクタ
-EffectBase::EffectBase(EFFECT_TYPE type, DirectX::XMFLOAT3 center, DirectX::XMFLOAT2 size, DirectX::XMFLOAT4 color, float lifeTime, bool isActive, MESH_TYPE meshType)
+EffectBase::EffectBase(EFFECT_TYPE type, DirectX::XMFLOAT3 center, DirectX::XMFLOAT3 size, DirectX::XMFLOAT4 color, float lifeTime, bool isActive, MESH_TYPE meshType)
 	: m_type(type), m_center(center), m_size(size), m_color(color), m_lifeTime(lifeTime), m_isActive(isActive), m_meshType(meshType)
 {
 }

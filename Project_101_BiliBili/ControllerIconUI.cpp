@@ -10,9 +10,9 @@ ControllerIconUI::ControllerIconUI(
 	DirectX::XMFLOAT3 rotation, 
 	UINT order, 
 	const std::wstring& textureFilePath,
-	BLEND_MODE blendMode
+	PSOKey psoKey
 )
-	: UIBase(position, scale, rotation, order, blendMode), 
+	: UIBase(position, scale, rotation, order, psoKey), 
 	m_textureFilePath(textureFilePath)
 {
 }

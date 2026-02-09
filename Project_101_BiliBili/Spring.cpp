@@ -60,7 +60,7 @@ Spring::Spring(
         EffectCommand{
             EFFECT_TYPE::WIND,
             windPosition,
-            XMFLOAT2{ 5.0f,5.0f },
+            XMFLOAT3{ 5.0f,5.0f, 1.0f },
         }
         );
 }
@@ -121,4 +121,5 @@ void Spring::UpdateOverride()
 
     m_nodeAnimatorSet.pNodeAnimator->Update(m_animTime);
 }
+
 void Spring::ResolveCollisionsOverride() {}

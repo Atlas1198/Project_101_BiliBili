@@ -289,7 +289,8 @@ void App::InitInstance()
 	//レンダラー初期化
 	m_pRenderer->Initialize(
 		pDevice,							//デバイス
-		m_pSceneManager->GetCameraInfo()	//カメラ情報構造体
+		m_pSceneManager->GetCameraInfo(),	//カメラ情報構造体
+		m_pTextureManager					//テクスチャ管理クラス
 	);
 
 	//テクスチャ管理クラス初期化
@@ -362,8 +363,7 @@ void App::Draw()
 	//シーンの描画
 	m_pRenderer->Draw(
 		m_pEngine->GetCurrentBufferIndex(),	//バッファインデックス
-		m_pEngine->GetCommandList(),		//コマンドリスト
-		*m_pTextureManager					//テクスチャ管理クラス
+		m_pEngine->GetCommandList()			//コマンドリスト
 	);
 
 	//描画終了

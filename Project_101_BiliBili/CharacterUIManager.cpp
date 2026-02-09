@@ -21,7 +21,7 @@ void CharacterUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		0,						//描画順序
 		L"asset/texture/character_scene/UI_CHARACTER_Back.png",
-		BLEND_MODE::BLEND_OPAQUE
+		PSO_KEY_OPAQUE
 	);
 	//ルートUIオブジェクトに追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pBackgroundImage));
@@ -33,7 +33,7 @@ void CharacterUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		1,						//描画順序
 		L"asset/texture/character_scene/UI_CHARACTER_Header.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 	//ルートUIオブジェクトに追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pHeaderImage));
@@ -59,7 +59,7 @@ void CharacterUIManager::InitializeOverride(
 				{ 0.0f, 0.0f, 0.0f },	//回転
 				2,						//描画順序
 				L"asset/texture/character_scene/UI_CHARACTER_Select_N.png",
-				BLEND_MODE::BLEND_MASKED
+				PSO_KEY_MASKED
 			);
 			//ルートUIオブジェクトに追加
 			m_roots.push_back(std::unique_ptr<UIBase>(m_pPlayerBackgroundsNormal[i]));
@@ -74,7 +74,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_1.png",
-			BLEND_MODE::BLEND_MASKED
+			PSO_KEY_MASKED
 		);
 		m_pPlayerBackgroundsSelected[1] = new UIImage(
 			{ 0.0f, characterIconPosY, 0.0f },	//位置
@@ -82,7 +82,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_2.png",
-			BLEND_MODE::BLEND_MASKED
+			PSO_KEY_MASKED
 		);
 		m_pPlayerBackgroundsSelected[2] = new UIImage(
 			{ 0.0f, characterIconPosY, 0.0f },	//位置
@@ -90,7 +90,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_3.png",
-			BLEND_MODE::BLEND_MASKED
+			PSO_KEY_MASKED
 		);
 		m_pPlayerBackgroundsSelected[3] = new UIImage(
 			{ 0.0f, characterIconPosY, 0.0f },	//位置
@@ -98,7 +98,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },	//回転
 			2,						//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Select_4.png",
-			BLEND_MODE::BLEND_MASKED
+			PSO_KEY_MASKED
 		);
 		//ルートUIオブジェクトに追加
 		for (auto& bg : m_pPlayerBackgroundsSelected)
@@ -116,7 +116,7 @@ void CharacterUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		3,						//描画順序
 		L"asset/texture/character_scene/UI_CHARACTER_Select_frame.png",
-		BLEND_MODE::BLEND_MASKED
+		PSO_KEY_MASKED
 	);
 	//ルートUIオブジェクトに追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCharacterIconBase));
@@ -137,7 +137,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },			//回転
 			2,								//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Icon_1.png",
-			BLEND_MODE::BLEND_TRANSPARENT
+			PSO_KEY_TRANSPARENT
 		);
 		m_pPlayerIcons[1] = new UIImage(
 			{ 0.0f, positionY, 0.0f },	//位置
@@ -145,7 +145,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },			//回転
 			2,								//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Icon_2.png",
-			BLEND_MODE::BLEND_TRANSPARENT
+			PSO_KEY_TRANSPARENT
 		);
 		m_pPlayerIcons[2] = new UIImage(
 			{ 0.0f, positionY, 0.0f },	//位置
@@ -153,7 +153,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },			//回転
 			2,								//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Icon_3.png",
-			BLEND_MODE::BLEND_TRANSPARENT
+			PSO_KEY_TRANSPARENT
 		);
 		m_pPlayerIcons[3] = new UIImage(
 			{ 0.0f, positionY, 0.0f },	//位置
@@ -161,7 +161,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },			//回転
 			2,								//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Icon_4.png",
-			BLEND_MODE::BLEND_TRANSPARENT
+			PSO_KEY_TRANSPARENT
 		);
 
 		//初期X座標設定
@@ -196,7 +196,7 @@ void CharacterUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		4,						//描画順序
 		L"asset/texture/character_scene/UI_CHARACTER_Operation.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 	//ルートUIオブジェクトに追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pOperation));
@@ -217,7 +217,7 @@ void CharacterUIManager::InitializeOverride(
 			{ 0.0f, 0.0f, 0.0f },		//回転
 			5,							//描画順序
 			L"asset/texture/character_scene/UI_CHARACTER_Ready.png",
-			BLEND_MODE::BLEND_TRANSPARENT
+			PSO_KEY_TRANSPARENT
 		);
 		//ルートUIオブジェクトに追加
 		m_roots.push_back(std::unique_ptr<UIBase>(m_pGoToNextSceneIcon));

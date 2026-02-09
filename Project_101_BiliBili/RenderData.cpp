@@ -9,6 +9,7 @@
 #include "SharedStruct.h"
 #include "Collider.h"
 #include "ObjectBase.h"
+#include "SharedStruct.h"
 
 using namespace DirectX;
 
@@ -18,7 +19,7 @@ void CreateRenderInfo(
 	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MESH_TYPE mType,						//メッシュタイプ
-	BLEND_MODE mode,						//ブレンドモード
+	PSOKey psoKey,							//パイプラインステートオブジェクトキー
 	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
 	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType,					//ビルボードタイプ
@@ -33,7 +34,7 @@ void CreateRenderInfo(
 			textureManager,	//テクスチャマネージャへの参照
 			meshManager,	//メッシュマネージャへの参照
 			pInfo,			//描画情報構造体配列へのポインタ
-			mode,			//ブレンドモード
+			psoKey,			//ブレンドモード
 			path,			//モデルファイルのパス
 			lightEneble,	//ライト有効or無効
 			bType,			//ビルボードタイプ
@@ -48,7 +49,7 @@ void CreateRenderInfo(
 			meshManager,	//メッシュマネージャへの参照
 			pInfo,			//描画情報構造体配列へのポインタ
 			mType,			//メッシュタイプ
-			mode,			//ブレンドモード
+			psoKey,			//ブレンドモード
 			path,			//テクスチャのファイル名
 			lightEneble,	//ライト有効or無効
 			bType			//ビルボードタイプ
@@ -61,7 +62,7 @@ void CreateRenderInfoFromFBX(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
-	BLEND_MODE mode,						//ブレンドモード
+	PSOKey psoKey,							//パイプラインステートオブジェクトキー
 	const wchar_t* path,					//モデルファイルのパス
 	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType,					//ビルボードタイプ
@@ -94,16 +95,16 @@ void CreateRenderInfoFromFBX(
 			textureManager,	//テクスチャマネージャへの参照
 			meshManager,	//メッシュマネージャへの参照
 			mesh,			//メッシュデータ
-			mode,			//ブレンドモード
+			psoKey,			//ブレンドモード
 			bType			//ビルボードタイプ
 		);
 
-		WorldRenderInfo info;				//描画情報構造体
-		info.common = desc;					//共通描画記述構造体の設定
-		info.lightingEnabled = lightEneble;	//ライティング有効フラグの設定
-		info.billboardType = bType;			//ビルボードタイプの設定
-		info.baseVertex = 0;				//基準インデックスの設定
-		info.startIndex = 0;				//開始インデックスの設定
+		WorldRenderInfo info;												//描画情報構造体
+		info.common = desc;													//共通描画記述構造体の設定
+		info.lightingEnabled = lightEneble;									//ライティング有効フラグの設定
+		info.billboardType = bType;											//ビルボードタイプの設定
+		info.baseVertex = 0;												//基準インデックスの設定
+		info.startIndex = 0;												//開始インデックスの設定
 		info.pNodeAnimAsset = new NodeAnimationAsset(mesh.nodeAnimAsset);	//ノードアニメーション資産の生成
 
 		pInfo->push_back(info);	//配列に格納
@@ -116,7 +117,7 @@ void CreateRenderInfoFromDefaultMesh(
 	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MESH_TYPE type,							//メッシュタイプ
-	BLEND_MODE mode,						//ブレンドモード
+	PSOKey psoKey,							//パイプラインステートオブジェクトキー
 	const wchar_t* path,					//テクスチャのファイル名
 	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType					//ビルボードタイプ
@@ -133,7 +134,7 @@ void CreateRenderInfoFromDefaultMesh(
 			textureManager,		//テクスチャマネージャへの参照
 			meshManager,		//メッシュマネージャへの参照
 			mesh,				//メッシュデータ
-			mode,				//ブレンドモード
+			psoKey,				//ブレンドモード
 			bType				//ビルボードタイプ
 		);
 
@@ -148,38 +149,12 @@ void CreateRenderInfoFromDefaultMesh(
 	}
 }
 
-//デフォルトのメッシュデータからエフェクト描画情報を作成する関数
-void CreateEffectRenderInfo(TextureManager& textureManager, MeshManager& meshManager, std::vector<EffectRenderInfo>* pInfo, MESH_TYPE type, BLEND_MODE mode, const wchar_t* path)
-{
-	Model model;				//モデルデータ構造体
-	model = GetModel(type);	//メッシュタイプに応じたメッシュデータを取得
-
-	//メッシュタイプに応じたメッシュデータを取得して描画情報を作成
-	for (auto& mesh : model.meshes)
-	{
-		mesh.texPath = path;	//テクスチャのファイル名を設定
-
-		CommonRenderDesc desc = CreateRenderInfoFromMeshData(	//描画情報構造体の生成
-			textureManager,		//テクスチャマネージャへの参照
-			meshManager,		//メッシュマネージャへの参照
-			mesh,				//メッシュデータ
-			mode,				//ブレンドモード
-			BILLBOARD_NONE		//ビルボードタイプ
-		);
-
-		EffectRenderInfo info;	//エフェクト描画情報構造体
-		info.common = desc;		//共通描画記述構造体の設定
-
-		pInfo->push_back(info);	//配列に格納
-	}
-}
-
 //メッシュデータから描画情報を構築する関数
 CommonRenderDesc CreateRenderInfoFromMeshData(
 	TextureManager& textureManager,	//テクスチャマネージャへの参照
 	MeshManager& meshManager,		//メッシュマネージャへの参照
-	Mesh& mesh,			//メッシュデータ
-	BLEND_MODE mode,				//ブレンドモード
+	Mesh& mesh,						//メッシュデータ
+	PSOKey psoKey,					//パイプラインステートオブジェクトキー
 	BILLBOARD_TYPE bType			//ビルボードタイプ
 )
 {
@@ -191,7 +166,9 @@ CommonRenderDesc CreateRenderInfoFromMeshData(
 	//メッシュGPUデータの作成と描画情報構造体への設定
 	desc.pMeshGPU = meshManager.CreateMesh(mesh);	//メッシュGPUデータの作成とポインタの取得
 	desc.color = mesh.materialColor;				//オブジェクトの色を白に設定
-	desc.blendMode = mode;							//ブレンドモードを設定
+	desc.psoKey = psoKey;							//ブレンドモードを設定
+
+	std::wstring texPath = mesh.texPath;	//テクスチャのファイル名を取得
 
 	//テクスチャのSRVインデックスを取得
 	if (!mesh.texPath.empty() && &textureManager)
@@ -205,6 +182,76 @@ CommonRenderDesc CreateRenderInfoFromMeshData(
 
 	return desc;	//描画情報構造体を返す
 }
+
+
+WorldRenderModel BuildRenderInfoForSubmit(
+	const WorldRenderModel& input,
+	MESH_TYPE meshType,
+	const XMFLOAT3& position,
+	const XMFLOAT3& scale,
+	const XMFLOAT3& rotation,
+	const XMFLOAT4& color,
+	const TexSplitInfo& texSplitInfo
+)
+{
+	WorldRenderModel in = input;
+	WorldRenderModel out;
+	out.reserve(in.size());		//容量確保
+
+	if (meshType == MESH_TYPE::CAPSULE)
+	{//カプセルメッシュの場合(複数メッシュに分かれているため個別に処理)
+		CapsuleVisualDesc desc{};	//カプセルメッシュの記述データ
+		//カプセルメッシュの記述データ設定
+		AppendCapsuleRenderInfos(
+			desc,			//カプセル描画情報記述子
+			position,	//位置
+			scale,		//スケール
+			rotation,	//回転Euler角
+			color,		//色
+			in,			//入力元描画情報配列
+			out		//出力先描画情報配列
+		);
+	}
+	else
+	{//それ以外のメッシュの場合
+		//描画情報構造体配列をそのまま提出用配列にコピー
+		for (auto& i : in)
+		{
+			out.push_back(i);
+		}
+
+		//ワールド行列と色を設定
+		for (auto& i : out)
+		{
+			i.world = GetMatrixFromGeometry(
+				position,
+				scale,
+				rotation
+			);
+
+			i.common.color =
+			{
+				color.x * i.common.color.x,
+				color.y * i.common.color.y,
+				color.z * i.common.color.z,
+				color.w * i.common.color.w
+			};
+		}
+	}
+
+	//共通要素の設定
+	for (int i = 0; i < out.size(); i++)
+	{
+		out[i].position = position;
+		out[i].scale = scale;
+		out[i].common.psoKey = in[i].common.psoKey;
+		out[i].common.uvRect = SplitSprite(texSplitInfo);
+		out[i].billboardType = in[i].billboardType;
+	}
+
+	return out;	//提出用描画情報構造体配列を返す
+}
+
 
 Model MakeQuadModel()
 {

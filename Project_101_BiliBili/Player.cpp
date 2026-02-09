@@ -173,7 +173,6 @@ void Player::ResolveCollisionsOverride()
 	pushVector = GetPushOutVector(
 		infos,	//衝突情報配列
 		{//対象タグリスト(レイヤーマスクにも含まれている必要がある)
-			OBJECT_TAG::PLAYER,		//他のプレイヤーも押し出す
 			OBJECT_TAG::WALL,		//壁
 			OBJECT_TAG::WALLPASS,	//弾貫通壁
 			OBJECT_TAG::WALLCURVE,	//カーブ壁

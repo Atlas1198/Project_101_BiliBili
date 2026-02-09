@@ -94,6 +94,7 @@ struct CameraInfo
 	DirectX::XMFLOAT3 target;	//カメラの注視点
 	DirectX::XMFLOAT3 up;		//カメラの上方向ベクトル
 	DirectX::XMFLOAT3 right;	//カメラの右方向ベクトル
+	DirectX::XMFLOAT3 forward;	//カメラの前方向ベクトル
 	float fov;					//垂直視野角
 	float aspectRatio;			//アスペクト比
 	float nearZ;				//ニアクリップ距離
@@ -439,6 +440,23 @@ inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& tran
 	//ワールド行列の合成(スケール→回転→平行移動)
 	return scaleMatrix * rotMatrix * transMatrix;
 }
+
+//Get transformation matrix from position, scale, and rotation
+inline static DirectX::XMMATRIX GetMatrixFromGeometry(
+	const DirectX::XMFLOAT3& position,
+	const DirectX::XMFLOAT3& scale,
+	const DirectX::XMFLOAT3& rotation
+)
+{
+	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(
+		DirectX::XMConvertToRadians(rotation.x),
+		DirectX::XMConvertToRadians(rotation.y),
+		DirectX::XMConvertToRadians(rotation.z));
+	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+	return S * R * T;
+}
+
 
 //スプライト分割情報構造体
 struct TexSplitInfo

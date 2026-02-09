@@ -19,7 +19,7 @@ struct EffectCommand
 {
 	EFFECT_TYPE type = EFFECT_TYPE::NONE;		//エフェクトタイプ
 	DirectX::XMFLOAT3 position{};				//座標
-	DirectX::XMFLOAT2 size{};					//サイズ
+	DirectX::XMFLOAT3 size{};					//サイズ
 	bool isChase = false;						//追従フラグ
 	DirectX::XMFLOAT3* chaseTarget = nullptr;	//追従ターゲット座標
 };
@@ -32,11 +32,10 @@ struct EffectTemplate
 	MESH_TYPE meshType{};			//メッシュデータ
 	const wchar_t* texPath = L"";			//テクスチャパス
 	TexSplitInfo texSplitInfo{};			//テクスチャ分割情報
-	BLEND_MODE blendMode = 
-		BLEND_MODE::BLEND_TRANSPARENT;		//ブレンドモード
+	PSOKey psoKey{};				//ブレンドモード
 
 	//オブジェクト関連
-	DirectX::XMFLOAT2 baseSize{};			//基本サイズ
+	DirectX::XMFLOAT3 baseSize{};			//基本サイズ
 	DirectX::XMFLOAT4 baseColor{};			//基本色RGBA
 	float lifeTime = 0.0f;					//寿命
 };

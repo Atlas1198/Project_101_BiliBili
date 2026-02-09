@@ -11,7 +11,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 		0,													//描画順序
 		L"asset/texture/result_scene/UI_RESULT_Back.png",	//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
+		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
 	m_pHeaderImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 540.0f - 153.0f * 0.5f, 0.0f },			//位置
@@ -19,7 +19,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 		0,													//描画順序
 		L"asset/texture/result_scene/UI_RESULT_Header.png",	//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
+		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
 	m_pWinnerImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ -600.0f, 430.0f, 0.0f },			//位置
@@ -27,7 +27,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 		0,													//描画順序
 		L"asset/texture/result_scene/UI_RESULT_Winner.png",	//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
+		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
 
 	float characterImageScale = 1300.0f; //キャラクター画像スケール
@@ -37,7 +37,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
 		0,											//描画順序
 		L"asset/texture/character_images/red_normal.png",					//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT				//ブレンドモード
+		PSO_KEY_TRANSPARENT				//ブレンドモード
 	);
 	m_pCharacterImage[1] = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, -0.0f, 0.0f },		//位置
@@ -45,7 +45,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
 		0,											//描画順序
 		L"asset/texture/character_images/green_normal.png",					//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT				//ブレンドモード
+		PSO_KEY_TRANSPARENT				//ブレンドモード
 	);
 	m_pCharacterImage[2] = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, -0.0f, 0.0f },		//位置
@@ -53,7 +53,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
 		0,											//描画順序
 		L"asset/texture/character_images/yellow_normal.png",					//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT				//ブレンドモード
+		PSO_KEY_TRANSPARENT				//ブレンドモード
 	);
 	m_pCharacterImage[3] = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, -0.0f, 0.0f },		//位置
@@ -61,7 +61,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
 		0,											//描画順序
 		L"asset/texture/character_images/blue_normal.png",					//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT				//ブレンドモード
+		PSO_KEY_TRANSPARENT				//ブレンドモード
 	);
 
 	m_pFooterImage = AddChild<UIImage>(
@@ -70,7 +70,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 		0,													//描画順序
 		L"asset/texture/result_scene/UI_RESULT_Footer.png",	//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
+		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
 	m_pBlueImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ -960.0f + 700.0f, -540 + 331.5f, 0.0f },			//位置
@@ -78,7 +78,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 		0,													//描画順序
 		L"asset/texture/result_scene/UI_RESULT_Blue.png",	//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
+		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
 	m_pRedImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ -960.0f + 717.5f, -540.0f + 331.5f, 0.0f },			//位置
@@ -86,7 +86,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 		0,													//描画順序
 		L"asset/texture/result_scene/UI_RESULT_Red.png",	//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
+		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
 	m_pGoToTitleImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 700.0f, -500.0f, 0.0f },			//位置
@@ -94,7 +94,7 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 		0,													//描画順序
 		L"asset/texture/result_scene/UI_RESULT_Title.png",//テクスチャパス
-		BLEND_MODE::BLEND_TRANSPARENT						//ブレンドモード
+		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
 
 	for(auto& characterImage : m_pCharacterImage)

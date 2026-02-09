@@ -22,7 +22,7 @@ void IconUI::InitializeOverride(TextureManager& textureManager, MeshManager& mes
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order + 2,
 		m_texturePath,
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 }
 
