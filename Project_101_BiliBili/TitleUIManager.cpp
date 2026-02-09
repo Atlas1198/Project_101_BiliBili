@@ -19,7 +19,7 @@ void TitleUIManager::InitializeOverride(
 		XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		0,
 		L"asset/texture/title_scene/UI_TITLE_Back.png",
-		BLEND_MODE::BLEND_OPAQUE
+		PSO_KEY_OPAQUE
 	);
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pBackImage));
 

@@ -3,8 +3,8 @@
 using namespace DirectX;
 
 //コンストラクタ
-EventAnounceUI::EventAnounceUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order, BLEND_MODE blendMode)
-	:UIBase(position, scale, rotation, order, blendMode)
+EventAnounceUI::EventAnounceUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order, PSOKey psoKey)
+	:UIBase(position, scale, rotation, order, psoKey)
 {
 }
 

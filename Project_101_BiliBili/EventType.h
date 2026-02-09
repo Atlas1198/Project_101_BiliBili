@@ -4,6 +4,7 @@ enum EventType
 {
 	NONE = 0,
 	//ゲームプレイ関連イベント
+	CALL_CAMERA_SHAKE, // int intensity, float duration
 	ITEM_PICKUP, // int teamID
 	TAKE_DAMAGE, // int teamID, float damage
 	GAME_OVER, // int winningTeamID

@@ -11,7 +11,7 @@ class MeshManager;
 //エフェクト描画情報構造体セット
 struct EffectRenderSet
 {
-	std::vector<EffectRenderInfo> renderInfo;	//描画情報
+	std::vector<WorldRenderInfo> renderInfo;	//描画情報
 	EFFECT_TYPE type;				//エフェクトタイプ
 };
 
@@ -39,7 +39,7 @@ public:
 private:
 	std::vector<EffectCommand> m_pEffectQueue;			//effect queue
 	std::vector<EffectTemplate> m_effectTemplates;		//effect template list
-	EffectBase* m_pEffectPool[maxEffectNum]{nullptr};	//active effect pool
+	EffectBase* m_pEffectPool[maxEffectNum]{ nullptr };	//active effect pool
 	std::vector<EffectRenderSet> m_renderInfos;			//effect render info
 
 private:
@@ -51,7 +51,7 @@ private:
 	void SubmitRenderInfo(	//描画情報をシーンに提出
 		Renderer& renderer,							//シーンの参照
 		const EffectBase& effects,					//エフェクト
-		std::vector <EffectRenderInfo>& info	//描画情報構造体
+		std::vector <WorldRenderInfo>& info	//描画情報構造体
 	);
 
 	void PushEffectFromQueue(); //effect queueからeffect poolへエフェクトを追加
@@ -60,5 +60,5 @@ private:
 
 	EffectBase* FindEffectInPool(EFFECT_TYPE type); //effect poolからエフェクトを探す
 
-	std::vector<EffectRenderInfo>* FindRenderInfo(EFFECT_TYPE type); //エフェクトタイプから描画情報を探す
+	std::vector<WorldRenderInfo>* FindRenderInfo(EFFECT_TYPE type); //エフェクトタイプから描画情報を探す
 };

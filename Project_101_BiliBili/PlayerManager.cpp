@@ -303,7 +303,7 @@ void PlayerManager::PrepareRenderInfo(
 			meshManager,					//メッシュマネージャへの参照
 			&m_playerInfo[i],					//描画情報構造体配列へのポインタ
 			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+			PSO_KEY_MASKED,		//ブレンドモード
 			normalTextures[i],		//テクスチャのファイル名
 			false,							//ライト無効
 			BILLBOARD_TYPE::BILLBOARD_FIX_X
@@ -314,7 +314,7 @@ void PlayerManager::PrepareRenderInfo(
 			meshManager,					//メッシュマネージャへの参照
 			&m_playerTransformInfo[i],			//描画情報構造体配列へのポインタ
 			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-			BLEND_MODE::BLEND_MASKED,		//ブレンドモード
+			PSO_KEY_MASKED,		//ブレンドモード
 			bbTextures[i],		//テクスチャのファイル名
 			false,							//ライト無効
 			BILLBOARD_TYPE::BILLBOARD_FIX_X

@@ -72,7 +72,7 @@ void TransformItemManager::PrepareRenderInfo(TextureManager& textureManager, Mes
         meshManager,					            //メッシュマネージャへの参照
         &m_itemInfo,					            //描画情報構造体配列へのポインタ
         m_items[0]->GetMeshType(),	                //メッシュタイプ
-        BLEND_MODE::BLEND_MASKED,		            //ブレンドモード
+        PSO_KEY_MASKED,		            //ブレンドモード
         texPath,						            //テクスチャのファイル名
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL			//ビルボードタイプ
     );

@@ -9,18 +9,11 @@ class Renderer;
 class TextureManager;
 class MeshManager;
 class MeshGPU;
+struct NodeAnimationAsset;
 
 //=======================================================================================================
 //列挙体群
 //=======================================================================================================
-//ブレンドモード列挙体
-enum BLEND_MODE
-{
-	BLEND_OPAQUE,		//不透明
-	BLEND_MASKED,		//マスク
-	BLEND_TRANSPARENT,	//透明
-	BLEND_MAX			//最大数
-};
 
 //ビルボードタイプ
 enum BILLBOARD_TYPE
@@ -32,42 +25,139 @@ enum BILLBOARD_TYPE
 	BILLBOARD_FIX_Z,		//Z軸のみ
 };
 
+enum class VS_ID : uint16_t
+{
+	Basic = 0,
+};
+
+enum class PS_ID : uint16_t
+{
+	Basic = 0,
+	BasicLight,
+	BasicMasked,
+	BasicLightMasked,
+
+};
+
+//ブレンドモード
+enum BLEND_MODE
+{
+	BLEND_OPAQUE,
+	BLEND_ALPHA,
+	BLEND_ADD_ALPHA,
+	BLEND_ADD,
+	BLEND_MULTIPLY,
+};
+
+//深度ステンシルモード
+enum DEPTH_MODE
+{
+	DEPTH_DISABLE,
+	DEPTH_TEST_WRITE,
+	DEPTH_TEST_NO_WRITE,
+};
+
+enum CULL_MODE
+{
+	CULL_NONE,
+	CULL_FRONT,
+	CULL_BACK,
+};
+
+//パイプラインステートオブジェクトキー構造体
+struct PSOKey
+{
+	VS_ID vsEntry = VS_ID::Basic;			//頂点シェーダーエントリポイント
+	PS_ID psEntry = PS_ID::BasicLight;		//ピクセルシェーダーエントリポイント
+	BLEND_MODE  blend = BLEND_OPAQUE;		//ブレンドモード
+	DEPTH_MODE  depth = DEPTH_TEST_WRITE;	//深度ステンシルモード
+	CULL_MODE  cull = CULL_NONE;			//カリングモード
+
+	//等価演算子オーバーロード
+	bool operator == (const PSOKey& other) const
+	{
+		return vsEntry == other.vsEntry &&
+			psEntry == other.psEntry &&
+			blend == other.blend &&
+			depth == other.depth &&
+			cull == other.cull;
+	}
+	bool operator != (const PSOKey& other) const
+	{
+		return !(*this == other);
+	}
+
+	PSOKey Lighten() {
+		if (psEntry == PS_ID::Basic) psEntry = PS_ID::BasicLight;
+		else if (psEntry == PS_ID::BasicMasked) psEntry = PS_ID::BasicLightMasked;
+		return *this;
+	}
+};
+
+#define PSO_KEY_OPAQUE PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE }
+#define PSO_KEY_TRANSPARENT PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE }
+#define PSO_KEY_MASKED PSOKey{ VS_ID::Basic, PS_ID::BasicMasked, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE }
+#define PSO_KEY_ADDITIVE PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_ADD_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE }
+#define PSO_KEY_MULTIPLY PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_MULTIPLY, DEPTH_TEST_NO_WRITE, CULL_NONE }
+
+//ハッシュ関数オーバーロード
+struct PSOKeyHash {
+	size_t operator()(const PSOKey& k) const noexcept {
+		auto h = std::hash<VS_ID>{}(k.vsEntry);
+		auto hc = [&](size_t v) { h ^= v + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2); };
+		hc(std::hash<PS_ID>{}(k.psEntry));
+		hc(std::hash<int>{}(static_cast<int>(k.blend)));
+		hc(std::hash<int>{}(static_cast<int>(k.depth)));
+		hc(std::hash<int>{}(static_cast<int>(k.cull)));
+		return h;
+	}
+};
+
+enum RENDER_QUEUE
+{
+	RENDER_QUEUE_INVALID = -1,
+	RENDER_QUEUE_OPAQUE = 0,
+	RENDER_QUEUE_TRANSPARENT = 2,
+};
+
+static inline RENDER_QUEUE GetRenderQueueFromBlendMode(BLEND_MODE blendMode)
+{
+	return (blendMode == BLEND_OPAQUE) ? RENDER_QUEUE_OPAQUE : RENDER_QUEUE_TRANSPARENT;
+}
+
 //=======================================================================================================
 //描画情報構造体群
 //=======================================================================================================
 //共通描画記述構造体
 struct CommonRenderDesc
 {
-	MeshGPU* pMeshGPU = nullptr;						//メッシュデータ
-	uint32_t srvIndex = UINT32_MAX;						//SRVインデックス(テクスチャ)
-	DirectX::XMFLOAT4 color = { 1,1,1,1 };				//表示色
-	DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };	//UV矩形
-	BLEND_MODE blendMode = BLEND_MODE::BLEND_OPAQUE;	//ブレンドモード
+	MeshGPU* pMeshGPU = nullptr;							//メッシュデータ
+	uint32_t srvIndex = UINT32_MAX;							//SRVインデックス(テクスチャ)
+	DirectX::XMFLOAT4 color = { 1,1,1,1 };					//表示色
+	DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };		//UV矩形
+	PSOKey psoKey{};										//パイプラインステートオブジェクトキー
+	float sortDepth = 0.0f;									//ソート用深度
+	RENDER_QUEUE renderQueue = RENDER_QUEUE_INVALID;		//レンダリングキュー
 };
 
-//描画情報構造体
+// Render information structure for world space
 struct WorldRenderInfo
 {
-	CommonRenderDesc common;				//共通描画記述構造体
-	DirectX::XMMATRIX world = {};			//ワールド行列
-	UINT startIndex = 0;					//開始インデックス
-	INT  baseVertex = 0;					//基準インデックス
-	DirectX::XMFLOAT3 position{};			//座標
-	DirectX::XMFLOAT3 scale{};				//スケール
-	bool lightingEnabled = true;			//ライティング有効フラグ
-	BILLBOARD_TYPE billboardType 
-		= BILLBOARD_TYPE::BILLBOARD_NONE;	//ビルボードタイプ
+	CommonRenderDesc common{};				// Common render description structure
+	DirectX::XMMATRIX world = {};			// World matrix
+	UINT startIndex = 0;					// Start index
+	INT  baseVertex = 0;					// Base vertex
+	DirectX::XMFLOAT3 position{};			// Position
+	DirectX::XMFLOAT3 scale{};				// Scale
+	bool lightingEnabled = true;			// Lighting enabled flag
+	BILLBOARD_TYPE billboardType
+		= BILLBOARD_TYPE::BILLBOARD_NONE;	// Billboard type
 
 	NodeAnimationAsset* pNodeAnimAsset = nullptr;	// Pointer to node animation asset
 };
 
-//エフェクト描画情報構造体
-struct EffectRenderInfo
-{
-	CommonRenderDesc common;	//共通描画記述構造体
-	DirectX::XMFLOAT3 center{};	//座標
-	DirectX::XMFLOAT2 size{};	//スケール
-};
+//描画情報構造体配列型
+using WorldRenderModel = std::vector<WorldRenderInfo>;
 
 //=======================================================================================================
 //メッシュ・モデルデータ構造体
@@ -80,13 +170,37 @@ struct Mesh
 	std::vector<uint32_t> indices;		//インデックスデータ配列
 	size_t indexCount = 0;				//インデックス数
 	std::wstring texPath;				//テクスチャのファイル名
-	DirectX::XMFLOAT4 materialColor{	//マテリアルカラー
+	DirectX::XMFLOAT4 materialColor		//材質色(RGBA)
+	{
 		1.0f,	//拡散反射色R
 		1.0f,	//拡散反射色G
 		1.0f,	//拡散反射色B
 		1.0f	//拡散反射色A
 	};
 	NodeAnimationAsset nodeAnimAsset{};	// ノードアニメーション資産
+};
+
+// Bone data structure
+struct Bone
+{
+	std::wstring name;				// Bone name
+	int parentIndex = -1;			// Parent bone index (-1 if root)
+	DirectX::XMMATRIX offset;		// Offset matrix
+	int nodeIndex = -1;				// Node index in the model's node hierarchy
+};
+
+// Skeleton data structure
+struct Skeleton
+{
+	std::vector<Bone> bones;						// Bone array
+	std::unordered_map<std::wstring, int> boneMap;	// Map from bone name to index
+};
+
+struct AnimationClip
+{
+	std::wstring name;	// Animation clip name
+	float duration;		// Duration in seconds
+	float ticksPerSecond; // Ticks per second
 };
 
 //モデルデータ構造体
@@ -173,7 +287,7 @@ inline constexpr Vertex CubeVertices[24] =
 };
 
 //立方体のインデックスデータ
-inline constexpr uint32_t CubeIndices[36] =
+inline constexpr uint32_t CubeIndices[42] =
 {
 	// +Z
 	0,1,2,  0,2,3,			//三角形1、2
@@ -185,6 +299,8 @@ inline constexpr uint32_t CubeIndices[36] =
 	12,13,14,  12,14,15,	//三角形7、8
 	// +Y
 	16,17,18,  16,18,19,	//三角形9、10
+	// -Y
+	20,21,22,  20,22,23		//三角形11、12
 };
 
 //立方体のメッシュデータ作成関数
@@ -257,7 +373,7 @@ void CreateRenderInfo(
 	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MESH_TYPE mType,						//メッシュタイプ
-	BLEND_MODE mode,						//ブレンドモード
+	PSOKey psoKey,							//ブレンドモード
 	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
 	bool lightEneble = true,				//ライト有効or無効
 	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
@@ -270,7 +386,7 @@ void CreateRenderInfoFromFBX(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
-	BLEND_MODE mode,						//ブレンドモード
+	PSOKey psoKey,							//ブレンドモード
 	const wchar_t* path,					//モデルファイルのパス
 	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
@@ -284,19 +400,10 @@ void CreateRenderInfoFromDefaultMesh(
 	MeshManager& meshManager,				//メッシュマネージャへの参照
 	std::vector<WorldRenderInfo>* pInfo,	//描画情報構造体配列へのポインタ
 	MESH_TYPE type,							//メッシュタイプ
-	BLEND_MODE mode,						//ブレンドモード
+	PSOKey psoKey,							//ブレンドモード
 	const wchar_t* path,					//テクスチャのファイル名
 	bool lightEneble,						//ライト有効or無効
 	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
-);
-
-void CreateEffectRenderInfo(
-	TextureManager& textureManager,			//テクスチャマネージャへの参照
-	MeshManager& meshManager,				//メッシュマネージャへの参照
-	std::vector<EffectRenderInfo>* pInfo,	//エフェクト描画情報構造体配列へのポインタ
-	MESH_TYPE type,				//メッシュタイプ
-	BLEND_MODE mode,						//ブレンドモード
-	const wchar_t* path						//テクスチャのファイル名
 );
 
 //メッシュデータから描画情報を構築する関数
@@ -304,6 +411,17 @@ CommonRenderDesc CreateRenderInfoFromMeshData(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
 	MeshManager& meshManager,				//メッシュマネージャへの参照
 	Mesh& mesh,					//メッシュデータ構造体への参照
-	BLEND_MODE mode,						//ブレンドモード
+	PSOKey psoKey,							//ブレンドモード
 	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
+);
+
+//描画情報配列とジオメトリ情報から提出用描画情報配列を構築する関数
+WorldRenderModel BuildRenderInfoForSubmit(
+	const WorldRenderModel& input,
+	MESH_TYPE meshType = MESH_TYPE::QUAD,
+	const DirectX::XMFLOAT3& position = { 0.0f, 0.0f, 0.0f },
+	const DirectX::XMFLOAT3& scale = { 1.0f, 1.0f, 1.0f },
+	const DirectX::XMFLOAT3& rotation = { 0.0f, 0.0f, 0.0f },
+	const DirectX::XMFLOAT4& color = { 1.0f, 1.0f, 1.0f, 1.0f },
+	const TexSplitInfo& texSplitInfo = {}
 );

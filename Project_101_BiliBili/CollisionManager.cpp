@@ -178,14 +178,16 @@ void CollisionManager::SubmitDraw(
 	{
 		submitInfos[i].position = collider.GetCurrentCenter();
 		submitInfos[i].scale = collider.GetCurrentScale();
-		submitInfos[i].common.blendMode = BLEND_TRANSPARENT;
+		submitInfos[i].common.psoKey = PSOKey{
+			VS_ID::Basic,
+			PS_ID::BasicMasked,
+			BLEND_MODE::BLEND_ALPHA,
+			DEPTH_TEST_NO_WRITE,
+			CULL_NONE
+		};
 	}
 
-	//描画要求をシーンに提出
-	for (auto& i : submitInfos)
-	{
-		renderer.SubmitToWorldList(i);
-	}
+	renderer.SubmitToWorldList(submitInfos);	//Rendererへ描画要求を提出
 }
 
 //衝突判定処理
@@ -486,7 +488,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		meshManager,				//メッシュ管理クラスの参照
 		&m_colliderRenderInfoBox,	//描画情報構造体配列へのポインタ
 		MESH_TYPE::CUBE,	//メッシュタイプ
-		BLEND_TRANSPARENT,			//ブレンドモード
+		PSOKey{},			//ブレンドモード
 		texPath						//テクスチャのファイル名
 	);
 
@@ -497,7 +499,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoSphere,	//描画情報構造体配列へのポインタ
 		MESH_TYPE::SPHERE,	//メッシュタイプ
-		BLEND_TRANSPARENT,				//ブレンドモード
+		PSOKey{},				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
 
@@ -508,7 +510,7 @@ void CollisionManager::CreateColliderRenderInfo(TextureManager& textureManager, 
 		meshManager,					//メッシュ管理クラスの参照
 		&m_colliderRenderInfoCapsule,	//描画情報構造体配列へのポインタ
 		MESH_TYPE::CAPSULE,	//メッシュタイプ
-		BLEND_TRANSPARENT,				//ブレンドモード
+		PSOKey{},				//ブレンドモード
 		texPath							//テクスチャのファイル名
 	);
 }

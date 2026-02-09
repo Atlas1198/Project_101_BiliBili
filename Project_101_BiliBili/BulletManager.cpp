@@ -180,7 +180,7 @@ void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManage
         meshManager,					    //メッシュマネージャへの参照
         &m_bulletInfoRed,					    //描画情報構造体配列へのポインタ
         MESH_TYPE::QUAD,	                //メッシュタイプ
-        BLEND_MODE::BLEND_MASKED,		    //ブレンドモード
+        PSO_KEY_MASKED,		                //ブレンドモード
         texPathRed,						    //テクスチャのファイル名
 		false,							    //ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
@@ -189,10 +189,10 @@ void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManage
     CreateRenderInfo(
         textureManager,					    //テクスチャマネージャへの参照
         meshManager,					    //メッシュマネージャへの参照
-        &m_bulletInfoBlue,					    //描画情報構造体配列へのポインタ
+        &m_bulletInfoBlue,					//描画情報構造体配列へのポインタ
         MESH_TYPE::QUAD,	                //メッシュタイプ
-        BLEND_MODE::BLEND_MASKED,		    //ブレンドモード
-        texPathBlue,						    //テクスチャのファイル名
+        PSO_KEY_MASKED,		                //ブレンドモード
+        texPathBlue,						//テクスチャのファイル名
         false,							    //ライト無効
         BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
     );

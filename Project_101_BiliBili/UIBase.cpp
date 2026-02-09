@@ -4,10 +4,16 @@
 using namespace DirectX;
 
 //コンストラクタ
-UIBase::UIBase(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 rotation, UINT order, BLEND_MODE blendMode)
+UIBase::UIBase(
+	DirectX::XMFLOAT3 position,
+	DirectX::XMFLOAT3 scale,
+	DirectX::XMFLOAT3 rotation,
+	UINT order,
+	PSOKey psoKey
+)
 	: m_local{ position, scale, rotation },
 	m_order(order),
-	m_blendMode(blendMode)
+	m_psoKey(psoKey)
 {
 }
 
@@ -15,7 +21,7 @@ UIBase::UIBase(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::XMF
 void UIBase::Initialize(
 	TextureManager& textureManager,
 	MeshManager& meshManager
-) 
+)
 {
 	InitializeOverride(textureManager, meshManager);
 	for (auto& child : m_children)
@@ -25,22 +31,20 @@ void UIBase::Initialize(
 }
 
 // 更新
-void UIBase::Update() 
+void UIBase::Update()
 {
-	if (m_isActive == false) return;	//非アクティブなら何もしない
-
 	UpdateOverride();
-	for(auto& child : m_children) 
+	for (auto& child : m_children)
 	{
 		child->Update();
 	}
 }
 
 // 終了
-void UIBase::Finalize() 
+void UIBase::Finalize()
 {
 	FinalizeOverride();
-	for(auto& child : m_children) 
+	for (auto& child : m_children)
 	{
 		child->Finalize();
 	}
@@ -50,14 +54,14 @@ void UIBase::Finalize()
 void UIBase::PrepareRenderInfo(
 	TextureManager& textureManager,
 	MeshManager& meshManager
-) 
+)
 {
 	//自身の描画情報生成
 	PrepareRenderInfoOverride(textureManager, meshManager);
 
 	//子UIオブジェクトの描画情報生成
-	for(auto& child : m_children) 
-{
+	for (auto& child : m_children)
+	{
 		child->PrepareRenderInfo(textureManager, meshManager);
 	}
 }
@@ -74,7 +78,7 @@ void UIBase::CollectRenderInfos(std::vector<WorldRenderInfo>& out) const
 		WorldRenderInfo renderInfoCopy = renderInfo;		//描画情報構造体をコピー
 		renderInfoCopy.world = worldMatrix;						//ワールド行列を設定
 		renderInfoCopy.common.color = m_color;							//色RGBAを設定
-		renderInfoCopy.common.uvRect = 
+		renderInfoCopy.common.uvRect =
 		{ m_uvRect.u, m_uvRect.v, m_uvRect.su, m_uvRect.sv };	//UV矩形を設定
 		out.push_back(renderInfoCopy);							//配列に追加
 	}
@@ -85,25 +89,25 @@ void UIBase::CollectRenderInfos(std::vector<WorldRenderInfo>& out) const
 }
 
 // ワールド変換情報の取得
-const Transform3D& UIBase::GetWorldTransform() const 
+const Transform3D& UIBase::GetWorldTransform() const
 {
 	return m_world;
 }
 
 // ローカル変換情報の取得
-const Transform3D& UIBase::GetLocalTransform() const 
+const Transform3D& UIBase::GetLocalTransform() const
 {
 	return m_local;
 }
 
 // 色RGBAの取得
-const DirectX::XMFLOAT4 UIBase::GetColor() const 
+const DirectX::XMFLOAT4 UIBase::GetColor() const
 {
 	return m_color;
 }
 
 // アクティブかどうかを取得
-const bool UIBase::IsActive() const 
+const bool UIBase::IsActive() const
 {
 	return m_isActive;
 }
@@ -126,12 +130,6 @@ TexSplitInfo& UIBase::GetTexSplitInfo()
 	return m_texSplitInfo;
 }
 
-// ワールド変換情報の設定
-void UIBase::SetWorldTransform(const Transform3D& world)
-{
-	m_world = world;
-}
-
 //ローカル変換情報の設定
 void UIBase::SetLocalTransform(const Transform3D& local)
 {
@@ -146,9 +144,6 @@ void UIBase::SetColor(DirectX::XMFLOAT4 color) {
 // アクティブフラグの設定
 void UIBase::SetActive(bool isActive) {
 	m_isActive = isActive;
-	for(auto& child : m_children) {
-		child->SetActive(isActive);	//子も同様に設定
-	}
 }
 
 //UV矩形の設定
@@ -170,7 +165,7 @@ void UIBase::SetTexSplitInfo(const TexSplitInfo& info)
 void UIBase::UpdateWorldTransform(const Transform3D& parent)
 {
 	m_world = CombineTransform3D(parent, m_local);	//親の変換情報とローカル変換情報を合成してワールド変換情報を更新
-	for(auto& child : m_children) {
+	for (auto& child : m_children) {
 		child->UpdateWorldTransform(m_world);	//子のワールド変換情報も更新
 	}
 }

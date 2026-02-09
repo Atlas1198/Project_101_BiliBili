@@ -12,7 +12,7 @@ public:
 		DirectX::XMFLOAT3 rotation = { 0,0,0 },
 		UINT order = 0,
 		const std::wstring& texturePath = L"",
-		BLEND_MODE blendMode = BLEND_MODE::BLEND_TRANSPARENT
+		PSOKey psoKey = PSO_KEY_TRANSPARENT
 	);
 	~UIImage() {};
 	void InitializeOverride(

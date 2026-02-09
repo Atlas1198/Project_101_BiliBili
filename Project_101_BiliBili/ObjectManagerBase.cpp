@@ -121,17 +121,13 @@ void ObjectManagerBase::SubmitRenderInfo(
 		{
 			submitInfos[i].position = object.GetPosition();
 			submitInfos[i].scale = object.GetScale();
-			submitInfos[i].common.blendMode = info[i].common.blendMode;
+			submitInfos[i].common.psoKey = info[i].common.psoKey;
 			submitInfos[i].common.uvRect = SplitSprite(object.GetTexSplitInfo());
 			submitInfos[i].billboardType = info[i].billboardType;
 		}
 
 		//描画要求をシーンに提出
-		for (auto& i : submitInfos)
-		{
-			renderer.SubmitToWorldList(i);
-		}
-
+		renderer.SubmitToWorldList(submitInfos);
 	}
 }
 

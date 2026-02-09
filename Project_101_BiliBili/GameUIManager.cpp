@@ -89,7 +89,7 @@ void GameUIManager::InitializeOverride(
 				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
 				0,													//描画順序
 				playerPointerTexturePaths[i],						//テクスチャパス
-				BLEND_MODE::BLEND_MASKED							//ブレンドモード
+				PSO_KEY_MASKED							//ブレンドモード
 			));
 		}
 	}
@@ -122,7 +122,7 @@ void GameUIManager::InitializeOverride(
 			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },					//回転
 			0,														//描画順序
 			L"asset/texture/game_scene/UI_INGAME_Operation.png",	//テクスチャパス
-			BLEND_MODE::BLEND_TRANSPARENT								//ブレンドモード
+			PSO_KEY_TRANSPARENT								//ブレンドモード
 		));
 	}
 

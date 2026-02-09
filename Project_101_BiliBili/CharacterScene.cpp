@@ -6,7 +6,7 @@ CharacterScene::CharacterScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
 {
 	m_pCharacterSelecter = new CharacterSelecter();
-	m_pCharacterUIManager = new CharacterUIManager(m_pCamera->GetCameraInfo(), window_width, window_height);
+	m_pCharacterUIManager = new CharacterUIManager(&m_pCamera->GetCameraInfo(), window_width, window_height);
 }
 
 //デストラクタ

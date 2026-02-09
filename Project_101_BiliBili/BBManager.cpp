@@ -273,7 +273,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_LineBBInfo,
 		m_BB[0]->GetLineBB()[0]->GetMeshType(),
-		BLEND_MODE::BLEND_MASKED,
+		PSO_KEY_MASKED,
 		lineBBTexPath,
 		false
 	);
@@ -283,7 +283,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_ElectricityBBBlueInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
-		BLEND_MODE::BLEND_MASKED,
+		PSO_KEY_MASKED,
 		electricityBBBlueTexPath,
 		false
 	);
@@ -293,7 +293,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_ElectricityBBRedInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
-		BLEND_MODE::BLEND_MASKED,
+		PSO_KEY_MASKED,
 		electricityBBRedTexPath,
 		false
 	);
@@ -303,7 +303,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_BBAreaBlueInfo,
 		m_BBAreas[0]->GetMeshType(),
-		BLEND_MODE::BLEND_MASKED,
+		PSO_KEY_MASKED,
 		areaBBBlueTexPath,
 		false
 	);
@@ -313,8 +313,9 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_BBAreaRedInfo,
 		m_BBAreas[0]->GetMeshType(),
-		BLEND_MODE::BLEND_MASKED,
+		PSO_KEY_MASKED,
 		areaBBRedTexPath,
-		false
+		false,
+		BILLBOARD_FIX_X
 	);
 }

@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX; WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX; WIN32_LEAN_AND_MEAN;_ENABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -201,6 +201,7 @@
     <ClInclude Include="LineBB.h" />
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SelectionScene.h" />
+    <ClInclude Include="ShaderLibrary.h" />
     <ClInclude Include="Spring.h" />
     <ClInclude Include="StageScene.h" />
     <ClInclude Include="StageSelector.h" />
@@ -267,7 +268,7 @@
     <ClCompile Include="ControllerScene.cpp" />
     <ClCompile Include="ControllerUIManager.cpp" />
     <ClCompile Include="CountUI.cpp" />
-    <ClCompile Include="CutInUIh.cpp" />
+    <ClCompile Include="CutInUI.cpp" />
     <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="EffectBase.cpp" />
     <ClCompile Include="EffectData.cpp" />
@@ -305,6 +306,7 @@
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SelectionScene.cpp" />
+    <ClCompile Include="ShaderLibrary.cpp" />
     <ClCompile Include="SharedStruct.cpp" />
     <ClCompile Include="Spring.cpp" />
     <ClCompile Include="StageScene.cpp" />

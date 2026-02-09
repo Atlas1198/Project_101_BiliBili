@@ -123,7 +123,7 @@ void Bullet::ResolveCollisionsOverride()
                     EffectCommand{
                         EFFECT_TYPE::EXPLOSION,
                         m_position,
-                        XMFLOAT2{ 2.5f,2.5f },
+                        XMFLOAT3{ 2.5f,2.5f,1.0f },
                     }
                     );
                 //コントローラー振動
@@ -138,7 +138,7 @@ void Bullet::ResolveCollisionsOverride()
                 EffectCommand{
                     EFFECT_TYPE::FIRE_FLASH,
                     m_position,
-                    XMFLOAT2{ 2.5f,2.5f },
+                    XMFLOAT3{ 2.5f,2.5f,1.0f },
                 }
                 );
         }

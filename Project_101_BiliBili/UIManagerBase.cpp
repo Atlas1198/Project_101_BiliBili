@@ -27,7 +27,7 @@ void UIManagerBase::Initialize(
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		1000,					//描画順序
 		L"asset/texture/white.png",
-		BLEND_MODE::BLEND_TRANSPARENT
+		PSO_KEY_TRANSPARENT
 	);
 	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f }); //初期透明
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pFadeImage));
@@ -122,10 +122,7 @@ void UIManagerBase::Finalize()
 //描画情報をシーンに提出
 void UIManagerBase::SubmitRenderInfo(Renderer& renderer, std::vector<WorldRenderInfo>& info)
 {
-	for(auto& renderInfo : info) 
-	{
-		renderer.SubmitToScreenList(renderInfo);
-	}
+	renderer.SubmitToScreenList(info);
 }
 
 //オブジェクトの描画情報生成

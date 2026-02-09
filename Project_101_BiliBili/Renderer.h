@@ -6,86 +6,165 @@
 #include "RootSignature.h"
 #include "PipelineState.h"
 #include "IndexBuffer.h"
-#include "TextureManager.h"
 #include "SharedStruct.h"
 #include "RenderData.h"
+#include "ShaderLibrary.h"
+#include <unordered_map>
+#include <vector>
+#include <tuple>
+#include <cstdint>
 
-//レンダラークラス
+// Forward declaration
+class TextureManager;
+
+// Renderer class
 class Renderer
 {
-public:	//公開関数
-	Renderer() {};	//コンストラクタ
-	~Renderer();	//デストラクタ
+public:
+	Renderer() {};	// Constructor
+	~Renderer();	// Destructor
 
-	//メイン処理関数	
-	void Initialize(											//初期化
-		ID3D12Device* pDevice, 
-		CameraInfo* pInfo);		
-	void Update(UINT currentBackBufferIndex, CameraInfo& info);	//更新
-	void Draw(													//描画
-		UINT index, 
-		ID3D12GraphicsCommandList* commandList,
-		TextureManager& textureManager
+	// Get singleton instance
+	static Renderer* GetInstance()
+	{
+		static Renderer instance;
+		return &instance;
+	}
+
+	// Main processing functions
+	void Initialize(											// Initialization
+		ID3D12Device* pDevice,
+		CameraInfo* pInfo,
+		TextureManager* textureManager
+	);
+	void Update(UINT currentBackBufferIndex, CameraInfo& info);	// Update
+	void Draw(													// Draw
+		UINT index,
+		ID3D12GraphicsCommandList* commandList
 	);
 
-	//描画リスト管理関数
+	// Render list management functions
 	void BeginFrame(UINT backIndex);
 
-	//描画リストに描画情報を追加
-	void SubmitToWorldList(const struct WorldRenderInfo& item);	//ワールド座標用
-	void SubmitToEffectList(const struct EffectRenderInfo& item);	//エフェクト用
-	void SubmitToScreenList(const struct WorldRenderInfo& item);	//スクリーン座標用
+	// Add render information to the render list
+	void SubmitToWorldList(const WorldRenderModel& info);		// World space
+	void SubmitToScreenList(const  WorldRenderModel& info);		// Screen space
 
-	void SubmitDirectionalLight(const DirectionalLight& light);	//平行光源情報を設定
+	void SubmitDirectionalLight(const DirectionalLight& light);	// Directional light information
 
-private:	//非公開メンバ変数
-	RootSignature* m_pRootSignature = nullptr;			//ルートシグネチャ
-	PipelineState* m_pPipelineStateWorldNoLight[BLEND_MAX]{};	//ワールド座標用パイプラインステートオブジェクト(ライティング無効)
-	PipelineState* m_pPipelineStateWorldLight[BLEND_MAX]{};		//ワールド座標用パイプラインステートオブジェクト(ライティング有効)
-	PipelineState* m_pPipelineStateEffect[BLEND_MAX]{};			//エフェクト用パイプラインステートオブジェクト
-	PipelineState* m_pPipelineStateScreen[BLEND_MAX]{};			//スクリーン座標用パイプラインステートオブジェクト
+private:
+	RootSignature* m_pRootSignature = nullptr;		// Root signature
+	ID3D12Device* m_pDevice = nullptr;				// Device
+	CameraInfo* m_cameraInfo = nullptr;				// Camera information structure
+	TextureManager* m_pTextureManager = nullptr;	// Texture manager
 
-	ID3D12Device* m_pDevice = nullptr;	//デバイス
-	CameraInfo* m_cameraInfo = nullptr;	//カメラ情報構造体
+	// Pipeline State Object related
+	std::unordered_map<PSOKey, PipelineState*, PSOKeyHash> m_psoMap;	// PSO map
+	std::vector<WorldRenderInfo> m_tempWorldRenderList;					// Temporary world render list for sorting
+	std::vector<WorldRenderInfo> m_tempScreenRenderList;				// Temporary world render list for sorting
+	PipelineState* m_pDefaultPSO = nullptr;								// Default PSO
+	ShaderLibrary* m_pShaderLibrary = nullptr;							// Shader library
 
-	std::vector<WorldRenderInfo> m_drawListWorldNoLight[BLEND_MAX]{};	//描画リスト(ワールド座標)
-	std::vector<WorldRenderInfo> m_drawListWorldLight[BLEND_MAX]{};		//描画リスト(ワールド座標)
-	std::vector<EffectRenderInfo> m_drawListEffect[BLEND_MAX]{};		//描画リスト(エフェクト用)
-	std::vector<WorldRenderInfo> m_drawListScreen[BLEND_MAX]{};			//描画リスト(スクリーン座標)
-
-	//フレームごとのオブジェクト用CBVプール（1オブジェクト＝1定数バッファ）
-	std::vector<ConstantBuffer*> m_objectCBWorld[Engine::FRAME_BUFFER_COUNT];	//ワールド座標用
-	std::vector<ConstantBuffer*> m_objectCBEffect[Engine::FRAME_BUFFER_COUNT];	//エフェクト用
-	std::vector<ConstantBuffer*> m_objectCBScreen[Engine::FRAME_BUFFER_COUNT];	//スクリーン座標用
+	// Frame-specific object CBV pool (1 object = 1 constant buffer)
+	std::vector<ConstantBuffer*> m_objectCBWorld[Engine::FRAME_BUFFER_COUNT];	// For world space
+	std::vector<ConstantBuffer*> m_objectCBScreen[Engine::FRAME_BUFFER_COUNT];	// For screen space
 	UINT m_currBackIndex = 0;
 
-	//カメラ行列
-	DirectX::XMMATRIX m_worldView{};	//ワールド座標用ビュー行列
-	DirectX::XMMATRIX m_worldProj{};	//ワールド座標用プロジェクション行列
-	DirectX::XMMATRIX m_screenProj{};	//スクリーン座標用プロジェクション行列
-	DirectX::XMMATRIX m_screenView{};	//スクリーン座標用ビュー行列
+	// Camera matrices
+	DirectX::XMMATRIX m_worldView{};	// View matrix for world space
+	DirectX::XMMATRIX m_worldProj{};	// Projection matrix for world space
+	DirectX::XMMATRIX m_screenProj{};	// Projection matrix for screen space
+	DirectX::XMMATRIX m_screenView{};	// View matrix for screen space
 
-	DirectionalLight m_directionalLight;	//平行光源
+	// Lighting information
+	DirectionalLight m_directionalLight{};	// Directional light
 
-private:	//非公開関数
-	//描画リストの描画関数
-	void DrawRenderListWorld(	//ワールド座標用描画リストの描画
-		ID3D12GraphicsCommandList* p_commandList,	//コマンドリスト
-		TextureManager& textureManager				//テクスチャ管理クラス
+private:
+	void DrawTempRenderListWorld(	// Draw for screen space render list
+		ID3D12GraphicsCommandList* p_commandList	// Command list
 	);
-	void DrawRenderListEffect(	//エフェクト用描画リストの描画
-		ID3D12GraphicsCommandList* p_commandList,	//コマンドリスト
-		TextureManager& textureManager				//テクスチャ管理クラス
-	);
-	void DrawRenderListScreen(	//スクリーン座標用描画リストの描画
-		ID3D12GraphicsCommandList* p_commandList,	//コマンドリスト
-		TextureManager& textureManager				//テクスチャ管理クラス
+	void DrawTempRenderListScreen(	// Draw for screen space render list
+		ID3D12GraphicsCommandList* p_commandList	// Command list
 	);
 
-	//描画リストソート関数
-	void SortDrawList();			//描画リストのソート
-	void SortDrawListOpaque();		//不透明オブジェクトの描画リストソート
-	void SortDrawListTransparent();	//透明オブジェクトの描画リストソート
+	DirectX::XMMATRIX CalcBillBoard(const WorldRenderInfo& info);	// Billboard calculation
+	float CalcSortDepth(const DirectX::XMFLOAT3& position);	// Sort depth calculation
 
-	DirectX::XMMATRIX CalcBillBoard(const WorldRenderInfo& info);	//ビルボード計算
+	PipelineState* GetPipelineStateObject(PSOKey key);				// Get pipeline state object(if not exists, create it)
+	PipelineState* CreatePipelineStateObject(const PSOKey& key);	// Create pipeline state object
+	void SortRenderListWorldByPSO();								// Sort render list by PSO
+	void SortRenderListScreenByPSO();								// Sort render list by PSO
+	void NormalizeKeyForRenderQueueWorld(WorldRenderInfo& info);	// Normalize PSO key for render queue
+	void NormalizeKeyForRenderQueueScreen(WorldRenderInfo& info);	// Normalize PSO key for render queue
+
+	// Sorting functions
+	// PSOKey comparison
+	static inline bool PSOKeyLess(const PSOKey& a, const PSOKey& b)
+	{
+		return std::tie(a.vsEntry, a.psEntry, a.blend, a.depth, a.cull)
+			< std::tie(b.vsEntry, b.psEntry, b.blend, b.depth, b.cull);
+	}
+	// Bind sort comparison
+	static inline bool BindLess(const WorldRenderInfo& a, const WorldRenderInfo& b)
+	{
+		// Convert pointer to integer for comparison
+		auto ap = reinterpret_cast<std::uintptr_t>(a.common.pMeshGPU);
+		auto bp = reinterpret_cast<std::uintptr_t>(b.common.pMeshGPU);
+		// Compare by srvIndex, pMeshGPU, startIndex, baseVertex
+		return std::tie(a.common.srvIndex, ap, a.startIndex, a.baseVertex)
+			< std::tie(b.common.srvIndex, bp, b.startIndex, b.baseVertex);
+	}
+	// Opaque objects sorting
+	static inline bool OpaqueLess(const WorldRenderInfo& a, const WorldRenderInfo& b)
+	{
+		//If PSOKey is the same, sort by bind
+		if (a.common.psoKey == b.common.psoKey)
+		{
+			return BindLess(a, b);
+		}
+
+		//Otherwise, sort by PSOKey
+		return PSOKeyLess(a.common.psoKey, b.common.psoKey);
+	}
+	// Transparent objects sorting (back to front)
+	static inline bool TransparentLess(const WorldRenderInfo& a, const WorldRenderInfo& b)
+	{
+		// Determine if the blend mode is order-dependent
+		auto isOrderDependent = [](BLEND_MODE blendMode) {
+			return blendMode == BLEND_ALPHA;
+			};
+
+		// First, sort by whether the blend mode is order-dependent
+		const bool aOrderDependent = isOrderDependent(a.common.psoKey.blend);
+		const bool bOrderDependent = isOrderDependent(b.common.psoKey.blend);
+		if (aOrderDependent != bOrderDependent)
+		{// Order-dependent blends first
+			return aOrderDependent > bOrderDependent;
+		}
+
+		if (aOrderDependent)
+		{// For order-dependent blends, sort by depth (greater depth first)
+			// Quantize depth to avoid precision issues
+			const int64_t bucketA = static_cast<int64_t>(std::floor(a.common.sortDepth * 64.0f));
+			const int64_t bucketB = static_cast<int64_t>(std::floor(b.common.sortDepth * 64.0f));
+
+			//First, sort by bucket (greater bucket first)
+			if (bucketA != bucketB) return bucketA > bucketB;
+
+			//Then, sort by fine depth within the bucket (greater fine depth first)
+			const int64_t fineA = (int64_t)std::llround(a.common.sortDepth * 4096.0f);
+			const int64_t fineB = (int64_t)std::llround(b.common.sortDepth * 4096.0f);
+			if (fineA != fineB) return fineA > fineB;
+
+			return false;	// Ignore same depth
+		}
+
+		if (a.common.psoKey != b.common.psoKey)
+		{// If PSOKey is different, sort by PSOKey
+			return PSOKeyLess(a.common.psoKey, b.common.psoKey);
+		}
+
+		// Finally, sort by bind
+		return BindLess(a, b);
+	}
 };

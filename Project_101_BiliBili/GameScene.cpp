@@ -23,7 +23,7 @@ GameScene::GameScene(float window_width, float window_height)
 	m_pBBManager = new BBManager();			//BB管理クラスの生成
 	m_pGameEventManager = new GameEventManager(); //イベント管理クラスの生成
 
-	m_pGameUIManager = new GameUIManager(m_pCamera->GetCameraInfo(), window_width, window_height);	//ゲームUI管理クラスの生成
+	m_pGameUIManager = new GameUIManager(&m_pCamera->GetCameraInfo(), window_width, window_height);	//ゲームUI管理クラスの生成
 }
 
 //デストラクタ
@@ -319,7 +319,7 @@ void GameScene::PlayUpdate()
 
 	if (m_pSceneContext->pInputInfo->key.enter.trigger)
 	{
-		if (m_pCamera->GetCameraInfo()->position.y == 0.0f)
+		if (m_pCamera->GetCameraInfo().position.y == 0.0f)
 		{
 			m_pCamera->SetPosition({ 10.0f, 30.0f, -1.0f });
 		}

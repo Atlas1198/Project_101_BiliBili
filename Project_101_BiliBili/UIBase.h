@@ -17,7 +17,7 @@ public:	//公開関数
 		DirectX::XMFLOAT3 scale = { 1,1,1 },
 		DirectX::XMFLOAT3 rotation = { 0,0,0 },
 		UINT order = 0,
-		BLEND_MODE blendMode = BLEND_MODE::BLEND_TRANSPARENT
+		PSOKey key = PSOKey{}
 	);
 	virtual ~UIBase() = default;	//デストラクタ
 	//メイン処理関数
@@ -47,7 +47,6 @@ public:	//公開関数
 	TexSplitInfo& GetTexSplitInfo();				//テクスチャ分割情報構造体の取得
 
 	//セッター
-	void SetWorldTransform(const Transform3D& world); //ワールド変換情報の設定
 	void SetLocalTransform(const Transform3D& local); //ローカル変換情報の設定
 	void SetColor(DirectX::XMFLOAT4 color);	//色RGBAの設定
 	void SetActive(bool isActive);			//アクティブフラグの設定
@@ -84,16 +83,16 @@ protected:
 	Transform3D m_world{};	//ワールド変換情報
 	Transform3D m_local{};	//ローカル変換情報
 
-	DirectX::XMFLOAT4 m_color{1.0f, 1.0f, 1.0f, 1.0f};	//色
+	DirectX::XMFLOAT4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };	//色
 	bool m_isActive = true;								//アクティブフラグ
 
 	//UI親子関係
 	UIBase* m_parent = nullptr;							//親UIオブジェクトポインタ
 	std::vector<std::unique_ptr<UIBase>> m_children;	//子UIオブジェクト配列
 
-	UINT m_order = 0;										//描画順
-	std::vector<WorldRenderInfo> m_renderInfos;				//描画情報構造体配列
-	BLEND_MODE m_blendMode = BLEND_MODE::BLEND_TRANSPARENT;	//ブレンドモード
+	UINT m_order = 0;									//描画順
+	std::vector<WorldRenderInfo> m_renderInfos;			//描画情報構造体配列
+	PSOKey m_psoKey{};									//パイプラインステートオブジェクトキー
 
 	UVRect m_uvRect{};				//UV矩形
 	TexSplitInfo m_texSplitInfo{};	//テクスチャ分割情報構造体

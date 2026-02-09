@@ -11,7 +11,7 @@ public:	//公開関数
 		DirectX::XMFLOAT3 scale = { 1,1,1 },
 		DirectX::XMFLOAT3 rotation = { 0,0,0 },
 		UINT order = 0,
-		BLEND_MODE blendMode = BLEND_MODE::BLEND_TRANSPARENT
+		PSOKey psoKey = PSO_KEY_TRANSPARENT
 	);
 	virtual ~EventAnounceUI() = default;	//デストラクタ
 
