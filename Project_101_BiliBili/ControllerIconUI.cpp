@@ -30,16 +30,17 @@ void ControllerIconUI::InitializeOverride(
 		DirectX::XMFLOAT3{ 415.0f * SCALE_FACTOR, 414.0f * SCALE_FACTOR, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order,
-		m_textureFilePath
+		m_textureFilePath,
+		PSO_KEY_MASKED
 	);
 }
 
 // XV
 void ControllerIconUI::UpdateOverride()
 {
-	if (!m_isActivated)
+	if (m_isActive && !m_isReacting)
 	{
-		auto transform =m_pIconImage->GetLocalTransform();
+		auto transform = m_pIconImage->GetLocalTransform();
 		auto scale = transform.scale;
 		scale.x *= 0.95f;
 		scale.y *= 0.95f;
