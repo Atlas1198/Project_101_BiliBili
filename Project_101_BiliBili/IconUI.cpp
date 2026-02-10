@@ -15,6 +15,8 @@ IconUI::IconUI(
 //‰Šú‰»
 void IconUI::InitializeOverride(TextureManager& textureManager, MeshManager& meshManager)
 {
+	PSOKey key = PSO_KEY_MULTIPLY;
+
 	//ƒAƒCƒRƒ“‰æ‘œUI‚Ìì¬
 	m_pIconImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
@@ -22,7 +24,7 @@ void IconUI::InitializeOverride(TextureManager& textureManager, MeshManager& mes
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order + 2,
 		m_texturePath,
-		PSO_KEY_TRANSPARENT
+		key
 	);
 }
 
