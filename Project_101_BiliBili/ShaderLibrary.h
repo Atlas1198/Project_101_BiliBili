@@ -12,6 +12,7 @@
 
 // Shader key type definition
 using ShaderKey = std::tuple<std::wstring, std::string, std::string, uint64_t>;
+
 // Shader key hash function
 struct ShaderKeyHash
 {
@@ -31,15 +32,15 @@ struct ShaderDesc
     std::wstring filePath;
     std::string entryPoint;
     std::string profile;
+    uint64_t allowedDefines;
 };
+
 static const ShaderDesc VS_TABLE[] = {
     { L"VertexShader.hlsl", "BasicVS", "vs_5_0" }, // VS_ID::Basic = 0
 };
+
 static const ShaderDesc PS_TABLE[] = {
-    { L"PixelShader.hlsl", "BasicPS",           "ps_5_0" }, // PS_ID::Basic = 0
-    { L"PixelShader.hlsl", "BasicLightPS",      "ps_5_0" }, // PS_ID::BasicLight
-    { L"PixelShader.hlsl", "BasicPSMasked",     "ps_5_0" }, // PS_ID::BasicMasked
-    { L"PixelShader.hlsl", "BasicLightPSMasked","ps_5_0" }, // PS_ID::BasicLightMasked
+    { L"PixelShader.hlsl", "BasicPS", "ps_5_0" }, // PS_ID::Basic = 0
 };
 
 // ShaderLibrary class
@@ -62,4 +63,6 @@ private:
 		const ShaderDesc& desc,
 		uint64_t defines = 0
 	);
+
+    static std::vector<D3D_SHADER_MACRO> BuildMacros(uint64_t defines);
 };

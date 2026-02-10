@@ -485,8 +485,8 @@ PipelineState* Renderer::CreatePipelineStateObject(const PSOKey& key)
 	PipelineState* pso = nullptr;
 
 	// Get shaders
-	auto vs = m_pShaderLibrary->GetVS(key.vsEntry);
-	auto ps = m_pShaderLibrary->GetPS(key.psEntry);
+	auto vs = m_pShaderLibrary->GetVS(key.vsEntry, key.defines);
+	auto ps = m_pShaderLibrary->GetPS(key.psEntry, key.defines);
 	if (!vs || !ps)
 	{
 		OutputDebugStringA("Shader blob missing\n");

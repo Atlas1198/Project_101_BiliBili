@@ -24,54 +24,28 @@ float4 BasicPS(
     VSOutPut input //頂点シェーダーから送られてきたデータ構造体
 ) : SV_TARGET //レンダーターゲットへ出力
 {
-    return gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-}
-
-float4 BasicPSMasked(
-    VSOutPut input
-) : SV_TARGET
-{
     float4 base = gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-    clip(base.a - 0.5f);
+    
+#ifdef PS_USE_MASK
+     clip(base.a - 0.1f);
+#endif
+    
+#ifdef PS_MULTIPLY_ALPHA_CONTROL
+    base.rgb *= base.a;
+#endif
+
+#ifdef PS_USE_LIGHTING
+    float3 normal = normalize(input.normal);
+    float3 length = normalize(-lightDir_Intensity.xyz);
+    float dotValue = saturate(dot(normal, length));
+    
+    float intensity = lightDir_Intensity.w;
+    float3 color = lightColor_Ambient.rgb;
+    float ambient = lightColor_Ambient.a;
+    
+    float3 lit = color * (ambient + dotValue * intensity);
+    base = float4(base.rgb * lit, base.a);
+#endif
+    
     return base;
-}
-
-float4 BasicLightPS(
-    VSOutPut input //頂点シェーダーから送られてきたデータ構造体
-) : SV_TARGET //レンダーターゲットへ出力
-{
-    float4 base = gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-    
-    float3 normal = normalize(input.normal);
-    float3 length = normalize(-lightDir_Intensity.xyz);
-    float dotValue = saturate(dot(normal, length));
-    
-    float intensity = lightDir_Intensity.w;
-    float3 color = lightColor_Ambient.rgb;
-    float ambient = lightColor_Ambient.a;
-    
-    float3 lit = color * (ambient + dotValue * intensity);
-    
-    return float4(base.rgb * lit, base.a);
-}
-
-//アルファマスク用ピクセルシェーダー
-float4 BasicLightPSMasked(
-    VSOutPut input
-) : SV_TARGET
-{
-    float4 base = gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-    clip(base.a - 0.5f);
-    
-    float3 normal = normalize(input.normal);
-    float3 length = normalize(-lightDir_Intensity.xyz);
-    float dotValue = saturate(dot(normal, length));
-    
-    float intensity = lightDir_Intensity.w;
-    float3 color = lightColor_Ambient.rgb;
-    float ambient = lightColor_Ambient.a;
-    
-    float3 lit = color * (ambient + dotValue * intensity);
-    
-    return float4(base.rgb * lit, base.a);
 }
