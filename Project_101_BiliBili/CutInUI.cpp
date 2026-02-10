@@ -141,7 +141,7 @@ void CutInUI::PrepareRenderInfoOverride(TextureManager& textureManager, MeshMana
 //カットイン導入処理
 void CutInUI::Start(int characterIndex)
 {
-	const int inDuration = 12;	//導入時間(フレーム数)
+	const int inDuration = 10;	//導入時間(フレーム数)
 
 	//開始位置と目的地位置の計算
 	const float startX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f) :
@@ -218,7 +218,7 @@ void CutInUI::Stay(int characterIndex)
 //カットイン終了処理
 void CutInUI::End(int characterIndex)
 {
-	const int outDuration = 12;	//終了時間(フレーム数)
+	const int outDuration = 2;	//終了時間(フレーム数)
 
 	//開始位置と目的地位置の計算
 	const float startX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f) :

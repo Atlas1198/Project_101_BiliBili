@@ -122,7 +122,7 @@ void GameUIManager::InitializeOverride(
 			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },					//回転
 			0,														//描画順序
 			L"asset/texture/game_scene/UI_INGAME_Operation.png",	//テクスチャパス
-			PSO_KEY_TRANSPARENT								//ブレンドモード
+			PSO_KEY_TRANSPARENT										//ブレンドモード
 		));
 	}
 

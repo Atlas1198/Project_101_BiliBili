@@ -27,7 +27,7 @@ Item::Item(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rot
 	TexSplitInfo texInfo{};
 	texInfo.cols = 6;
 	texInfo.rows = 5;
-	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.total = 30;
 	texInfo.index = 0;
 	texInfo.frameCount = 0;
 	texInfo.updateRate = 2;
