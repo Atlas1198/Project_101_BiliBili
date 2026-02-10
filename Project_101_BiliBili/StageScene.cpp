@@ -47,6 +47,15 @@ void StageScene::UpdateOverride()
 
 	m_pUIManager->Update();
 
+	if (m_pUIManager->IsFadeEnd())
+	{
+		//ゲームシーンへの遷移イベント発行
+		EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
+			EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CHARACTER);
+
+		return;
+	}
+
 	//選択完了後処理
 	if (!m_pUIManager->IsFading())
 	{
@@ -58,13 +67,6 @@ void StageScene::UpdateOverride()
 			//↓↓↓選択時サウンド再生↓↓↓
 			AudioManager::GetInstance()->PlaySE("STAGE_SET");
 		}
-	}
-
-	if (m_pUIManager->IsFadeEnd())
-	{
-		//ゲームシーンへの遷移イベント発行
-		EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
-			EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CHARACTER);
 	}
 }
 
