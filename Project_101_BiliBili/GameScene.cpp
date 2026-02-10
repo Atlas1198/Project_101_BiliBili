@@ -341,12 +341,13 @@ void GameScene::PlayUpdate()
 //ゲームオーバー時の更新処理
 void GameScene::ResultUpdate()
 {
-	const int WAIT_DURATION = 150; // リザルトUI表示までの待機フレーム数（2.5秒間）
+	const int WAIT_DURATION = 180; // リザルトUI表示までの待機フレーム数（3秒間）
+	const int RESULT_BGM_STRAT = 360;	//リザルトBGM再生までの待機フレーム(6秒間)
 
 	if (m_timer == 0)
 	{
 		AudioManager::GetInstance()->StopAll();
-		AudioManager::GetInstance()->PlaySE("RESULT");
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH");
 	}
 
 	m_timer++;
@@ -357,8 +358,12 @@ void GameScene::ResultUpdate()
 	{
 		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, {m_winner, m_character1ID, m_character2ID});
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
-		AudioManager::GetInstance()->StopAll();
-		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");	
+		AudioManager::GetInstance()->PlaySE("RESULT");
+
+	}
+	else if (m_timer == RESULT_BGM_STRAT)
+	{
+		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");
 	}
 	else if (m_timer > WAIT_DURATION)
 	{
