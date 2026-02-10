@@ -152,13 +152,17 @@ void ItemManager::FinalizeOverride()
 //オブジェクトの描画情報生成
 void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
+	PSOKey psoKey = PSO_KEY_MASKED;
+	psoKey.psEntry = PS_ID::BasicMasked;
+	psoKey.blend = BLEND_ALPHA;
+
 	//描画情報生成関数を呼び出し、描画情報を作成
 	CreateRenderInfo(
 		textureManager,						//テクスチャマネージャへの参照
 		meshManager,						//メッシュマネージャへの参照
 		&m_itemInfo,						//描画情報構造体配列へのポインタ
 		MESH_TYPE::QUAD,					//メッシュタイプ
-		PSO_KEY_MASKED,			//ブレンドモード
+		psoKey,			//ブレンドモード
 		itemTexPath,						//テクスチャのファイル名
 		false,								//ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ

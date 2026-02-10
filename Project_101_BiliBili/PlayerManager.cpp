@@ -179,6 +179,12 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 		teamHP[teamID] = 0.0f;
 	}
 
+	if (teamHP[teamID] <= 0.5f && !sentBBEnhanceEvent[teamID])
+	{
+		sentBBEnhanceEvent[teamID] = true;
+		EventManager::GetInstance()->TriggerEvent<int>(EventType::ENHANCE_BB, teamID);
+	}
+
 	EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(EventType::UPDATE_HP_UI, std::make_pair(teamID, teamHP[teamID]));
 
 	if (teamHP[teamID] <= 0.0f)
