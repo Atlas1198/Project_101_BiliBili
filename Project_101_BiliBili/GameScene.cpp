@@ -88,7 +88,8 @@ void GameScene::InitializeOverride(
 
 	m_pGameUIManager->Initialize(	//ゲームUI管理クラス初期化
 		pTextureManager,
-		pMeshManager
+		pMeshManager,
+		*m_pSceneContext
 	);
 
 	m_pBulletManager->Initialize( //弾管理クラス初期化
@@ -244,9 +245,10 @@ void GameScene::CountdownUpdate()
 	m_pBBManager->Update();		//BB管理クラス更新
 
 	//定数定義
-	const int COUNTDOWN_DURATION = 240;	//カウントダウンの総フレーム数（4秒間）
-	const int FRAMES_PER_SECOND = 60;	//1秒あたりのフレーム数
-	const int COUNTDOWN_START = 30;		//カウントダウン開始フレーム数（1秒間）
+	const int COUNTDOWN_DURATION = 240;		//カウントダウンの総フレーム数（4秒間）
+	const int FRAMES_PER_SECOND = 60;		//1秒あたりのフレーム数
+	const int COUNTDOWN_START = 30;			//カウントダウン開始フレーム数（1秒間）
+	const int START_ANNOUNCE_DURATION = 90; // スタートアナウンスのフレーム数（1.5秒間）
 
 	auto eventManager = EventManager::GetInstance();
 	auto players = m_pPlayerManager->GetPlayers();
@@ -260,9 +262,6 @@ void GameScene::CountdownUpdate()
 		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
 			players[2]->GetTeamID(), players[2]->GetPosition(), players[3]->GetPosition()
 		));
-
-	//カウントダウンタイマーの更新
-	m_timer++;
 
 	//カウントダウンUIの表示
   	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
@@ -295,19 +294,46 @@ void GameScene::CountdownUpdate()
 	}
 
 	//カウントダウン終了後、ゲーム状態をプレイに変更
-	if (m_timer >= COUNTDOWN_DURATION + COUNTDOWN_START) // 4秒カウントダウン
+	if (m_timer == COUNTDOWN_DURATION + COUNTDOWN_START) // 4秒カウントダウン
 	{
-		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
+		
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
 		AudioManager::GetInstance()->PlaySE("GAME_COUNT2");
-		AudioManager::GetInstance()->PlayBGM("GAME_BGM");
-		m_pGameEventManager->Start(); // イベントマネージャー開始
 	}
+
+	//スタートアナウンス表示終了後
+	if( m_timer == COUNTDOWN_DURATION + COUNTDOWN_START + START_ANNOUNCE_DURATION)
+	{
+		//スタートアナウンス非表示イベントをトリガー
+		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
+
+		//ゴールアナウンス表示イベントをトリガー
+		EventManager::GetInstance()->TriggerEvent<bool>(EventType::ANOUNCE_GOAL, true);
+
+		//BGM再生
+		AudioManager::GetInstance()->PlayBGM("GAME_BGM");
+		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
+		m_pGameEventManager->Start(); // イベントマネージャー開始
+		m_timer = 0; // タイマーリセット
+	}
+
+	//カウントダウンタイマーの更新
+	m_timer++;
 }
 
 //プレイ中の更新処理
 void GameScene::PlayUpdate()
 {
+	const int GOAL_ANNOUNCE_DURATION = 120; // ゴールアナウンスのフレーム数（2秒間）
+
+	//ゴールアナウンス表示終了後
+	if (m_timer == GOAL_ANNOUNCE_DURATION)
+	{
+		//ゴールアナウンス非表示イベントをトリガー
+		EventManager::GetInstance()->TriggerEvent<bool>(EventType::ANOUNCE_GOAL, false);
+
+	}
+
 	m_pPlayerManager->Update();	//プレイヤー管理クラス更新
 	m_pFieldManager->Update();	//フィールド管理クラス更新
 	m_pBulletManager->Update(); //弾管理クラス更新
@@ -336,6 +362,9 @@ void GameScene::PlayUpdate()
 		m_timer = 0;
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
 	}
+
+	//カウントダウンタイマーの更新
+	m_timer++;
 }
 
 //ゲームオーバー時の更新処理
@@ -351,16 +380,20 @@ void GameScene::ResultUpdate()
 
 	m_timer++;
 
-
-
 	if (m_timer == WAIT_DURATION)
 	{
-		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, {m_winner, m_character1ID, m_character2ID});
+		m_pGameUIManager->StartFadeOut(0.02f); // リザルトシーンフェードイン
+	}
+	else if (m_timer > WAIT_DURATION && m_pGameUIManager->IsFadeEnd())
+	{
+		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, { m_winner, m_character1ID, m_character2ID });
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
 		AudioManager::GetInstance()->StopAll();
-		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");	
+		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");
+		m_isResultUIShown = true;
 	}
-	else if (m_timer > WAIT_DURATION)
+
+	if (m_isResultUIShown)
 	{
 		auto& controllers = m_pSceneContext->pInputInfo->controller;
 		auto& keyInput = m_pSceneContext->pInputInfo->key;
@@ -369,10 +402,12 @@ void GameScene::ResultUpdate()
 		{
 			auto controller = controllers[i];
 
-			if (controller.anyButton.trigger || keyInput.space.trigger)
+			if ((controller.anyButton.trigger || keyInput.space.trigger)
+				&& m_pGameUIManager->IsGoToTitleShown())
 			{
 				m_pSceneContext->pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30);
 				EventManager::GetInstance()->TriggerEvent(EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE);
+				m_isResultUIShown = false;
 			}
 		}
 	}

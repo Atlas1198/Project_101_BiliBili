@@ -70,10 +70,12 @@ void HPBarUI::UpdateGageImage()
 	const float gageScaleX = 488.0f;	//ゲージ画像スケールX基準値
 
 	//ローカル変換情報更新
-	auto local = m_pGageImage->GetLocalTransform();		//ローカル変換情報取得
-	local.scale.x = gageScaleX * m_hpRate;					//スケールX更新
-	local.position.x = -(gageScaleX - local.scale.x) * 0.5f;	//位置X更新
-	m_pGageImage->SetLocalTransform(local);				//ローカル変換情報設定
+	auto scale = m_pGageImage->GetLocalScale();			//ローカルスケール取得
+	scale.x = gageScaleX * m_hpRate;					//スケールX更新
+	m_pGageImage->SetLocalScale(scale);
+	auto position = m_pGageImage->GetLocalPosition();	//ローカル位置取得
+	position.x = -(gageScaleX - scale.x) * 0.5f;		//位置X更新
+	m_pGageImage->SetLocalPosition(position);			//ローカル変換情報設定
 
 	//UV矩形更新
 	UVRect uvRect{};

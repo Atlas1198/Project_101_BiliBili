@@ -16,9 +16,12 @@ UIManagerBase::~UIManagerBase()
 //初期化
 void UIManagerBase::Initialize(
 	TextureManager& textureManager,
-	MeshManager& meshManager
+	MeshManager& meshManager,
+	SceneContext& sceneContext
 )
 {
+	m_pSceneContext = &sceneContext;
+
 	InitializeOverride(textureManager, meshManager);
 
 	m_pFadeImage = new UIImage(
@@ -75,9 +78,7 @@ void UIManagerBase::Update()
 void UIManagerBase::SubmitDraws(Renderer& renderer)
 {
 	//描画順の更新(昇順)
-	std::sort(
-		m_roots.begin(),
-		m_roots.end(),
+	std::stable_sort(m_roots.begin(),m_roots.end(),
 		[](const std::unique_ptr<UIBase>& a, const std::unique_ptr<UIBase>& b) {
 			return a->GetOrder() < b->GetOrder();
 		}
@@ -87,7 +88,7 @@ void UIManagerBase::SubmitDraws(Renderer& renderer)
 	Transform3D identity{};	//単位変換情報
 	identity.position = { 0.0f, 0.0f, 0.0f };
 	identity.scale = { 1.0f, 1.0f, 1.0f };
-	identity.rotation = { 0.0f, 0.0f, 0.0f };
+	identity.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	for(auto& root : m_roots) 
 	{
@@ -140,18 +141,19 @@ void UIManagerBase::PrepareRenderInfo(
 //フェードイン開始
 void UIManagerBase::StartFadeIn(float duration, int delay)
 {
-	if (m_fadeState != FADE_STATE::FADE_NONE) return;
+	if (m_fadeState != FADE_STATE::FADE_NONE && m_fadeState != FADE_STATE::FADE_COMPLETE) return;
 	m_fadeState = FADE_STATE::FADE_IN;
 	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f});
 	m_fadeDuration = -duration;
 	m_fadeDelay = delay;
 	m_fadeTimer = 0;
+	
 }
 
 //フェードアウト開始
 void UIManagerBase::StartFadeOut(float duration, int delay)
 {
-	if (m_fadeState != FADE_STATE::FADE_NONE) return;
+	if (m_fadeState != FADE_STATE::FADE_NONE && m_fadeState != FADE_STATE::FADE_COMPLETE) return;
 	m_fadeState = FADE_STATE::FADE_OUT;
 	m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f});
 	m_fadeDuration = duration;
@@ -171,6 +173,7 @@ bool UIManagerBase::IsFadeEnd()
 	if(m_fadeState == FADE_STATE::FADE_COMPLETE)
 	{
 		m_fadeState = FADE_STATE::FADE_NONE;
+		m_pFadeImage->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f });
 		return true;
 	}
 	return false;

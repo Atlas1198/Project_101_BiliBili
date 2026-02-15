@@ -1,0 +1,13 @@
+#pragma once
+
+enum CHARACTER_TYPE
+{
+	CHARACTER_LUMINA = 0,
+	CHARACTER_UT,
+	CHARACTER_VOLT,
+	CHARACTER_NEON,
+	MAX_CHARACTER_TYPE
+};
+
+static constexpr int MAX_CHARACTER_NUM = static_cast<int>(CHARACTER_TYPE::MAX_CHARACTER_TYPE);
+static constexpr int TEAM_NUM = 2;
