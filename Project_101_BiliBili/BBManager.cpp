@@ -286,7 +286,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_ElectricityBBBlueInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		electricityBBBlueTexPath,
 		false
 	);
@@ -296,7 +296,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_ElectricityBBRedInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		electricityBBRedTexPath,
 		false
 	);
@@ -306,9 +306,10 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_BBAreaBlueInfo,
 		m_BBAreas[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		areaBBBlueTexPath,
-		false
+		false,
+		BILLBOARD_FIX_X
 	);
 
 	CreateRenderInfo(
@@ -316,7 +317,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_BBAreaRedInfo,
 		m_BBAreas[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		areaBBRedTexPath,
 		false,
 		BILLBOARD_FIX_X

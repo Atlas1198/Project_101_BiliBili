@@ -22,8 +22,12 @@ public:
 	) override;
 	void UpdateOverride() override;
 	void FinalizeOverride() override;
+
+	void SetTeamCharacter(int p1, int p2);
+
 private:
-	UIImage* m_pIconImage = nullptr;	//アイコン画像UIポインタ
+	UIImage* m_pIconImage = nullptr;				//アイコン画像UIポインタ
+	UIImage* m_pCharacterImages[4] = { nullptr };	//キャラクター画像UIポインタ配列
 
 	const wchar_t* m_texturePath{ nullptr }; // テクスチャパス
 private:

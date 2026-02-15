@@ -8,61 +8,47 @@ CutInUI::CutInUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX::X
 {
 	//スケールのX成分を方向に応じて反転
 	float directionFactor = 0.0f;
+	std::wstring texturePath[4]{};
 	switch (direction)
 	{
 	case DIRECTION::LEFT:
 		directionFactor = 1.0f;
+		texturePath[0] = L"asset/texture/game_scene/UI_INGAME_L_cut-in_1.png";
+		texturePath[1] = L"asset/texture/game_scene/UI_INGAME_L_cut-in_2.png";
+		texturePath[2] = L"asset/texture/game_scene/UI_INGAME_L_cut-in_3.png";
+		texturePath[3] = L"asset/texture/game_scene/UI_INGAME_L_cut-in_4.png";
 		break;
 	case DIRECTION::RIGHT:
 		directionFactor = -1.0f;
+		texturePath[0] = L"asset/texture/game_scene/UI_INGAME_R_cut-in_1.png";
+		texturePath[1] = L"asset/texture/game_scene/UI_INGAME_R_cut-in_2.png";
+		texturePath[2] = L"asset/texture/game_scene/UI_INGAME_R_cut-in_3.png";
+		texturePath[3] = L"asset/texture/game_scene/UI_INGAME_R_cut-in_4.png";
 		break;
 	default:
 		break;
 	}
 
-	XMFLOAT3 imageScale = XMFLOAT3{ 490.0f * directionFactor, 224.0f, 1.0f };
-	XMFLOAT3 imagePosition =
+	const XMFLOAT3 imageScale = XMFLOAT3{ 490.0f, 224.0f, 1.0f };
+	const XMFLOAT3 imagePosition =
 	{
 		directionFactor* (1980.0f * 0.5f) + directionFactor * (fabs(imageScale.x) * 0.5f),
 		-200.0f,
 		0.0f
 	};
 
-	m_pCutInImage[0] = AddChild<UIImage>(
-		imagePosition,							//位置
-		imageScale,								//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0,										//描画順序
-		L"asset/texture/game_scene/UI_INGAME_L_cut-in.png"
-	);
-	m_pCutInImage[0]->SetColor(XMFLOAT4{ 1.0f, 0.0f, 0.0f, 1.0f });	//赤色に設定（テスト用）
-
-	m_pCutInImage[1] = AddChild<UIImage>(
-		imagePosition,							//位置
-		imageScale,								//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0,										//描画順序
-		L"asset/texture/game_scene/UI_INGAME_L_cut-in.png"
-	);
-	m_pCutInImage[1]->SetColor(XMFLOAT4{ 0.0f, 0.0f, 1.0f, 1.0f });	//青色に設定（テスト用）
-
-	m_pCutInImage[2] = AddChild<UIImage>(
-		imagePosition,							//位置
-		imageScale,								//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0,										//描画順序
-		L"asset/texture/game_scene/UI_INGAME_L_cut-in.png"
-	);
-	m_pCutInImage[2]->SetColor(XMFLOAT4{ 1.0f, 1.0f, 0.0f, 1.0f });	//黄色に設定（テスト用）
-
-	m_pCutInImage[3] = AddChild<UIImage>(
-		position,								//位置
-		imageScale,								//スケール
-		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		0,										//描画順序
-		L"asset/texture/game_scene/UI_INGAME_L_cut-in.png"
-	);
-	m_pCutInImage[3]->SetColor(XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f });	//緑色に設定（テスト用）
+	for(int i = 0; i < 4; ++i)
+	{
+		//カットイン画像UI生成
+		m_pCutInImage[i] = AddChild<UIImage>(
+			imagePosition,					//位置
+			imageScale,						//スケール
+			XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+			order,							//描画順序
+			texturePath[i]					//テクスチャパス
+		);
+		m_pCutInImage[i]->SetActive(true);	//アクティブに設定
+	}
 
 	for(auto& pos : m_initialPosition)
 	{
@@ -91,13 +77,7 @@ void CutInUI::UpdateOverride()
 		{
 		case STATE::NONE:
 			//何もしない
-			m_pCutInImage[i]->SetLocalTransform(
-				Transform3D{
-					m_initialPosition[i],
-					m_pCutInImage[i]->GetLocalTransform().scale,
-					m_pCutInImage[i]->GetLocalTransform().rotation
-				}
-			);
+			m_pCutInImage[i]->SetLocalPosition(m_initialPosition[i]);
 			break;
 		case STATE::STATE_IN:
 			//カットイン導入処理
@@ -144,23 +124,23 @@ void CutInUI::Start(int characterIndex)
 	const int inDuration = 10;	//導入時間(フレーム数)
 
 	//開始位置と目的地位置の計算
-	const float startX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f) :
-		(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f);
-	const float destinationX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f) :
-		(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f);
+	const float startX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f) :
+		(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f);
+	const float destinationX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f) :
+		(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f);
 
 	XMFLOAT3A startPos =
 	{
 		startX,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.y,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.z
+		m_pCutInImage[characterIndex]->GetLocalPosition().y,
+		m_pCutInImage[characterIndex]->GetLocalPosition().z
 	};
 
 	XMFLOAT3A destPos =
 	{
 		destinationX,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.y,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.z
+		m_pCutInImage[characterIndex]->GetLocalPosition().y,
+		m_pCutInImage[characterIndex]->GetLocalPosition().z
 	};
 
 	int progress = m_mainTimer - m_indexStartTime[characterIndex];	//進行度(フレーム数)
@@ -169,13 +149,7 @@ void CutInUI::Start(int characterIndex)
 	newPos = LerpXMF3(startPos, destPos, progress / static_cast<float>(inDuration));	//線形補間で新しい位置を計算
 
 	//位置更新
-	m_pCutInImage[characterIndex]->SetLocalTransform(
-		Transform3D{
-			newPos,
-			m_pCutInImage[characterIndex]->GetLocalTransform().scale,
-			m_pCutInImage[characterIndex]->GetLocalTransform().rotation
-		}
-	);
+	m_pCutInImage[characterIndex]->SetLocalPosition(newPos);
 
 	//導入完了判定
 	if (progress >= inDuration)
@@ -197,15 +171,9 @@ void CutInUI::Stay(int characterIndex)
 	float amplitude = 1.5f;	//振幅
 	float frequency = 0.025f;	//周波数
 	float offsetX = amplitude * sinf(frequency * progress * 2.0f * 3.14159f);	//X方向のオフセット計算
-	XMFLOAT3 currentPos = m_pCutInImage[characterIndex]->GetLocalTransform().position;
+	XMFLOAT3 currentPos = m_pCutInImage[characterIndex]->GetLocalPosition();
 	currentPos.x += offsetX;												//X位置にオフセットを加算
-	m_pCutInImage[characterIndex]->SetLocalTransform(
-		Transform3D{
-			currentPos,
-			m_pCutInImage[characterIndex]->GetLocalTransform().scale,
-			m_pCutInImage[characterIndex]->GetLocalTransform().rotation
-		}
-	);
+	m_pCutInImage[characterIndex]->SetLocalPosition(currentPos);
 
 	if (progress >= stayDuration)
 	{
@@ -221,24 +189,24 @@ void CutInUI::End(int characterIndex)
 	const int outDuration = 2;	//終了時間(フレーム数)
 
 	//開始位置と目的地位置の計算
-	const float startX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f) :
-		(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f);
+	const float startX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f) :
+		(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f);
 
-	const float destinationX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f) :
-		(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalTransform().scale.x) * 0.5f);
+	const float destinationX = m_direction == DIRECTION::LEFT ? -(1980.0f * 0.5f) - (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f) :
+		(1980.0f * 0.5f) + (fabs(m_pCutInImage[characterIndex]->GetLocalScale().x) * 0.5f);
 
 	XMFLOAT3A startPos =
 	{
 		startX,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.y,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.z
+		m_pCutInImage[characterIndex]->GetLocalPosition().y,
+		m_pCutInImage[characterIndex]->GetLocalPosition().z
 	};
 
 	XMFLOAT3A destPos =
 	{
 		destinationX,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.y,
-		m_pCutInImage[characterIndex]->GetLocalTransform().position.z
+		m_pCutInImage[characterIndex]->GetLocalPosition().y,
+		m_pCutInImage[characterIndex]->GetLocalPosition().z
 	};
 
 	int progress = m_mainTimer - m_indexStartTime[characterIndex];	//進行度(フレーム数)
@@ -246,13 +214,7 @@ void CutInUI::End(int characterIndex)
 	newPos = LerpXMF3(startPos, destPos, progress / static_cast<float>(outDuration));	//線形補間で新しい位置を計算
 
 	//位置更新
-	m_pCutInImage[characterIndex]->SetLocalTransform(
-		Transform3D{
-			newPos,
-			m_pCutInImage[characterIndex]->GetLocalTransform().scale,
-			m_pCutInImage[characterIndex]->GetLocalTransform().rotation
-		}
-	);
+	m_pCutInImage[characterIndex]->SetLocalPosition(newPos);
 
 	//終了完了判定
 	if (progress >= outDuration)

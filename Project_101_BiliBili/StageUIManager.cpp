@@ -144,7 +144,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 		L"asset/texture/stage_scene/UI_STAGE_Name_EF.png",
 		PSO_KEY_MASKED
 	);
-	m_nameBackOriginalScale = m_pNameBack->GetLocalTransform().scale;
+	m_nameBackOriginalScale = m_pNameBack->GetLocalScale();
 
 	m_roots.push_back(std::unique_ptr<UIImage>(m_pHeader));
 	m_roots.push_back(std::unique_ptr<UIImage>(m_pOperation));
@@ -164,26 +164,26 @@ void StageUIManager::UpdateOverride()
 		const float changeAmount = 1.04f;
 		if (m_selectAnimationTimer <= 3)
 		{//拡大
-			Transform3D transform = m_pNameBack->GetLocalTransform();
-			transform.scale.x *= changeAmount;
-			transform.scale.y *= changeAmount;
-			m_pNameBack->SetLocalTransform(transform);
+			auto scale = m_pNameBack->GetLocalScale();
+			scale.x *= changeAmount;
+			scale.y *= changeAmount;
+			m_pNameBack->SetLocalScale(scale);
 		}
 		else if (m_selectAnimationTimer <= 6)
 		{//縮小
-			Transform3D transform = m_pNameBack->GetLocalTransform();
-			transform.scale.x /= changeAmount;
-			transform.scale.y /= changeAmount;
-			m_pNameBack->SetLocalTransform(transform);
+			auto scale = m_pNameBack->GetLocalScale();
+			scale.x /= changeAmount;
+			scale.y /= changeAmount;
+			m_pNameBack->SetLocalScale(scale);
 		}
 	}
 	else
 	{//選択アニメーション開始前
-		auto nameBackScale = m_pNameBack->GetLocalTransform().scale;
+		auto nameBackScale = m_pNameBack->GetLocalScale();
 		float scaleFactor = 10.0f * (sinf(m_timer * 0.05f) + 1.0f);
 		nameBackScale.x = m_nameBackOriginalScale.x + scaleFactor;
 		nameBackScale.y = m_nameBackOriginalScale.y + scaleFactor;
-		m_pNameBack->SetLocalTransform({ m_pNameBack->GetLocalTransform().position, nameBackScale, m_pNameBack->GetLocalTransform().rotation });
+		m_pNameBack->SetLocalScale(nameBackScale);
 	}
 
 	//説明文アニメーション
@@ -191,13 +191,13 @@ void StageUIManager::UpdateOverride()
 	{
 		if(m_pExplanation[i]->IsActive())
 		{
-			auto explanationPos = m_pExplanation[i]->GetLocalTransform().position;
+			auto explanationPos = m_pExplanation[i]->GetLocalPosition();
 			explanationPos.x -= 60.0f;
 			if(explanationPos.x < m_explanationDestinationX)
 			{
 				explanationPos.x = m_explanationDestinationX;
 			}
-			m_pExplanation[i]->SetLocalTransform({ explanationPos, m_pExplanation[i]->GetLocalTransform().scale, m_pExplanation[i]->GetLocalTransform().rotation });
+			m_pExplanation[i]->SetLocalPosition(explanationPos);
 		}
 	}
 }
@@ -223,7 +223,7 @@ void StageUIManager::ChangeStageUI(STAGE_TYPE stageType)
 	m_pName[index]->SetActive(true);
 
 	//説明文の位置リセット
-	m_pExplanation[index]->SetLocalTransform({ m_explanationOriginalPosition, m_pExplanation[index]->GetLocalTransform().scale, m_pExplanation[index]->GetLocalTransform().rotation });
+	m_pExplanation[index]->SetLocalPosition(m_explanationOriginalPosition);
 }
 
 //ステージ選択アニメーション開始関数

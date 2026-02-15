@@ -36,6 +36,8 @@ public:	//公開関数
 		const DirectX::XMFLOAT3& position2		//弾数UI2位置
 	);
 
+	bool IsGoToTitleShown() const { return m_pResultUI->isGoToTitleShown(); } //タイトルへ戻る表示フラグゲッター
+
 private:
 	TeamUI* m_pTeamUI1 = nullptr; //チームUIポインタ
 	TeamUI* m_pTeamUI2 = nullptr; //チームUIポインタ
@@ -54,7 +56,11 @@ private:
 
 	EventAnounceUI* m_pEventAnounceUI = nullptr; //イベントアナウンスUIポインタ
 
+	UIImage* m_pGoalAnounceImage = nullptr; //ゴールアナウンス画像UIポインタ
+
 	ResultUI* m_pResultUI = nullptr; //リザルトUIポインタ
+
+	bool m_showGoalAounce = false;
 	
 private:
 	void OnHPChanged(int teamID, float newHP);							//HP変更時の処理

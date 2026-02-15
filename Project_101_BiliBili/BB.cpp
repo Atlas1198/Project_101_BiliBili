@@ -185,13 +185,18 @@ void BB::SetTeamId(int id)
 	{
 		m_electricityBB[i]->SetTeamId(m_teamId);
 
-		m_lineBB[i]->SetColor(
-			XMFLOAT4(
-				0.0f,
-				static_cast<float>(m_teamId),
-				static_cast<float>((m_teamId + 1) % 2),
-				1.0f)
-		);
+		DirectX::XMFLOAT4 color = XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f );
+
+		if(m_teamId == 0)
+		{
+			color = XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ); //青
+		}
+		else if(m_teamId == 1)
+		{
+			color = XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ); //赤
+		}
+
+		m_lineBB[i]->SetColor(color);
 	}
 }
 

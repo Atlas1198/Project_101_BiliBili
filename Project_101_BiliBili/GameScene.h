@@ -68,6 +68,8 @@ private:
 	int m_character1ID = -1;
 	int m_character2ID = -1;
 
+	bool m_isResultUIShown = false;
+
 private:
 	void CountdownUpdate(); // カウントダウン中の更新処理
 	void PlayUpdate();      // プレイ中の更新処理

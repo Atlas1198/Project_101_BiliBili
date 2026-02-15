@@ -33,6 +33,7 @@ enum class VS_ID : uint16_t
 enum class PS_ID : uint16_t
 {
 	Basic = 0,
+	BBSceneEffect = 1,
 };
 
 enum class SHADER_DEFINE : uint64_t
@@ -86,7 +87,7 @@ enum CULL_MODE
 struct PSOKey
 {
 	VS_ID vsEntry = VS_ID::Basic;			//頂点シェーダーエントリポイント
-	PS_ID psEntry = PS_ID::Basic;		//ピクセルシェーダーエントリポイント
+	PS_ID psEntry = PS_ID::Basic;			//ピクセルシェーダーエントリポイント
 	BLEND_MODE  blend = BLEND_OPAQUE;		//ブレンドモード
 	DEPTH_MODE  depth = DEPTH_TEST_WRITE;	//深度ステンシルモード
 	CULL_MODE  cull = CULL_NONE;			//カリングモード

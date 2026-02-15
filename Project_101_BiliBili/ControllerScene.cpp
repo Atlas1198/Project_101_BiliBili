@@ -19,7 +19,7 @@ ControllerScene::~ControllerScene()
 void ControllerScene::InitializeOverride(TextureManager& pTextureManager, MeshManager& pMeshManager)
 {
 	m_pControllerConnecter->Initialize();
-	m_pUIManager->Initialize(pTextureManager, pMeshManager);
+	m_pUIManager->Initialize(pTextureManager, pMeshManager, *m_pSceneContext);
 	m_pUIManager->StartFadeIn(0.01f);
 	AudioManager::GetInstance()->PlayBGM("CON_BGM");
 }

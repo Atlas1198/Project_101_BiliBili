@@ -40,8 +40,7 @@ void ControllerIconUI::UpdateOverride()
 {
 	if (m_isActive && !m_isReacting)
 	{
-		auto transform = m_pIconImage->GetLocalTransform();
-		auto scale = transform.scale;
+		auto scale = m_pIconImage->GetLocalScale();
 		scale.x *= 0.95f;
 		scale.y *= 0.95f;
 
@@ -58,13 +57,7 @@ void ControllerIconUI::UpdateOverride()
 			setScale = { 415.0f, 414.0f, 1.0f };
 		}
 
-		m_pIconImage->SetLocalTransform(
-			{
-				transform.position,
-				setScale,
-				transform.rotation
-			}
-		);
+		m_pIconImage->SetLocalScale(setScale);
 	}
 
 	if(m_isReacting)
@@ -74,17 +67,17 @@ void ControllerIconUI::UpdateOverride()
 		const float changeAmount = 1.05f;
 		if (m_reactionFrameCount <= 3)
 		{//Šg‘å
-			Transform3D transform = m_pIconImage->GetLocalTransform();
-			transform.scale.x *= changeAmount;
-			transform.scale.y *= changeAmount;
-			m_pIconImage->SetLocalTransform(transform);
+			auto scale = m_pIconImage->GetLocalScale();
+			scale.x *= changeAmount;
+			scale.y *= changeAmount;
+			m_pIconImage->SetLocalScale(scale);
 		}
 		else if (m_reactionFrameCount <= 6)
 		{//k¬
-			Transform3D transform = m_pIconImage->GetLocalTransform();
-			transform.scale.x /= changeAmount;
-			transform.scale.y /= changeAmount;
-			m_pIconImage->SetLocalTransform(transform);
+			auto scale = m_pIconImage->GetLocalScale();
+			scale.x /= changeAmount;
+			scale.y /= changeAmount;
+			m_pIconImage->SetLocalScale(scale);
 		}
 
 

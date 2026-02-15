@@ -41,6 +41,7 @@ static const ShaderDesc VS_TABLE[] = {
 
 static const ShaderDesc PS_TABLE[] = {
     { L"PixelShader.hlsl", "BasicPS", "ps_5_0" }, // PS_ID::Basic = 0
+    { L"BBSceneEffect.hlsl", "BasicPS", "ps_5_0" }, // PS_ID::Basic = 0
 };
 
 // ShaderLibrary class

@@ -43,16 +43,15 @@ void GameUIManager::InitializeOverride(
 
 	//弾数UIの初期化
 	{
-		const DirectX::XMFLOAT3 bulletUIBaseScale = { 110.0f, 104.5f, 1.0f }; // 弾数UIの基本スケール
-		const float scaleFactor = 1.5f; // スケール調整用の係数
-		const DirectX::XMFLOAT3 adjustedScale = { bulletUIBaseScale.x * scaleFactor, bulletUIBaseScale.y * scaleFactor, bulletUIBaseScale.z };
 		for (auto& bulletUI : m_pBulletCountUI1)
 		{
 			bulletUI = (new BulletCountUI(
 				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-				adjustedScale,	//スケール
+				DirectX::XMFLOAT3{ 0.9f, 0.9f, 1.0f },	//スケール
 				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-				0											//描画順序
+				-1,											//描画順序
+				L"asset/texture/game_scene/UI_INGAME_Rest_B.png",
+				L"asset/texture/game_scene/UI_INGAME_NoRest_B.png"
 			));
 			bulletUI->SetActive(false); // 初期状態では非表示にする
 		}
@@ -61,9 +60,11 @@ void GameUIManager::InitializeOverride(
 		{
 			bulletUI = (new BulletCountUI(
 				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
-				adjustedScale,	//スケール
+				DirectX::XMFLOAT3{ 0.9f, 0.9f, 1.0f },	//スケール
 				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },		//回転
-				0											//描画順序
+				-1,											//描画順序
+				L"asset/texture/game_scene/UI_INGAME_Rest_R.png",
+				L"asset/texture/game_scene/UI_INGAME_NoRest_R.png"
 			));
 			bulletUI->SetActive(false); // 初期状態では非表示にする
 		}
@@ -146,6 +147,19 @@ void GameUIManager::InitializeOverride(
 		));
 	}
 
+	//ゴールアナウンス画像UIの初期化
+	{
+		m_pGoalAnounceImage = (new UIImage(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },			//位置
+			DirectX::XMFLOAT3{ 1297.0f, 432.0f, 1.0f },		//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },			//回転
+			0,												//描画順序
+			L"asset/texture/game_scene/UI_INGAME_Goal.png",	//テクスチャパス
+			PSO_KEY_TRANSPARENT								//ブレンドモード
+		));
+		m_pGoalAnounceImage->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f }); // 初期状態ではアルファ０
+	}
+
 	//リザルトUIの初期化
 	{
 		m_pResultUI = (new ResultUI(
@@ -178,6 +192,7 @@ void GameUIManager::InitializeOverride(
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCountUI));				//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pResultUI));			//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pEventAnounceUI));		//ルートUIオブジェクト配列に追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pGoalAnounceImage));	//ルートUIオブジェクト配列に追加
 
 	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
 		EventType::UPDATE_HP_UI,
@@ -294,11 +309,48 @@ void GameUIManager::InitializeOverride(
 			m_pEventAnounceUI->ShowAnounce(*data);
 		}
 	);
+
+	using boolArgs = bool;
+	EventManager::GetInstance()->Subscribe<boolArgs>(
+		EventType::ANOUNCE_GOAL,
+		[this](std::shared_ptr<boolArgs> data)
+		{
+			m_showGoalAounce = *data;
+		}
+	);
+
+
+	//チームキャラクター設定
+	m_pTeamUI1->SetTeamCharacter(
+		m_pSceneContext->playersInfo[0].characterID,
+		m_pSceneContext->playersInfo[1].characterID
+	);
+	m_pTeamUI2->SetTeamCharacter(
+		m_pSceneContext->playersInfo[2].characterID,
+		m_pSceneContext->playersInfo[3].characterID
+	);
+
+	m_showGoalAounce = false;
 }
 
 //更新
 void GameUIManager::UpdateOverride()
 {
+	const float disolveSpeed = 0.15f;
+
+	auto color = m_pGoalAnounceImage->GetColor();
+
+	if (m_showGoalAounce)
+	{
+		color.w = std::min(color.w + disolveSpeed, 1.0f);
+	}
+	else
+	{
+		color.w = std::max(color.w - disolveSpeed, 0.0f);
+	}
+
+	m_pGoalAnounceImage->SetColor(color);
+
 }
 
 //終了
@@ -317,33 +369,17 @@ void GameUIManager::SetPlayerChasingUIPosition(int teamID, const DirectX::XMFLOA
 	DirectX::XMFLOAT3 adjustedPosition2 = DirectX::XMFLOAT3{ screenPos2.x, screenPos2.y + offsetY, 0.0f };
 	if (teamID == 0)
 	{
-		auto transformBullet1 = m_pBulletCountUI1[0]->GetLocalTransform();
-		transformBullet1.position = adjustedPosition1;
-		m_pBulletCountUI1[0]->SetLocalTransform(transformBullet1);
-		auto transformBullet2 = m_pBulletCountUI1[1]->GetLocalTransform();
-		transformBullet2.position = adjustedPosition2;
-		m_pBulletCountUI1[1]->SetLocalTransform(transformBullet2);
-		auto transformPlayerPointer1 = m_pPlayerPointerImage[0]->GetLocalTransform();
-		transformPlayerPointer1.position = adjustedPosition1;
-		m_pPlayerPointerImage[0]->SetLocalTransform(transformPlayerPointer1);
-		auto transformPlayerPointer2 = m_pPlayerPointerImage[1]->GetLocalTransform();
-		transformPlayerPointer2.position = adjustedPosition2;
-		m_pPlayerPointerImage[1]->SetLocalTransform(transformPlayerPointer2);
+		m_pBulletCountUI1[0]->SetLocalPosition(adjustedPosition1);
+		m_pBulletCountUI1[1]->SetLocalPosition(adjustedPosition2);
+		m_pPlayerPointerImage[0]->SetLocalPosition(adjustedPosition1);
+		m_pPlayerPointerImage[1]->SetLocalPosition(adjustedPosition2);
 	}
 	else if (teamID == 1)
 	{
-		auto transformBullet1 = m_pBulletCountUI2[0]->GetLocalTransform();
-		transformBullet1.position = adjustedPosition1;
-		m_pBulletCountUI2[0]->SetLocalTransform(transformBullet1);
-		auto transformBullet2 = m_pBulletCountUI2[1]->GetLocalTransform();
-		transformBullet2.position = adjustedPosition2;
-		m_pBulletCountUI2[1]->SetLocalTransform(transformBullet2);
-		auto transformPlayerPointer3 = m_pPlayerPointerImage[2]->GetLocalTransform();
-		transformPlayerPointer3.position = adjustedPosition1;
-		m_pPlayerPointerImage[2]->SetLocalTransform(transformPlayerPointer3);
-		auto transformPlayerPointer4 = m_pPlayerPointerImage[3]->GetLocalTransform();
-		transformPlayerPointer4.position = adjustedPosition2;
-		m_pPlayerPointerImage[3]->SetLocalTransform(transformPlayerPointer4);
+		m_pBulletCountUI2[0]->SetLocalPosition(adjustedPosition1);
+		m_pBulletCountUI2[1]->SetLocalPosition(adjustedPosition2);
+		m_pPlayerPointerImage[2]->SetLocalPosition(adjustedPosition1);
+		m_pPlayerPointerImage[3]->SetLocalPosition(adjustedPosition2);
 	}
 }
 

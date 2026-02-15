@@ -24,12 +24,12 @@ public:
 
 	void SetTexturePath(const std::wstring& texturePath) { m_texturePath = texturePath; }
 
-private:
-	std::wstring m_texturePath;							//テクスチャパス
-
 protected:
 	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成
 		TextureManager& textureManager,	//テクスチャ管理クラスの参照
 		MeshManager& meshManager		//メッシュ管理クラスの参照
 	) override;
+
+private:
+	std::wstring m_texturePath;							//テクスチャパス
 };

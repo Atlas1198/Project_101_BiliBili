@@ -60,9 +60,9 @@ void CountUI::InitializeOverride(TextureManager& textureManager, MeshManager& me
 	m_pFinishImage->SetActive(false);
 
 	//カウント画像の基準サイズを保存
-	m_countImageBaseSize[0] = m_pCountImage1->GetLocalTransform().scale;
-	m_countImageBaseSize[1] = m_pCountImage2->GetLocalTransform().scale;
-	m_countImageBaseSize[2] = m_pCountImage3->GetLocalTransform().scale;
+	m_countImageBaseSize[0] = m_pCountImage1->GetLocalScale();
+	m_countImageBaseSize[1] = m_pCountImage2->GetLocalScale();
+	m_countImageBaseSize[2] = m_pCountImage3->GetLocalScale();
 }
 
 //更新
@@ -195,13 +195,7 @@ void CountUI::UpdateNumberImage(UIImage& image, XMFLOAT3 baseSize)
 	};
 	scale = LerpXMF3(startScale, targetScale, t);
 
-	image.SetLocalTransform(
-		Transform3D(
-			image.GetLocalTransform().position,
-			scale,
-			image.GetLocalTransform().rotation
-		)
-	);
+	image.SetLocalScale(scale);
 }
 
 //スタート表示更新関数
@@ -217,13 +211,7 @@ void CountUI::UpdateStartImage(UIImage& image)
 	{
 		float positionX = 0.0f;
 		positionX = Lerpf(1920.0f * 0.5f, 0.0f, t); //X位置計算(画面外左端から中央へ移動)
-		image.SetLocalTransform(
-			Transform3D(
-				DirectX::XMFLOAT3{ positionX, image.GetLocalTransform().position.y, image.GetLocalTransform().position.z },
-				image.GetLocalTransform().scale,
-				image.GetLocalTransform().rotation
-			)
-		);
+		image.SetLocalPosition(DirectX::XMFLOAT3{ positionX, image.GetLocalPosition().y, image.GetLocalPosition().z });
 	}
 
 	if(m_mainTimer >= activeDuration)
@@ -247,12 +235,6 @@ void CountUI::UpdateFinishImage(UIImage& image)
 	{
 		float positionY = 0.0f;
 		positionY = Lerpf(1080.0f * 0.5f, 0.0f, t); //Y位置計算(画面外下端から中央へ移動)
-		image.SetLocalTransform(
-			Transform3D(
-				DirectX::XMFLOAT3{ image.GetLocalTransform().position.x, positionY, image.GetLocalTransform().position.z },
-				image.GetLocalTransform().scale,
-				image.GetLocalTransform().rotation
-			)
-		);
+		image.SetLocalPosition(DirectX::XMFLOAT3{ image.GetLocalPosition().x, positionY, image.GetLocalPosition().z });
 	}
 }

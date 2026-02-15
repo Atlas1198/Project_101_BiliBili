@@ -163,5 +163,4 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 		false,								//ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
 	);
-
 }
