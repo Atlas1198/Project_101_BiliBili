@@ -1,4 +1,4 @@
-#include "BulletManager.h"
+﻿#include "BulletManager.h"
 #include "CollisionManager.h"
 #include "Renderer.h"
 #include "EventManager.h"
@@ -101,7 +101,7 @@ void BulletManager::UpdateOverride()
     if (m_totalTimer.Peek() >= DEFAULT_INCREASE_DELAY)
     {
 		defaultSpeedModifier = 1.0f + (m_totalTimer.Peek() - DEFAULT_INCREASE_DELAY) * 0.01f;
-		defaultRecoveryModifier = defaultSpeedModifier;
+		defaultRecoveryModifier = std::min(defaultSpeedModifier, 2.0f);
 	}
 
 
