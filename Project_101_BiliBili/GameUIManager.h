@@ -9,6 +9,7 @@
 #include "CountUI.h"
 #include "ResultUI.h"
 #include "EventAnounceUI.h"
+#include "BBSceneEffectUI.h"
 
 //ゲームUI管理クラス
 class GameUIManager : public UIManagerBase
@@ -59,6 +60,8 @@ private:
 	UIImage* m_pGoalAnounceImage = nullptr; //ゴールアナウンス画像UIポインタ
 
 	ResultUI* m_pResultUI = nullptr; //リザルトUIポインタ
+
+	BBSceneEffectUI* m_pBBEffect = nullptr;
 
 	bool m_showGoalAounce = false;
 	

@@ -30,4 +30,7 @@ protected:
 private:
 	UIImage* m_pTopImage = nullptr;		//トップイメージ
 	UIImage* m_pBottomImage = nullptr;	//ボトムイメージ
+
+	float m_uOffset = 0.0f;
+	float m_time = 0.0f;
 };

@@ -12,6 +12,14 @@ void GameUIManager::InitializeOverride(
 	MeshManager& meshManager
 )
 {
+	m_pBBEffect = new BBSceneEffectUI(
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+		-1										//描画順序
+	);
+	m_pBBEffect->SetActive(false);
+
 	//チームUIの初期化
 	{
 		m_pTeamUI1 = (new TeamUI(
@@ -172,6 +180,7 @@ void GameUIManager::InitializeOverride(
 	}
 
 	//操作ガイド画像UIの初期化
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pBBEffect));			//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pTeamUI1));				//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pTeamUI2));				//ルートUIオブジェクト配列に追加
 	for (auto& bulletUI : m_pBulletCountUI1)
@@ -316,6 +325,14 @@ void GameUIManager::InitializeOverride(
 		[this](std::shared_ptr<boolArgs> data)
 		{
 			m_showGoalAounce = *data;
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<boolArgs>(
+		EventType::SET_BB_SCENE_EFFECT,
+		[this](std::shared_ptr<boolArgs> data)
+		{
+			m_pBBEffect->SetActive(*data);
 		}
 	);
 
