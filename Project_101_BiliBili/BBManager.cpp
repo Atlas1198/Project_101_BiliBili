@@ -124,7 +124,10 @@ void BBManager::UpdateOverride()
 	for (auto& index : m_activationCalledBBIndex)
 	{
 		OnItemPickup(index);
-		//AudioManager::GetInstance()->PlayBGM("GAME_TF");
+
+		AudioManager::GetInstance()->PauseBGM("GAME_BGM");
+		AudioManager::GetInstance()->PlayBGM("GAME_TF_BGM");
+		AudioManager::GetInstance()->PlayLoopSE("TF_SHOOT");
 	}
 	m_activationCalledBBIndex.clear();
 
@@ -149,7 +152,9 @@ void BBManager::UpdateOverride()
 				m_BBAreas[i * 2]->SetActive(false);
 				m_BBAreas[i * 2 + 1]->SetActive(false);
 
-				//AudioManager::GetInstance()->StopBGM();
+				AudioManager::GetInstance()->StopBGM("GAME_TF_BGM");
+				AudioManager::GetInstance()->ResumeBGM("GAME_BGM");
+				AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 			}
 			
 		}
