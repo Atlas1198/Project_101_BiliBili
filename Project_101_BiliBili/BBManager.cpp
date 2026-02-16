@@ -209,6 +209,8 @@ void BBManager::FinalizeOverride()
 		m_BB[i]->Finalize();
 	}
 
+	delete[] m_BBAreas;
+
 	timerStarted = false;
 }
 
