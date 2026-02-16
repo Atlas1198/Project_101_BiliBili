@@ -1,4 +1,4 @@
-#include "ItemManager.h"
+﻿#include "ItemManager.h"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "TextureManager.h"
@@ -73,6 +73,13 @@ void ItemManager::SpawnItem()
 //更新
 void ItemManager::UpdateOverride()
 {
+	if (!showedAnnouncement &&
+		m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
+	{
+		showedAnnouncement = true;
+
+		EventManager::GetInstance()->TriggerEvent<EventType>(EventType::SHOW_ANOUNCE_UI, EventType::EVENT_ITEM_SPAWN);
+	}
 	if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
 	{
 		bool skipped = false;
@@ -92,6 +99,7 @@ void ItemManager::UpdateOverride()
 			EventManager::GetInstance()->TriggerEvent<EventType>(EventType::SHOW_ANOUNCE_UI, EventType::EVENT_ITEM_SPAWN);
 		}
 
+		showedAnnouncement = false;
 		nextItemIndex++;
 		m_frameTimer.Mark();
 	}
