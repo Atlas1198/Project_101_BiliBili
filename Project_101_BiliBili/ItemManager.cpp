@@ -76,6 +76,14 @@ void ItemManager::UpdateOverride()
 	if (!showedAnnouncement &&
 		m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
 	{
+		for (int i = 0; i < MAX_SKIPS; i++)
+		{
+			if (nextItemIndex == skips[i])
+			{
+				return;
+			}
+		}
+
 		showedAnnouncement = true;
 
 		EventManager::GetInstance()->TriggerEvent<EventType>(EventType::SHOW_ANOUNCE_UI, EventType::EVENT_ITEM_SPAWN);
