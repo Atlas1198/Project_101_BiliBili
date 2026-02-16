@@ -45,6 +45,7 @@ enum EventType
 	INACTIVATE_PLAYER_POINTER_IMAGES, // void
 	SHOW_ANOUNCE_UI, // EventType eventType
 	ANOUNCE_GOAL, // bool isActive
+	SET_BB_SCENE_EFFECT,
 
 	//ゲーム内イベント(UI表示と併用)
 	EVENT_BULLET_SPEED,		// void
