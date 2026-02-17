@@ -115,8 +115,21 @@ IXAudio2SourceVoice* AudioManager::CreateVoice(const std::string& label) {
 
 
 //BGMÄ¶
-void AudioManager::PlayBGM(const std::string& label, bool loop) {
+void AudioManager::PlayBGM(const std::string& label, bool loop)
+{
+  
+    if (BGMVoices.find(label) != BGMVoices.end())
+    {// ‚·‚Å‚ÉƒŠƒXƒg‚É‚ ‚éiÄ¶’†A‚Ü‚½‚ÍˆêŽž’âŽ~’†j‚È‚ç
+        XAUDIO2_VOICE_STATE state;
+        BGMVoices[label]->GetState(&state);
+        //ˆêŽž’âŽ~’†‚È‚çÄ¶‚·‚é
+        if (BGMVoices.find(label) != BGMVoices.end()) {
+            BGMVoices[label]->Start(0);
+        }
+        return; //‚·‚Å‚ÉÄ¶A—¬‚ê‚Ä‚¢‚é‚Ì‚ÅI—¹
+    }
 
+    //V‹Kì¬
     IXAudio2SourceVoice* pVoice = CreateVoice(label);
     if (!pVoice) return;
 
@@ -150,6 +163,28 @@ void AudioManager::PlaySE(const std::string& label)
     SEVoices.insert(std::make_pair(label, pVoice));
 	}
 
+void AudioManager::PlayLoopSE(const std::string& label) {
+    // ‚·‚Å‚ÉÄ¶’†‚È‚ç‰½‚à‚µ‚È‚¢
+    if (LoopSEVoices.find(label) != LoopSEVoices.end()) return;
+
+    IXAudio2SourceVoice* pVoice = CreateVoice(label);
+    if (!pVoice) return;
+
+    XAUDIO2_BUFFER buffer = { 0 };
+    buffer.pAudioData = soundLibrary[label].buffer.data();
+    buffer.AudioBytes = (UINT32)soundLibrary[label].buffer.size();
+    buffer.Flags = XAUDIO2_END_OF_STREAM;
+    buffer.LoopCount = XAUDIO2_LOOP_INFINITE; // ƒ‹[ƒvÝ’è
+
+    pVoice->SubmitSourceBuffer(&buffer);
+    pVoice->SetVolume(seVolume); // SE—pƒ{ƒŠƒ…[ƒ€
+    pVoice->Start();
+
+    LoopSEVoices[label] = pVoice; // ŠÇ—ƒŠƒXƒg‚É’Ç‰Á
+}
+
+
+
 //BGM’âŽ~
 void AudioManager::StopBGM() {
     for (auto& pair : BGMVoices) {
@@ -175,11 +210,8 @@ void AudioManager::StopAll()
     StopAllSE();
 }
 
-//BGMˆêŽž’âŽ~
-void AudioManager::PauseBGM()
-{// ‘S‚Ä‚ÌBGM‚ðˆêŽž’âŽ~i“à•”ƒJƒEƒ“ƒg‚ð•ÛŽ‚µ‚½‚Ü‚Ü’âŽ~j
-    for (auto& pair : BGMVoices) pair.second->Stop(0);
-}
+
+
 
 //SEˆêŽž’âŽ~
 void AudioManager::PauseSE()
@@ -194,11 +226,7 @@ void AudioManager::PauseAll()
     for (auto& pair : SEVoices) pair.second->Stop(0);
 }
 
-//BGMÄŠJ
-void AudioManager::ResumeBGM()
-{// ˆêŽž’âŽ~‚µ‚Ä‚¢‚½‰ÓŠ‚©‚çBGMÄŠJ
-    for (auto& pair : BGMVoices) pair.second->Start(0);
-	}
+
 
 //SEÄŠJ
 void AudioManager::ResumeSE()
@@ -211,4 +239,38 @@ void AudioManager::ResumeAll()
 {// ˆêŽž’âŽ~‚µ‚Ä‚¢‚½‰ÓŠ‚©‚çÄŠJ
     for (auto& pair : BGMVoices) pair.second->Start(0);
     for (auto& pair : SEVoices) pair.second->Start(0);
+}
+
+
+// “Á’è‚ÌBGM‚ðˆêŽž’âŽ~
+void AudioManager::PauseBGM(const std::string& label) {
+    if (BGMVoices.count(label)) {
+        // ‘æ1ˆø”‚É0‚ð“n‚·‚ÆAŒ»Ý‚ÌÄ¶ˆÊ’u‚ð•ÛŽ‚µ‚½‚Ü‚Ü’âŽ~iˆêŽž’âŽ~j
+        BGMVoices[label]->Stop(0);
+    }
+}
+
+// “Á’è‚ÌBGM‚ðÄŠJ
+void AudioManager::ResumeBGM(const std::string& label) {
+    if (BGMVoices.count(label)) {
+        BGMVoices[label]->Start(0);
+    }
+}
+
+// “Á’è‚ÌBGM‚ðŠ®‘S‚É’âŽ~‚µ‚Äíœ
+void AudioManager::StopBGM(const std::string& label) {
+    if (BGMVoices.count(label)) {
+        BGMVoices[label]->Stop();
+        BGMVoices[label]->DestroyVoice();
+        BGMVoices.erase(label);
+    }
+}
+
+// “Á’è‚ÌSE‚ðˆêŽž’âŽ~
+void AudioManager::StopLoopSE(const std::string& label) {
+    if (LoopSEVoices.count(label)) {
+        LoopSEVoices[label]->Stop();
+        LoopSEVoices[label]->DestroyVoice();
+        LoopSEVoices.erase(label);
+    }
 }

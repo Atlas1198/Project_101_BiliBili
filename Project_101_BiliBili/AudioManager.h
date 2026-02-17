@@ -25,17 +25,22 @@ public:
     // 再生
     void PlayBGM(const std::string& label, bool loop = true);   //BGM
     void PlaySE(const std::string& label);   //SE
-    //void Play(const std::string& label, bool loop = false);
+    void PlayLoopSE(const std::string& label);
 
-    void StopBGM();     //BGM停止
+ 
     void StopAllSE();   //全SE停止
     void StopAll();     //全ての音の停止
-    void ResumeBGM();//BGM一時停止
     void ResumeSE(); //SE一時停止
     void ResumeAll();   //全音一時停止
-    void PauseBGM();    //再開
     void PauseSE();    //再開
     void PauseAll();    //再開
+              
+    void StopLoopSE(const std::string& label);//特定のループさせているSEを停止
+
+    void StopBGM();     //BGM停止
+    void PauseBGM(const std::string& label);  // 特定のBGMを一時停止
+    void ResumeBGM(const std::string& label); // 特定のBGMを再開
+    void StopBGM(const std::string& label);   // 特定のBGMを停止・削除
 
     void SetBGMVolume(float volume) { bgmVolume = volume; } //音量調整・再生中のBGMにも反映
 
@@ -57,6 +62,8 @@ private:
     std::map<std::string, SoundData> soundLibrary;
     // 再生中のBGM管理
     std::map<std::string, IXAudio2SourceVoice*> BGMVoices;
+    // 再生中のループSE管理
+    std::map<std::string, IXAudio2SourceVoice*> LoopSEVoices;
     // 再生中のSE管理
     std::multimap<std::string, IXAudio2SourceVoice*> SEVoices;
 

@@ -131,6 +131,7 @@ void Bullet::ResolveCollisionsOverride()
                     );
                 //コントローラー振動
                 otherPlayer->ShakeController(1.0f, 1.0f, 20);
+                AudioManager::GetInstance()->PlaySE("HIT");
             }
         }
         else

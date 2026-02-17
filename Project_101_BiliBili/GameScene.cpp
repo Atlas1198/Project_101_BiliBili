@@ -361,6 +361,7 @@ void GameScene::PlayUpdate()
 		m_gameState = GameState::STATE_RESULT;
 		m_timer = 0;
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT");
 	}
 
 	//カウントダウンタイマーの更新
@@ -408,6 +409,7 @@ void GameScene::ResultUpdate()
 				m_pSceneContext->pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30);
 				EventManager::GetInstance()->TriggerEvent(EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE);
 				m_isResultUIShown = false;
+				AudioManager::GetInstance()->PlaySE("RESULT_NEXT");
 			}
 		}
 	}
