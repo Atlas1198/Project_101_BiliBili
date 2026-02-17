@@ -46,6 +46,7 @@ enum EventType
 	SHOW_ANOUNCE_UI, // EventType eventType
 	ANOUNCE_GOAL, // bool isActive
 	SET_BB_SCENE_EFFECT,
+	SET_PLAYER_POINTER_ACTIVE,
 
 	//ゲーム内イベント(UI表示と併用)
 	EVENT_BULLET_SPEED,		// void

@@ -128,7 +128,7 @@ void GameScene::InitializeOverride(
 
 	//タイマーとゲーム状態初期化
 	m_timer = 0;								//タイマー初期化
-	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
+	m_gameState = GameState::STATE_BEFORE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
 
 	m_directionalLight.direction = XMFLOAT3(-0.2f, -1.0f, 0.4f);
@@ -181,20 +181,22 @@ void GameScene::RemovePlayer(uint32_t id)
 //更新
 void GameScene::UpdateOverride()
 {
-	if(m_gameState == GameState::STATE_COUNTDOWN)
+	switch (m_gameState)
 	{
-		//カウントダウン中の処理
+	case GameState::STATE_BEFORE_COUNTDOWN:
+		BeforeCountdownUpdate();
+		break;
+	case GameState::STATE_COUNTDOWN:
 		CountdownUpdate();
-	}
-	else if(m_gameState == GameState::STATE_PLAY)
-	{
-		//プレイ中の処理
+		break;
+	case GameState::STATE_PLAY:
 		PlayUpdate();
-	}
-	else if(m_gameState == GameState::STATE_RESULT)
-	{
-		//ゲームオーバー時の処理
+		break;
+	case GameState::STATE_RESULT:
 		ResultUpdate();
+		break;
+	default:
+		break;
 	}
 
 	m_pGameUIManager->Update();	//ゲームUI管理クラス更新
@@ -237,22 +239,65 @@ void GameScene::FinalizeOverride()
 	m_pBBManager->Finalize();		//BB管理クラス終了
 }
 
-//カウントダウン中の更新処理
-void GameScene::CountdownUpdate()
+void GameScene::BeforeCountdownUpdate()
 {
-	m_pFieldManager->Update();	//フィールド管理クラス更新
-	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
-	m_pBBManager->Update();		//BB管理クラス更新
+	const int WAIT_DURATION = 180; // カウントダウン前の待機時間（180フレーム）
+	const int BEGIN_DURATION = 40; 
 
-	//定数定義
-	const int COUNTDOWN_DURATION = 240;		//カウントダウンの総フレーム数（4秒間）
-	const int FRAMES_PER_SECOND = 60;		//1秒あたりのフレーム数
-	const int COUNTDOWN_START = 30;			//カウントダウン開始フレーム数（1秒間）
-	const int START_ANNOUNCE_DURATION = 90; // スタートアナウンスのフレーム数（1.5秒間）
+	m_pFieldManager->Update();										//フィールド管理クラス更新
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();											//BB管理クラス更新
 
 	auto eventManager = EventManager::GetInstance();
 	auto players = m_pPlayerManager->GetPlayers();
 
+	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
+			players[0]->GetTeamID(), players[0]->GetPosition(), players[1]->GetPosition()
+		));
+	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
+			players[2]->GetTeamID(), players[2]->GetPosition(), players[3]->GetPosition()
+		));
+
+	if (m_timer < WAIT_DURATION)
+	{
+		if (m_timer > BEGIN_DURATION)
+		{
+			const int ACTIVATE_RATE = 20;
+
+			if (m_timer % ACTIVATE_RATE == 0)
+			{
+				int playerIndex = (m_timer - BEGIN_DURATION) / ACTIVATE_RATE - 1;
+				eventManager->TriggerEvent<int>(
+					EventType::SET_PLAYER_POINTER_ACTIVE, playerIndex
+				);
+			}
+		}
+	}
+	else
+	{
+		m_gameState = GameState::STATE_COUNTDOWN; // ゲーム状態をカウントダウンに変更
+		m_timer = 0; // タイマーリセット
+	}
+
+	m_timer++; // タイマー更新
+}
+
+//カウントダウン中の更新処理
+void GameScene::CountdownUpdate()
+{
+	m_pFieldManager->Update();										//フィールド管理クラス更新
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();											//BB管理クラス更新
+
+	//定数定義
+	const int COUNTDOWN_DURATION = 160;		//カウントダウンの総フレーム数（2.67秒間）
+	const int FRAMES_PER_SECOND = 40;		//1秒あたりのフレーム数
+	const int START_ANNOUNCE_DURATION = 90; // スタートアナウンスのフレーム数（1.5秒間）
+
+	auto eventManager = EventManager::GetInstance();
+	auto players = m_pPlayerManager->GetPlayers();
 
 	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
 		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
@@ -264,15 +309,13 @@ void GameScene::CountdownUpdate()
 		));
 
 	//カウントダウンUIの表示
-  	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
+  	if((m_timer % FRAMES_PER_SECOND == 0  && m_timer < COUNTDOWN_DURATION))
 	{// 1秒ごとにUIを更新
-		int second = (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND;
+		int second = (COUNTDOWN_DURATION - m_timer) / FRAMES_PER_SECOND;
 		eventManager->TriggerEvent(EventType::SHOW_COUNT_UI, second);
 		
-		if (90 <= m_timer && m_timer <= 210)
-		{
-   			AudioManager::GetInstance()->PlaySE("GAME_COUNT1");
-		}
+   		AudioManager::GetInstance()->PlaySE("GAME_COUNT1");
+
 		//残り１秒で弾UIを表示
 		const int showBulletUISecond = 1;
 		if (second == showBulletUISecond)
@@ -294,7 +337,7 @@ void GameScene::CountdownUpdate()
 	}
 
 	//カウントダウン終了後、ゲーム状態をプレイに変更
-	if (m_timer == COUNTDOWN_DURATION + COUNTDOWN_START) // 4秒カウントダウン
+	if (m_timer == COUNTDOWN_DURATION) // 4秒カウントダウン
 	{
 		
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
@@ -302,7 +345,7 @@ void GameScene::CountdownUpdate()
 	}
 
 	//スタートアナウンス表示終了後
-	if( m_timer == COUNTDOWN_DURATION + COUNTDOWN_START + START_ANNOUNCE_DURATION)
+	if( m_timer == COUNTDOWN_DURATION + START_ANNOUNCE_DURATION)
 	{
 		//スタートアナウンス非表示イベントをトリガー
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);

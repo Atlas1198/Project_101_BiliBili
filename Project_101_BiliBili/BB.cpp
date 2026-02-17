@@ -210,7 +210,12 @@ void BB::ActivateBB()
 	{
 		line->SetDrawn(false);		//ラインの描画をオフ
 	}
+	//シーンエフェクトのフラグをオン
 	EventManager::GetInstance()->TriggerEvent<bool>(EventType::SET_BB_SCENE_EFFECT, true);
+	//画面振動
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(
+		EventType::CALL_CAMERA_SHAKE, std::make_pair(30, 10.0f)
+	);
 }
 
 //ビリビリの無効化
