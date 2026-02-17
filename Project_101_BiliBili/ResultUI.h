@@ -1,6 +1,8 @@
 #pragma once
 #include "UIBase.h"
 #include "UIImage.h"
+#include "Random.h"
+#include "CharacterData.h"
 
 //リザルトUIクラス
 class ResultUI : public UIBase
@@ -22,17 +24,28 @@ class ResultUI : public UIBase
 
 	void ShowResult(int winner, int character1ID, int character2ID);	//リザルト表示関数
 
-private:
-	UIImage* m_pBackgroundImage = nullptr;			//背景画像UIポインタ
-	UIImage* m_pHeaderImage = nullptr;				//ヘッダー画像UIポインタ
-	UIImage* m_pFooterImage = nullptr;				//フッター画像UIポインタ
-	UIImage* m_pWinnerImage = nullptr;				//勝者画像UIポインタ
-	UIImage* m_pBlueImage = nullptr;				//青チーム画像UIポインタ
-	UIImage* m_pRedImage = nullptr;					//赤チーム画像UIポインタ
-	UIImage* m_pGoToTitleImage = nullptr;			//タイトルへ戻る画像UIポインタ
-	UIImage* m_pCharacterImage[4] = { nullptr };	//キャラクター画像UIポインタ配列
+	bool isGoToTitleShown() const { return m_isGoToTitleShown; } //タイトルへ戻る表示フラグゲッター
 
-	int m_mainTimer = 0;	//メインタイマー
+private:
+	UIImage* m_pBackgroundImage[TEAM_NUM] = { nullptr };					//背景画像UIポインタ
+	UIImage* m_pTeamTextImage[TEAM_NUM] = { nullptr };						//チームテキスト画像UIポインタ
+	UIImage* m_pHeaderImage = nullptr;										//ヘッダー画像UIポインタ
+	UIImage* m_pFooterImage[TEAM_NUM] = { nullptr };						//フッター画像UIポインタ
+	UIImage* m_pGoToTitleImage = nullptr;									//タイトルへ戻る画像UIポインタ
+	UIImage* m_pCharacterImage[TEAM_NUM][MAX_CHARACTER_NUM] = { nullptr };	//キャラクター画像UIポインタ配列
+	UIImage* m_pItemImage = nullptr;										//アイテム画像UIポインタ
+	UIImage* m_pConfettiImage[100] = { nullptr };							//紙吹雪画像UIポインタ
+
+	Random* m_pRandom = nullptr;
+
+	bool m_isResultShown = false;		//リザルト表示フラグ
+	bool m_isGoToTitleShown = false;	//タイトルへ戻る表示フラグ
+	bool m_confettiActive = false;		//紙吹雪表示フラグ
+	int m_mainTimer = 0;				//メインタイマー
+	int m_confettiTimer = 0;			//紙吹雪タイマー
+	int m_winner = -1;					//勝利チームID
+	int m_character1ID = -1;			//キャラクター1ID
+	int m_character2ID = -1;			//キャラクター2ID
 
 private:
 	//オブジェクトの描画情報生成
@@ -40,4 +53,6 @@ private:
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	) override;
+
+	void UpdateConfetti(); //紙吹雪更新関数
 };

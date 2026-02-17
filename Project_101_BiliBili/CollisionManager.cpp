@@ -178,13 +178,7 @@ void CollisionManager::SubmitDraw(
 	{
 		submitInfos[i].position = collider.GetCurrentCenter();
 		submitInfos[i].scale = collider.GetCurrentScale();
-		submitInfos[i].common.psoKey = PSOKey{
-			VS_ID::Basic,
-			PS_ID::BasicMasked,
-			BLEND_MODE::BLEND_ALPHA,
-			DEPTH_TEST_NO_WRITE,
-			CULL_NONE
-		};
+		submitInfos[i].common.psoKey = PSO_KEY_TRANSPARENT;
 	}
 
 	renderer.SubmitToWorldList(submitInfos);	//Rendererへ描画要求を提出

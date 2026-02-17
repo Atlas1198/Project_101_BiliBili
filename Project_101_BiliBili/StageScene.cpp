@@ -28,7 +28,7 @@ void StageScene::InitializeOverride(
 )
 {
 	m_pStageSelector->Initialize();
-	m_pUIManager->Initialize(pTextureManager, pMeshManager);
+	m_pUIManager->Initialize(pTextureManager, pMeshManager, *m_pSceneContext);
 
 	using args = STAGE_TYPE;
 	EventManager::GetInstance()->Subscribe<args>(

@@ -104,8 +104,8 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 	m_screenProj = XMMatrixOrthographicLH(
 		(int)App::WINDOW_WIDTH,	//画面幅
 		(int)App::WINDOW_HEIGHT,	//画面高さ
-		0.0f,									//ニアクリップ距離
-		1.0f);									//ファークリップ距離
+		-1000.0f,									//ニアクリップ距離
+		1000.0f);								//ファークリップ距離
 }
 
 //描画
@@ -485,8 +485,8 @@ PipelineState* Renderer::CreatePipelineStateObject(const PSOKey& key)
 	PipelineState* pso = nullptr;
 
 	// Get shaders
-	auto vs = m_pShaderLibrary->GetVS(key.vsEntry);
-	auto ps = m_pShaderLibrary->GetPS(key.psEntry);
+	auto vs = m_pShaderLibrary->GetVS(key.vsEntry, key.defines);
+	auto ps = m_pShaderLibrary->GetPS(key.psEntry, key.defines);
 	if (!vs || !ps)
 	{
 		OutputDebugStringA("Shader blob missing\n");

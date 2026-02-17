@@ -1,4 +1,4 @@
-#include "ItemManager.h"
+﻿#include "ItemManager.h"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "TextureManager.h"
@@ -73,6 +73,25 @@ void ItemManager::SpawnItem()
 //更新
 void ItemManager::UpdateOverride()
 {
+	if (!showedAnnouncement &&
+		m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
+	{
+		bool skipped = false;
+		for (int i = 0; i < MAX_SKIPS; i++)
+		{
+			if (nextItemIndex == skips[i])
+			{
+				skipped = true;
+				break;
+			}
+		}
+
+		if (!skipped)
+		{
+			showedAnnouncement = true;
+			EventManager::GetInstance()->TriggerEvent<EventType>(EventType::SHOW_ANOUNCE_UI, EventType::EVENT_ITEM_SPAWN);
+		}
+	}
 	if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
 	{
 		bool skipped = false;
@@ -92,6 +111,7 @@ void ItemManager::UpdateOverride()
 			EventManager::GetInstance()->TriggerEvent<EventType>(EventType::SHOW_ANOUNCE_UI, EventType::EVENT_ITEM_SPAWN);
 		}
 
+		showedAnnouncement = false;
 		nextItemIndex++;
 		m_frameTimer.Mark();
 	}
@@ -152,16 +172,19 @@ void ItemManager::FinalizeOverride()
 //オブジェクトの描画情報生成
 void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
+	PSOKey psoKey = PSO_KEY_MASKED;
+	psoKey.psEntry = PS_ID::Basic;
+	psoKey.blend = BLEND_ALPHA;
+
 	//描画情報生成関数を呼び出し、描画情報を作成
 	CreateRenderInfo(
 		textureManager,						//テクスチャマネージャへの参照
 		meshManager,						//メッシュマネージャへの参照
 		&m_itemInfo,						//描画情報構造体配列へのポインタ
 		MESH_TYPE::QUAD,					//メッシュタイプ
-		PSO_KEY_MASKED,			//ブレンドモード
+		PSO_KEY_MASKED,						//ブレンドモード
 		itemTexPath,						//テクスチャのファイル名
 		false,								//ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
 	);
-
 }

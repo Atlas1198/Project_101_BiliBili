@@ -18,6 +18,7 @@ public:
 
 private:
 
+	int m_timer = 0;
 	int m_cursor = 0;
 	int m_previousCursor = -1;
 	bool m_isSelected = false;

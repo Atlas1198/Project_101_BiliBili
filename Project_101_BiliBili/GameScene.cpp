@@ -88,7 +88,8 @@ void GameScene::InitializeOverride(
 
 	m_pGameUIManager->Initialize(	//ゲームUI管理クラス初期化
 		pTextureManager,
-		pMeshManager
+		pMeshManager,
+		*m_pSceneContext
 	);
 
 	m_pBulletManager->Initialize( //弾管理クラス初期化
@@ -127,7 +128,7 @@ void GameScene::InitializeOverride(
 
 	//タイマーとゲーム状態初期化
 	m_timer = 0;								//タイマー初期化
-	m_gameState = GameState::STATE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
+	m_gameState = GameState::STATE_BEFORE_COUNTDOWN;	//ゲーム状態をカウントダウンに設定
 	m_isGameOver = false;						//ゲームオーバーフラグ初期化
 
 	m_directionalLight.direction = XMFLOAT3(-0.2f, -1.0f, 0.4f);
@@ -180,20 +181,22 @@ void GameScene::RemovePlayer(uint32_t id)
 //更新
 void GameScene::UpdateOverride()
 {
-	if(m_gameState == GameState::STATE_COUNTDOWN)
+	switch (m_gameState)
 	{
-		//カウントダウン中の処理
+	case GameState::STATE_BEFORE_COUNTDOWN:
+		BeforeCountdownUpdate();
+		break;
+	case GameState::STATE_COUNTDOWN:
 		CountdownUpdate();
-	}
-	else if(m_gameState == GameState::STATE_PLAY)
-	{
-		//プレイ中の処理
+		break;
+	case GameState::STATE_PLAY:
 		PlayUpdate();
-	}
-	else if(m_gameState == GameState::STATE_RESULT)
-	{
-		//ゲームオーバー時の処理
+		break;
+	case GameState::STATE_RESULT:
 		ResultUpdate();
+		break;
+	default:
+		break;
 	}
 
 	m_pGameUIManager->Update();	//ゲームUI管理クラス更新
@@ -236,21 +239,17 @@ void GameScene::FinalizeOverride()
 	m_pBBManager->Finalize();		//BB管理クラス終了
 }
 
-//カウントダウン中の更新処理
-void GameScene::CountdownUpdate()
+void GameScene::BeforeCountdownUpdate()
 {
-	m_pFieldManager->Update();	//フィールド管理クラス更新
-	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
-	m_pBBManager->Update();		//BB管理クラス更新
+	const int WAIT_DURATION = 180; // カウントダウン前の待機時間（180フレーム）
+	const int BEGIN_DURATION = 40; 
 
-	//定数定義
-	const int COUNTDOWN_DURATION = 240;	//カウントダウンの総フレーム数（4秒間）
-	const int FRAMES_PER_SECOND = 60;	//1秒あたりのフレーム数
-	const int COUNTDOWN_START = 30;		//カウントダウン開始フレーム数（1秒間）
+	m_pFieldManager->Update();										//フィールド管理クラス更新
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();											//BB管理クラス更新
 
 	auto eventManager = EventManager::GetInstance();
 	auto players = m_pPlayerManager->GetPlayers();
-
 
 	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
 		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
@@ -261,19 +260,62 @@ void GameScene::CountdownUpdate()
 			players[2]->GetTeamID(), players[2]->GetPosition(), players[3]->GetPosition()
 		));
 
-	//カウントダウンタイマーの更新
-	m_timer++;
+	if (m_timer < WAIT_DURATION)
+	{
+		if (m_timer > BEGIN_DURATION)
+		{
+			const int ACTIVATE_RATE = 20;
+
+			if (m_timer % ACTIVATE_RATE == 0)
+			{
+				int playerIndex = (m_timer - BEGIN_DURATION) / ACTIVATE_RATE - 1;
+				eventManager->TriggerEvent<int>(
+					EventType::SET_PLAYER_POINTER_ACTIVE, playerIndex
+				);
+			}
+		}
+	}
+	else
+	{
+		m_gameState = GameState::STATE_COUNTDOWN; // ゲーム状態をカウントダウンに変更
+		m_timer = 0; // タイマーリセット
+	}
+
+	m_timer++; // タイマー更新
+}
+
+//カウントダウン中の更新処理
+void GameScene::CountdownUpdate()
+{
+	m_pFieldManager->Update();										//フィールド管理クラス更新
+	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
+	m_pBBManager->Update();											//BB管理クラス更新
+
+	//定数定義
+	const int COUNTDOWN_DURATION = 160;		//カウントダウンの総フレーム数（2.67秒間）
+	const int FRAMES_PER_SECOND = 40;		//1秒あたりのフレーム数
+	const int START_ANNOUNCE_DURATION = 90; // スタートアナウンスのフレーム数（1.5秒間）
+
+	auto eventManager = EventManager::GetInstance();
+	auto players = m_pPlayerManager->GetPlayers();
+
+	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
+			players[0]->GetTeamID(), players[0]->GetPosition(), players[1]->GetPosition()
+		));
+	eventManager->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
+		EventType::SET_PLAYER_CHASING_UI_POSITION, std::make_tuple(
+			players[2]->GetTeamID(), players[2]->GetPosition(), players[3]->GetPosition()
+		));
 
 	//カウントダウンUIの表示
-  	if((COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) % FRAMES_PER_SECOND == 0)
+  	if((m_timer % FRAMES_PER_SECOND == 0  && m_timer < COUNTDOWN_DURATION))
 	{// 1秒ごとにUIを更新
-		int second = (COUNTDOWN_DURATION + COUNTDOWN_START - m_timer) / FRAMES_PER_SECOND;
+		int second = (COUNTDOWN_DURATION - m_timer) / FRAMES_PER_SECOND;
 		eventManager->TriggerEvent(EventType::SHOW_COUNT_UI, second);
 		
-		if (90 <= m_timer && m_timer <= 210)
-		{
-   			AudioManager::GetInstance()->PlaySE("GAME_COUNT1");
-		}
+   		AudioManager::GetInstance()->PlaySE("GAME_COUNT1");
+
 		//残り１秒で弾UIを表示
 		const int showBulletUISecond = 1;
 		if (second == showBulletUISecond)
@@ -295,19 +337,46 @@ void GameScene::CountdownUpdate()
 	}
 
 	//カウントダウン終了後、ゲーム状態をプレイに変更
-	if (m_timer >= COUNTDOWN_DURATION + COUNTDOWN_START) // 4秒カウントダウン
+	if (m_timer == COUNTDOWN_DURATION) // 4秒カウントダウン
 	{
-		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
+		
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
 		AudioManager::GetInstance()->PlaySE("GAME_COUNT2");
-		AudioManager::GetInstance()->PlayBGM("GAME_BGM");
-		m_pGameEventManager->Start(); // イベントマネージャー開始
 	}
+
+	//スタートアナウンス表示終了後
+	if( m_timer == COUNTDOWN_DURATION + START_ANNOUNCE_DURATION)
+	{
+		//スタートアナウンス非表示イベントをトリガー
+		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
+
+		//ゴールアナウンス表示イベントをトリガー
+		EventManager::GetInstance()->TriggerEvent<bool>(EventType::ANOUNCE_GOAL, true);
+
+		//BGM再生
+		AudioManager::GetInstance()->PlayBGM("GAME_BGM");
+		m_gameState = GameState::STATE_PLAY; // ゲーム状態をプレイに変更
+		m_pGameEventManager->Start(); // イベントマネージャー開始
+		m_timer = 0; // タイマーリセット
+	}
+
+	//カウントダウンタイマーの更新
+	m_timer++;
 }
 
 //プレイ中の更新処理
 void GameScene::PlayUpdate()
 {
+	const int GOAL_ANNOUNCE_DURATION = 120; // ゴールアナウンスのフレーム数（2秒間）
+
+	//ゴールアナウンス表示終了後
+	if (m_timer == GOAL_ANNOUNCE_DURATION)
+	{
+		//ゴールアナウンス非表示イベントをトリガー
+		EventManager::GetInstance()->TriggerEvent<bool>(EventType::ANOUNCE_GOAL, false);
+
+	}
+
 	m_pPlayerManager->Update();	//プレイヤー管理クラス更新
 	m_pFieldManager->Update();	//フィールド管理クラス更新
 	m_pBulletManager->Update(); //弾管理クラス更新
@@ -317,7 +386,7 @@ void GameScene::PlayUpdate()
 	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
 	m_pBBManager->Update();		//BB管理クラス更新
 
-	if (m_pSceneContext->pInputInfo->key.enter.trigger)
+	if (m_pSceneContext->pInputInfo->key.enter.down)
 	{
 		if (m_pCamera->GetCameraInfo().position.y == 0.0f)
 		{
@@ -325,8 +394,14 @@ void GameScene::PlayUpdate()
 		}
 		else
 		{
-			m_pCamera->SetPosition({ 0.0f, 35.0f, -15.0f });
+			m_pCamera->SetPosition({ 0.0f, 80.0f, 5.0f });
+			m_pCamera->SetTarget({ 0.0f, 00.0f, 6.0f });
 		}
+	}
+	else
+	{
+		m_pCamera->SetPosition({ 0.0f, 70.0f, -50.0f });
+		m_pCamera->SetTarget({ 0.0f, 00.0f, 3.5f });
 	}
 
 	//勝利条件の判定
@@ -335,7 +410,12 @@ void GameScene::PlayUpdate()
 		m_gameState = GameState::STATE_RESULT;
 		m_timer = 0;
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT");
+		AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 	}
+
+	//カウントダウンタイマーの更新
+	m_timer++;
 }
 
 //ゲームオーバー時の更新処理
@@ -352,20 +432,24 @@ void GameScene::ResultUpdate()
 
 	m_timer++;
 
-
-
 	if (m_timer == WAIT_DURATION)
 	{
-		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, {m_winner, m_character1ID, m_character2ID});
+		m_pGameUIManager->StartFadeOut(0.02f); // リザルトシーンフェードイン
+	}
+	else if (m_timer > WAIT_DURATION && m_pGameUIManager->IsFadeEnd())
+	{
+		EventManager::GetInstance()->TriggerEvent<std::tuple<int, int, int>>(EventType::SHOW_RESULT_UI, { m_winner, m_character1ID, m_character2ID });
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
-		AudioManager::GetInstance()->PlaySE("RESULT");
-
+    AudioManager::GetInstance()->PlaySE("RESULT");
 	}
 	else if (m_timer == RESULT_BGM_STRAT)
-	{
+  {
+		AudioManager::GetInstance()->StopAll();
 		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");
+		m_isResultUIShown = true;
 	}
-	else if (m_timer > WAIT_DURATION)
+
+	if (m_isResultUIShown)
 	{
 		auto& controllers = m_pSceneContext->pInputInfo->controller;
 		auto& keyInput = m_pSceneContext->pInputInfo->key;
@@ -374,10 +458,13 @@ void GameScene::ResultUpdate()
 		{
 			auto controller = controllers[i];
 
-			if (controller.anyButton.trigger || keyInput.space.trigger)
+			if ((controller.anyButton.trigger || keyInput.space.trigger)
+				&& m_pGameUIManager->IsGoToTitleShown())
 			{
 				m_pSceneContext->pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30);
 				EventManager::GetInstance()->TriggerEvent(EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE);
+				m_isResultUIShown = false;
+				AudioManager::GetInstance()->PlaySE("RESULT_NEXT");
 			}
 		}
 	}

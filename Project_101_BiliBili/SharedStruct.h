@@ -63,9 +63,9 @@ struct DirectionalLight
 //3D変換情報構造体
 struct Transform3D
 {
-	DirectX::XMFLOAT3 position;	//位置
-	DirectX::XMFLOAT3 scale;	//スケール
-	DirectX::XMFLOAT3 rotation;	//回転
+	DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };			//位置
+	DirectX::XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };				//スケール
+	DirectX::XMFLOAT4 rotation = { 0.0f, 0.0f, 0.0f, 1.0f };	//回転(クォータニオン)
 };
 
 //エフェクト用定数バッファ構造体
@@ -379,66 +379,42 @@ inline static float EaseOutBack(float t)
 }
 
 //3D変換情報合成関数
-inline static Transform3D CombineTransform3D(const Transform3D& world, const Transform3D& local)
+inline static Transform3D CombineTransform3D(const Transform3D& parent, const Transform3D& local)
 {
-	Transform3D result;
-	//スケールの合成
-	result.scale.x = world.scale.x * local.scale.x;
-	result.scale.y = world.scale.y * local.scale.y;
-	result.scale.z = world.scale.z * local.scale.z;
+	using namespace DirectX;
 
-	//回転の合成
-	result.rotation.x = world.rotation.x + local.rotation.x;
-	result.rotation.y = world.rotation.y + local.rotation.y;
-	result.rotation.z = world.rotation.z + local.rotation.z;
+	Transform3D out{};
 
-	//位置の合成(スケールと回転を考慮)
-	DirectX::XMVECTOR childPos = DirectX::XMLoadFloat3(&local.position);	//子の位置ベクトル
-	DirectX::XMVECTOR parentScale = DirectX::XMLoadFloat3(&world.scale);	//親のスケールベクトル
-	childPos = DirectX::XMVectorMultiply(childPos, parentScale);			//スケール適用
+	out.scale = {
+		parent.scale.x * local.scale.x,
+		parent.scale.y * local.scale.y,
+		parent.scale.z * local.scale.z
+	};
 
-	DirectX::XMVECTOR parentRot = DirectX::XMLoadFloat3(&world.rotation);	//親の回転ベクトル
-	DirectX::XMMATRIX rotMatrix =											//親の回転行列
-		DirectX::XMMatrixRotationRollPitchYaw(
-			DirectX::XMVectorGetX(parentRot),	//ピッチ
-			DirectX::XMVectorGetY(parentRot),	//ヨー
-			DirectX::XMVectorGetZ(parentRot)	//ロール
-		);
-	childPos = DirectX::XMVector3Transform(childPos, rotMatrix);				//回転適用
+	XMVECTOR qP = XMLoadFloat4(&parent.rotation);
+	XMVECTOR qL = XMLoadFloat4(&local.rotation);
+	XMVECTOR qW = XMQuaternionMultiply(qL, qP);
+	qW = XMQuaternionNormalize(qW);
+	XMStoreFloat4(&out.rotation, qW);
 
-	DirectX::XMVECTOR parentPos = DirectX::XMLoadFloat3(&world.position);		//親の位置ベクトル
-	DirectX::XMVECTOR resultPos = DirectX::XMVectorAdd(parentPos, childPos);	//位置合成
-	DirectX::XMStoreFloat3(&result.position, resultPos);						//結果を格納
+	XMVECTOR p = XMLoadFloat3(&local.position);
+	p = XMVectorMultiply(p, XMLoadFloat3(&parent.scale));
+	p = XMVector3Rotate(p, qP);
+	p = XMVectorAdd(p, XMLoadFloat3(&parent.position));
+	XMStoreFloat3(&out.position, p);
 
-	return result;
+	return out;
 }
 
 //変換情報から変換行列を取得する関数
-inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& transform)
+inline static DirectX::XMMATRIX GetMatrixFromTransform3D(const Transform3D& t)
 {
-	//スケール行列
-	DirectX::XMMATRIX scaleMatrix =
-		DirectX::XMMatrixScaling(
-			transform.scale.x,
-			transform.scale.y,
-			transform.scale.z
-		);
-	//回転行列
-	DirectX::XMMATRIX rotMatrix =
-		DirectX::XMMatrixRotationRollPitchYaw(
-			DirectX::XMConvertToRadians(transform.rotation.x),	//ピッチ
-			DirectX::XMConvertToRadians(transform.rotation.y),	//ヨー
-			DirectX::XMConvertToRadians(transform.rotation.z)	//ロール
-		);
-	//平行移動行列
-	DirectX::XMMATRIX transMatrix =
-		DirectX::XMMatrixTranslation(
-			transform.position.x,
-			transform.position.y,
-			transform.position.z
-		);
-	//ワールド行列の合成(スケール→回転→平行移動)
-	return scaleMatrix * rotMatrix * transMatrix;
+	using namespace DirectX;
+	XMMATRIX S = XMMatrixScaling(t.scale.x, t.scale.y, t.scale.z);
+	XMMATRIX R = XMMatrixRotationQuaternion(XMLoadFloat4(&t.rotation));
+	XMMATRIX T = XMMatrixTranslation(t.position.x, t.position.y, t.position.z);
+
+	return S * R * T;
 }
 
 //Get transformation matrix from position, scale, and rotation

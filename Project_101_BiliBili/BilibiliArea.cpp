@@ -1,4 +1,4 @@
-#include "BilibiliArea.h"
+﻿#include "BilibiliArea.h"
 #include <cmath>
 #include "EventManager.h"
 #include "EffectData.h"
@@ -119,6 +119,8 @@ void BilibiliArea::ResolveCollisionsOverride()
                     EventType::TAKE_DAMAGE,
                     std::make_pair(otherPlayer->GetTeamID(), m_damage)
                 );
+
+				otherPlayer->StartDamageAnimation();
             }
         }
     }

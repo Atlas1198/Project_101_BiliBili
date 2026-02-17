@@ -154,11 +154,13 @@
     <ClInclude Include="AudioResources.h" />
     <ClInclude Include="BB.h" />
     <ClInclude Include="BBManager.h" />
+    <ClInclude Include="BBSceneEffectUI.h" />
     <ClInclude Include="BilibiliArea.h" />
     <ClInclude Include="BulletCountUI.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BulletManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CharacterData.h" />
     <ClInclude Include="CharacterScene.h" />
     <ClInclude Include="CharacterSelecter.h" />
     <ClInclude Include="CharacterUIManager.h" />
@@ -199,6 +201,10 @@
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="LineBB.h" />
+    <ClInclude Include="LoadUI.h" />
+    <ClInclude Include="NoCollisionModel.h" />
+    <ClInclude Include="PlayerPointerUI.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SelectionScene.h" />
     <ClInclude Include="ShaderLibrary.h" />
@@ -250,6 +256,7 @@
     <ClCompile Include="AudioResources.cpp" />
     <ClCompile Include="BB.cpp" />
     <ClCompile Include="BBManager.cpp" />
+    <ClCompile Include="BBSceneEffectUI.cpp" />
     <ClCompile Include="BilibiliArea.cpp" />
     <ClCompile Include="BulletCountUI.cpp" />
     <ClCompile Include="Bullet.cpp" />
@@ -287,6 +294,8 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="LineBB.cpp" />
+    <ClCompile Include="LoadUI.cpp" />
+    <ClCompile Include="NoCollisionModel.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
     <ClCompile Include="ObjectManagerBase.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -299,6 +308,7 @@
     <ClCompile Include="PipelineState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="PlayerPointerUI.cpp" />
     <ClCompile Include="RenderData.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResultUI.cpp" />

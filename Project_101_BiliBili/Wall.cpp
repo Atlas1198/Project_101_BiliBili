@@ -65,9 +65,9 @@ Wall::Wall(MESH_TYPE meshType,
     const XMFLOAT3 COLLIDER_SCALE_FACTOR = { 2.5f, 3.1f, 2.5f }; // コライダースケールの調整用係数（必要に応じて変更）
     const XMFLOAT3 COLLIDER_SCALE_NORMAL =
     {
-        scale.x * COLLIDER_SCALE_FACTOR.x,
-        scale.y * COLLIDER_SCALE_FACTOR.y,
-        scale.z * COLLIDER_SCALE_FACTOR.z
+        COLLIDER_SCALE_FACTOR.x,
+        COLLIDER_SCALE_FACTOR.y,
+        COLLIDER_SCALE_FACTOR.z
     };
 	const float COLLIDER_SCALE_MULTIPLIER = 0.9f; // 小さい方のコライダーの倍率
     const XMFLOAT3 COLLIDER_SCALE_SMALL =
@@ -80,7 +80,7 @@ Wall::Wall(MESH_TYPE meshType,
 	 //コライダーの設定
     m_pColliderSet->AddCollider(
         ColliderType::BOX,
-        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), // オフセット位置
+        DirectX::XMFLOAT3(0.0f, 1.0f, 0.5f), // オフセット位置
         COLLIDER_SCALE_NORMAL,
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), // オフセット回転
         COLLISION_LAYER::WALLPASS
@@ -88,7 +88,7 @@ Wall::Wall(MESH_TYPE meshType,
 
     m_pColliderSet->AddCollider(
         ColliderType::BOX,
-        DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), // オフセット位置
+        DirectX::XMFLOAT3(0.0f, 1.0f, 0.5f), // オフセット位置
         COLLIDER_SCALE_SMALL,
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), // オフセット回転
         COLLISION_LAYER::WALL

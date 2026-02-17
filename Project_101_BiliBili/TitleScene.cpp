@@ -30,7 +30,7 @@ void TitleScene::InitializeOverride(
 	MeshManager& pMeshManager			//メッシュ管理クラスの参照
 )
 {
-	m_pTitleUIManager->Initialize(pTextureManager, pMeshManager);
+	m_pTitleUIManager->Initialize(pTextureManager, pMeshManager, *m_pSceneContext);
 	AudioManager::GetInstance()->StopBGM();
 	AudioManager::GetInstance()->PlayBGM("TITLE_BGM");
 }
