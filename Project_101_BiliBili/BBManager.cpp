@@ -123,12 +123,11 @@ void BBManager::UpdateOverride()
 {
 	//BB発動コマンド処理
 	for (auto& index : m_activationCalledBBIndex)
-	{
+	{   
 		OnItemPickup(index);
 
 		AudioManager::GetInstance()->PauseBGM("GAME_BGM");
 		AudioManager::GetInstance()->PlayBGM("GAME_TF_BGM");
-		AudioManager::GetInstance()->PlayLoopSE("TF_SHOOT");
 	}
 	m_activationCalledBBIndex.clear();
 

@@ -405,6 +405,7 @@ void GameScene::PlayUpdate()
 		m_timer = 0;
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
 		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT");
+		AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 	}
 
 	//カウントダウンタイマーの更新
