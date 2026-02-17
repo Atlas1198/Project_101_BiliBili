@@ -64,7 +64,7 @@ private:	//”ñŒöŠJƒƒ“ƒo•Ï”
 
 	// Parameters for shaking camera
 	bool m_isShakeActive = false;			// Active flag of shake
-	DirectX::XMFLOAT3 m_originPosition{};	// Originl position
+	CameraInfo m_originalCameraInfo{};		// Original camera info
 	int m_shakeTime = 0;					// Length of time to keep shaking
 	int m_shakeElapsedTime = 0;				// Elapsed time of shaking
 	float m_shakeStrength = 0.0f;			// Strenght of shake

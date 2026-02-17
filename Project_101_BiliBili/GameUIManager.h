@@ -9,6 +9,8 @@
 #include "CountUI.h"
 #include "ResultUI.h"
 #include "EventAnounceUI.h"
+#include "BBSceneEffectUI.h"
+#include "PlayerPointerUI.h"
 
 //ゲームUI管理クラス
 class GameUIManager : public UIManagerBase
@@ -45,7 +47,7 @@ private:
 	BulletCountUI* m_pBulletCountUI1[2] = { nullptr }; //弾数UIポインタ
 	BulletCountUI* m_pBulletCountUI2[2] = { nullptr }; //弾数UIポインタ
 
-	UIImage* m_pPlayerPointerImage[4] = { nullptr }; //プレイヤーポインター画像UIポインタ配列
+	PlayerPointerUI* m_pPlayerPointerUI = nullptr; //プレイヤーポインターUIポインタ
 
 	CutInUI* m_pCutInUI1 = nullptr; //カットインUIポインタ
 	CutInUI* m_pCutInUI2 = nullptr; //カットインUIポインタ
@@ -59,6 +61,8 @@ private:
 	UIImage* m_pGoalAnounceImage = nullptr; //ゴールアナウンス画像UIポインタ
 
 	ResultUI* m_pResultUI = nullptr; //リザルトUIポインタ
+
+	BBSceneEffectUI* m_pBBEffect = nullptr;
 
 	bool m_showGoalAounce = false;
 	

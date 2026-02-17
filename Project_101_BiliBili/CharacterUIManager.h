@@ -30,25 +30,26 @@ public:
 	void GoToNextScene();															//次のシーンへ進む
 
 private:
-	UIImage* m_pBackgroundImage = nullptr;					//背景画像UIオブジェクト
-	UIImage* m_pHeaderImage = nullptr;						//ヘッダー画像UIオブジェクト
-	UIImage* m_pCharacterIconBase = nullptr;				//キャラクターアイコンベースUIオブジェクト
+	UIImage* m_pBackgroundImage = nullptr;									//背景画像UIオブジェクト
+	UIImage* m_pHeaderImage = nullptr;										//ヘッダー画像UIオブジェクト
+	UIImage* m_pCharacterIconBase = nullptr;								//キャラクターアイコンベースUIオブジェクト
+	UIImage* m_pCharacterName = nullptr;									//キャラクター名UIオブジェクト
 	UIImage* m_pPlayerIcons[MAX_CHARACTER_NUM] = { nullptr };				//プレイヤーアイコンUIオブジェクト配列
-	UIImage* m_pPlayerBlurs[MAX_CHARACTER_NUM] = { nullptr };			//プレイヤーブラーUIオブジェクト配列
+	UIImage* m_pPlayerBlurs[MAX_CHARACTER_NUM] = { nullptr };				//プレイヤーブラーUIオブジェクト配列
 	UIImage* m_pPlayerBackgroundsSelected[MAX_CHARACTER_NUM] = { nullptr };	//プレイヤー背景UIオブジェクト配列(選択済み)
 	UIImage* m_pPlayerBackgroundsNormal[MAX_CHARACTER_NUM] = { nullptr };	//プレイヤー背景UIオブジェクト配列(未選択)
-	UIImage* m_pGoToNextSceneIcon = nullptr;				//次のシーンへ進むアイコンUIオブジェクト
-	UIImage* m_pOperation = nullptr;						//操作説明UIオブジェクト
-	LoadUI* m_pLoadUI = nullptr;							//ロードUIオブジェクト
+	UIImage* m_pGoToNextSceneIcon = nullptr;								//次のシーンへ進むアイコンUIオブジェクト
+	UIImage* m_pOperation = nullptr;										//操作説明UIオブジェクト
+	LoadUI* m_pLoadUI = nullptr;											//ロードUIオブジェクト
 
-	float m_passedFrameCount = 0.0f;			//経過フレーム数
+	float m_passedFrameCount = 0.0f;							//経過フレーム数
 	bool m_playersSelected[MAX_CHARACTER_NUM] = { false };		//プレイヤー選択済みフラグ配列
-	bool m_isGoToNextSceneIconVisible = false;	//次のシーンへ進むアイコン表示フラグ
+	bool m_isGoToNextSceneIconVisible = false;					//次のシーンへ進むアイコン表示フラグ
 
 	bool m_isCalledGoToNextScene = false;	//次のシーンへ進む処理が呼ばれたかどうか
 	int m_goToNextSceneIconMoveCount = 0;	//次のシーンへ進むアイコン移動カウント
 
-	float playerIconScaleOffsets[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; //プレイヤーアイコンスケールオフセット配列
+	float playerIconScaleOffsets[4] = { 1.0f, 1.0f, 1.0f, 1.0f };	//プレイヤーアイコンスケールオフセット配列
 
 private:
 	//メイン処理関数

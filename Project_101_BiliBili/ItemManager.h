@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include "ObjectManagerBase.h"
@@ -51,4 +51,5 @@ private:
 	int nextItemIndex = 1;
 	int skips[2] = { 1, 4 };
 	bool applyNewSpawnRate = false;
+	bool showedAnnouncement = false;
 };
