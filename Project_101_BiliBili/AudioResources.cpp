@@ -25,7 +25,7 @@ void LoadAllGameSounds(AudioManager& am) {
         { "GAME_COUNT1", L"asset/sound/SE/インゲーム_カウントダウン_1_SE.wav" },
         { "GAME_COUNT2", L"asset/sound/SE/インゲーム_カウントダウン_2_SE.wav" },
         { "GAME_TF", L"asset/sound/SE/インゲーム_変身_SE.wav"},
-        { "", L"asset/sound/SE/インゲーム_終了_SE"},
+        { "GAME_FINISH", L"asset/sound/SE/インゲーム_終了_SE.wav"},
         { "", L"asset/sound/SE/インゲーム_変身解除_SE.wav"},
         { "Shoot", L"asset/sound/SE/Shoot.wav" },
         { "TF_SHOOT", L"asset/sound/SE/インゲーム_ビリビリ.wav"},
