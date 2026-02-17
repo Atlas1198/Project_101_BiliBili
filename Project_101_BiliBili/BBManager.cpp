@@ -1,4 +1,4 @@
-#include "BBManager.h"
+﻿#include "BBManager.h"
 #include "Player.h"
 #include "GameUIManager.h"
 #include "EventManager.h"
@@ -224,6 +224,11 @@ void BBManager::FinalizeOverride()
 	for(int i = 0; i < BB_NUM; i++)
 	{
 		m_BB[i]->Finalize();
+	}
+
+	for(int i = 0; i < BB_AREA_NUM; i++)
+	{
+		delete m_BBAreas[i];
 	}
 
 	timerStarted = false;
