@@ -35,6 +35,8 @@ public:
 
 	void GetDamage(float health);	//ダメージ取得関数
 
+	void SetTeamCharacter(int p1, int p2);
+
 private:
 	HPBarUI* m_pHPBarUI;	//HPバーUIポインタ
 	IconUI* m_pIconUI;		//アイコンUIポインタ

@@ -118,14 +118,15 @@ void BBManager::OnItemPickup(int teamID)
 	{
 		SetBB(teamID, true);
 
-		if (m_isBBEnhanced[teamID])
+
+		if (m_isBBEnhanced)
 		{
 			m_BBAreas[teamID * 2]->SetActive(true);
 			m_BBAreas[teamID * 2 + 1]->SetActive(true);
 		}
 
 	}
-	m_BBTimer[teamID] = BB_DURATION;
+	m_BBTimer[teamID] = 10.0f;
 	m_frameTimer[teamID].Mark();
 }
 
@@ -134,9 +135,11 @@ void BBManager::UpdateOverride()
 {
 	//BB発動コマンド処理
 	for (auto& index : m_activationCalledBBIndex)
-	{
+	{   
 		OnItemPickup(index);
-		//AudioManager::GetInstance()->PlayBGM("GAME_TF");
+
+		AudioManager::GetInstance()->PauseBGM("GAME_BGM");
+		AudioManager::GetInstance()->PlayBGM("GAME_TF_BGM");
 	}
 	m_activationCalledBBIndex.clear();
 
@@ -161,7 +164,9 @@ void BBManager::UpdateOverride()
 				m_BBAreas[i * 2]->SetActive(false);
 				m_BBAreas[i * 2 + 1]->SetActive(false);
 
-				//AudioManager::GetInstance()->StopBGM();
+				AudioManager::GetInstance()->StopBGM("GAME_TF_BGM");
+				AudioManager::GetInstance()->ResumeBGM("GAME_BGM");
+				AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 			}
 			
 		}
@@ -298,7 +303,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_ElectricityBBBlueInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		electricityBBBlueTexPath,
 		false
 	);
@@ -308,7 +313,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_ElectricityBBRedInfo,
 		m_BB[0]->GetElectricityBB()[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		electricityBBRedTexPath,
 		false
 	);
@@ -318,9 +323,10 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_BBAreaBlueInfo,
 		m_BBAreas[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		areaBBBlueTexPath,
-		false
+		false,
+		BILLBOARD_FIX_X
 	);
 
 	CreateRenderInfo(
@@ -328,7 +334,7 @@ void BBManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& m
 		meshManager,
 		&m_BBAreaRedInfo,
 		m_BBAreas[0]->GetMeshType(),
-		PSO_KEY_MASKED,
+		PSO_KEY_TRANSPARENT,
 		areaBBRedTexPath,
 		false,
 		BILLBOARD_FIX_X

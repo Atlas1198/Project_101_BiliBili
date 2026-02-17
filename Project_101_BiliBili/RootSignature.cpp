@@ -37,7 +37,6 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 	);
 
 	//b1の定数バッファを設定
-	//b1の定数バッファを設定
 	rootParam[2].InitAsConstantBufferView(
 		1							//シェーダーレジスタb1
 	);

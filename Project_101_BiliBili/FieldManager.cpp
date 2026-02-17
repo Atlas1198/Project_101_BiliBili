@@ -1199,7 +1199,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_wallInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
-		PSO_KEY_MASKED,		//ブレンドモード
+		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		L"asset/fbx/wall_capacitor/ST_wall_capacitor.fbx",	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
@@ -1238,7 +1238,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_springInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,				//メッシュタイプ
-		PSO_KEY_MASKED,		//ブレンドモード
+		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		springTexPath,
 		true
 	);

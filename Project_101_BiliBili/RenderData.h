@@ -33,11 +33,30 @@ enum class VS_ID : uint16_t
 enum class PS_ID : uint16_t
 {
 	Basic = 0,
-	BasicLight,
-	BasicMasked,
-	BasicLightMasked,
-
+	BBSceneEffect = 1,
 };
+
+enum class SHADER_DEFINE : uint64_t
+{
+	NONE = 0,
+
+	// ---VS Defines (lower 32 bits)---
+
+	// ---PS Defines (upper 32 bits)---
+	PS_USE_MASK = 1ull << 32,
+	PS_MULTIPLY_ALPHA_CONTROL = 1ull << 33,
+	PS_USE_LIGHTING = 1ull << 34,
+};
+static inline SHADER_DEFINE operator|(SHADER_DEFINE a, SHADER_DEFINE b)
+{
+	return static_cast<SHADER_DEFINE>(static_cast<uint64_t>(a) | static_cast<uint64_t>(b));
+}
+constexpr bool Has(uint64_t m, SHADER_DEFINE f)
+{
+	return (m & static_cast<uint64_t>(f)) != 0;
+}
+constexpr uint64_t VS_DEFINE_MASK = 0x00000000FFFFFFFFull;
+constexpr uint64_t PS_DEFINE_MASK = 0xFFFFFFFF00000000ull;
 
 //ブレンドモード
 enum BLEND_MODE
@@ -68,16 +87,18 @@ enum CULL_MODE
 struct PSOKey
 {
 	VS_ID vsEntry = VS_ID::Basic;			//頂点シェーダーエントリポイント
-	PS_ID psEntry = PS_ID::BasicLight;		//ピクセルシェーダーエントリポイント
+	PS_ID psEntry = PS_ID::Basic;			//ピクセルシェーダーエントリポイント
 	BLEND_MODE  blend = BLEND_OPAQUE;		//ブレンドモード
 	DEPTH_MODE  depth = DEPTH_TEST_WRITE;	//深度ステンシルモード
 	CULL_MODE  cull = CULL_NONE;			//カリングモード
+	uint64_t defines = 0;
 
 	//等価演算子オーバーロード
 	bool operator == (const PSOKey& other) const
 	{
 		return vsEntry == other.vsEntry &&
 			psEntry == other.psEntry &&
+			defines == other.defines &&
 			blend == other.blend &&
 			depth == other.depth &&
 			cull == other.cull;
@@ -87,28 +108,39 @@ struct PSOKey
 		return !(*this == other);
 	}
 
-	PSOKey Lighten() {
-		if (psEntry == PS_ID::Basic) psEntry = PS_ID::BasicLight;
-		else if (psEntry == PS_ID::BasicMasked) psEntry = PS_ID::BasicLightMasked;
-		return *this;
+	PSOKey WithLighting() const {
+		PSOKey k = *this;
+		k.defines |= static_cast<uint64_t>(SHADER_DEFINE::PS_USE_LIGHTING);
+		return k;
+	}
+
+	PSOKey AddDefines(std::initializer_list<SHADER_DEFINE> defines) const {
+		PSOKey k = *this;
+		for (auto d : defines) {
+			k.defines |= static_cast<uint64_t>(d);
+		}
+		return k;
 	}
 };
 
-#define PSO_KEY_OPAQUE PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE }
-#define PSO_KEY_TRANSPARENT PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE }
-#define PSO_KEY_MASKED PSOKey{ VS_ID::Basic, PS_ID::BasicMasked, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE }
-#define PSO_KEY_ADDITIVE PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_ADD_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE }
-#define PSO_KEY_MULTIPLY PSOKey{ VS_ID::Basic, PS_ID::Basic, BLEND_MULTIPLY, DEPTH_TEST_NO_WRITE, CULL_NONE }
+inline constexpr PSOKey PSO_KEY_OPAQUE { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, 0 };
+inline constexpr PSOKey PSO_KEY_TRANSPARENT { VS_ID::Basic, PS_ID::Basic, BLEND_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, 0 };
+inline constexpr PSOKey PSO_KEY_MASKED { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_USE_MASK) };
+inline constexpr PSOKey PSO_KEY_ADDITIVE { VS_ID::Basic, PS_ID::Basic, BLEND_ADD_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, 0 };
+inline constexpr PSOKey PSO_KEY_MULTIPLY { VS_ID::Basic, PS_ID::Basic, BLEND_MULTIPLY, DEPTH_TEST_NO_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL) };
 
 //ハッシュ関数オーバーロード
-struct PSOKeyHash {
-	size_t operator()(const PSOKey& k) const noexcept {
-		auto h = std::hash<VS_ID>{}(k.vsEntry);
+struct PSOKeyHash
+{
+	size_t operator()(const PSOKey& k) const noexcept
+	{
+		size_t h = std::hash<VS_ID>{}(k.vsEntry);
 		auto hc = [&](size_t v) { h ^= v + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2); };
 		hc(std::hash<PS_ID>{}(k.psEntry));
 		hc(std::hash<int>{}(static_cast<int>(k.blend)));
 		hc(std::hash<int>{}(static_cast<int>(k.depth)));
 		hc(std::hash<int>{}(static_cast<int>(k.cull)));
+		hc(std::hash<uint64_t>{}(k.defines));
 		return h;
 	}
 };

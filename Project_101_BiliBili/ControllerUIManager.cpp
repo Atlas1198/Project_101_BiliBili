@@ -125,13 +125,7 @@ void ControllerUIManager::UpdateOverride()
 
 	//次のシーンへ進むアイコンのスケールアニメーション
 	float scaleFactor = 1.0f + 0.05f * std::sin(static_cast<float>(m_passedFrameCount) * 0.04f);
-	m_pGoToNextSceneIcon->SetLocalTransform(
-		{
-			m_pGoToNextSceneIcon->GetLocalTransform().position,
-			{ 878.0f * scaleFactor, 116.0f * scaleFactor, 1.0f },
-			m_pGoToNextSceneIcon->GetLocalTransform().rotation
-		}
-	);
+	m_pGoToNextSceneIcon->SetLocalScale( { 878.0f * scaleFactor, 116.0f * scaleFactor, 1.0f } );
 }
 
 //コントローラーUI管理クラス終了

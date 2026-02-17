@@ -30,6 +30,7 @@ enum EventType
 	SHOW_SELECTED_ICON, // int playerIndex
 	HIDE_SELECTED_ICON, // int playerIndex
 	GO_TO_GAME_SCENE, // void
+	SHOW_LOAD_UI, // void
 
 	//ゲームシーンUI関連イベント
 	UPDATE_HP_UI, // int teamID, float newHP
@@ -44,6 +45,9 @@ enum EventType
 	SET_BULLET_UI_ACTIVE, // int teamID, bool isActive
 	INACTIVATE_PLAYER_POINTER_IMAGES, // void
 	SHOW_ANOUNCE_UI, // EventType eventType
+	ANOUNCE_GOAL, // bool isActive
+	SET_BB_SCENE_EFFECT,
+	SET_PLAYER_POINTER_ACTIVE,
 
 	//ゲーム内イベント(UI表示と併用)
 	EVENT_BULLET_SPEED,		// void

@@ -7,14 +7,13 @@
 class BulletCountUI : public UIBase
 {
 public:
-	//テクスチャファイルパス定数(仮)
-		static constexpr const wchar_t* BULLET_TEXTURE_PATH = L"asset/texture/game_scene/UI_INGAME_Rest.png"; // 弾数テクスチャパス
-public:
 	BulletCountUI(
 		DirectX::XMFLOAT3 position = { 0,0,0 },
 		DirectX::XMFLOAT3 scale = { 1,1,1 },
 		DirectX::XMFLOAT3 rotation = { 0,0,0 },
-		UINT order = 0
+		UINT order = 0,
+		std::wstring bulletPass = L"",
+		std::wstring crossPass = L""
 	);
 	~BulletCountUI() {};
 	void InitializeOverride(
@@ -26,9 +25,13 @@ public:
 	void SetBulletCount(int count) { m_currentBulletCount = count; } // 弾数設定
 private:
 	UIImage* m_pBulletImage = nullptr;	//弾数画像UIポインタ
+	UIImage* m_pCrossImage = nullptr;
 	int m_bulletCountMax = 6;			//最大弾数
 	int m_currentBulletCount = 6;		//現在の弾数
 	int m_frameCount = 0;				//フレームカウント
+
+	std::wstring m_bulletPath = {};
+	std::wstring m_crossPath = {};
 
 private:
 	void PrepareRenderInfoOverride(	//オブジェクトの描画情報生成

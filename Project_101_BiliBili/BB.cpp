@@ -185,13 +185,18 @@ void BB::SetTeamId(int id)
 	{
 		m_electricityBB[i]->SetTeamId(m_teamId);
 
-		m_lineBB[i]->SetColor(
-			XMFLOAT4(
-				0.0f,
-				static_cast<float>(m_teamId),
-				static_cast<float>((m_teamId + 1) % 2),
-				1.0f)
-		);
+		DirectX::XMFLOAT4 color = XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f );
+
+		if(m_teamId == 0)
+		{
+			color = XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ); //青
+		}
+		else if(m_teamId == 1)
+		{
+			color = XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ); //赤
+		}
+
+		m_lineBB[i]->SetColor(color);
 	}
 }
 
@@ -205,6 +210,12 @@ void BB::ActivateBB()
 	{
 		line->SetDrawn(false);		//ラインの描画をオフ
 	}
+	//シーンエフェクトのフラグをオン
+	EventManager::GetInstance()->TriggerEvent<bool>(EventType::SET_BB_SCENE_EFFECT, true);
+	//画面振動
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(
+		EventType::CALL_CAMERA_SHAKE, std::make_pair(30, 10.0f)
+	);
 }
 
 //ビリビリの無効化
@@ -219,6 +230,7 @@ void BB::DisableBB()
 	{
 		line->SetDrawn(true);		//ラインの描画をオン
 	}
+	EventManager::GetInstance()->TriggerEvent<bool>(EventType::SET_BB_SCENE_EFFECT, false);
 }
 
 //電流の操作

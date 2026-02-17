@@ -151,34 +151,6 @@ void LineBB::SetLine(DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end)
 		XMConvertToDegrees(yaw),
 		XMConvertToDegrees(roll)
 	};
-
-	////座標
-	//XMFLOAT3 midPos{};	//中点座標
-	//midPos.x = (start.x + end.x) * 0.5f;
-	//midPos.y = (start.y + end.y) * 0.5f;
-	//midPos.z = (start.z + end.z) * 0.5f;
-	//m_position = midPos;	//位置設定
-
-	////長さ
-	//m_length = sqrtf(
-	//	(start.x - end.x) * (start.x - end.x) +
-	//	(start.y - end.y) * (start.y - end.y) +
-	//	(start.z - end.z) * (start.z - end.z)
-	//);
-	//m_scale.y = m_length;	//スケール設定	
-
-	//XMFLOAT3 startPosLocal{};	//ローカル座標系での開始位置
-	//XMFLOAT3 endPosLocal{};		//ローカル座標系での終了位置
-	//startPosLocal.x = start.x - midPos.x;
-	//startPosLocal.y = start.y - midPos.y;
-	//startPosLocal.z = start.z - midPos.z;
-	//endPosLocal.x = end.x - midPos.x;
-	//endPosLocal.y = end.y - midPos.y;
-	//endPosLocal.z = end.z - midPos.z;
-
-	////Y軸回転
-	//float angleY = atan2f(endPosLocal.x - startPosLocal.x, endPosLocal.z - startPosLocal.z);
-	//m_rotation.y = XMConvertToDegrees(angleY);
 }
 
 //壁と最も近い衝突点の収集

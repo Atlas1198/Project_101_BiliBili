@@ -11,10 +11,21 @@ UIBase::UIBase(
 	UINT order,
 	PSOKey psoKey
 )
-	: m_local{ position, scale, rotation },
+	: 
+	m_localPosition(position),
+	m_localScale(scale),
+	m_localRotation(rotation),
 	m_order(order),
 	m_psoKey(psoKey)
 {
+	m_local.position = position;
+	m_local.scale = scale;
+	XMVECTOR qRotation = XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(rotation.x),
+		XMConvertToRadians(rotation.y),
+		XMConvertToRadians(rotation.z)
+	);
+	XMStoreFloat4(&m_local.rotation, qRotation);
 }
 
 // 初期化
@@ -34,10 +45,13 @@ void UIBase::Initialize(
 void UIBase::Update()
 {
 	UpdateOverride();
+	UpdateTexSplitInfo();
+	UpdateLocalTransform();
 	for (auto& child : m_children)
 	{
 		child->Update();
 	}
+	SortChildrenByOrder();
 }
 
 // 終了
@@ -75,13 +89,23 @@ void UIBase::CollectRenderInfos(std::vector<WorldRenderInfo>& out) const
 	auto worldMatrix = GetMatrixFromTransform3D(m_world);	//ワールド行列を取得
 
 	for (const auto& renderInfo : m_renderInfos) {
-		WorldRenderInfo renderInfoCopy = renderInfo;		//描画情報構造体をコピー
-		renderInfoCopy.world = worldMatrix;						//ワールド行列を設定
-		renderInfoCopy.common.color = m_color;							//色RGBAを設定
-		renderInfoCopy.common.uvRect =
-		{ m_uvRect.u, m_uvRect.v, m_uvRect.su, m_uvRect.sv };	//UV矩形を設定
-		out.push_back(renderInfoCopy);							//配列に追加
+		WorldRenderInfo renderInfoCopy = renderInfo;				//描画情報構造体をコピー
+		renderInfoCopy.world = worldMatrix;							//ワールド行列を設定
+		renderInfoCopy.common.color = m_color;						//色RGBAを設定
+
+		//テクスチャ分割とUV矩形操作を結合
+		auto splitedUV = SplitSprite(m_texSplitInfo);
+		float splitedSu = (1.0f / m_texSplitInfo.cols);
+		float splitedSv = (1.0f / m_texSplitInfo.rows);
+		float su = splitedSu * m_uvRect.su;
+		float sv = splitedSv * m_uvRect.sv;
+		float u0 = splitedUV.x + (splitedSu * m_uvRect.u);
+		float v0 = splitedUV.y + (splitedSv * m_uvRect.v);
+
+		renderInfoCopy.common.uvRect = XMFLOAT4(u0, v0, su, sv);	//UV矩形を設定
+		out.push_back(renderInfoCopy);								//配列に追加
 	}
+
 	//子UIオブジェクトの描画情報構造体配列を収集
 	for (const auto& child : m_children) {
 		child->CollectRenderInfos(out);
@@ -146,6 +170,12 @@ void UIBase::SetActive(bool isActive) {
 	m_isActive = isActive;
 }
 
+//描画順の設定
+void UIBase::SetOrder(int order)
+{
+	m_order = order;
+}
+
 //UV矩形の設定
 void UIBase::SetUVRect(const UVRect& uvRect)
 {
@@ -159,6 +189,53 @@ void UIBase::SetUVRect(const UVRect& uvRect)
 void UIBase::SetTexSplitInfo(const TexSplitInfo& info)
 {
 	m_texSplitInfo = info;
+}
+
+void UIBase::SortChildrenByOrder()
+{
+	std::stable_sort(
+		m_children.begin(),
+		m_children.end(),
+		[](const std::unique_ptr<UIBase>& a, const std::unique_ptr<UIBase>& b) {
+			return a->GetOrder() < b->GetOrder();
+		}
+	);
+
+	for(auto& child : m_children) {
+		child->SortChildrenByOrder();
+	}
+}
+
+void UIBase::UpdateTexSplitInfo()
+{
+	if (m_texSplitInfo.total <= 1 || m_texSplitInfo.updateRate <= 0) return;
+
+	m_texSplitInfo.frameCount++;	//フレームカウントをインクリメント
+
+	//更新頻度に達したらインデックスを更新
+	if (m_texSplitInfo.frameCount >= m_texSplitInfo.updateRate)
+	{
+		m_texSplitInfo.frameCount = 0;	//フレームカウントリセット
+		m_texSplitInfo.index++;			//インデックスをインクリメント
+
+		//インデックスが総数を超えたらリセット
+		if (m_texSplitInfo.index >= m_texSplitInfo.total)
+		{
+			m_texSplitInfo.index = 0;
+		}
+	}
+}
+
+void UIBase::UpdateLocalTransform()
+{
+	m_local.position = m_localPosition;
+	m_local.scale = m_localScale;
+	XMVECTOR qRotation = XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(m_localRotation.x),
+		XMConvertToRadians(m_localRotation.y),
+		XMConvertToRadians(m_localRotation.z)
+	);
+	XMStoreFloat4(&m_local.rotation, qRotation);
 }
 
 // ワールド変換情報更新

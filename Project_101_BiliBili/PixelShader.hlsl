@@ -1,77 +1,115 @@
-//================================================================================================
-//ƒsƒNƒZƒ‹ƒVƒF[ƒ_[
-//’¸“_ƒVƒF[ƒ_[‚©‚ç‘—‚ç‚ê‚Ä‚«‚½À•Wî•ñ‚ğó‚¯æ‚èAƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ö‘‚«‚Ş‚½‚ß‚ÌF‚ğ•Ô‚·B
-//================================================================================================
 #include "BasicShader.hlsli"
-//’è”ƒoƒbƒtƒ@‚O
+//å®šæ•°ãƒãƒƒãƒ•ã‚¡ï¼
 cbuffer PerObject : register(b0)
 {
-    float4x4 world; //ƒ[ƒ‹ƒhs—ñ
-    float4x4 worldInvTranspose; //ƒ[ƒ‹ƒhs—ñ‚Ì‹t“]’us—ñ
-    float4x4 view; //ƒrƒ…[s—ñ
-    float4x4 proj; //ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-    float4 objColor; //‘S‘Ì‚ÌF
-    float4 uvRect; //uv‹éŒ`î•ñ(x:¶, y:ã, z:‰E, w:‰º)
+    float4x4 world; //ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
+    float4x4 worldInvTranspose; //ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®é€†è»¢ç½®è¡Œåˆ—
+    float4x4 view; //ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    float4x4 proj; //ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+    float4 objColor; //å…¨ä½“ã®è‰²
+    float4 uvRect; //uvçŸ©å½¢æƒ…å ±(x:å·¦, y:ä¸Š, z:å³, w:ä¸‹)
     
-    float4 lightDir_Intensity; //ƒ‰ƒCƒg‚Ì•ûŒü(x,y,z)A‹­“x(w)
-    float4 lightColor_Ambient; //ƒ‰ƒCƒg‚ÌF(x,y,z)AŠÂ‹«Œõ‹­“x(w)
+    float4 lightDir_Intensity; //ãƒ©ã‚¤ãƒˆã®æ–¹å‘(x,y,z)ã€å¼·åº¦(w)
+    float4 lightColor_Ambient; //ãƒ©ã‚¤ãƒˆã®è‰²(x,y,z)ã€ç’°å¢ƒå…‰å¼·åº¦(w)
 }
 
-Texture2D gTexture : register(t0); //ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
-SamplerState gSampler : register(s0); //ƒTƒ“ƒvƒ‰[ƒIƒuƒWƒFƒNƒg
+Texture2D gTexture : register(t0); //ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+SamplerState gSampler : register(s0); //ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
 float4 BasicPS(
-    VSOutPut input //’¸“_ƒVƒF[ƒ_[‚©‚ç‘—‚ç‚ê‚Ä‚«‚½ƒf[ƒ^\‘¢‘Ì
-) : SV_TARGET //ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Öo—Í
-{
-    return gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-}
-
-float4 BasicPSMasked(
-    VSOutPut input
-) : SV_TARGET
+    VSOutPut input //é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‹ã‚‰é€ã‚‰ã‚Œã¦ããŸãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
+) : SV_TARGET //ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸å‡ºåŠ›
 {
     float4 base = gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-    clip(base.a - 0.5f);
+    
+#ifdef PS_USE_MASK
+     clip(base.a - 0.1f);
+#endif
+    
+#ifdef PS_MULTIPLY_ALPHA_CONTROL
+    base.rgb *= base.a;
+#endif
+
+#ifdef PS_USE_LIGHTING
+    float3 normal = normalize(input.normal);
+    float3 length = normalize(-lightDir_Intensity.xyz);
+    float dotValue = saturate(dot(normal, length));
+    
+    float intensity = lightDir_Intensity.w;
+    float3 color = lightColor_Ambient.rgb;
+    float ambient = lightColor_Ambient.a;
+    
+    float3 lit = color * (ambient + dotValue * intensity);
+    base = float4(base.rgb * lit, base.a);
+#endif
+    
     return base;
 }
 
-float4 BasicLightPS(
-    VSOutPut input //’¸“_ƒVƒF[ƒ_[‚©‚ç‘—‚ç‚ê‚Ä‚«‚½ƒf[ƒ^\‘¢‘Ì
-) : SV_TARGET //ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Öo—Í
+
+
+float Hash21(float2 p)
 {
-    float4 base = gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-    
-    float3 normal = normalize(input.normal);
-    float3 length = normalize(-lightDir_Intensity.xyz);
-    float dotValue = saturate(dot(normal, length));
-    
-    float intensity = lightDir_Intensity.w;
-    float3 color = lightColor_Ambient.rgb;
-    float ambient = lightColor_Ambient.a;
-    
-    float3 lit = color * (ambient + dotValue * intensity);
-    
-    return float4(base.rgb * lit, base.a);
+    return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453123);
 }
 
-//ƒAƒ‹ƒtƒ@ƒ}ƒXƒN—pƒsƒNƒZƒ‹ƒVƒF[ƒ_[
-float4 BasicLightPSMasked(
-    VSOutPut input
-) : SV_TARGET
+float Noise21(float2 p)
 {
-    float4 base = gTexture.Sample(gSampler, input.uv) * input.color * objColor;
-    clip(base.a - 0.5f);
-    
-    float3 normal = normalize(input.normal);
-    float3 length = normalize(-lightDir_Intensity.xyz);
-    float dotValue = saturate(dot(normal, length));
-    
-    float intensity = lightDir_Intensity.w;
-    float3 color = lightColor_Ambient.rgb;
-    float ambient = lightColor_Ambient.a;
-    
-    float3 lit = color * (ambient + dotValue * intensity);
-    
-    return float4(base.rgb * lit, base.a);
+    float2 i = floor(p);
+    float2 f = frac(p);
+    float a = Hash21(i);
+    float b = Hash21(i + float2(1, 0));
+    float c = Hash21(i + float2(0, 1));
+    float d = Hash21(i + float2(1, 1));
+    float2 u = f * f * (3.0 - 2.0 * f);
+    return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
+}
+
+float Stretch1D_T(float x, float t, float w)
+{
+    float n0 = Noise21(float2(x, t));
+    float n1 = Noise21(float2(x + w, t));
+    float n2 = Noise21(float2(x - w, t));
+    float n3 = Noise21(float2(x + 2.0 * w, t));
+    float n4 = Noise21(float2(x - 2.0 * w, t));
+    return max(n0, max(max(n1, n2), max(n3, n4)));
+}
+
+float4 BBScreenEffectPS(VSOutPut input) : SV_TARGET
+{
+    float2 uv = input.uv;
+    float timeSec = objColor.z;
+
+    // å¸¯ã®ä¸Šä¸‹ç«¯ãƒ•ã‚§ãƒ¼ãƒ‰
+    float y = saturate(uv.y);
+    float feather = objColor.y;
+    float edge = smoothstep(0.0, feather, y) * smoothstep(0.0, feather, 1.0 - y);
+
+    // èµ°æŸ»ç·šå˜ä½ã§ä½ç›¸ã‚’å¤‰ãˆã‚‹ï¼ˆå¸¯å†…ã«å¤§é‡ã«å‡ºã™ï¼‰
+    float scanCount = 90.0;
+    float scan = floor(y * scanCount);
+    float phaseX = Hash21(float2(scan, 1.23)) * 13.0;
+    float phaseT = Hash21(float2(scan, 9.87)) * 7.0;
+
+    // æ¨ªæ–¹å‘ã®â€œä¼¸ã³â€ã‚’ä½œã‚‹ï¼ˆscrollã—ãªã„ï¼šxã¯å›ºå®šï¼‰
+    float density = 50.0; // å¯†åº¦ï¼šä¸Šã’ã‚‹ã¨ç´°ã‹ãã€ä¸‹ã’ã‚‹ã¨ä¼¸ã³ã‚„ã™ã„
+    float morphSpd = 10.0; // å½¢ã®å¤‰åŒ–é€Ÿåº¦ï¼ˆã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã˜ã‚ƒãªãâ€œå¤‰å½¢â€é€Ÿåº¦ï¼‰
+    float x = uv.x * density + phaseX;
+    float t = timeSec * morphSpd + phaseT;
+
+    float base = Stretch1D_T(x * 0.22, t, 0.45); // 0.22â†“ã§é•·ãä¼¸ã³ã‚‹ã€0.45â†‘ã§ä¼¸ã³å¼·
+    float streak = smoothstep(0.55, 0.90, base);
+
+    // ä»•ä¸Šã’ã®ã‚¶ãƒ©ã¤ãï¼ˆç‚¹æ»…ã«æˆ»ã‚‰ãªã„ç¨‹åº¦ï¼‰
+    float detail = Noise21(float2(x * 1.6, t * 2.0));
+    streak *= lerp(0.75, 1.0, detail);
+
+    // å‡ºç¾é‡ã®æºã‚‰ãï¼ˆå…¨ä½“ãŒåŒã˜ã«ãªã‚‰ãªã„ï¼‰
+    float burst = 0.65 + 0.35 * Noise21(float2(timeSec * 1.2, scan * 0.11));
+
+    float intensity = objColor.x;
+    float alpha = objColor.w;
+
+    float a = (0.08 + streak * burst * 0.92) * intensity * edge * alpha;
+    return float4(0, 0, 0, saturate(a));
 }

@@ -27,11 +27,14 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 	if (m_isCalledGoToNextScene)
 	{//次のシーンへ進む処理
 		m_countToNextScene++;
+		if (m_countToNextScene >= 89)
+		{
+			EventManager::GetInstance()->TriggerEvent(EventType::SHOW_LOAD_UI);
+		}
 		if (m_countToNextScene >= 90)
 		{
 			//ゲームシーンへの遷移イベント発行
-			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
-				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_GAME);
+			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_GAME);
 			AudioManager::GetInstance()->StopBGM();
 		}
 	}
@@ -45,8 +48,7 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 			{
 				m_isCalledGoToNextScene = true;
 				m_countToNextScene = 0;
-				EventManager::GetInstance()->TriggerEvent(
-					EventType::GO_TO_GAME_SCENE);
+				EventManager::GetInstance()->TriggerEvent(EventType::GO_TO_GAME_SCENE);
 				AudioManager::GetInstance()->PlaySE("CHARA_NEXT");
 			}
 			else
@@ -87,8 +89,7 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 					m_isCalledGoToNextScene = true;
 					sceneContext.pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30); //バイブレーション
 					m_countToNextScene = 0;
-					EventManager::GetInstance()->TriggerEvent(
-						EventType::GO_TO_GAME_SCENE);
+					EventManager::GetInstance()->TriggerEvent(EventType::GO_TO_GAME_SCENE);
 					AudioManager::GetInstance()->PlaySE("CHARA_NEXT");
 					AudioManager::GetInstance()->StopBGM();
 				}

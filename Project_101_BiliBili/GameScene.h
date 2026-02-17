@@ -18,6 +18,7 @@ class MeshManager;
 
 enum class GameState
 {
+	STATE_BEFORE_COUNTDOWN,
 	STATE_COUNTDOWN,
 	STATE_PLAY,
 	STATE_RESULT
@@ -59,7 +60,7 @@ private:
 	BBManager* m_pBBManager = nullptr;			//BB管理クラス
 	GameEventManager* m_pGameEventManager = nullptr; //イベント管理クラスのポインタ
 
-	GameState m_gameState = GameState::STATE_COUNTDOWN; // ゲームの状態
+	GameState m_gameState = GameState::STATE_BEFORE_COUNTDOWN; // ゲームの状態
 
 	int m_timer = 0; //タイマー
 
@@ -68,8 +69,11 @@ private:
 	int m_character1ID = -1;
 	int m_character2ID = -1;
 
+	bool m_isResultUIShown = false;
+
 private:
-	void CountdownUpdate(); // カウントダウン中の更新処理
-	void PlayUpdate();      // プレイ中の更新処理
-	void ResultUpdate();    // ゲームオーバー時の更新処理
+	void BeforeCountdownUpdate();	 // カウントダウン前の更新処理
+	void CountdownUpdate();			// カウントダウン中の更新処理
+	void PlayUpdate();				// プレイ中の更新処理
+	void ResultUpdate();			// ゲームオーバー時の更新処理
 };

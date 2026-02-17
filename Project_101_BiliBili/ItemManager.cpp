@@ -162,10 +162,9 @@ void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager&
 		meshManager,						//メッシュマネージャへの参照
 		&m_itemInfo,						//描画情報構造体配列へのポインタ
 		MESH_TYPE::QUAD,					//メッシュタイプ
-		psoKey,			//ブレンドモード
+		PSO_KEY_MASKED,						//ブレンドモード
 		itemTexPath,						//テクスチャのファイル名
 		false,								//ライト無効
 		BILLBOARD_TYPE::BILLBOARD_SPHERICAL	//ビルボードタイプ
 	);
-
 }

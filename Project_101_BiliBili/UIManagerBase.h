@@ -8,6 +8,7 @@
 #include "UIImage.h"
 #include "SharedStruct.h"
 #include "RenderData.h"
+#include "Context.h"
 
 // 前方宣言
 class Renderer;
@@ -42,7 +43,8 @@ public:	//公開関数
 	//メイン処理関数
 	void Initialize(										//初期化
 		TextureManager& textureManager,	//テクスチャ管理クラス
-		MeshManager& meshManager		//メッシュ管理クラス
+		MeshManager& meshManager,		//メッシュ管理クラス
+		SceneContext& sceneContext		//シーンコンテキスト構造体
 	);
 	void Update();											//更新
 	void SubmitDraws(Renderer& renderer);					//描画要求をシーンに提出
@@ -84,6 +86,7 @@ protected:
 	FADE_STATE m_fadeState = FADE_STATE::FADE_NONE; //フェード状態
 
 	CameraInfo* m_pCameraInfo = nullptr;		//カメラ情報構造体参照
+	SceneContext* m_pSceneContext = nullptr;	//シーンコンテキスト構造体参照
 
 private:
 	uint64_t m_fadeStartEventID = 0;	//フェード開始イベントID

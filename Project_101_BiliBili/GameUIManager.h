@@ -9,6 +9,8 @@
 #include "CountUI.h"
 #include "ResultUI.h"
 #include "EventAnounceUI.h"
+#include "BBSceneEffectUI.h"
+#include "PlayerPointerUI.h"
 
 //ゲームUI管理クラス
 class GameUIManager : public UIManagerBase
@@ -36,6 +38,8 @@ public:	//公開関数
 		const DirectX::XMFLOAT3& position2		//弾数UI2位置
 	);
 
+	bool IsGoToTitleShown() const { return m_pResultUI->isGoToTitleShown(); } //タイトルへ戻る表示フラグゲッター
+
 private:
 	TeamUI* m_pTeamUI1 = nullptr; //チームUIポインタ
 	TeamUI* m_pTeamUI2 = nullptr; //チームUIポインタ
@@ -43,7 +47,7 @@ private:
 	BulletCountUI* m_pBulletCountUI1[2] = { nullptr }; //弾数UIポインタ
 	BulletCountUI* m_pBulletCountUI2[2] = { nullptr }; //弾数UIポインタ
 
-	UIImage* m_pPlayerPointerImage[4] = { nullptr }; //プレイヤーポインター画像UIポインタ配列
+	PlayerPointerUI* m_pPlayerPointerUI = nullptr; //プレイヤーポインターUIポインタ
 
 	CutInUI* m_pCutInUI1 = nullptr; //カットインUIポインタ
 	CutInUI* m_pCutInUI2 = nullptr; //カットインUIポインタ
@@ -54,7 +58,13 @@ private:
 
 	EventAnounceUI* m_pEventAnounceUI = nullptr; //イベントアナウンスUIポインタ
 
+	UIImage* m_pGoalAnounceImage = nullptr; //ゴールアナウンス画像UIポインタ
+
 	ResultUI* m_pResultUI = nullptr; //リザルトUIポインタ
+
+	BBSceneEffectUI* m_pBBEffect = nullptr;
+
+	bool m_showGoalAounce = false;
 	
 private:
 	void OnHPChanged(int teamID, float newHP);							//HP変更時の処理

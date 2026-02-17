@@ -77,18 +77,11 @@ void TeamUI::InitializeOverride(
 	MeshManager& meshManager
 )
 {
-	m_pHPBarUI->Initialize(textureManager, meshManager);
-	m_pIconUI->Initialize(textureManager, meshManager);
-	m_pAlertImage->Initialize(textureManager, meshManager);
 }
 
 //更新
 void TeamUI::UpdateOverride()
 {
-	m_pHPBarUI->Update();
-	m_pIconUI->Update();
-	m_pAlertImage->Update();
-
 	UpdateHitEffect();
 	ShakeUI();
 }
@@ -96,9 +89,6 @@ void TeamUI::UpdateOverride()
 //終了
 void TeamUI::FinalizeOverride()
 {
-	m_pHPBarUI->Finalize();
-	m_pIconUI->Finalize();
-	m_pAlertImage->Finalize();
 }
 
 //オブジェクトの描画情報生成
@@ -119,6 +109,15 @@ void TeamUI::GetDamage(float health)
 
 	m_hitEffectTimer = 0;
 	m_isHitEffect = true;
+}
+
+//チームキャラクター設定関数
+void TeamUI::SetTeamCharacter(int p1, int p2)
+{
+	if (m_pIconUI)
+	{
+		m_pIconUI->SetTeamCharacter(p1, p2);
+	}
 }
 
 //被弾エフェクト更新関数
@@ -148,7 +147,7 @@ void TeamUI::ShakeUI()
 		float shakeAmount = 14.0f;	//シェイクの強さ
 		position.x = m_originalPosition.x + (rand() % (int)(shakeAmount * 2)) - shakeAmount;
 		position.y = m_originalPosition.y + (rand() % (int)(shakeAmount * 2)) - shakeAmount;
-		m_local.position = position;
+		m_localPosition = position;
 	}
 	else
 	{
