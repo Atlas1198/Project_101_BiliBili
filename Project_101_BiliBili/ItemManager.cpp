@@ -152,6 +152,10 @@ void ItemManager::FinalizeOverride()
 //オブジェクトの描画情報生成
 void ItemManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager& meshManager)
 {
+	PSOKey psoKey = PSO_KEY_MASKED;
+	psoKey.psEntry = PS_ID::BasicMasked;
+	psoKey.blend = BLEND_ALPHA;
+
 	//描画情報生成関数を呼び出し、描画情報を作成
 	CreateRenderInfo(
 		textureManager,						//テクスチャマネージャへの参照

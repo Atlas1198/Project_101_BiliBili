@@ -33,6 +33,10 @@ public:
     inline static float BULLET_BONUS_SPEED_MUL = 2.0f;
 	inline static float BONUS_RECOVERY_MODIFIER = 1.5f;
 	inline static float EVENT_RECOVERY_MODIFIER = 2.0f;
+    inline static float DEFAULT_INCREASE_DELAY = 60.0f;
+
+	float defaultSpeedModifier = 1.0f;
+	float defaultRecoveryModifier = 1.0f;
 
 	static constexpr int MAX_BULLETS_PER_TEAM = 6;
 
@@ -60,6 +64,7 @@ private:
     std::vector<WorldRenderInfo> m_bulletInfoBlue;
 	GameUIManager *m_pGameUIManager = nullptr;
     FrameTimer m_bulletRestoreTimer;
+    FrameTimer m_bonusTimer;
     FrameTimer m_totalTimer;
 	float m_bulletRestoreElapsed;
 	float m_currentRestoreModifier = 1.0f;

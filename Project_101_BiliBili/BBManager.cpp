@@ -37,6 +37,8 @@ void BBManager::InitializeOverride(
 	{
 		m_BB[i]->Initialize();
 		m_BB[i]->SetTeamId(i);
+
+		m_isBBEnhanced[i] = false;
 	}
 
 	for(int i = 0; i < BB_NUM; i++)
@@ -93,7 +95,17 @@ void BBManager::InitializeOverride(
 		}
 	);
 
-	m_isBBEnhanced = false;
+	EventManager::GetInstance()->Subscribe<int>(
+		EventType::ENHANCE_BB,
+		[this](std::shared_ptr<int> teamID)
+		{
+			if (*teamID < 0 || *teamID >= BB_NUM)
+			{
+				return;
+			}
+			m_isBBEnhanced[*teamID] = true;
+		}
+	);
 }
 
 void BBManager::OnItemPickup(int teamID)
@@ -131,11 +143,11 @@ void BBManager::UpdateOverride()
 	}
 	m_activationCalledBBIndex.clear();
 
-	if(timerStarted && !m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
+	/*if(timerStarted && !m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
 	{
 		m_isBBEnhanced = true;
 		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, EVENT_BB_ENHANCE);
-	}
+	}*/
 
 	//BB時間管理
 	for(int i = 0; i < BB_NUM; i++)
