@@ -26,7 +26,7 @@ public:
 	const wchar_t* areaBBRedTexPath = L"asset/texture/effect/circle_R_EF.png";
 	const wchar_t* areaBBBlueTexPath = L"asset/texture/effect/circle_B_EF.png";
 
-	inline static float BB_DURATION = 15.0f;
+	inline static float BB_DURATION = 100.0f;
 	static constexpr float BB_ENHANCE_TIME = 120.0f;
 
 public:

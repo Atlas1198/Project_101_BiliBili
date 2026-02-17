@@ -78,29 +78,13 @@ void GameUIManager::InitializeOverride(
 		}
 	}
 
-	{
-		//プレイヤーポインター画像テクスチャパス配列
-		std::wstring playerPointerTexturePaths[4] =
-		{
-			L"asset/texture/game_scene/UI_INGAME_1p.png",
-			L"asset/texture/game_scene/UI_INGAME_2p.png",
-			L"asset/texture/game_scene/UI_INGAME_3p.png",
-			L"asset/texture/game_scene/UI_INGAME_4p.png"
-		};
-
-		DirectX::XMFLOAT3 scale = { 76.0f, 79.0f, 1.0f };
-
-		for(int i = 0 ; i < 4; ++i)
-		{
-			m_pPlayerPointerImage[i] = (new UIImage(
-				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//位置
-				scale,												//スケール
-				DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
-				0,													//描画順序
-				playerPointerTexturePaths[i],						//テクスチャパス
-				PSO_KEY_MASKED							//ブレンドモード
-			));
-		}
+	{//プレイヤーポインターUIの初期化
+		m_pPlayerPointerUI = (new PlayerPointerUI(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
+			DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
+			-1										//描画順序
+		));
 	}
 
 	//カットインUIの初期化
@@ -191,10 +175,7 @@ void GameUIManager::InitializeOverride(
 	{
 		m_roots.push_back(std::unique_ptr<UIBase>(bulletUI));			//ルートUIオブジェクト配列に追加
 	}
-	for (auto& pointerImage : m_pPlayerPointerImage)
-	{
-		m_roots.push_back(std::unique_ptr<UIBase>(pointerImage));		//ルートUIオブジェクト配列に追加
-	}
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pPlayerPointerUI));		//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI1));			//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCutInUI2));			//ルートUIオブジェクト配列に追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pOperationGuideImage));	//ルートUIオブジェクト配列に追加
@@ -306,7 +287,7 @@ void GameUIManager::InitializeOverride(
 		EventType::INACTIVATE_PLAYER_POINTER_IMAGES,
 		[this](std::shared_ptr<void> data)
 		{
-			InactivatePlayerPointerImages();
+			m_pPlayerPointerUI->SetActive(false);
 		}
 	);
 
@@ -333,6 +314,15 @@ void GameUIManager::InitializeOverride(
 		[this](std::shared_ptr<boolArgs> data)
 		{
 			m_pBBEffect->SetActive(*data);
+		}
+	);
+
+	using pointerInt = int;
+	EventManager::GetInstance()->Subscribe<pointerInt>(
+		EventType::SET_PLAYER_POINTER_ACTIVE,
+		[this](std::shared_ptr<pointerInt> data)
+		{
+			m_pPlayerPointerUI->SetPlayerActive(*data, true);
 		}
 	);
 
@@ -388,15 +378,15 @@ void GameUIManager::SetPlayerChasingUIPosition(int teamID, const DirectX::XMFLOA
 	{
 		m_pBulletCountUI1[0]->SetLocalPosition(adjustedPosition1);
 		m_pBulletCountUI1[1]->SetLocalPosition(adjustedPosition2);
-		m_pPlayerPointerImage[0]->SetLocalPosition(adjustedPosition1);
-		m_pPlayerPointerImage[1]->SetLocalPosition(adjustedPosition2);
+		m_pPlayerPointerUI->SetPlayerPosition(0, adjustedPosition1);
+		m_pPlayerPointerUI->SetPlayerPosition(1, adjustedPosition2);
 	}
 	else if (teamID == 1)
 	{
 		m_pBulletCountUI2[0]->SetLocalPosition(adjustedPosition1);
 		m_pBulletCountUI2[1]->SetLocalPosition(adjustedPosition2);
-		m_pPlayerPointerImage[2]->SetLocalPosition(adjustedPosition1);
-		m_pPlayerPointerImage[3]->SetLocalPosition(adjustedPosition2);
+		m_pPlayerPointerUI->SetPlayerPosition(2, adjustedPosition1);
+		m_pPlayerPointerUI->SetPlayerPosition(3, adjustedPosition2);
 	}
 }
 
@@ -492,14 +482,5 @@ void GameUIManager::SetBulletCountActive(int teamID, bool isActive)
 		{
 			bulletUI->SetActive(isActive);
 		}
-	}
-}
-
-//プレイヤーポインター画像非アクティブ化関数
-void GameUIManager::InactivatePlayerPointerImages()
-{
-	for (auto& pointerImage : m_pPlayerPointerImage)
-	{
-		pointerImage->SetActive(false);
 	}
 }

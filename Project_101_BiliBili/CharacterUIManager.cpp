@@ -121,6 +121,17 @@ void CharacterUIManager::InitializeOverride(
 	//ルートUIオブジェクトに追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCharacterIconBase));
 
+	m_pCharacterName = new UIImage(
+		{ -75.0f, -400.0f, 0.0f },	//位置
+		{ 1673.0f, 87.0f, 1.0f },//スケール
+		{ 0.0f, 0.0f, 0.0f },	//回転
+		3,						//描画順序
+		L"asset/texture/character_scene/UI_CHARACTER_Select_name.png",
+		PSO_KEY_TRANSPARENT
+	);
+	//ルートUIオブジェクトに追加
+	m_roots.push_back(std::unique_ptr<UIBase>(m_pCharacterName));
+
 	//プレイヤーブラーUIオブジェクト配列生成
 	{
 		std::wstring playerBlurTexturePaths[4] =
