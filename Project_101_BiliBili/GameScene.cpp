@@ -386,7 +386,7 @@ void GameScene::PlayUpdate()
 	m_pBBManager->SetPlayerData(m_pPlayerManager->GetPlayers());	//プレイヤー位置の設定
 	m_pBBManager->Update();		//BB管理クラス更新
 
-	if (m_pSceneContext->pInputInfo->key.enter.trigger)
+	if (m_pSceneContext->pInputInfo->key.enter.down)
 	{
 		if (m_pCamera->GetCameraInfo().position.y == 0.0f)
 		{
@@ -394,8 +394,14 @@ void GameScene::PlayUpdate()
 		}
 		else
 		{
-			m_pCamera->SetPosition({ 0.0f, 35.0f, -15.0f });
+			m_pCamera->SetPosition({ 0.0f, 80.0f, 5.0f });
+			m_pCamera->SetTarget({ 0.0f, 00.0f, 6.0f });
 		}
+	}
+	else
+	{
+		m_pCamera->SetPosition({ 0.0f, 70.0f, -50.0f });
+		m_pCamera->SetTarget({ 0.0f, 00.0f, 3.5f });
 	}
 
 	//勝利条件の判定
