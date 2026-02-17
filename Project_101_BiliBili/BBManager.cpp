@@ -106,6 +106,7 @@ void BBManager::OnItemPickup(int teamID)
 	{
 		SetBB(teamID, true);
 
+
 		if (m_isBBEnhanced)
 		{
 			m_BBAreas[teamID * 2]->SetActive(true);
@@ -113,7 +114,7 @@ void BBManager::OnItemPickup(int teamID)
 		}
 
 	}
-	m_BBTimer[teamID] = BB_DURATION;
+	m_BBTimer[teamID] = 10.0f;
 	m_frameTimer[teamID].Mark();
 }
 
