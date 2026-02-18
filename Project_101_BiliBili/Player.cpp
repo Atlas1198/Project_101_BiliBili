@@ -259,7 +259,7 @@ void Player::ResolveCollisionsOverride()
 					// m_ignoreCollisionFrame = 5;
 
 					spring->SetIsBlowing(true);
-					m_pSceneContext->pInputInfo->controller[controllerID].SetVibration(1.0f, 1.0f, 10);
+					m_pSceneContext->pInputInfo->controller[id].SetVibration(1.0f, 1.0f, 10);
 				}
 			}
 			AudioManager::GetInstance()->PlaySE("BANE_JUMP");

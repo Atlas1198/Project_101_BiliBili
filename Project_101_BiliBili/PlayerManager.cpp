@@ -38,12 +38,13 @@ void PlayerManager::InitializeOverride(
 	CollisionManager& collisionManager	//衝突管理クラスの参照
 )
 {
-	for (auto it = m_pPlayer.begin(); it != m_pPlayer.end(); it++)
+	for (int i = 0; i < m_pPlayer.size(); i++)
 	{
-		(*it)->Reset();
-		(*it)->Update();
-		(*it)->GetColliderSet()->RegisterColliders(collisionManager);
-		(*it)->SetSceneContext(m_pSceneContext);
+		m_pPlayer[i]->Reset();
+		m_pPlayer[i]->Update();
+		m_pPlayer[i]->GetColliderSet()->RegisterColliders(collisionManager);
+		m_pPlayer[i]->SetSceneContext(m_pSceneContext);
+		m_pPlayer[i]->SetCharacterID(m_pSceneContext->playersInfo[i].characterID);
 	}
 
 	m_subscribedEvents.push_back(
@@ -87,33 +88,6 @@ void PlayerManager::InitializeOverride(
 	for (int i = 0; i < 4; i++)
 	{
 		m_pPlayer[i]->SetPosition(spawnPoses[i]);
-	}
-
-	//キャラクターごとの色設定(テスト用)
-	for (int i = 0; i < 4; i++)
-	{
-		XMFLOAT4 color = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-		switch (m_pSceneContext->playersInfo[i].characterID)
-		{
-		case 0:
-			color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f); // 赤
-			break;
-		case 1:
-			color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f); // 青
-			break;
-		case 2:
-			color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f); // 黄
-			break;
-		case 3:
-			color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f); // 緑
-			break;
-		default:
-			break;
-		}
-
-		m_pPlayer[i]->SetCharacterID(m_pSceneContext->playersInfo[i].characterID);
-		m_pPlayer[i]->SetControllerID(m_pSceneContext->playersInfo[i].controllerID);
 	}
 }
 
@@ -303,11 +277,14 @@ void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 			*m_pPlayerShadow[i],		//ゲームオブジェクト配列の参照
 			m_shadowInfo
 		);
+
+		int characterID = m_pPlayer[i]->GetCharacterID();
+
 		//描画要求をシーンに提出
 		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
 			*m_pPlayer[i],		//ゲームオブジェクト配列の参照
-			teamBBActive[m_pPlayer[i]->GetTeamID()] ? m_playerTransformInfo[i] : m_playerInfo[i]	//プレイヤー描画情報
+			teamBBActive[m_pPlayer[i]->GetTeamID()] ? m_playerTransformInfo[characterID] : m_playerInfo[characterID]	//プレイヤー描画情報
 		);
 	}
 }
@@ -320,17 +297,17 @@ void PlayerManager::PrepareRenderInfo(
 {
 
 	wchar_t normalTextures[4][39] = {
-		L"asset/texture/player/BLUE_off_CH.png",
-		L"asset/texture/player/SKY_off_CH.png",
-		L"asset/texture/player/ORANGE_off_CH.png",
-		L"asset/texture/player/YELLOW_off_CH.png",
+		L"asset/texture/player/LUMINA_off_CH.png",
+		L"asset/texture/player/U-Ti_off_CH.png",
+		L"asset/texture/player/VOLT_off_CH.png",
+		L"asset/texture/player/NEON_off_CH.png",
 	};
 
 	wchar_t bbTextures[4][38] = {
-		L"asset/texture/player/BLUE_on_CH.png",
-		L"asset/texture/player/SKY_on_CH.png",
-		L"asset/texture/player/ORANGE_on_CH.png",
-		L"asset/texture/player/YELLOW_on_CH.png"
+		L"asset/texture/player/LUMINA_on_CH.png",
+		L"asset/texture/player/U-Ti_on_CH.png",
+		L"asset/texture/player/VOLT_on_CH.png",
+		L"asset/texture/player/NEON_on_CH.png"
 	};
 
 	wchar_t shadowTexture[] = L"asset/texture/player/shadow_CH.png";

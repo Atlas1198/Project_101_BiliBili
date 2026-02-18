@@ -111,6 +111,8 @@ void GameScene::InitializeOverride(
 		*m_pCollisionManager
 	);
 
+	m_resultBehavior = new ResultBehavior(this); //リザルトビヘイビアの生成
+
 	m_pBulletManager->SetGameUIManager(m_pGameUIManager);
 
 	m_pBBManager->SetGameUIManager(m_pGameUIManager);
@@ -415,7 +417,9 @@ void PlayBehavior::Update()
 		m_pGameScene->ChangeBehavior(GAME_STATE::STATE_RESULT); // リザルト状態に遷移
 		m_pGameScene->m_timer = 0;
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
-		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT");
+		AudioManager::GetInstance()->StopAll();
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH");
+		//AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT");
 		AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 	}
 
@@ -440,13 +444,11 @@ void ResultBehavior::Update()
 void ResultBehavior::HandleFirstWait()
 {
 	const int WAIT_DURATION = 180; // リザルトUI表示までの待機フレーム数（3秒間）
-	const int RESULT_BGM_STRAT = 360;	//リザルトBGM再生までの待機フレーム(6秒間)
+	const int RESULT_BGM_STRAT = 400;	//リザルトBGM再生までの待機フレーム(6秒間)
 
 	//リザルトUI表示前の待機時間中はフィールドとBBを更新し続ける
 	if (m_pGameScene->m_timer == 0)
 	{
-		AudioManager::GetInstance()->StopAll();
-		AudioManager::GetInstance()->PlaySE("GAME_FINISH");
 	}
 
 	if (m_pGameScene->m_timer == WAIT_DURATION)
