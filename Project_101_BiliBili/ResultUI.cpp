@@ -256,9 +256,6 @@ void ResultUI::FinalizeOverride()
 
 void ResultUI::ShowResult(int winner, int character1ID, int character2ID)
 {
-	character1ID = CHARACTER_VOLT; //デバッグ用
-	character2ID = CHARACTER_UT;  //デバッグ用
-
 	//無効な勝利チームIDまたはキャラクターIDの場合は処理を中断
 	if (character1ID < 0 || character1ID >= MAX_CHARACTER_NUM
 	 || character2ID < 0 || character2ID >= MAX_CHARACTER_NUM)
