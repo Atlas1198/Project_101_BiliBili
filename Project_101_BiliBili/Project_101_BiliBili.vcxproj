@@ -204,6 +204,7 @@
     <ClInclude Include="LoadUI.h" />
     <ClInclude Include="NoCollisionModel.h" />
     <ClInclude Include="PlayerPointerUI.h" />
+    <ClInclude Include="PlayerShadow.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SelectionScene.h" />
@@ -309,6 +310,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="PlayerPointerUI.cpp" />
+    <ClCompile Include="PlayerShadow.cpp" />
     <ClCompile Include="RenderData.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResultUI.cpp" />
