@@ -155,6 +155,7 @@
     <ClInclude Include="BB.h" />
     <ClInclude Include="BBManager.h" />
     <ClInclude Include="BBSceneEffectUI.h" />
+    <ClInclude Include="Behavior.h" />
     <ClInclude Include="BilibiliArea.h" />
     <ClInclude Include="BulletCountUI.h" />
     <ClInclude Include="Bullet.h" />

@@ -119,7 +119,11 @@ void ObjectManagerBase::SubmitRenderInfo(
 		//‹¤’Ê—v‘f‚Ìİ’è
 		for (int i = 0; i < submitInfos.size(); i++)
 		{
-			submitInfos[i].position = object.GetPosition();
+			submitInfos[i].position = XMFLOAT3(
+				object.GetPosition().x + object.GetDrawOffset().x,
+				object.GetPosition().y + object.GetDrawOffset().y,
+				object.GetPosition().z + object.GetDrawOffset().z
+			);
 			submitInfos[i].scale = object.GetScale();
 			submitInfos[i].common.psoKey = info[i].common.psoKey;
 			submitInfos[i].common.uvRect = SplitSprite(object.GetTexSplitInfo());

@@ -38,7 +38,10 @@ public:	//公開関数
 		const DirectX::XMFLOAT3& position2		//弾数UI2位置
 	);
 
-	bool IsGoToTitleShown() const { return m_pResultUI->isGoToTitleShown(); } //タイトルへ戻る表示フラグゲッター
+	bool IsGoToTitleShown() const { return m_pResultUI->isGoToTitleShown(); }	//タイトルへ戻る表示フラグゲッター
+	void SetGoToTitleTimerProgress(float duration);								//タイトルへ戻る表示タイマースタート関数
+	void DropThankyouForPlaying() { m_pResultUI->DropThankyouForPlaying(); }	// "Thank you for playing"表示関数
+	void ShakeGoToTitleButton() { m_pResultUI->ShakeGoToTitleButton(); }			//タイトルへ戻るボタンを揺らす関数
 
 private:
 	TeamUI* m_pTeamUI1 = nullptr; //チームUIポインタ
@@ -76,5 +79,4 @@ private:
 	void HideCountUI();													//カウントUI非表示関数
 	void ShowResultUI(int winner, int character1ID, int character2ID);	//リザルトUI表示関数
 	void SetBulletCountActive(int teamID, bool isActive);				//弾数UIアクティブ設定関数
-	void InactivatePlayerPointerImages();								//プレイヤーポインター画像非アクティブ化関数
 };

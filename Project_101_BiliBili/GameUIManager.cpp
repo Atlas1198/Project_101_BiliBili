@@ -484,3 +484,9 @@ void GameUIManager::SetBulletCountActive(int teamID, bool isActive)
 		}
 	}
 }
+
+//タイトルへ戻る表示タイマーセット関数
+void GameUIManager::SetGoToTitleTimerProgress(float duration)
+{
+	m_pResultUI->SetGoToTitleTimer(duration);
+}
