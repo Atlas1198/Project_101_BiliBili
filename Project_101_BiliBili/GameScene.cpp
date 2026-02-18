@@ -405,8 +405,8 @@ void PlayBehavior::Update()
 	}
 	else
 	{
-		m_pCamera->SetPosition({ 0.0f, 70.0f, -50.0f });
-		m_pCamera->SetTarget({ 0.0f, 00.0f, 3.5f });
+		m_pGameScene->m_pCamera->SetPosition({ 0.0f, 70.0f, -50.0f });
+		m_pGameScene->m_pCamera->SetTarget({ 0.0f, 00.0f, 3.5f });
 	}
 
 	//勝利条件の判定
@@ -465,8 +465,8 @@ void ResultBehavior::HandleFirstWait()
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
     AudioManager::GetInstance()->PlaySE("RESULT");
 	}
-	else if (m_timer == RESULT_BGM_STRAT)
-  {
+	else if (m_pGameScene->m_timer == RESULT_BGM_STRAT)
+	{
 		AudioManager::GetInstance()->StopAll();
 		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");
 		m_subState = SUB_STATE::SHOW_RESULT;
