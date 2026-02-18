@@ -126,7 +126,14 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		L"asset/texture/result_scene/UI_RESULT_Title.png",	//テクスチャパス
 		PSO_KEY_TRANSPARENT						//ブレンドモード
 	);
-	m_pGoToTitleImage->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+	m_pGoToTitleImageWrap = AddChild<UIImage>(
+		DirectX::XMFLOAT3{ 700.0f, 400.0f, 0.0f },			//位置
+		DirectX::XMFLOAT3{ 424.0f, 55.0f, 1.0f },			//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },				//回転
+		6,													//描画順序
+		L"asset/texture/result_scene/UI_RESULT_Title_ON.png",	//テクスチャパス
+		PSO_KEY_TRANSPARENT						//ブレンドモード
+	);
 
 	for(int i = 0; i < 100; ++i)
 	{
@@ -142,6 +149,15 @@ ResultUI::ResultUI(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 scale, DirectX:
 		m_pConfettiImage[i]->SetActive(false); // 初期状態では非表示にする
 		m_pConfettiImage[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f });
 	}
+
+	m_pThankyouForPlaying = AddChild<UIImage>(
+		DirectX::XMFLOAT3{ 0.0f, 1080.0f, 0.0f },					//位置
+		DirectX::XMFLOAT3{ 1920.0f, 1080.0f, 1.0f },			//スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },					//回転
+		101,													//描画順序
+		L"asset/texture/result_scene/UI_RESULT_Shutter.png",	//テクスチャパス
+		PSO_KEY_TRANSPARENT										//ブレンドモード
+	);
 
 	//全ての子UIを非アクティブに設定
 	for(auto& child : m_children)
@@ -175,6 +191,7 @@ void ResultUI::UpdateOverride()
 			m_pTeamTextImage[m_winner]->SetActive(true);
 			m_pItemImage->SetActive(true);
 			m_pGoToTitleImage->SetActive(true);
+			m_pGoToTitleImageWrap->SetActive(true);
 			m_confettiActive = true; 
 			m_confettiTimer = 0;
 		}
@@ -186,6 +203,46 @@ void ResultUI::UpdateOverride()
 			m_pGoToTitleImage->SetColor(color);
 			m_isGoToTitleShown = true;
 		}
+	}
+
+	//タイトルへ戻るボタンのUVとスケール、位置を更新
+	auto uvRect =  m_pGoToTitleImageWrap->GetUVRect();
+	uvRect.sv = m_goToTitlePressAmount;
+	uvRect.v = 1.0f - m_goToTitlePressAmount;
+	m_pGoToTitleImageWrap->SetUVRect(uvRect);
+	auto scale = m_pGoToTitleImageWrap->GetLocalScale();
+	scale.y = 55.0f * m_goToTitlePressAmount;
+	m_pGoToTitleImageWrap->SetLocalScale(scale);
+	auto position = m_pGoToTitleImageWrap->GetLocalPosition();
+	position.y = (55.0f / 2.0f) * m_goToTitlePressAmount + (400.0f - 27.5f);
+	m_pGoToTitleImageWrap->SetLocalPosition(position);
+
+	if(m_shakeGoToTitleButton)
+	{
+		const float shakeAmount = 5.0f; //揺れの強さ
+		XMFLOAT3 offset{};
+		offset.x = m_pRandom->GetFloat(-shakeAmount, shakeAmount);
+		offset.y = m_pRandom->GetFloat(-shakeAmount, shakeAmount);
+		m_pGoToTitleImage->SetDrawOffset(offset);
+		m_pGoToTitleImageWrap->SetDrawOffset(offset);
+	}
+	else
+	{
+		m_pGoToTitleImage->SetDrawOffset({ 0.0f, 0.0f, 0.0f });
+		m_pGoToTitleImageWrap->SetDrawOffset({ 0.0f, 0.0f, 0.0f });
+	}
+	m_shakeGoToTitleButton = false; //揺らすフラグリセット
+
+	if(m_pThankyouForPlaying->IsActive())
+	{
+		const int SCROLL_DURATION = 10;	//スクロールにかかるフレーム数
+		float t = m_ThankYouForPlayingFallTimer / static_cast<float>(SCROLL_DURATION);
+		t = std::clamp(t, 0.0f, 1.0f);
+		auto position = m_pThankyouForPlaying->GetLocalPosition();
+		position.y = Lerpf(1080.0f, 0.0f, t);	//Y位置を線形補間で更新
+		m_pThankyouForPlaying->SetLocalPosition(position);
+
+		m_ThankYouForPlayingFallTimer++;
 	}
 
 	//紙吹雪更新
@@ -271,6 +328,13 @@ void ResultUI::ShowResult(int winner, int character1ID, int character2ID)
 
 	m_isResultShown = true; //リザルト表示フラグON
 	m_mainTimer = 0; //メインタイマーリセット
+
+	m_pThankyouForPlaying->SetActive(false); // "Thank you for playing"を非表示にする
+}
+
+void ResultUI::ShakeGoToTitleButton()
+{
+	m_shakeGoToTitleButton = true;
 }
 
 //オブジェクトの描画情報生成

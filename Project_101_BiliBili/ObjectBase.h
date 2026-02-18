@@ -54,6 +54,8 @@ public:	//公開関数
 	const DirectX::XMFLOAT3 GetRotation() const;	//回転の取得
 	const DirectX::XMFLOAT3 GetScale() const;		//スケールの取得
 	const DirectX::XMFLOAT4 GetColor() const;		//色RGBAの取得
+	const DirectX::XMFLOAT3 GetVelocity() const;	//移動速度の取得
+	const DirectX::XMFLOAT3 GetDrawOffset() const;	//描画オフセットの取得
 	const bool IsActive() const;					//アクティブかどうかを取得
 	const bool IsDrawn() const;						//描画フラグの取得
 	ColliderSet* GetColliderSet() const;			//コライダーの取得
@@ -67,6 +69,8 @@ public:	//公開関数
 	void SetRotation(DirectX::XMFLOAT3 rotation);		//回転の設定
 	void SetScale(DirectX::XMFLOAT3 scale);				//スケールの設定
 	void SetColor(DirectX::XMFLOAT4 color);				//色RGBAの設定
+	void SetVelocity(DirectX::XMFLOAT3 velocity);		//移動速度の設定
+	void SetDrawOffset(DirectX::XMFLOAT3 drawOffset);	//描画オフセットの設定
 	void SetActive(bool isActive);						//アクティブフラグの設定
 	void SetDrawn(bool isDrawn);						//描画フラグの設定
 	void SetTexSplitInfo(TexSplitInfo info);			//テクスチャ分割情報構造体の設定
@@ -79,6 +83,7 @@ protected:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_scale{ 1.0f,1.0f,1.0f };		//スケール
 	DirectX::XMFLOAT4 m_color{ 1.0f,1.0f,1.0f,1.0f };	//色RGBA
 	DirectX::XMFLOAT3 m_velocity{ 0.0f, 0.0f, 0.0f };	//移動速度
+	DirectX::XMFLOAT3 m_drawOffset{ 0.0f, 0.0f, 0.0f };	//描画オフセット
 	bool m_isActive = false;		//アクティブフラグ
 
 	MESH_TYPE m_meshType = MESH_TYPE::QUAD;	//メッシュタイプ

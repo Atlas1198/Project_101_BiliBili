@@ -95,7 +95,11 @@ void ObjectBase::ClearCollisionInfos()
 //ワールド行列の取得
 const DirectX::XMMATRIX ObjectBase::GetWorldMatrix() const
 {
-	XMMATRIX T = XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
+	XMMATRIX T = XMMatrixTranslation(
+		m_position.x + m_drawOffset.x, 
+		m_position.y + m_drawOffset.y,
+		m_position.z + m_drawOffset.z
+	);
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(
 		XMConvertToRadians(m_rotation.x),
 		XMConvertToRadians(m_rotation.y),
@@ -126,6 +130,18 @@ const DirectX::XMFLOAT3 ObjectBase::GetScale() const
 const DirectX::XMFLOAT4 ObjectBase::GetColor() const
 {
 	return m_color;
+}
+
+//移動速度の取得
+const DirectX::XMFLOAT3 ObjectBase::GetVelocity() const
+{
+	return m_velocity;
+}
+
+//描画オフセットの取得
+const DirectX::XMFLOAT3 ObjectBase::GetDrawOffset() const
+{
+	return m_drawOffset;
 }
 
 //アクティブかどうかを取得
@@ -162,6 +178,18 @@ void ObjectBase::SetScale(DirectX::XMFLOAT3 scale)
 void ObjectBase::SetColor(DirectX::XMFLOAT4 color)
 {
 	m_color = color;
+}
+
+//移動速度の設定
+void ObjectBase::SetVelocity(DirectX::XMFLOAT3 velocity)
+{
+	m_velocity = velocity;
+}
+
+//描画オフセットの設定
+void ObjectBase::SetDrawOffset(DirectX::XMFLOAT3 drawOffset)
+{
+	m_drawOffset = drawOffset;
 }
 
 //アクティブフラグの設定

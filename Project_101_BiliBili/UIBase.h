@@ -38,33 +38,35 @@ public:	//公開関数
 	void CollectRenderInfos(std::vector<WorldRenderInfo>& out) const;	//描画情報構造体配列収集
 
 	//ゲッター
-	const Transform3D& GetWorldTransform() const;	//ワールド変換情報の取得
-	const Transform3D& GetLocalTransform() const;	//ローカル変換情報の取得
-	const DirectX::XMFLOAT4 GetColor() const;		//色RGBAの取得
-	const bool IsActive() const;					//アクティブかどうかを取得
-	int GetOrder() const;							//描画順の取得
-	UVRect GetUVRect() const;						//UV矩形の取得
-	TexSplitInfo& GetTexSplitInfo();				//テクスチャ分割情報構造体の取得
+	const Transform3D& GetWorldTransform() const;							//ワールド変換情報の取得
+	const Transform3D& GetLocalTransform() const;							//ローカル変換情報の取得
+	const DirectX::XMFLOAT4 GetColor() const;								//色RGBAの取得
+	const bool IsActive() const;											//アクティブかどうかを取得
+	int GetOrder() const;													//描画順の取得
+	UVRect GetUVRect() const;												//UV矩形の取得
+	TexSplitInfo& GetTexSplitInfo();										//テクスチャ分割情報構造体の取得
 	DirectX::XMFLOAT3 GetWorldPosition() const { return m_worldPosition; }	//ワールド位置の取得
 	DirectX::XMFLOAT3 GetWorldScale() const { return m_worldScale; }		//ワールドスケールの取得
 	DirectX::XMFLOAT3 GetWorldRotation() const { return m_worldRotation; }	//ワールド回転の取得
 	DirectX::XMFLOAT3 GetLocalPosition() const { return m_localPosition; }	//ローカル位置の取得
 	DirectX::XMFLOAT3 GetLocalScale() const { return m_localScale; }		//ローカルスケールの取得
 	DirectX::XMFLOAT3 GetLocalRotation() const { return m_localRotation; }	//ローカル回転の取得
+	DirectX::XMFLOAT3 GetDrawOffset() const { return m_drawOffset; }		//描画オフセットの取得
 
 	//セッター
-	void SetLocalTransform(const Transform3D& local); //ローカル変換情報の設定
-	void SetColor(DirectX::XMFLOAT4 color);	//色RGBAの設定
-	void SetActive(bool isActive);			//アクティブフラグの設定
-	void SetOrder(int order);				//描画順の設定
-	void SetUVRect(const UVRect& uvRect);	//UV矩形の設定
-	void SetTexSplitInfo(const TexSplitInfo& info);	//テクスチャ分割情報構造体の設定
+	void SetLocalTransform(const Transform3D& local);									//ローカル変換情報の設定
+	void SetColor(DirectX::XMFLOAT4 color);												//色RGBAの設定
+	void SetActive(bool isActive);														//アクティブフラグの設定
+	void SetOrder(int order);															//描画順の設定
+	void SetUVRect(const UVRect& uvRect);												//UV矩形の設定
+	void SetTexSplitInfo(const TexSplitInfo& info);										//テクスチャ分割情報構造体の設定
 	void SetWorldPosition(DirectX::XMFLOAT3 position) { m_worldPosition = position; }	//ワールド位置の設定
 	void SetWorldScale(DirectX::XMFLOAT3 scale) { m_worldScale = scale; }				//ワールドスケールの設定
 	void SetWorldRotation(DirectX::XMFLOAT3 rotation) { m_worldRotation = rotation; }	//ワールド回転の設定
 	void SetLocalPosition(DirectX::XMFLOAT3 position) { m_localPosition = position; }	//ローカル位置の設定
 	void SetLocalScale(DirectX::XMFLOAT3 scale) { m_localScale = scale; }				//ローカルスケールの設定
 	void SetLocalRotation(DirectX::XMFLOAT3 rotation) { m_localRotation = rotation; }	//ローカル回転の設定
+	void SetDrawOffset(DirectX::XMFLOAT3 drawOffset) { m_drawOffset = drawOffset; }		//描画オフセットの設定
 
 	//UI親子関係関数
 	//子UIオブジェクト追加関数(テンプレート)
@@ -101,6 +103,8 @@ protected:
 	DirectX::XMFLOAT3 m_worldPosition{};
 	DirectX::XMFLOAT3 m_worldScale{};
 	DirectX::XMFLOAT3 m_worldRotation{};
+
+	DirectX::XMFLOAT3 m_drawOffset{};	//描画オフセット(ワールド位置に加算される)
 
 	Transform3D m_world{};	//ワールド変換情報
 	Transform3D m_local{};	//ローカル変換情報

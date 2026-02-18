@@ -228,7 +228,11 @@ void UIBase::UpdateTexSplitInfo()
 
 void UIBase::UpdateLocalTransform()
 {
-	m_local.position = m_localPosition;
+	m_local.position = XMFLOAT3{
+		m_localPosition.x + m_drawOffset.x,
+		m_localPosition.y + m_drawOffset.y,
+		m_localPosition.z + m_drawOffset.z
+	};
 	m_local.scale = m_localScale;
 	XMVECTOR qRotation = XMQuaternionRotationRollPitchYaw(
 		XMConvertToRadians(m_localRotation.x),
