@@ -164,9 +164,9 @@ Player* PlayerManager::AddPlayer(
 
 	PlayerShadow* newShadow = new PlayerShadow(
 		MESH_TYPE::QUAD,
-		XMFLOAT3(spawnPos.x, spawnPos.y - 0.1f, spawnPos.z),	//位置
+		XMFLOAT3(spawnPos.x, spawnPos.y - 0.2f, spawnPos.z),	//位置
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//回転
-		XMFLOAT3(4.5f, 4.5f, 4.5f),						//スケール
+		XMFLOAT3(7.5f, 4.5f, 7.5f),						//スケール
 		XMFLOAT3(0.0f, 0.0f, 0.0f),						//移動速度
 		ColliderType::BOX,								//コライダータイプ	
 		XMFLOAT3(0.5f, 0.5f, 0.5f),						//コライダーセットサイズ
