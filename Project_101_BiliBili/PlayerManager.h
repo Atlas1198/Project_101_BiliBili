@@ -4,18 +4,19 @@
 #include "SharedStruct.h"
 #include "BulletManager.h"
 #include "EventType.h"
+#include "PlayerShadow.h"
 
-//‘O•ûéŒ¾
+//å‰æ–¹å®£è¨€
 class Renderer;
 class InputManager;
 class TextureManager;
 class MeshManager;
 
-//ƒvƒŒƒCƒ„[ŠÇ—ƒNƒ‰ƒX
+//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç®¡ç†ã‚¯ãƒ©ã‚¹
 class PlayerManager : public ObjectManagerBase
 {
 public:
-	//static constexpr int PLAYER_NUM = 2; // ƒvƒŒƒCƒ„[‚Ì”
+	//static constexpr int PLAYER_NUM = 2; // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ•°
 	const wchar_t* modelFile = L"asset/fbx/Dragon 2.5_fbx.fbx";
 	const wchar_t* texPath = L"asset/texture/player/Character_front.png";
 
@@ -27,48 +28,51 @@ public:
 	};
 
 private:
-	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg”z—ñ
-	std::vector<WorldRenderInfo> m_playerInfo[4];					//ƒvƒŒƒCƒ„[•`‰æî•ñ
-	std::vector<WorldRenderInfo> m_playerTransformInfo[4];			//ƒvƒŒƒCƒ„[•Ïg•`‰æî•ñ
-	float teamHP[2] = { 1.0f, 1.0f };							//ƒ`[ƒ€‚Ì‘Ì—Í
-	bool teamBBActive[2] = { false, false };					//ƒ`[ƒ€‚ÌBBƒAƒNƒeƒBƒuƒtƒ‰ƒO
+	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—
+	std::vector<PlayerShadow *> m_pPlayerShadow = std::vector<PlayerShadow *>();	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å½±ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—
+	std::vector<WorldRenderInfo> m_playerInfo[4];					//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±
+	std::vector<WorldRenderInfo> m_playerTransformInfo[4];			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å¤‰èº«æç”»æƒ…å ±
+	std::vector<WorldRenderInfo> m_shadowInfo;						//å½±æç”»æƒ…å ±
+	float teamHP[2] = { 1.0f, 1.0f };							//ãƒãƒ¼ãƒ ã®ä½“åŠ›
+	bool teamBBActive[2] = { false, false };					//ãƒãƒ¼ãƒ ã®BBã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°
+	bool sentBBEnhanceEvent[2] = { false, false };			//ãƒãƒ¼ãƒ ã®BBå¼·åŒ–ã‚¤ãƒ™ãƒ³ãƒˆé€ä¿¡ãƒ•ãƒ©ã‚°
 
-	std::vector<EventData> m_subscribedEvents;	//w“Ç‚µ‚Ä‚¢‚éƒCƒxƒ“ƒg”z—ñ
+	std::vector<EventData> m_subscribedEvents;	//è³¼èª­ã—ã¦ã„ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆé…åˆ—
 
 public:
-	PlayerManager();			//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~PlayerManager();	//ƒfƒXƒgƒ‰ƒNƒ^
+	PlayerManager();			//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~PlayerManager();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
-	//ƒƒCƒ“ˆ—ŠÖ”
-	void InitializeOverride(	//‰Šú‰»
-		TextureManager& pTextureManager,	//ƒeƒNƒXƒ`ƒƒŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-		MeshManager& pMeshManager,			//ƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^
-		CollisionManager& collisionManager	//Õ“ËŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+	//ãƒ¡ã‚¤ãƒ³å‡¦ç†é–¢æ•°
+	void InitializeOverride(	//åˆæœŸåŒ–
+		TextureManager& pTextureManager,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+		MeshManager& pMeshManager,			//ãƒ¡ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+		CollisionManager& collisionManager	//è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 	) override;
 
 	Player* AddPlayer(
 		uint32_t id,						//ID
-		InputManager *pInputManager,		//“ü—Íƒ}ƒl[ƒWƒƒ[‚Ìƒ|ƒCƒ“ƒ^
-		CollisionManager &collisionManager,	//Õ“ËŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-		BulletManager *pBulletManager	//’eŠÛŠÇ—ƒNƒ‰ƒX‚ÌQÆ
+		InputManager *pInputManager,		//å…¥åŠ›ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
+		CollisionManager &collisionManager,	//è¡çªç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+		BulletManager *pBulletManager	//å¼¾ä¸¸ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
 	);
 	void RemovePlayer(uint32_t id);
 
-	void OnTakeDamage(int teamID, float damage); // ƒ_ƒ[ƒW‚ğó‚¯‚½‚Æ‚«‚Ìˆ—
-	void OnSetBB(int teamID, bool isActive); // BB‚ğƒZƒbƒg‚µ‚½‚Æ‚«‚Ìˆ—
+	void OnTakeDamage(int teamID, float damage); // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ãŸã¨ãã®å‡¦ç†
+	void OnSetBB(int teamID, bool isActive); // BBã‚’ã‚»ãƒƒãƒˆã—ãŸã¨ãã®å‡¦ç†
 
-	void UpdateOverride() override;		//XV
-	void ResolveCollisionsOverride() override;	//Õ“ËŒãˆ—
-	void FinalizeOverride() override;	//I—¹
+	void UpdateOverride() override;		//æ›´æ–°
+	void ResolveCollisionsOverride() override;	//è¡çªå¾Œå‡¦ç†
+	void FinalizeOverride() override;	//çµ‚äº†
 
-	//•`‰æ
-	void SubmitDrawsOverride(Renderer& renderer) override;	//•`‰æ—v‹‚ğƒV[ƒ“‚É’ño
+	//æç”»
+	void SubmitDrawsOverride(Renderer& renderer) override;	//æç”»è¦æ±‚ã‚’ã‚·ãƒ¼ãƒ³ã«æå‡º
 
-	//ƒQƒbƒ^[
-	std::vector<Player*>& GetPlayers(); // ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg”z—ñ‚ğæ“¾
+	//ã‚²ãƒƒã‚¿ãƒ¼
+	std::vector<Player*>& GetPlayers(); // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé…åˆ—ã‚’å–å¾—
 
-private:	//”ñŒöŠJŠÖ”
-	void PrepareRenderInfo(	//ƒvƒŒƒCƒ„[•`‰æî•ñ¶¬
+private:	//éå…¬é–‹é–¢æ•°
+	void PrepareRenderInfo(	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æç”»æƒ…å ±ç”Ÿæˆ
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	) override;	

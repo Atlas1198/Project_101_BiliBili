@@ -26,7 +26,7 @@ WallCurve::WallCurve(
     bool collisionIsTrigger,
     float rotationSpeed,
     bool orbit,
-    float orbitRadius,          // ← 半径の“保険”としてだけ使う
+    float orbitRadius,
     XMFLOAT3 orbitCenter,
     float forwardOffsetDeg
 )
@@ -43,24 +43,26 @@ WallCurve::WallCurve(
     if (!m_orbit)
         return;
 
-    // 初期位置から中心へのオフセット
+    // 指定半径を必ず採用（0は事故るので最低値を持たせる）
+    m_orbitRadius = (orbitRadius > 0.0001f) ? orbitRadius : 0.0001f;
+
+    // 初期角度：中心→初期位置の方向から決める
     const float ox = m_position.x - m_orbitCenter.x;
     const float oz = m_position.z - m_orbitCenter.z;
 
-    // 半径は “中心から初期位置までの距離” を必ず採用
-    const float r = std::sqrt(ox * ox + oz * oz);
-
-    if (r > 0.0001f)
+    if ((ox * ox + oz * oz) > 0.0001f)
     {
-        m_orbitRadius = r;
+        // あなたの座標系（x=sin, z=cos）に合わせて atan2(ox, oz)
         m_currentOrbitAngleDeg = NormalizeDeg(XMConvertToDegrees(std::atan2f(ox, oz)));
     }
     else
     {
-        // 初期位置が中心と同じ＝半径が作れないので、引数を保険として使う
-        m_orbitRadius = (orbitRadius > 0.0f) ? orbitRadius : 0.0f;
+        // 初期位置が中心と同じなら角度0スタート
         m_currentOrbitAngleDeg = 0.0f;
     }
+
+    // ※ここで即座に円周上に置きたいなら、下の行を呼んでもOK（任意）
+    // UpdateOverride(); // 初期位置を半径の円周に補正して開始
 }
 
 void WallCurve::UpdateOverride()
@@ -70,11 +72,11 @@ void WallCurve::UpdateOverride()
         m_currentOrbitAngleDeg = NormalizeDeg(m_currentOrbitAngleDeg + m_rotationSpeed);
         const float rad = XMConvertToRadians(m_currentOrbitAngleDeg);
 
-        // 回転
+        // 中心から「指定半径」ぶんの円周上を回る
         m_position.x = m_orbitCenter.x + std::sinf(rad) * m_orbitRadius;
         m_position.z = m_orbitCenter.z + std::cosf(rad) * m_orbitRadius;
 
-        // 中心を見る
+        // 中心を見る（yaw）
         const float dx = m_orbitCenter.x - m_position.x;
         const float dz = m_orbitCenter.z - m_position.z;
 

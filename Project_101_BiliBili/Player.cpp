@@ -236,7 +236,7 @@ void Player::ResolveCollisionsOverride()
 					float T = (desiredSpeedXZ > 0.0001f) ? (distXZ / desiredSpeedXZ) : 30.0f;
 
 					// 早すぎ/遅すぎ防止（15～60フレームに制限）
-					T = std::clamp(T, 15.0f, 60.0f);
+					T = std::clamp(T, 15.0f, 80.0f);
 
 					// あなたの重力適用：毎フレーム vy -= GRAVITY
 					const float g = GRAVITY;

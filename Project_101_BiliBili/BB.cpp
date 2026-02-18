@@ -230,7 +230,7 @@ void BB::DisableBB()
 	{
 		line->SetDrawn(true);		//ラインの描画をオン
 	}
-	EventManager::GetInstance()->TriggerEvent<bool>(EventType::SET_BB_SCENE_EFFECT, false);
+
 }
 
 //電流の操作

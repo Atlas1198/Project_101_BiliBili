@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <d3d12.h>
 #include "d3dx12.h"
 #include "BB.h"
@@ -47,7 +47,7 @@ public:
 	void SetGameUIManager(GameUIManager* pUIManager);				
 	void SetCollisionManager(CollisionManager* pCollisionManager);	
 	void SetBB(int teamID, bool activate);						
-	void OnItemPickup(int teamID);								
+	void OnItemPickup(int teamID);
 
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; 
@@ -67,7 +67,7 @@ private:
 	GameUIManager* m_pUIManager = nullptr; 
 	CollisionManager* m_pCollisionManager = nullptr; 
 
-	bool m_isBBEnhanced = false;
+	bool m_isBBEnhanced[2] = { false, false };
 	bool timerStarted = false;
 
 private:

@@ -8,6 +8,7 @@
 #include "WallCurve.h"
 #include "Ground.h"
 #include "Spring.h"
+#include "NoCollisionModel.h"
 
 //前方宣言
 class Renderer;
@@ -50,9 +51,14 @@ private:	//非公開メンバ変数
 	std::vector<WallCurve*> m_pWallCurves;			//カーブ壁オブジェクト配列
 	std::vector<Ground*> m_pGrounds;				//地面オブジェクト配列
 	std::vector<Spring*> m_pSprings;				//バネオブジェクト配列
+	std::vector<NoCollisionModel*> m_pDrivers;		//ドライバーオブジェクト配列
+	std::vector<NoCollisionModel*> m_pSprays;		//スプレーオブジェクト配列
+
 	std::vector<WorldRenderInfo> m_wallInfo;		//壁描画情報
 	std::vector<WorldRenderInfo> m_wallPassInfo;	//貫通壁描画情報
 	std::vector<WorldRenderInfo> m_wallCurveInfo;	//カーブ壁描画情報
 	std::vector<WorldRenderInfo> m_groundInfo;		//地面描画情報
 	std::vector<WorldRenderInfo> m_springInfo;		//バネ描画情報
+	std::vector<WorldRenderInfo> m_driverInfo;		//ドライバー描画情報
+	std::vector<WorldRenderInfo> m_sprayInfo;		//スプレー描画情報
 };

@@ -403,6 +403,11 @@ void PlayBehavior::Update()
 			m_pGameScene->m_pCamera->SetPosition({ 0.0f, 35.0f, -15.0f });
 		}
 	}
+	else
+	{
+		m_pCamera->SetPosition({ 0.0f, 70.0f, -50.0f });
+		m_pCamera->SetTarget({ 0.0f, 00.0f, 3.5f });
+	}
 
 	//勝利条件の判定
 	if (m_pGameScene->m_isGameOver)
@@ -410,6 +415,8 @@ void PlayBehavior::Update()
 		m_pGameScene->ChangeBehavior(GAME_STATE::STATE_RESULT); // リザルト状態に遷移
 		m_pGameScene->m_timer = 0;
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT");
+		AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 	}
 
 }
@@ -432,13 +439,14 @@ void ResultBehavior::Update()
 
 void ResultBehavior::HandleFirstWait()
 {
-	const int WAIT_DURATION = 150; // リザルトUI表示までの待機フレーム数（2.5秒間）
+	const int WAIT_DURATION = 180; // リザルトUI表示までの待機フレーム数（3秒間）
+	const int RESULT_BGM_STRAT = 360;	//リザルトBGM再生までの待機フレーム(6秒間)
 
 	//リザルトUI表示前の待機時間中はフィールドとBBを更新し続ける
 	if (m_pGameScene->m_timer == 0)
 	{
 		AudioManager::GetInstance()->StopAll();
-		AudioManager::GetInstance()->PlaySE("RESULT");
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH");
 	}
 
 	if (m_pGameScene->m_timer == WAIT_DURATION)
@@ -455,6 +463,10 @@ void ResultBehavior::HandleFirstWait()
 			}
 		);
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
+    AudioManager::GetInstance()->PlaySE("RESULT");
+	}
+	else if (m_timer == RESULT_BGM_STRAT)
+  {
 		AudioManager::GetInstance()->StopAll();
 		AudioManager::GetInstance()->PlayBGM("RESULT_BGM");
 		m_subState = SUB_STATE::SHOW_RESULT;

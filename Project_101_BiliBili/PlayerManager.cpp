@@ -22,6 +22,13 @@ PlayerManager::~PlayerManager()
 		player = nullptr;
 	}
 	m_pPlayer.clear();
+
+	for (auto &shadow : m_pPlayerShadow)
+	{
+		delete shadow;
+		shadow = nullptr;
+	}
+	m_pPlayerShadow.clear();
 }
 
 //初期化
@@ -155,6 +162,20 @@ Player* PlayerManager::AddPlayer(
 		m_pPlayer.back()->Initialize(pInputManager->GetInputInfo(), pBulletManager); //入力情報構造体の取得
 	}
 
+	PlayerShadow* newShadow = new PlayerShadow(
+		MESH_TYPE::QUAD,
+		XMFLOAT3(spawnPos.x, spawnPos.y - 0.1f, spawnPos.z),	//位置
+		XMFLOAT3(0.0f, 0.0f, 0.0f),						//回転
+		XMFLOAT3(4.5f, 4.5f, 4.5f),						//スケール
+		XMFLOAT3(0.0f, 0.0f, 0.0f),						//移動速度
+		ColliderType::BOX,								//コライダータイプ	
+		XMFLOAT3(0.5f, 0.5f, 0.5f),						//コライダーセットサイズ
+		newPlayer,										//影の対象プレイヤー
+		false											//コライダーのトリガーフラグ
+	);
+
+	m_pPlayerShadow.push_back(newShadow);
+
 	return newPlayer;
 }
 
@@ -177,6 +198,12 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 	if (teamHP[teamID] < 0.0f)
 	{
 		teamHP[teamID] = 0.0f;
+	}
+
+	if (teamHP[teamID] <= 0.5f && !sentBBEnhanceEvent[teamID])
+	{
+		sentBBEnhanceEvent[teamID] = true;
+		EventManager::GetInstance()->TriggerEvent<int>(EventType::ENHANCE_BB, teamID);
 	}
 
 	EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(EventType::UPDATE_HP_UI, std::make_pair(teamID, teamHP[teamID]));
@@ -213,6 +240,11 @@ void PlayerManager::UpdateOverride()
 	for (auto player : m_pPlayer)
 	{
 		player->Update();
+	}
+
+	for (auto shadow : m_pPlayerShadow)
+	{
+		shadow->Update();
 	}
 
 	EventManager::GetInstance()->TriggerEvent<std::tuple<int, XMFLOAT3, XMFLOAT3>>(
@@ -266,6 +298,11 @@ void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 {
 	for (int i = 0; i < m_pPlayer.size(); i++)
 	{
+		ObjectManagerBase::SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*m_pPlayerShadow[i],		//ゲームオブジェクト配列の参照
+			m_shadowInfo
+		);
 		//描画要求をシーンに提出
 		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
@@ -296,6 +333,8 @@ void PlayerManager::PrepareRenderInfo(
 		L"asset/texture/player/YELLOW_on_CH.png"
 	};
 
+	wchar_t shadowTexture[] = L"asset/texture/player/shadow_CH.png";
+
 	for (int i = 0; i < 4; i++)
 	{
 		CreateRenderInfo(
@@ -316,6 +355,17 @@ void PlayerManager::PrepareRenderInfo(
 			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
 			PSO_KEY_MASKED,		//ブレンドモード
 			bbTextures[i],		//テクスチャのファイル名
+			false,							//ライト無効
+			BILLBOARD_TYPE::BILLBOARD_FIX_X
+		);
+
+		CreateRenderInfo(
+			textureManager,					//テクスチャマネージャへの参照
+			meshManager,					//メッシュマネージャへの参照
+			&m_shadowInfo,			//描画情報構造体配列へのポインタ
+			MESH_TYPE::QUAD,	//メッシュタイプ
+			PSO_KEY_MASKED,		//ブレンドモード
+			shadowTexture,		//テクスチャのファイル名
 			false,							//ライト無効
 			BILLBOARD_TYPE::BILLBOARD_FIX_X
 		);

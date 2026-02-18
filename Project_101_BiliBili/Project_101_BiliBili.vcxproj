@@ -203,7 +203,9 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="LineBB.h" />
     <ClInclude Include="LoadUI.h" />
+    <ClInclude Include="NoCollisionModel.h" />
     <ClInclude Include="PlayerPointerUI.h" />
+    <ClInclude Include="PlayerShadow.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SelectionScene.h" />
@@ -295,6 +297,7 @@
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="LineBB.cpp" />
     <ClCompile Include="LoadUI.cpp" />
+    <ClCompile Include="NoCollisionModel.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
     <ClCompile Include="ObjectManagerBase.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -308,6 +311,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="PlayerPointerUI.cpp" />
+    <ClCompile Include="PlayerShadow.cpp" />
     <ClCompile Include="RenderData.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResultUI.cpp" />

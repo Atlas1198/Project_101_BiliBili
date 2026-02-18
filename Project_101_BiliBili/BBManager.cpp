@@ -1,4 +1,4 @@
-#include "BBManager.h"
+﻿#include "BBManager.h"
 #include "Player.h"
 #include "GameUIManager.h"
 #include "EventManager.h"
@@ -37,6 +37,8 @@ void BBManager::InitializeOverride(
 	{
 		m_BB[i]->Initialize();
 		m_BB[i]->SetTeamId(i);
+
+		m_isBBEnhanced[i] = false;
 	}
 
 	for(int i = 0; i < BB_NUM; i++)
@@ -93,7 +95,17 @@ void BBManager::InitializeOverride(
 		}
 	);
 
-	m_isBBEnhanced = false;
+	EventManager::GetInstance()->Subscribe<int>(
+		EventType::ENHANCE_BB,
+		[this](std::shared_ptr<int> teamID)
+		{
+			if (*teamID < 0 || *teamID >= BB_NUM)
+			{
+				return;
+			}
+			m_isBBEnhanced[*teamID] = true;
+		}
+	);
 }
 
 void BBManager::OnItemPickup(int teamID)
@@ -106,6 +118,7 @@ void BBManager::OnItemPickup(int teamID)
 	{
 		SetBB(teamID, true);
 
+
 		if (m_isBBEnhanced)
 		{
 			m_BBAreas[teamID * 2]->SetActive(true);
@@ -113,7 +126,7 @@ void BBManager::OnItemPickup(int teamID)
 		}
 
 	}
-	m_BBTimer[teamID] = BB_DURATION;
+	m_BBTimer[teamID] = 10.0f;
 	m_frameTimer[teamID].Mark();
 }
 
@@ -122,17 +135,19 @@ void BBManager::UpdateOverride()
 {
 	//BB発動コマンド処理
 	for (auto& index : m_activationCalledBBIndex)
-	{
+	{   
 		OnItemPickup(index);
-		//AudioManager::GetInstance()->PlayBGM("GAME_TF");
+
+		AudioManager::GetInstance()->PauseBGM("GAME_BGM");
+		AudioManager::GetInstance()->PlayBGM("GAME_TF_BGM");
 	}
 	m_activationCalledBBIndex.clear();
 
-	if(timerStarted && !m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
+	/*if(timerStarted && !m_isBBEnhanced && bbAreaStartEventTimer.Peek() >= BB_ENHANCE_TIME)
 	{
 		m_isBBEnhanced = true;
 		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, EVENT_BB_ENHANCE);
-	}
+	}*/
 
 	//BB時間管理
 	for(int i = 0; i < BB_NUM; i++)
@@ -149,9 +164,25 @@ void BBManager::UpdateOverride()
 				m_BBAreas[i * 2]->SetActive(false);
 				m_BBAreas[i * 2 + 1]->SetActive(false);
 
-				//AudioManager::GetInstance()->StopBGM();
+				bool anyTeamActive = false;
+				for (int j = 0; j < BB_NUM; j++)
+				{
+					if (m_BBTimer[j] > 0.0f)
+					{
+						anyTeamActive = true;
+						break;
+					}
+
+				}
+				
+				if (!anyTeamActive)
+				{
+					EventManager::GetInstance()->TriggerEvent<bool>(EventType::SET_BB_SCENE_EFFECT, false);
+					AudioManager::GetInstance()->StopBGM("GAME_TF_BGM");
+					AudioManager::GetInstance()->ResumeBGM("GAME_BGM");
+					AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
+				}
 			}
-			
 		}
 
 		m_BB[i]->Update();
@@ -207,6 +238,11 @@ void BBManager::FinalizeOverride()
 	for(int i = 0; i < BB_NUM; i++)
 	{
 		m_BB[i]->Finalize();
+	}
+
+	for(int i = 0; i < BB_AREA_NUM; i++)
+	{
+		delete m_BBAreas[i];
 	}
 
 	timerStarted = false;
