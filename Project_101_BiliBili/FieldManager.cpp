@@ -399,7 +399,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		Walls(XMFLOAT3(0.0f, -5.0f, -4.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		Walls(XMFLOAT3(-10.0f, -5.0f, -7.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-		Walls(XMFLOAT3(10.0f, -5.0f, 19.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Walls(XMFLOAT3(10.0f, -5.0f, 20.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		Walls(XMFLOAT3(-11.0f, -5.5f, 12.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 		Walls(XMFLOAT3(11.0f, -5.0f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
