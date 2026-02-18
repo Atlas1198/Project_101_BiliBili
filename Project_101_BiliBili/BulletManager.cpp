@@ -1,4 +1,4 @@
-#include "BulletManager.h"
+﻿#include "BulletManager.h"
 #include "CollisionManager.h"
 #include "Renderer.h"
 #include "EventManager.h"
@@ -25,7 +25,7 @@ void BulletManager::FireBullet(
 	EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>
         (EventType::UPDATE_BULLET_UI, { ownerTeam, teamBulletCount[ownerTeam] });
 
-    auto bullet = std::make_unique<Bullet>(position, direction, speed * m_speedModifier, ownerTeam, ownerID, BULLET_DAMAGE);
+    auto bullet = std::make_unique<Bullet>(position, direction, speed * m_speedModifier * defaultSpeedModifier, ownerTeam, ownerID, BULLET_DAMAGE);
     if (m_pCollisionManager)
     {
 		bullet->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
@@ -89,7 +89,7 @@ void BulletManager::UpdateOverride()
 
     if (timeUntilBonusRestoreModifier > 0.0f)
     {
-        timeUntilBonusRestoreModifier -= m_totalTimer.Mark();
+        timeUntilBonusRestoreModifier -= m_bonusTimer.Mark();
     }
     else
     {
@@ -97,10 +97,15 @@ void BulletManager::UpdateOverride()
             m_currentRestoreModifier = BONUS_RECOVERY_MODIFIER;
         m_normalRestoreModifier = BONUS_RECOVERY_MODIFIER;
     }
-	
+
+    if (m_totalTimer.Peek() >= DEFAULT_INCREASE_DELAY)
+    {
+		defaultSpeedModifier = 1.0f + (m_totalTimer.Peek() - DEFAULT_INCREASE_DELAY) * 0.01f;
+		defaultRecoveryModifier = std::min(defaultSpeedModifier, 2.0f);
+	}
 
 
-    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_currentRestoreModifier)
+    if (m_bulletRestoreElapsed >= BULLET_RECOVERY / m_currentRestoreModifier / defaultRecoveryModifier)
     {
         for (int team = 0; team < 2; ++team)
         {
@@ -201,7 +206,10 @@ void BulletManager::PrepareRenderInfo(TextureManager& textureManager, MeshManage
 void BulletManager::Reset()
 {
     m_bulletRestoreTimer.Mark();
-    m_totalTimer.Mark();
+    m_bonusTimer.Mark();
+	m_totalTimer.Mark();
+    defaultRecoveryModifier = 1.0f;
+	defaultSpeedModifier = 1.0f;
     m_bulletRestoreElapsed = 0.0f;
     m_currentRestoreModifier = 1.0f;
     m_normalRestoreModifier = 1.0f;

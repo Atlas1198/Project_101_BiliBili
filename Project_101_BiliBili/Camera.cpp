@@ -182,10 +182,10 @@ bool Camera::WorldToScreen(
 void Camera::CallShakeCamera(int time, float strength)
 {
 	m_isShakeActive = true;
-	m_originPosition = m_position;
 	m_shakeTime = time;
 	m_shakeStrength = strength;
 	m_shakeElapsedTime = 0;
+	m_originalCameraInfo = m_cameraInfo; // Store original camera info
 }
 
 //カメラ情報構造体を更新
@@ -209,6 +209,7 @@ void Camera::UpdateShake()
 	if (m_shakeElapsedTime < m_shakeTime)
 	{
 		auto position = m_position;
+		auto m_originPosition = m_originalCameraInfo.position;
 
 		//シェイク処理
 		float shakeAmount = m_shakeStrength;	//シェイクの強さ
@@ -220,9 +221,16 @@ void Camera::UpdateShake()
 	}
 	else
 	{
-		//元の位置に戻す
-		m_position.x = m_originPosition.x;
-		m_position.y = m_originPosition.y;
+		//シェイク終了後、元の位置に戻す
+		m_position = m_originalCameraInfo.position;
+		m_target = m_originalCameraInfo.target;
+		m_up = m_originalCameraInfo.up;
+		m_right = m_originalCameraInfo.right;
+		m_forward = m_originalCameraInfo.forward;
+		m_fov = m_originalCameraInfo.fov;
+		m_aspectRatio = m_originalCameraInfo.aspectRatio;
+		m_nearZ = m_originalCameraInfo.nearZ;
+		m_farZ = m_originalCameraInfo.farZ;
 
 		m_isShakeActive = false;
 	}

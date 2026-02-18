@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <string>
 #include <cstdarg>
+#include <comdef.h>
 
 // Out put debug string
 static void DBG(const char* fmt, ...)
@@ -14,4 +15,10 @@ static void DBG(const char* fmt, ...)
 	va_end(args);
 
 	OutputDebugStringA(buf);
+}
+
+static void DBG_HR(HRESULT hr) {
+	_com_error err(hr);
+	auto message = err.ErrorMessage();
+	DBG(message);
 }

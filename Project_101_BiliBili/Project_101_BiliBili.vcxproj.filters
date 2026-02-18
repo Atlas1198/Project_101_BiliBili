@@ -313,6 +313,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="NoCollisionModel.h">
+     <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerPointerUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -573,6 +576,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="NoCollisionModel.cpp">
+    <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerPointerUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -583,9 +589,6 @@
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl" />
     <FxCompile Include="VertexShader.hlsl" />
-    <FxCompile Include="BBSceneEffect.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project_101_BiliBili.rc">

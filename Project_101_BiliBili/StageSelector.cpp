@@ -8,6 +8,7 @@
 //‰Šú‰»
 void StageSelector::Initialize()
 {
+	m_timer = 0;
 	m_cursor = 0;
 	m_isSelected = false;
 }
@@ -78,9 +79,15 @@ void StageSelector::Update(SceneContext& context)
 	//Œˆ’èˆ—
 	if (select)
 	{
-		context.stageType = static_cast<STAGE_TYPE>(m_cursor);
-		m_isSelected = true;
+		const int SELECT_REJECTION = 60;
+		if (m_timer > SELECT_REJECTION)
+		{
+			context.stageType = static_cast<STAGE_TYPE>(m_cursor);
+			m_isSelected = true;
+		}
 	}
+
+	m_timer++;
 }
 
 //I—¹

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <d3d12.h>
 #include "d3dx12.h"
 #include "BB.h"
@@ -26,7 +26,7 @@ public:
 	const wchar_t* areaBBRedTexPath = L"asset/texture/effect/circle_R_EF.png";
 	const wchar_t* areaBBBlueTexPath = L"asset/texture/effect/circle_B_EF.png";
 
-	inline static float BB_DURATION = 15.0f;
+	inline static float BB_DURATION = 100.0f;
 	static constexpr float BB_ENHANCE_TIME = 120.0f;
 
 public:
@@ -47,7 +47,7 @@ public:
 	void SetGameUIManager(GameUIManager* pUIManager);				
 	void SetCollisionManager(CollisionManager* pCollisionManager);	
 	void SetBB(int teamID, bool activate);						
-	void OnItemPickup(int teamID);								
+	void OnItemPickup(int teamID);
 
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; 
@@ -67,7 +67,7 @@ private:
 	GameUIManager* m_pUIManager = nullptr; 
 	CollisionManager* m_pCollisionManager = nullptr; 
 
-	bool m_isBBEnhanced = false;
+	bool m_isBBEnhanced[2] = { false, false };
 	bool timerStarted = false;
 
 private:
