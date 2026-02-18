@@ -164,11 +164,25 @@ void BBManager::UpdateOverride()
 				m_BBAreas[i * 2]->SetActive(false);
 				m_BBAreas[i * 2 + 1]->SetActive(false);
 
-				AudioManager::GetInstance()->StopBGM("GAME_TF_BGM");
-				AudioManager::GetInstance()->ResumeBGM("GAME_BGM");
-				AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
+				bool anyTeamActive = false;
+				for (int j = 0; j < BB_NUM; j++)
+				{
+					if (m_BBTimer[j] > 0.0f)
+					{
+						anyTeamActive = true;
+						break;
+					}
+
+				}
+				
+				if (!anyTeamActive)
+				{
+					EventManager::GetInstance()->TriggerEvent<bool>(EventType::SET_BB_SCENE_EFFECT, false);
+					AudioManager::GetInstance()->StopBGM("GAME_TF_BGM");
+					AudioManager::GetInstance()->ResumeBGM("GAME_BGM");
+					AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
+				}
 			}
-			
 		}
 
 		m_BB[i]->Update();
