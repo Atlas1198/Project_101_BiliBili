@@ -80,7 +80,7 @@ Wall::Wall(MESH_TYPE meshType,
 	 //コライダーの設定
     m_pColliderSet->AddCollider(
         ColliderType::BOX,
-        DirectX::XMFLOAT3(0.0f, 1.0f, 0.5f), // オフセット位置
+        DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // オフセット位置
         COLLIDER_SCALE_NORMAL,
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), // オフセット回転
         COLLISION_LAYER::WALLPASS
@@ -88,7 +88,7 @@ Wall::Wall(MESH_TYPE meshType,
 
     m_pColliderSet->AddCollider(
         ColliderType::BOX,
-        DirectX::XMFLOAT3(0.0f, 1.0f, 0.5f), // オフセット位置
+        DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), // オフセット位置
         COLLIDER_SCALE_SMALL,
         DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), // オフセット回転
         COLLISION_LAYER::WALL
