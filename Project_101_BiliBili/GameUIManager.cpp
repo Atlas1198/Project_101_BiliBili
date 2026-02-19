@@ -108,7 +108,7 @@ void GameUIManager::InitializeOverride(
 
 	//操作ガイド画像UIの初期化
 	{
-		const float sizeFactor = 0.75f; // サイズ調整用の係数
+		const float sizeFactor = 0.9f; // サイズ調整用の係数
 		m_pOperationGuideImage = (new UIImage(
 			DirectX::XMFLOAT3{ 0.0f, 450.0f, 0.0f },				//位置
 			DirectX::XMFLOAT3{ 276.0f * sizeFactor, 128.0f * sizeFactor, 1.0f },	//スケール

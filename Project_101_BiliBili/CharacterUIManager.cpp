@@ -122,7 +122,7 @@ void CharacterUIManager::InitializeOverride(
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pCharacterIconBase));
 
 	m_pCharacterName = new UIImage(
-		{ -75.0f, -400.0f, 0.0f },	//位置
+		{ -75.0f, -390.0f, 0.0f },	//位置
 		{ 1673.0f, 87.0f, 1.0f },//スケール
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		3,						//描画順序

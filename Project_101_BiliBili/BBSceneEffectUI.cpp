@@ -11,7 +11,7 @@ void BBSceneEffectUI::InitializeOverride(TextureManager& textureManager, MeshMan
 	key.psEntry = PS_ID::BBSceneEffect;
 	
 	m_pTopImage = AddChild<UIImage>(
-		DirectX::XMFLOAT3{ 0,540 - 120 ,0 }, 
+		DirectX::XMFLOAT3{ 0,540 - 130 ,0 }, 
 		DirectX::XMFLOAT3{ 1980,300,1 },
 		DirectX::XMFLOAT3{ 0,0,0 }, 
 		0, 
@@ -19,7 +19,7 @@ void BBSceneEffectUI::InitializeOverride(TextureManager& textureManager, MeshMan
 		key
 	);
 	m_pBottomImage = AddChild<UIImage>(
-		DirectX::XMFLOAT3{ 0,-540 + 50, 0 },
+		DirectX::XMFLOAT3{ 0,-560 + 0, 0 },
 		DirectX::XMFLOAT3{ 1980,300,1 },
 		DirectX::XMFLOAT3{ 0,0,0 },
 		0, 

@@ -88,10 +88,29 @@ uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 		return UINT32_MAX;
 	}
 
+	//画像フォーマットを固定
+	DXGI_FORMAT target = DXGI_FORMAT_R8G8B8A8_UNORM;
+	if (meta.format != target) {
+		ScratchImage conv;
+		HRESULT hr2 = Convert(
+			*img.GetImage(0, 0, 0),
+			target,
+			TEX_FILTER_DEFAULT,
+			TEX_THRESHOLD_DEFAULT,
+			conv
+		);
+		if (FAILED(hr2)) { /* error */ }
+
+		img = std::move(conv);
+		meta = img.GetMetadata(); // format がR8G8B8A8_UNORMに揃う
+	}
+
+	imageCount = img.GetImageCount();
+
 	//GPU用テクスチャリソースの生成
 	ComPtr<ID3D12Resource> pTexture;	//テクスチャリソース
 	CD3DX12_RESOURCE_DESC texDesc = CD3DX12_RESOURCE_DESC::Tex2D(	//テクスチャリソース記述子
-		meta.format,						//フォーマット
+		DXGI_FORMAT_R8G8B8A8_TYPELESS,						//フォーマット
 		static_cast<UINT>(meta.width),		//幅
 		static_cast<UINT>(meta.height),		//高さ
 		1,									//配列サイズ
@@ -148,9 +167,8 @@ uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};	//SRV記述子
 	srvDesc.Shader4ComponentMapping = 
 		D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;	//コンポーネントマッピング
-	srvDesc.Format = 
-		meta.format;								//フォーマット
-	srvDesc.ViewDimension = 
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	srvDesc.ViewDimension =
 		D3D12_SRV_DIMENSION_TEXTURE2D;				//ビューの次元(2Dテクスチャ)
 	srvDesc.Texture2D.MipLevels = 
 		(UINT)meta.mipLevels;						//ミップレベル数
