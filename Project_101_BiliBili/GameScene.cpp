@@ -489,7 +489,10 @@ void ResultBehavior::HandleShowResult()
 	{
 		auto controller = controllers[i];
 
-		isPressed = (controller.B.down || keyInput.space.down) && m_pGameScene->m_pGameUIManager->IsGoToTitleShown();
+		if ((controller.B.down || keyInput.space.down) && m_pGameScene->m_pGameUIManager->IsGoToTitleShown())
+		{
+			isPressed = true;
+		}
 	}
 
 	//スペースキーまたはコントローラーのBボタンが押されていて、かつタイトルへ戻るUIが表示されている場合

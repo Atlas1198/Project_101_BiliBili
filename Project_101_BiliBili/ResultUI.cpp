@@ -219,7 +219,7 @@ void ResultUI::UpdateOverride()
 
 	if(m_shakeGoToTitleButton)
 	{
-		const float shakeAmount = 5.0f; //—h‚ê‚Ì‹­‚³
+		const float shakeAmount = 3.0f; //—h‚ê‚Ì‹­‚³
 		XMFLOAT3 offset{};
 		offset.x = m_pRandom->GetFloat(-shakeAmount, shakeAmount);
 		offset.y = m_pRandom->GetFloat(-shakeAmount, shakeAmount);

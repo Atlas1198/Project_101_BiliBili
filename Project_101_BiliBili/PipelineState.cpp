@@ -16,7 +16,7 @@ PipelineState::PipelineState(ID3D12Device* pDevice)
 	m_desc.SampleMask = UINT_MAX;											//サンプルマスクの設定
 	m_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;	//プリミティブトポロジーの設定(三角形)
 	m_desc.NumRenderTargets = 1;											//レンダーターゲットの数
-	m_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;						//レンダーターゲットのフォーマット設定(sRGB)
+	m_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;						//レンダーターゲットのフォーマット設定(sRGB)
 	m_desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;								//デプスステンシルビューのフォーマット設定
 	m_desc.SampleDesc.Count = 1;											//マルチサンプリングしない
 	m_desc.SampleDesc.Quality = 0;											//クオリティレベル0
@@ -136,6 +136,15 @@ void PipelineState::SetBlendMode(BLEND_MODE mode)
 		rt0.SrcBlend = D3D12_BLEND_DEST_COLOR;
 		rt0.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 		rt0.BlendOp = D3D12_BLEND_OP_ADD;
+		break;
+	case BLEND_PREMULTIPLY:
+		rt0.BlendEnable = TRUE;
+		rt0.SrcBlend = D3D12_BLEND_ONE;
+		rt0.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		rt0.BlendOp = D3D12_BLEND_OP_ADD;
+		rt0.SrcBlendAlpha = D3D12_BLEND_ONE;
+		rt0.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+		rt0.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 		break;
 	default:
 		break;

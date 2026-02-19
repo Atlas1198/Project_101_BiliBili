@@ -356,7 +356,7 @@ void Engine::CreateRenderTarget()
 	//レンダーターゲットビュー設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};	//レンダーターゲットビューの設定構造体
 
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;			//色フォーマット
+	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;			//色フォーマット
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2Dテクスチャ
 
 	//スワップチェーンの設定取得
