@@ -43,6 +43,17 @@ float4 BasicPS(
     base = float4(base.rgb * lit, base.a);
 #endif
     
+#ifdef PS_OUTLINE_RED
+    clip(base.a - 0.1f);
+    
+    return float4(1.0f, 0.0f, 0.0f, 1.0f);
+#endif
+#ifdef PS_OUTLINE_BLUE
+    clip(base.a - 0.1f);
+    
+    return float4(0.0f, 0.0f, 1.0f, 1.0f);
+#endif
+    
     return base;
 }
 
