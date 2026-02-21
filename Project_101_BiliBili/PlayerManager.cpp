@@ -99,7 +99,6 @@ void PlayerManager::InitializeOverride(
 	{
 		m_pPlayer[i]->SetPosition(spawnPoses[i]);
 		m_pPlayerOutline[i]->SetPosition(spawnPoses[i]);
-		m_pPlayerOutline[i]->SetTexSplitInfo(m_pPlayer[i]->GetTexSplitInfo());
 		m_pPlayer[i]->BindOutline(m_pPlayerOutline[i]);
 	}
 }

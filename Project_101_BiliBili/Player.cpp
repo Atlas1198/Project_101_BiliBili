@@ -677,6 +677,17 @@ void Player::Reset()
 	canRun = false;
 	runTimerStarted = false;
 	bbSlowMoveSpeed = false;
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 3;
+	texInfo.rows = 8;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.frameCount = 0;
+	texInfo.updateRate = 0;
+
+	m_texSplitInfo = texInfo;
+
 	runTimer.Mark();
 	gameTimer.Mark();
 }
