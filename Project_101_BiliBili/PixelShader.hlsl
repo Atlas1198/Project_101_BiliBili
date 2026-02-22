@@ -57,7 +57,18 @@ float4 BasicPS(
     return base;
 }
 
+float4 PostEffectPS(
+    VSOutPut input //頂点シェーダーから送られてきたデータ構造体
+) : SV_TARGET //レンダーターゲットへ出力
+{
+    float4 base = gTexture.Sample(gSampler, input.uv);
+    
+    // Post-process用の処理を追加
+    base.rgb = pow(base.rgb, 1.0f / 2.2f); // ガンマ補正
+    base.rgb *= 1.5f; // 明るさを上げる
 
+    return base;
+}
 
 float Hash21(float2 p)
 {
