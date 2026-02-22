@@ -4,7 +4,7 @@
 #include "SharedStruct.h"
 #include <vector>
 
-//‘O•ûéŒ¾
+//å‰æ–¹å®£è¨€
 class Renderer;
 class TextureManager;
 class MeshManager;
@@ -12,17 +12,17 @@ class MeshGPU;
 struct NodeAnimationAsset;
 
 //=======================================================================================================
-//—ñ‹“‘ÌŒQ
+//åˆ—æŒ™ä½“ç¾¤
 //=======================================================================================================
 
-//ƒrƒ‹ƒ{[ƒhƒ^ƒCƒv
+//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—
 enum BILLBOARD_TYPE
 {
-	BILLBOARD_NONE,			//ƒrƒ‹ƒ{[ƒh‚È‚µ
-	BILLBOARD_SPHERICAL,	//‘S²ƒrƒ‹ƒ{[ƒh
-	BILLBOARD_FIX_X,		//X²‚Ì‚İ
-	BILLBOARD_FIX_Y,		//Y²‚Ì‚İ
-	BILLBOARD_FIX_Z,		//Z²‚Ì‚İ
+	BILLBOARD_NONE,			//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ãªã—
+	BILLBOARD_SPHERICAL,	//å…¨è»¸ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰
+	BILLBOARD_FIX_X,		//Xè»¸ã®ã¿
+	BILLBOARD_FIX_Y,		//Yè»¸ã®ã¿
+	BILLBOARD_FIX_Z,		//Zè»¸ã®ã¿
 };
 
 enum class VS_ID : uint16_t
@@ -46,6 +46,8 @@ enum class SHADER_DEFINE : uint64_t
 	PS_USE_MASK = 1ull << 32,
 	PS_MULTIPLY_ALPHA_CONTROL = 1ull << 33,
 	PS_USE_LIGHTING = 1ull << 34,
+	PS_OUTLINE_RED = 1ull << 35,
+	PS_OUTLINE_BLUE = 1ull << 36,
 };
 static inline SHADER_DEFINE operator|(SHADER_DEFINE a, SHADER_DEFINE b)
 {
@@ -58,7 +60,7 @@ constexpr bool Has(uint64_t m, SHADER_DEFINE f)
 constexpr uint64_t VS_DEFINE_MASK = 0x00000000FFFFFFFFull;
 constexpr uint64_t PS_DEFINE_MASK = 0xFFFFFFFF00000000ull;
 
-//ƒuƒŒƒ“ƒhƒ‚[ƒh
+//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
 enum BLEND_MODE
 {
 	BLEND_OPAQUE,
@@ -69,7 +71,7 @@ enum BLEND_MODE
 	BLEND_PREMULTIPLY,
 };
 
-//[“xƒXƒeƒ“ƒVƒ‹ƒ‚[ƒh
+//æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ¢ãƒ¼ãƒ‰
 enum DEPTH_MODE
 {
 	DEPTH_DISABLE,
@@ -84,17 +86,17 @@ enum CULL_MODE
 	CULL_BACK,
 };
 
-//ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgƒIƒuƒWƒFƒNƒgƒL[\‘¢‘Ì
+//ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚­ãƒ¼æ§‹é€ ä½“
 struct PSOKey
 {
-	VS_ID vsEntry = VS_ID::Basic;			//’¸“_ƒVƒF[ƒ_[ƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg
-	PS_ID psEntry = PS_ID::Basic;			//ƒsƒNƒZƒ‹ƒVƒF[ƒ_[ƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg
-	BLEND_MODE  blend = BLEND_OPAQUE;		//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	DEPTH_MODE  depth = DEPTH_TEST_WRITE;	//[“xƒXƒeƒ“ƒVƒ‹ƒ‚[ƒh
-	CULL_MODE  cull = CULL_NONE;			//ƒJƒŠƒ“ƒOƒ‚[ƒh
+	VS_ID vsEntry = VS_ID::Basic;			//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆ
+	PS_ID psEntry = PS_ID::Basic;			//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆ
+	BLEND_MODE  blend = BLEND_OPAQUE;		//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	DEPTH_MODE  depth = DEPTH_TEST_WRITE;	//æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ¢ãƒ¼ãƒ‰
+	CULL_MODE  cull = CULL_NONE;			//ã‚«ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰
 	uint64_t defines = 0;
 
-	//“™‰¿‰‰ZqƒI[ƒo[ƒ[ƒh
+	//ç­‰ä¾¡æ¼”ç®—å­ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 	bool operator == (const PSOKey& other) const
 	{
 		return vsEntry == other.vsEntry &&
@@ -127,10 +129,12 @@ struct PSOKey
 inline constexpr PSOKey PSO_KEY_OPAQUE { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, 0 };
 inline constexpr PSOKey PSO_KEY_TRANSPARENT { VS_ID::Basic, PS_ID::Basic, BLEND_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, 0 };
 inline constexpr PSOKey PSO_KEY_MASKED { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_USE_MASK) };
+inline constexpr PSOKey PSO_KEY_OUTLINE_RED { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_OUTLINE_RED) };
+inline constexpr PSOKey PSO_KEY_OUTLINE_BLUE { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_OUTLINE_BLUE) };
 inline constexpr PSOKey PSO_KEY_ADDITIVE { VS_ID::Basic, PS_ID::Basic, BLEND_ADD_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, 0 };
 inline constexpr PSOKey PSO_KEY_MULTIPLY { VS_ID::Basic, PS_ID::Basic, BLEND_MULTIPLY, DEPTH_TEST_NO_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL) };
 
-//ƒnƒbƒVƒ…ŠÖ”ƒI[ƒo[ƒ[ƒh
+//ãƒãƒƒã‚·ãƒ¥é–¢æ•°ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
 struct PSOKeyHash
 {
 	size_t operator()(const PSOKey& k) const noexcept
@@ -159,18 +163,18 @@ static inline RENDER_QUEUE GetRenderQueueFromBlendMode(BLEND_MODE blendMode)
 }
 
 //=======================================================================================================
-//•`‰æî•ñ\‘¢‘ÌŒQ
+//æç”»æƒ…å ±æ§‹é€ ä½“ç¾¤
 //=======================================================================================================
-//‹¤’Ê•`‰æ‹Lq\‘¢‘Ì
+//å…±é€šæç”»è¨˜è¿°æ§‹é€ ä½“
 struct CommonRenderDesc
 {
-	MeshGPU* pMeshGPU = nullptr;							//ƒƒbƒVƒ…ƒf[ƒ^
-	uint32_t srvIndex = UINT32_MAX;							//SRVƒCƒ“ƒfƒbƒNƒX(ƒeƒNƒXƒ`ƒƒ)
-	DirectX::XMFLOAT4 color = { 1,1,1,1 };					//•\¦F
-	DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };		//UV‹éŒ`
-	PSOKey psoKey{};										//ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgƒIƒuƒWƒFƒNƒgƒL[
-	float sortDepth = 0.0f;									//ƒ\[ƒg—p[“x
-	RENDER_QUEUE renderQueue = RENDER_QUEUE_INVALID;		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒLƒ…[
+	MeshGPU* pMeshGPU = nullptr;							//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿
+	uint32_t srvIndex = UINT32_MAX;							//SRVã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹(ãƒ†ã‚¯ã‚¹ãƒãƒ£)
+	DirectX::XMFLOAT4 color = { 1,1,1,1 };					//è¡¨ç¤ºè‰²
+	DirectX::XMFLOAT4 uvRect{ 0.0f, 0.0f, 1.0f, 1.0f };		//UVçŸ©å½¢
+	PSOKey psoKey{};										//ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚­ãƒ¼
+	float sortDepth = 0.0f;									//ã‚½ãƒ¼ãƒˆç”¨æ·±åº¦
+	RENDER_QUEUE renderQueue = RENDER_QUEUE_INVALID;		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚­ãƒ¥ãƒ¼
 };
 
 // Render information structure for world space
@@ -189,28 +193,28 @@ struct WorldRenderInfo
 	NodeAnimationAsset* pNodeAnimAsset = nullptr;	// Pointer to node animation asset
 };
 
-//•`‰æî•ñ\‘¢‘Ì”z—ñŒ^
+//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—å‹
 using WorldRenderModel = std::vector<WorldRenderInfo>;
 
 //=======================================================================================================
-//ƒƒbƒVƒ…Eƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
+//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ»ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 //=======================================================================================================
-//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì
+//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 struct Mesh
 {
-	std::vector<Vertex> vertices;		//’¸“_ƒf[ƒ^”z—ñ
-	size_t vertexCount = 0;				//’¸“_”
-	std::vector<uint32_t> indices;		//ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^”z—ñ
-	size_t indexCount = 0;				//ƒCƒ“ƒfƒbƒNƒX”
-	std::wstring texPath;				//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
-	DirectX::XMFLOAT4 materialColor		//Ş¿F(RGBA)
+	std::vector<Vertex> vertices;		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—
+	size_t vertexCount = 0;				//é ‚ç‚¹æ•°
+	std::vector<uint32_t> indices;		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—
+	size_t indexCount = 0;				//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°
+	std::wstring texPath;				//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+	DirectX::XMFLOAT4 materialColor		//æè³ªè‰²(RGBA)
 	{
-		1.0f,	//ŠgU”½ËFR
-		1.0f,	//ŠgU”½ËFG
-		1.0f,	//ŠgU”½ËFB
-		1.0f	//ŠgU”½ËFA
+		1.0f,	//æ‹¡æ•£åå°„è‰²R
+		1.0f,	//æ‹¡æ•£åå°„è‰²G
+		1.0f,	//æ‹¡æ•£åå°„è‰²B
+		1.0f	//æ‹¡æ•£åå°„è‰²A
 	};
-	NodeAnimationAsset nodeAnimAsset{};	// ƒm[ƒhƒAƒjƒ[ƒVƒ‡ƒ“‘Y
+	NodeAnimationAsset nodeAnimAsset{};	// ãƒãƒ¼ãƒ‰ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è³‡ç”£
 };
 
 // Bone data structure
@@ -236,10 +240,10 @@ struct AnimationClip
 	float ticksPerSecond; // Ticks per second
 };
 
-//ƒ‚ƒfƒ‹ƒf[ƒ^\‘¢‘Ì
+//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 struct Model
 {
-	std::vector<Mesh> meshes;	//ƒƒbƒVƒ…ƒf[ƒ^”z—ñ
+	std::vector<Mesh> meshes;	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿é…åˆ—
 };
 
 //mesh type enumeration
@@ -255,200 +259,200 @@ enum MESH_TYPE
 };
 
 //=======================
-//lŠp•½–Ê
+//å››è§’å¹³é¢
 //=======================
-//lŠp•½–Ê‚Ì’¸“_ƒf[ƒ^
+//å››è§’å¹³é¢ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
 inline constexpr Vertex QuadVertices[4] =
 {
-	{{-0.5f,  0.5f, 0.f},{0,0,1},{0,0},{1,0,0},{1,1,1,1}},	//’¸“_0
-	{{ 0.5f,  0.5f, 0.f},{0,0,1},{1,0},{1,0,0},{1,1,1,1}},	//’¸“_1
-	{{ 0.5f, -0.5f, 0.f},{0,0,1},{1,1},{1,0,0},{1,1,1,1}},	//’¸“_2
-	{{-0.5f, -0.5f, 0.f},{0,0,1},{0,1},{1,0,0},{1,1,1,1}},	//’¸“_3
+	{{-0.5f,  0.5f, 0.f},{0,0,1},{0,0},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹0
+	{{ 0.5f,  0.5f, 0.f},{0,0,1},{1,0},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹1
+	{{ 0.5f, -0.5f, 0.f},{0,0,1},{1,1},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹2
+	{{-0.5f, -0.5f, 0.f},{0,0,1},{0,1},{1,0,0},{1,1,1,1}},	//é ‚ç‚¹3
 };
 
-//lŠp•½–Ê‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^
+//å››è§’å¹³é¢ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿
 inline constexpr uint32_t QuadIndices[6] =
 {
-	0,1,2,	//OŠpŒ`1
-	0,2,3	//OŠpŒ`2
+	0,1,2,	//ä¸‰è§’å½¢1
+	0,2,3	//ä¸‰è§’å½¢2
 };
 
-//lŠp•½–Ê‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//å››è§’å¹³é¢ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 Model MakeQuadModel();
 
 //=======================
-//—§•û‘Ì
+//ç«‹æ–¹ä½“
 //=======================
-//—§•û‘Ì‚Ì’¸“_ƒf[ƒ^(24’¸“_)
+//ç«‹æ–¹ä½“ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿(24é ‚ç‚¹)
 inline constexpr Vertex CubeVertices[24] =
 {
 	// +Z
-	{{-0.5,  0.5,  0.5}, {0,0,1}, {0,0}, {1,0,0}, {1,1,1,1}},	//’¸“_0
-	{{ 0.5,  0.5,  0.5}, {0,0,1}, {1,0}, {1,0,0}, {1,1,1,1}},	//’¸“_1
-	{{ 0.5, -0.5,  0.5}, {0,0,1}, {1,1}, {1,0,0}, {1,1,1,1}},	//’¸“_2
-	{{-0.5, -0.5,  0.5}, {0,0,1}, {0,1}, {1,0,0}, {1,1,1,1}},	//’¸“_3
+	{{-0.5,  0.5,  0.5}, {0,0,1}, {0,0}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹0
+	{{ 0.5,  0.5,  0.5}, {0,0,1}, {1,0}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹1
+	{{ 0.5, -0.5,  0.5}, {0,0,1}, {1,1}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹2
+	{{-0.5, -0.5,  0.5}, {0,0,1}, {0,1}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹3
 
 	// -Z
-	{{ 0.5,  0.5, -0.5}, {0,0,-1}, {0,0}, {-1,0,0}, {1,1,1,1}},	//’¸“_4
-	{{-0.5,  0.5, -0.5}, {0,0,-1}, {1,0}, {-1,0,0}, {1,1,1,1}},	//’¸“_5
-	{{-0.5, -0.5, -0.5}, {0,0,-1}, {1,1}, {-1,0,0}, {1,1,1,1}},	//’¸“_6
-	{{ 0.5, -0.5, -0.5}, {0,0,-1}, {0,1}, {-1,0,0}, {1,1,1,1}},	//’¸“_7
+	{{ 0.5,  0.5, -0.5}, {0,0,-1}, {0,0}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹4
+	{{-0.5,  0.5, -0.5}, {0,0,-1}, {1,0}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹5
+	{{-0.5, -0.5, -0.5}, {0,0,-1}, {1,1}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹6
+	{{ 0.5, -0.5, -0.5}, {0,0,-1}, {0,1}, {-1,0,0}, {1,1,1,1}},	//é ‚ç‚¹7
 
 	// +X
-	{{ 0.5,  0.5,  0.5}, {1,0,0}, {0,0}, {0,0,-1}, {1,1,1,1}},	//’¸“_1
-	{{ 0.5,  0.5, -0.5}, {1,0,0}, {1,0}, {0,0,-1}, {1,1,1,1}},	//’¸“_5
-	{{ 0.5, -0.5, -0.5}, {1,0,0}, {1,1}, {0,0,-1}, {1,1,1,1}},	//’¸“_6
-	{{ 0.5, -0.5,  0.5}, {1,0,0}, {0,1}, {0,0,-1}, {1,1,1,1}},	//’¸“_2
+	{{ 0.5,  0.5,  0.5}, {1,0,0}, {0,0}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹1
+	{{ 0.5,  0.5, -0.5}, {1,0,0}, {1,0}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹5
+	{{ 0.5, -0.5, -0.5}, {1,0,0}, {1,1}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹6
+	{{ 0.5, -0.5,  0.5}, {1,0,0}, {0,1}, {0,0,-1}, {1,1,1,1}},	//é ‚ç‚¹2
 
 	// -X
-	{{-0.5,  0.5, -0.5}, {-1,0,0}, {0,0}, {0,0,1}, {1,1,1,1}},	//’¸“_4
-	{{-0.5,  0.5,  0.5}, {-1,0,0}, {1,0}, {0,0,1}, {1,1,1,1}},	//’¸“_0
-	{{-0.5, -0.5,  0.5}, {-1,0,0}, {1,1}, {0,0,1}, {1,1,1,1}},	//’¸“_3
-	{{-0.5, -0.5, -0.5}, {-1,0,0}, {0,1}, {0,0,1}, {1,1,1,1}},	//’¸“_7
+	{{-0.5,  0.5, -0.5}, {-1,0,0}, {0,0}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹4
+	{{-0.5,  0.5,  0.5}, {-1,0,0}, {1,0}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹0
+	{{-0.5, -0.5,  0.5}, {-1,0,0}, {1,1}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹3
+	{{-0.5, -0.5, -0.5}, {-1,0,0}, {0,1}, {0,0,1}, {1,1,1,1}},	//é ‚ç‚¹7
 
 	// +Y
-	{{-0.5,  0.5, -0.5}, {0,1,0}, {0,0}, {1,0,0}, {1,1,1,1}},		//’¸“_4
-	{{ 0.5,  0.5, -0.5}, {0,1,0}, {1,0}, {1,0,0}, {1,1,1,1}},		//’¸“_5
-	{{ 0.5,  0.5,  0.5}, {0,1,0}, {1,1}, {1,0,0}, {1,1,1,1}},		//’¸“_1
-	{{-0.5,  0.5,  0.5}, {0,1,0}, {0,1}, {1,0,0}, {1,1,1,1}},		//’¸“_0
+	{{-0.5,  0.5, -0.5}, {0,1,0}, {0,0}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹4
+	{{ 0.5,  0.5, -0.5}, {0,1,0}, {1,0}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹5
+	{{ 0.5,  0.5,  0.5}, {0,1,0}, {1,1}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹1
+	{{-0.5,  0.5,  0.5}, {0,1,0}, {0,1}, {1,0,0}, {1,1,1,1}},		//é ‚ç‚¹0
 
 	// -Y
-	{{-0.5, -0.5,  0.5}, {0,-1,0}, {0,0}, {1,0,0}, {1,1,1,1}},	//’¸“_3
-	{{ 0.5, -0.5,  0.5}, {0,-1,0}, {1,0}, {1,0,0}, {1,1,1,1}},	//’¸“_2
-	{{ 0.5, -0.5, -0.5}, {0,-1,0}, {1,1}, {1,0,0}, {1,1,1,1}},	//’¸“_6
-	{{-0.5, -0.5, -0.5}, {0,-1,0}, {0,1}, {1,0,0}, {1,1,1,1}},	//’¸“_7
+	{{-0.5, -0.5,  0.5}, {0,-1,0}, {0,0}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹3
+	{{ 0.5, -0.5,  0.5}, {0,-1,0}, {1,0}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹2
+	{{ 0.5, -0.5, -0.5}, {0,-1,0}, {1,1}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹6
+	{{-0.5, -0.5, -0.5}, {0,-1,0}, {0,1}, {1,0,0}, {1,1,1,1}},	//é ‚ç‚¹7
 };
 
-//—§•û‘Ì‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^
+//ç«‹æ–¹ä½“ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿
 inline constexpr uint32_t CubeIndices[42] =
 {
 	// +Z
-	0,1,2,  0,2,3,			//OŠpŒ`1A2
+	0,1,2,  0,2,3,			//ä¸‰è§’å½¢1ã€2
 	// -Z
-	4,6,5,  4,7,6,			//OŠpŒ`3A4
+	4,6,5,  4,7,6,			//ä¸‰è§’å½¢3ã€4
 	// +X
-	8,9,10,  8,10,11,		//OŠpŒ`5A6
+	8,9,10,  8,10,11,		//ä¸‰è§’å½¢5ã€6
 	// -X
-	12,13,14,  12,14,15,	//OŠpŒ`7A8
+	12,13,14,  12,14,15,	//ä¸‰è§’å½¢7ã€8
 	// +Y
-	16,17,18,  16,18,19,	//OŠpŒ`9A10
+	16,17,18,  16,18,19,	//ä¸‰è§’å½¢9ã€10
 	// -Y
-	20,21,22,  20,22,23		//OŠpŒ`11A12
+	20,21,22,  20,22,23		//ä¸‰è§’å½¢11ã€12
 };
 
-//—§•û‘Ì‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//ç«‹æ–¹ä½“ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 Model MakeCubeModel();
 
 //=======================
-//‰~Œ`•½–Ê
+//å††å½¢å¹³é¢
 //=======================
-//‰~Œ`•½–Ê‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//å††å½¢å¹³é¢ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 Model MakeCircleModel(int slice = 32);
 
 //=======================
-//‹…‘Ì
+//çƒä½“
 //=======================
-//‹…‘Ì‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//çƒä½“ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 Model MakeSphereModel(int slice = 32, int stacks = 16);
 
 //=======================
-//ƒJƒvƒZƒ‹
+//ã‚«ãƒ—ã‚»ãƒ«
 //=======================
-//ƒJƒvƒZƒ‹‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//ã‚«ãƒ—ã‚»ãƒ«ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 Model MakeCapsuleModel(int slice = 32, int stacks = 16);
 
-//ƒJƒvƒZƒ‹‚ÌƒrƒWƒ…ƒAƒ‹‹Lq\‘¢‘Ì
+//ã‚«ãƒ—ã‚»ãƒ«ã®ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«è¨˜è¿°æ§‹é€ ä½“
 struct CapsuleVisualDesc
 {
-	float baseRadius = 0.5f;		//’ê–Ê”¼Œa
-	float basehalfHeight = 0.5f;	//”¼•ª‚Ì‚‚³
+	float baseRadius = 0.5f;		//åº•é¢åŠå¾„
+	float basehalfHeight = 0.5f;	//åŠåˆ†ã®é«˜ã•
 };
 
-//ƒJƒvƒZƒ‹‚Ì•`‰æî•ñ’Ç‰ÁŠÖ”
+//ã‚«ãƒ—ã‚»ãƒ«ã®æç”»æƒ…å ±è¿½åŠ é–¢æ•°
 void AppendCapsuleRenderInfos(
-	const CapsuleVisualDesc& desc,				//ƒJƒvƒZƒ‹•`‰æî•ñ‹Lqq
-	const DirectX::XMFLOAT3& position,			//ˆÊ’u
-	const DirectX::XMFLOAT3& scale,				//ƒXƒP[ƒ‹
-	const DirectX::XMFLOAT3& rotEuler,			//‰ñ“]EulerŠp
-	const DirectX::XMFLOAT4& color,				//F
-	std::vector<WorldRenderInfo>& infos,	//“ü—ÍŒ³•`‰æî•ñ”z—ñ
-	std::vector<WorldRenderInfo>& out	//o—Íæ•`‰æî•ñ”z—ñ
+	const CapsuleVisualDesc& desc,				//ã‚«ãƒ—ã‚»ãƒ«æç”»æƒ…å ±è¨˜è¿°å­
+	const DirectX::XMFLOAT3& position,			//ä½ç½®
+	const DirectX::XMFLOAT3& scale,				//ã‚¹ã‚±ãƒ¼ãƒ«
+	const DirectX::XMFLOAT3& rotEuler,			//å›è»¢Eulerè§’
+	const DirectX::XMFLOAT4& color,				//è‰²
+	std::vector<WorldRenderInfo>& infos,	//å…¥åŠ›å…ƒæç”»æƒ…å ±é…åˆ—
+	std::vector<WorldRenderInfo>& out	//å‡ºåŠ›å…ˆæç”»æƒ…å ±é…åˆ—
 );
 
 //=======================
-//‰~’Œ
+//å††æŸ±
 //=======================
-//‰~’Œ‚ÌƒƒbƒVƒ…ƒf[ƒ^ì¬ŠÖ”
+//å††æŸ±ã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä½œæˆé–¢æ•°
 Model MakeCylinderModel(int slice = 32, int stacks = 16);
 
-//ƒƒbƒVƒ…ƒf[ƒ^æ“¾ŠÖ”
+//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿å–å¾—é–¢æ•°
 inline Model GetModel(MESH_TYPE type)
 {
-	//ƒƒbƒVƒ…ƒ^ƒCƒv‚É‰‚¶‚½ƒƒbƒVƒ…ƒf[ƒ^‚ğ•Ô‚·
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—ã«å¿œã˜ãŸãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’è¿”ã™
 	switch (type)
 	{
-	case QUAD: return MakeQuadModel();			//lŠp•½–Ê
-	case CUBE: return MakeCubeModel();			//—§•û‘Ì
-	case SPHERE: return MakeSphereModel();		//‹…‘Ì
-	case CIRCLE: return MakeCircleModel();		//‰~Œ`•½–Ê
-	case CAPSULE: return MakeCapsuleModel();	//ƒJƒvƒZƒ‹
-	case CYLINDER: return MakeCylinderModel();	//‰~’Œ
-	default:   return {};						//‚»‚Ì‘¼
+	case QUAD: return MakeQuadModel();			//å››è§’å¹³é¢
+	case CUBE: return MakeCubeModel();			//ç«‹æ–¹ä½“
+	case SPHERE: return MakeSphereModel();		//çƒä½“
+	case CIRCLE: return MakeCircleModel();		//å††å½¢å¹³é¢
+	case CAPSULE: return MakeCapsuleModel();	//ã‚«ãƒ—ã‚»ãƒ«
+	case CYLINDER: return MakeCylinderModel();	//å††æŸ±
+	default:   return {};						//ãã®ä»–
 	}
 }
 
 //=======================================================================================================
-//•`‰æî•ñì¬ŠÖ”ŒQ
+//æç”»æƒ…å ±ä½œæˆé–¢æ•°ç¾¤
 //=======================================================================================================
-//ƒ‚ƒfƒ‹ƒf[ƒ^–”‚ÍƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
+//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
 void CreateRenderInfo(
-	TextureManager& textureManager,			//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,				//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	std::vector<WorldRenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	MESH_TYPE mType,						//ƒƒbƒVƒ…ƒ^ƒCƒv
-	PSOKey psoKey,							//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	const wchar_t* path,					//ƒ‚ƒfƒ‹ƒf[ƒ^–”‚ÍƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	bool lightEneble = true,				//ƒ‰ƒCƒg—LŒøor–³Œø
-	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ƒrƒ‹ƒ{[ƒhƒ^ƒCƒv
-	bool inverseU = false,					//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©(ƒ‚ƒfƒ‹ƒf[ƒ^‚Ìê‡‚Ì‚İ—LŒø)
-	bool inverseV = false					//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©(ƒ‚ƒfƒ‹ƒf[ƒ^‚Ìê‡‚Ì‚İ—LŒø)
+	TextureManager& textureManager,			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,				//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	std::vector<WorldRenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	MESH_TYPE mType,						//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+	PSOKey psoKey,							//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	const wchar_t* path,					//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	bool lightEneble = true,				//ãƒ©ã‚¤ãƒˆæœ‰åŠ¹orç„¡åŠ¹
+	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—
+	bool inverseU = false,					//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹(ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã®å ´åˆã®ã¿æœ‰åŠ¹)
+	bool inverseV = false					//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹(ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã®å ´åˆã®ã¿æœ‰åŠ¹)
 );
 
-//FBXƒtƒ@ƒCƒ‹‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
+//FBXãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
 void CreateRenderInfoFromFBX(
-	TextureManager& textureManager,			//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,				//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	std::vector<WorldRenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	PSOKey psoKey,							//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	const wchar_t* path,					//ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	bool lightEneble,						//ƒ‰ƒCƒg—LŒøor–³Œø
-	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ƒrƒ‹ƒ{[ƒhƒ^ƒCƒv
-	bool inverseU = false,					//U‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
-	bool inverseV = false					//V‚ğ”½“]‚·‚é‚©‚Ç‚¤‚©
+	TextureManager& textureManager,			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,				//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	std::vector<WorldRenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	PSOKey psoKey,							//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	const wchar_t* path,					//ãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+	bool lightEneble,						//ãƒ©ã‚¤ãƒˆæœ‰åŠ¹orç„¡åŠ¹
+	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—
+	bool inverseU = false,					//Uã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
+	bool inverseV = false					//Vã‚’åè»¢ã™ã‚‹ã‹ã©ã†ã‹
 );
 
-//ƒfƒtƒHƒ‹ƒg‚ÌƒƒbƒVƒ…ƒf[ƒ^‚©‚ç•`‰æî•ñ‚ğì¬‚·‚éŠÖ”
+//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æç”»æƒ…å ±ã‚’ä½œæˆã™ã‚‹é–¢æ•°
 void CreateRenderInfoFromDefaultMesh(
-	TextureManager& textureManager,			//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,				//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	std::vector<WorldRenderInfo>* pInfo,	//•`‰æî•ñ\‘¢‘Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	MESH_TYPE type,							//ƒƒbƒVƒ…ƒ^ƒCƒv
-	PSOKey psoKey,							//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	const wchar_t* path,					//ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ@ƒCƒ‹–¼
-	bool lightEneble,						//ƒ‰ƒCƒg—LŒøor–³Œø
-	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ƒrƒ‹ƒ{[ƒhƒ^ƒCƒv
+	TextureManager& textureManager,			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,				//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	std::vector<WorldRenderInfo>* pInfo,	//æç”»æƒ…å ±æ§‹é€ ä½“é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	MESH_TYPE type,							//ãƒ¡ãƒƒã‚·ãƒ¥ã‚¿ã‚¤ãƒ—
+	PSOKey psoKey,							//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	const wchar_t* path,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚¡ã‚¤ãƒ«å
+	bool lightEneble,						//ãƒ©ã‚¤ãƒˆæœ‰åŠ¹orç„¡åŠ¹
+	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—
 );
 
-//ƒƒbƒVƒ…ƒf[ƒ^‚©‚ç•`‰æî•ñ‚ğ\’z‚·‚éŠÖ”
+//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰æç”»æƒ…å ±ã‚’æ§‹ç¯‰ã™ã‚‹é–¢æ•°
 CommonRenderDesc CreateRenderInfoFromMeshData(
-	TextureManager& textureManager,			//ƒeƒNƒXƒ`ƒƒƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	MeshManager& meshManager,				//ƒƒbƒVƒ…ƒ}ƒl[ƒWƒƒ‚Ö‚ÌQÆ
-	Mesh& mesh,					//ƒƒbƒVƒ…ƒf[ƒ^\‘¢‘Ì‚Ö‚ÌQÆ
-	PSOKey psoKey,							//ƒuƒŒƒ“ƒhƒ‚[ƒh
-	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ƒrƒ‹ƒ{[ƒhƒ^ƒCƒv
+	TextureManager& textureManager,			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	MeshManager& meshManager,				//ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒãƒ¼ã‚¸ãƒ£ã¸ã®å‚ç…§
+	Mesh& mesh,					//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã¸ã®å‚ç…§
+	PSOKey psoKey,							//ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ—
 );
 
-//•`‰æî•ñ”z—ñ‚ÆƒWƒIƒƒgƒŠî•ñ‚©‚ç’ño—p•`‰æî•ñ”z—ñ‚ğ\’z‚·‚éŠÖ”
+//æç”»æƒ…å ±é…åˆ—ã¨ã‚¸ã‚ªãƒ¡ãƒˆãƒªæƒ…å ±ã‹ã‚‰æå‡ºç”¨æç”»æƒ…å ±é…åˆ—ã‚’æ§‹ç¯‰ã™ã‚‹é–¢æ•°
 WorldRenderModel BuildRenderInfoForSubmit(
 	const WorldRenderModel& input,
 	MESH_TYPE meshType = MESH_TYPE::QUAD,

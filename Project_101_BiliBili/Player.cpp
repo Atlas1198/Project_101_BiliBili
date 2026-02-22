@@ -157,6 +157,8 @@ void Player::UpdateOverride()
 		Shoot();
 		//Rotate();
 		//Scale();
+
+		m_pOutline->SetPosition(m_position);
 	}
 }
 
@@ -185,6 +187,8 @@ void Player::ResolveCollisionsOverride()
 	m_position.x += pushVector.x;
 	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
+
+	m_pOutline->SetPosition(m_position);
 
 	m_isGrounded = false;
 
@@ -581,6 +585,8 @@ void Player::UpdateAnimation()
 			m_texSplitInfo.frameCount = 0;
 		}
 	}
+
+	m_pOutline->SetTexSplitInfo(m_texSplitInfo);
 }
 
 void Player::Shoot()
@@ -700,6 +706,17 @@ void Player::Reset()
 	canRun = false;
 	runTimerStarted = false;
 	bbSlowMoveSpeed = false;
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 3;
+	texInfo.rows = 8;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.frameCount = 0;
+	texInfo.updateRate = 0;
+
+	m_texSplitInfo = texInfo;
+
 	runTimer.Mark();
 	gameTimer.Mark();
 }

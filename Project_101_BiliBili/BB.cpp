@@ -189,11 +189,11 @@ void BB::SetTeamId(int id)
 
 		if(m_teamId == 0)
 		{
-			color = XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ); //青
+			color = XMFLOAT4(0.188f, 0.78f, 1.0f, 1.0f); //青
 		}
 		else if(m_teamId == 1)
 		{
-			color = XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ); //赤
+			color = XMFLOAT4(1.0f, 0.188f, 0.188f, 1.0f); //赤
 		}
 
 		m_lineBB[i]->SetColor(color);
