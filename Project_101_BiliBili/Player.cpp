@@ -157,6 +157,8 @@ void Player::UpdateOverride()
 		Shoot();
 		//Rotate();
 		//Scale();
+
+		m_pOutline->SetPosition(m_position);
 	}
 }
 
@@ -185,6 +187,8 @@ void Player::ResolveCollisionsOverride()
 	m_position.x += pushVector.x;
 	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
+
+	m_pOutline->SetPosition(m_position);
 
 	m_isGrounded = false;
 
@@ -294,6 +298,7 @@ void Player::ShakeController(float leftMotor, float rightMotor, int duration)
 
 void Player::StartDamageAnimation()
 {
+	if (damageAnimation) return;
 	damageAnimation = true;
 	damageAnimTimer.Mark();
 }
@@ -517,6 +522,34 @@ void Player::UpdateAnimation()
 {
 	if (!bbActive && isShooting)
 	{
+		DirectX::XMFLOAT3 matePos = teammate->GetPosition();
+		DirectX::XMVECTOR vThis = DirectX::XMLoadFloat3(&m_position);
+		DirectX::XMVECTOR vMate = DirectX::XMLoadFloat3(&matePos);
+
+		DirectX::XMVECTOR vDir = DirectX::XMVectorSubtract(vMate, vThis);
+
+		bool down = DirectX::XMVectorGetZ(vDir) < 0.0f;
+		bool left = DirectX::XMVectorGetX(vDir) < 0.0f;
+
+		int direction = 0;
+
+		if (down && left)
+			direction = 1;
+		else if (down && !left)
+			direction = 7;
+		else if (!down && !left)
+			direction = 5;
+		else if (!down && left)
+			direction = 3;
+		else if (!down)
+			direction = 4;
+		else if (down)
+			direction = 0;
+		else if (left)
+			direction = 2;
+		else if (!left)
+			this->direction = 6;
+
 		m_texSplitInfo.frameCount++;
 		m_texSplitInfo.index = direction * 3 + 2;
 
@@ -552,6 +585,8 @@ void Player::UpdateAnimation()
 			m_texSplitInfo.frameCount = 0;
 		}
 	}
+
+	m_pOutline->SetTexSplitInfo(m_texSplitInfo);
 }
 
 void Player::Shoot()
@@ -671,6 +706,17 @@ void Player::Reset()
 	canRun = false;
 	runTimerStarted = false;
 	bbSlowMoveSpeed = false;
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 3;
+	texInfo.rows = 8;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.frameCount = 0;
+	texInfo.updateRate = 0;
+
+	m_texSplitInfo = texInfo;
+
 	runTimer.Mark();
 	gameTimer.Mark();
 }

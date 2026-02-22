@@ -5,6 +5,7 @@
 #include "BulletManager.h"
 #include "EventType.h"
 #include "PlayerShadow.h"
+#include "PlayerOutline.h"
 
 //前方宣言
 class Renderer;
@@ -30,9 +31,11 @@ public:
 private:
 	std::vector<Player*> m_pPlayer = std::vector<Player*>();	//プレイヤーオブジェクト配列
 	std::vector<PlayerShadow *> m_pPlayerShadow = std::vector<PlayerShadow *>();	//プレイヤーの影オブジェクト配列
+	std::vector<PlayerOutline *> m_pPlayerOutline = std::vector<PlayerOutline *>(); //プレイヤーの輪郭オブジェクト配列
 	std::vector<WorldRenderInfo> m_playerInfo[4];					//プレイヤー描画情報
 	std::vector<WorldRenderInfo> m_playerTransformInfo[4];			//プレイヤー変身描画情報
 	std::vector<WorldRenderInfo> m_shadowInfo;						//影描画情報
+	std::vector<WorldRenderInfo> m_outlineInfo[2][4][2]; // 輪郭描画情報 [チームID][キャラクターID][BBアクティブフラグ]
 	float teamHP[2] = { 1.0f, 1.0f };							//チームの体力
 	bool teamBBActive[2] = { false, false };					//チームのBBアクティブフラグ
 	bool sentBBEnhanceEvent[2] = { false, false };			//チームのBB強化イベント送信フラグ

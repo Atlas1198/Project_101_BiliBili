@@ -25,6 +25,8 @@ void PlayerShadow::UpdateOverride()
 	// プレイヤーの位置に影を追従させる
 	DirectX::XMFLOAT3 playerPos = m_pPlayer->GetPosition();
 	m_position.x = playerPos.x;
-	//m_position.y = playerPos.y - 0.1f; // 地面に少し浮かせる
+	m_scale.x = std::max(0.5f, 7.5f - (playerPos.y - m_position.y) * 0.2f);
+	m_scale.y = std::max(0.5f, 4.5f - (playerPos.y - m_position.y) * 0.1f);
+	m_scale.z = std::max(0.5f, 7.5f - (playerPos.y - m_position.y) * 0.2f);
 	m_position.z = playerPos.z;
 }
