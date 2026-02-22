@@ -36,7 +36,7 @@ private:	//非公開メンバ変数
 	int animUpdateRate = 10; // アニメーションの更新速度
 	bool isMoving = false; // 移動中フラグ
 	bool isShooting = false; // 射撃中フラグ
-	int shootAnimDuration = 5; // 射撃アニメーションの持続フレーム数
+	int shootAnimDuration = 10; // 射撃アニメーションの持続フレーム数
 	bool bbActive = false; // BBアクティブフラグ
 	bool canRun = false;
 	bool runTimerStarted = false;

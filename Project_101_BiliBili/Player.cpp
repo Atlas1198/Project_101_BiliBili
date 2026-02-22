@@ -517,6 +517,34 @@ void Player::UpdateAnimation()
 {
 	if (!bbActive && isShooting)
 	{
+		DirectX::XMFLOAT3 matePos = teammate->GetPosition();
+		DirectX::XMVECTOR vThis = DirectX::XMLoadFloat3(&m_position);
+		DirectX::XMVECTOR vMate = DirectX::XMLoadFloat3(&matePos);
+
+		DirectX::XMVECTOR vDir = DirectX::XMVectorSubtract(vMate, vThis);
+
+		bool down = DirectX::XMVectorGetZ(vDir) < 0.0f;
+		bool left = DirectX::XMVectorGetX(vDir) < 0.0f;
+
+		int direction = 0;
+
+		if (down && left)
+			direction = 1;
+		else if (down && !left)
+			direction = 7;
+		else if (!down && !left)
+			direction = 5;
+		else if (!down && left)
+			direction = 3;
+		else if (!down)
+			direction = 4;
+		else if (down)
+			direction = 0;
+		else if (left)
+			direction = 2;
+		else if (!left)
+			this->direction = 6;
+
 		m_texSplitInfo.frameCount++;
 		m_texSplitInfo.index = direction * 3 + 2;
 
