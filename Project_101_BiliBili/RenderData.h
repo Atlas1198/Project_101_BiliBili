@@ -28,12 +28,14 @@ enum BILLBOARD_TYPE
 enum class VS_ID : uint16_t
 {
 	Basic = 0,
+	PostEffect = 1,
 };
 
 enum class PS_ID : uint16_t
 {
 	Basic = 0,
 	BBSceneEffect = 1,
+	PostEffect = 2,
 };
 
 enum class SHADER_DEFINE : uint64_t
@@ -77,6 +79,7 @@ enum DEPTH_MODE
 	DEPTH_TEST_NO_WRITE,
 };
 
+//カリングモード
 enum CULL_MODE
 {
 	CULL_NONE,
@@ -84,14 +87,22 @@ enum CULL_MODE
 	CULL_BACK,
 };
 
+// Render target formats (LDR vs HDR)
+enum RENDER_TARGET_FORMAT
+{
+	RTV_FORMAT_LDR = 0,
+	RTV_FORMAT_HDR = 1,
+};
+
 //パイプラインステートオブジェクトキー構造体
 struct PSOKey
 {
-	VS_ID vsEntry = VS_ID::Basic;			//頂点シェーダーエントリポイント
-	PS_ID psEntry = PS_ID::Basic;			//ピクセルシェーダーエントリポイント
-	BLEND_MODE  blend = BLEND_OPAQUE;		//ブレンドモード
-	DEPTH_MODE  depth = DEPTH_TEST_WRITE;	//深度ステンシルモード
-	CULL_MODE  cull = CULL_NONE;			//カリングモード
+	VS_ID vsEntry = VS_ID::Basic;					//頂点シェーダーエントリポイント
+	PS_ID psEntry = PS_ID::Basic;					//ピクセルシェーダーエントリポイント
+	BLEND_MODE  blend = BLEND_OPAQUE;				//ブレンドモード
+	DEPTH_MODE  depth = DEPTH_TEST_WRITE;			//深度ステンシルモード
+	CULL_MODE  cull = CULL_NONE;					//カリングモード
+	RENDER_TARGET_FORMAT rtvFormat = RTV_FORMAT_LDR;	//レンダーターゲットのフォーマット
 	uint64_t defines = 0;
 
 	//等価演算子オーバーロード
@@ -102,7 +113,8 @@ struct PSOKey
 			defines == other.defines &&
 			blend == other.blend &&
 			depth == other.depth &&
-			cull == other.cull;
+			cull == other.cull &&
+			rtvFormat == other.rtvFormat;
 	}
 	bool operator != (const PSOKey& other) const
 	{
@@ -124,11 +136,11 @@ struct PSOKey
 	}
 };
 
-inline constexpr PSOKey PSO_KEY_OPAQUE { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, 0 };
-inline constexpr PSOKey PSO_KEY_TRANSPARENT { VS_ID::Basic, PS_ID::Basic, BLEND_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, 0 };
-inline constexpr PSOKey PSO_KEY_MASKED { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_USE_MASK) };
-inline constexpr PSOKey PSO_KEY_ADDITIVE { VS_ID::Basic, PS_ID::Basic, BLEND_ADD_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, 0 };
-inline constexpr PSOKey PSO_KEY_MULTIPLY { VS_ID::Basic, PS_ID::Basic, BLEND_MULTIPLY, DEPTH_TEST_NO_WRITE, CULL_NONE, static_cast<uint64_t>(SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL) };
+inline constexpr PSOKey PSO_KEY_OPAQUE { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, RTV_FORMAT_LDR, 0 };
+inline constexpr PSOKey PSO_KEY_TRANSPARENT { VS_ID::Basic, PS_ID::Basic, BLEND_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, RTV_FORMAT_LDR, 0 };
+inline constexpr PSOKey PSO_KEY_MASKED { VS_ID::Basic, PS_ID::Basic, BLEND_OPAQUE, DEPTH_TEST_WRITE, CULL_NONE, RTV_FORMAT_LDR, static_cast<uint64_t>(SHADER_DEFINE::PS_USE_MASK) };
+inline constexpr PSOKey PSO_KEY_ADDITIVE { VS_ID::Basic, PS_ID::Basic, BLEND_ADD_ALPHA, DEPTH_TEST_NO_WRITE, CULL_NONE, RTV_FORMAT_LDR, 0 };
+inline constexpr PSOKey PSO_KEY_MULTIPLY { VS_ID::Basic, PS_ID::Basic, BLEND_MULTIPLY, DEPTH_TEST_NO_WRITE, CULL_NONE, RTV_FORMAT_LDR, static_cast<uint64_t>(SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL) };
 
 //ハッシュ関数オーバーロード
 struct PSOKeyHash
@@ -141,6 +153,7 @@ struct PSOKeyHash
 		hc(std::hash<int>{}(static_cast<int>(k.blend)));
 		hc(std::hash<int>{}(static_cast<int>(k.depth)));
 		hc(std::hash<int>{}(static_cast<int>(k.cull)));
+		hc(std::hash<int>{}(static_cast<int>(k.rtvFormat)));
 		hc(std::hash<uint64_t>{}(k.defines));
 		return h;
 	}
@@ -187,6 +200,8 @@ struct WorldRenderInfo
 		= BILLBOARD_TYPE::BILLBOARD_NONE;	// Billboard type
 
 	NodeAnimationAsset* pNodeAnimAsset = nullptr;	// Pointer to node animation asset
+
+	bool isPostEffect = false;	// Whether this is a post-effect (used for special handling in rendering)
 };
 
 //描画情報構造体配列型
@@ -410,6 +425,7 @@ void CreateRenderInfo(
 	const wchar_t* path,					//モデルデータ又はテクスチャファイルのパス
 	bool lightEneble = true,				//ライト有効or無効
 	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
+	bool postEffect = false,				//ポストエフェクト用かどうか
 	bool inverseU = false,					//Uを反転するかどうか(モデルデータの場合のみ有効)
 	bool inverseV = false					//Vを反転するかどうか(モデルデータの場合のみ有効)
 );
@@ -422,6 +438,7 @@ void CreateRenderInfoFromFBX(
 	PSOKey psoKey,							//ブレンドモード
 	const wchar_t* path,					//モデルファイルのパス
 	bool lightEneble,						//ライト有効or無効
+	bool isPostEffect = false,				//ポストエフェクト用かどうか
 	BILLBOARD_TYPE bType = BILLBOARD_NONE,	//ビルボードタイプ
 	bool inverseU = false,					//Uを反転するかどうか
 	bool inverseV = false					//Vを反転するかどうか
@@ -436,16 +453,17 @@ void CreateRenderInfoFromDefaultMesh(
 	PSOKey psoKey,							//ブレンドモード
 	const wchar_t* path,					//テクスチャのファイル名
 	bool lightEneble,						//ライト有効or無効
+	bool isPostEffect = false,				//ポストエフェクト用かどうか
 	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
 );
 
-//メッシュデータから描画情報を構築する関数
+//メッシュデータから共通描画記述構造体を作成する関数
 CommonRenderDesc CreateRenderInfoFromMeshData(
-	TextureManager& textureManager,			//テクスチャマネージャへの参照
-	MeshManager& meshManager,				//メッシュマネージャへの参照
-	Mesh& mesh,					//メッシュデータ構造体への参照
-	PSOKey psoKey,							//ブレンドモード
-	BILLBOARD_TYPE bType = BILLBOARD_NONE	//ビルボードタイプ
+	TextureManager& textureManager, 
+	MeshManager& meshManager, 
+	Mesh& mesh, 
+	PSOKey psoKey, 
+	BILLBOARD_TYPE bType
 );
 
 //描画情報配列とジオメトリ情報から提出用描画情報配列を構築する関数

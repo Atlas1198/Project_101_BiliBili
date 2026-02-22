@@ -16,6 +16,14 @@ struct PendingTextureUpload
 	uint32_t srvIndex;									//SRVディスクリプタインデックス
 };
 
+// Reserved SRV indices for special textures
+enum class TEXTURE_SRV_INDEX_RESERVED : uint32_t
+{
+	POST_PROCESSING = 0,	// Reserved index for post-processing texture
+	DEFAULT_TEXTURE,		// Reserved index for default white texture
+	RESERVED_COUNT			// Count of reserved indices
+};
+
 // テクスチャマネージャークラス
 class TextureManager
 {
@@ -40,17 +48,25 @@ public:
 		const std::wstring& path	//ファイルパス
 	);
 
+	uint32_t AllocateSrv();	// Allocate SRV descriptor index (for manually created textures)
+	void CreateSrv(			// Create SRV for a texture resource
+		ID3D12Resource* pResource,	// Texture resource
+		DXGI_FORMAT format,			// Texture format
+		uint32_t srvIndex			// SRV descriptor index
+	);
+
 	void UploadPendingTextures(ID3D12GraphicsCommandList* cmdList);	//アップロード待ちテクスチャをアップロード
 
 	ID3D12DescriptorHeap* GetSrvHeap() const;	//SRVヒープを取得(ここにSRVが格納されている)
 	UINT GetSrvIncrementSize() const;			//SRVディスクリプタのインクリメントサイズを取得
 
-	uint32_t GetDefaultWhiteTextureIndex() const;	//デフォルトの白テクスチャのSRVインデックスを取得
+	uint32_t GetPostProcessingTextureIndex() const;	// Get post-processing texture index
+	uint32_t GetDefaultTextureIndex() const;		// Get default texture index
 private:
-	ComPtr<ID3D12DescriptorHeap> m_pSrvHeap;	//SRVディスクリプタヒープ(テクスチャのSRVが格納される)
-
-	UINT m_srvIncrementSize = 0;	//SRVディスクリプタのインクリメントサイズ
-	UINT m_nextFreeIndex = 0;		//次に使用可能なディスクリプタインデックス
+	// SRV management
+	ComPtr<ID3D12DescriptorHeap> m_pSrvHeap;												// SRV descriptor heap (where texture SRVs are stored)
+	UINT m_srvIncrementSize = 0;															//SRVディスクリプタのインクリメントサイズ
+	UINT m_nextFreeIndex = static_cast<UINT>(TEXTURE_SRV_INDEX_RESERVED::RESERVED_COUNT);	//次に使用可能なディスクリプタインデックス
 
 	std::unordered_map<std::wstring, uint32_t> m_loadedTextures;	//読み込まれたテクスチャのマップ
 	std::vector<ComPtr<ID3D12Resource>> m_textures;					//テクスチャリソース配列
@@ -59,5 +75,6 @@ private:
 
 	ID3D12Device* m_pDevice = nullptr;	//デバイス
 
-	uint32_t m_defaultTextureIndex = UINT32_MAX; //デフォルトテクスチャのSRVインデックス
+private:
+	void CreateDefaultTexture();	// Create default texture
 };

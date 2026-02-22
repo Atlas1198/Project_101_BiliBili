@@ -1300,9 +1300,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		L"asset/fbx/Neji/ST_neji.fbx",	//テクスチャのファイル名
 		true,
-		BILLBOARD_NONE,
-		false,
-		false
+		BILLBOARD_NONE
 	);
 
 	CreateRenderInfo(
@@ -1313,9 +1311,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		PSO_KEY_MASKED,		//ブレンドモード
 		L"asset/fbx/hole/ST_hole.fbx",	//テクスチャのファイル名
 		false,
-		BILLBOARD_NONE,
-		false,
-		false
+		BILLBOARD_NONE
 	);
 
 	CreateRenderInfo(
@@ -1326,9 +1322,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		L"asset/fbx/USB/ST_wall_USB.fbx",	//テクスチャのファイル名
 		true,
-		BILLBOARD_NONE,
-		false,
-		false
+		BILLBOARD_NONE
 	);
 
 	CreateRenderInfo(
@@ -1339,9 +1333,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		L"asset/fbx/Driver/ST_driver_R.fbx",	//テクスチャのファイル名
 		true,
-		BILLBOARD_NONE,
-		false,
-		false
+		BILLBOARD_NONE
 	);
 
 	CreateRenderInfo(
@@ -1352,9 +1344,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		L"asset/fbx/Spray/ST_spray_R.fbx",	//テクスチャのファイル名
 		true,
-		BILLBOARD_NONE,
-		false,
-		false
+		BILLBOARD_NONE
 	);
 
 	CreateRenderInfo(
@@ -1399,8 +1389,6 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		PSO_KEY_MASKED,		//ブレンドモード
 		groundTexPath.c_str(),	//テクスチャのファイル名
 		true,
-		BILLBOARD_NONE,
-		false,
-		false
+		BILLBOARD_NONE
 	);
 }

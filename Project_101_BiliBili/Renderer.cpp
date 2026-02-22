@@ -8,6 +8,7 @@
 #include "SharedStruct.h"
 #include "AssimpLoader.h"
 #include "ShaderLibrary.h"
+#include "Debug.h"
 
 using namespace DirectX;
 
@@ -75,6 +76,9 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo, TextureManag
 	//ベーシックPSOの生成
 	PSOKey defaultKey{};
 	m_pDefaultPSO = CreatePipelineStateObject(defaultKey);
+
+	//ポストエフェクト用PSOキーの設定
+	PreparePostProcessKey();
 }
 
 //更新
@@ -109,10 +113,8 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 }
 
 //描画
-void Renderer::Draw(
-	UINT index,									//描画インデックス（未使用）
-	ID3D12GraphicsCommandList* p_commandList	//コマンドリスト
-)
+//描画
+void Renderer::Draw(ID3D12GraphicsCommandList* p_commandList, RENDER_TARGET_TYPE targetType)
 {
 	//デスクリプタヒープの設定
 	ID3D12DescriptorHeap* heaps[] = { m_pTextureManager->GetSrvHeap() };	//SRVヒープの取得
@@ -121,20 +123,30 @@ void Renderer::Draw(
 	//ルートシグネチャの設定
 	p_commandList->SetGraphicsRootSignature(m_pRootSignature->GetRootSignature());
 
-	//パイプラインステートオブジェクトごとにソート
-	SortRenderListWorldByPSO();
-	SortRenderListScreenByPSO();
-
-	DrawTempRenderListWorld(p_commandList);
-	DrawTempRenderListScreen(p_commandList);
+	if (targetType == RENDER_TARGET_TYPE::POST_PROCESS)
+	{
+		SortRenderListWorldByPSO(m_tempWorldRenderListPostProcess);	//PSOキーでワールド座標用描画リストをソート
+		DrawTempWorldRenderListPostProcess(p_commandList);
+	}
+	else
+	{
+		SortRenderListWorldByPSO(m_tempWorldRenderList);	//PSOキーでワールド座標用描画リストをソート
+		SortRenderListScreenByPSO(m_tempScreenRenderList);	//PSOキーでスクリーン座標用描画リストをソート
+		DrawPostProcess(p_commandList);
+		DrawTempRenderListWorld(p_commandList);
+		DrawTempRenderListScreen(p_commandList);
+	}
 }
 
 //フレーム開始
 void Renderer::BeginFrame(UINT backIndex)
 {
 	m_currBackIndex = backIndex;	//現在のバックバッファインデックスを保存
-	m_tempWorldRenderList.clear();	//一時描画リストのクリア
-	m_tempScreenRenderList.clear();	//一時描画リストのクリア
+
+	//一時描画リストのクリア
+	m_tempWorldRenderListPostProcess.clear();
+	m_tempWorldRenderList.clear();
+	m_tempScreenRenderList.clear();
 }
 
 //ワールド座標用描画リストに描画要求を追加
@@ -142,14 +154,17 @@ void Renderer::SubmitToWorldList(const WorldRenderModel& info)
 {
 	for (const auto& item : info)
 	{
+		auto& list = item.isPostEffect ? m_tempWorldRenderListPostProcess : m_tempWorldRenderList;
+
 		WorldRenderInfo itemRef = item;
+		if (item.isPostEffect) itemRef.common.psoKey.rtvFormat = RENDER_TARGET_FORMAT::RTV_FORMAT_HDR;	//ポストエフェクト用のPSOキーはHDRレンダーターゲットフォーマットを使用
 		NormalizeKeyForRenderQueueWorld(itemRef);						//レンダリングキューに応じたパイプラインステートオブジェクトキーの正規化
 		itemRef.common.sortDepth = CalcSortDepth(item.position);	//ソート用深度の計算と設定
 		if (itemRef.common.srvIndex == UINT32_MAX)
 		{
-			itemRef.common.srvIndex = m_pTextureManager->GetDefaultWhiteTextureIndex(); //白テクスチャのインデックスを使用
+			itemRef.common.srvIndex = m_pTextureManager->GetDefaultTextureIndex(); //白テクスチャのインデックスを使用
 		}
-		m_tempWorldRenderList.push_back(itemRef);	//一時描画リストに追加
+		list.push_back(itemRef);	//一時描画リストに追加
 	}
 }
 
@@ -163,7 +178,7 @@ void Renderer::SubmitToScreenList(const WorldRenderModel& info)
 		itemRef.common.sortDepth = CalcSortDepth(item.position); //ソート用深度の計算と設定
 		if (itemRef.common.srvIndex == UINT32_MAX)
 		{
-			itemRef.common.srvIndex = m_pTextureManager->GetDefaultWhiteTextureIndex(); //白テクスチャのインデックスを使用
+			itemRef.common.srvIndex = m_pTextureManager->GetDefaultTextureIndex(); //白テクスチャのインデックスを使用
 		}
 		m_tempScreenRenderList.push_back(itemRef);	//一時描画リストに追加
 	}
@@ -264,6 +279,7 @@ void Renderer::DrawTempRenderListWorld(ID3D12GraphicsCommandList* p_commandList)
 		//SRVの設定
 		auto heapHandle = m_pTextureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
 		uint32_t idx = m_tempWorldRenderList[i].common.srvIndex;
+
 		auto gpuHandle = heapHandle;
 		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
 		p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
@@ -382,6 +398,137 @@ void Renderer::DrawTempRenderListScreen(ID3D12GraphicsCommandList* p_commandList
 	}
 }
 
+//一時描画リストの描画（ポストプロセス用）
+void Renderer::DrawTempWorldRenderListPostProcess(ID3D12GraphicsCommandList* p_commandList)
+{
+	PSOKey compare{};
+
+	for (size_t i = 0; i < m_tempWorldRenderListPostProcess.size(); i++)
+	{
+		auto& item = m_tempWorldRenderListPostProcess[i];
+
+		//パイプラインステートオブジェクトの設定
+		if (i == 0)
+		{
+			auto pso = GetPipelineStateObject(item.common.psoKey);		//パイプラインステートを取得
+			p_commandList->SetPipelineState(pso->GetPipelineState());	//パイプラインステートをセット
+			compare = item.common.psoKey;
+		}
+		else if (compare != item.common.psoKey)
+		{
+			auto pso = GetPipelineStateObject(item.common.psoKey);		//パイプラインステートを取得
+			p_commandList->SetPipelineState(pso->GetPipelineState());	//パイプラインステートをセット
+		}
+
+		compare = item.common.psoKey;
+
+		// フレームごとのCBVプールを必要数まで確保
+		if (i >= m_objectCBWorldPostProcess.size())
+		{
+			//新しい定数バッファを作成
+			auto* newCb = new ConstantBuffer(m_pDevice, sizeof(PerObjectConstants));
+
+			if (!newCb->GetIsValid())
+			{//作成失敗時
+				OutputDebugStringA("ConstantBuffer creation failed\n");
+				delete newCb;
+				break;
+			}
+
+			//プールに追加
+			m_objectCBWorldPostProcess.push_back(newCb);
+		}
+
+		//オブジェクト用定数バッファの取得
+		ConstantBuffer* cb = m_objectCBWorldPostProcess[i];
+		auto* ptr = cb->GetPtr<PerObjectConstants>();
+
+		//定数バッファに transform を書く（各オブジェクト専用のメモリ）
+
+		if (item.billboardType != BILLBOARD_NONE)
+		{//ビルボードの場合
+			//ビルボード用のワールド行列を計算してセット
+			ptr->worldMatrix = CalcBillBoard(item);
+		}
+		else
+		{//通常のワールド行列の場合
+			ptr->worldMatrix = item.world;	//ワールド行列
+		}
+		ptr->worldInvTranspose = XMMatrixTranspose(XMMatrixInverse(nullptr, ptr->worldMatrix)); //ワールド逆転置行列
+		ptr->viewMatrix = m_worldView;			//ビュー行列
+		ptr->projMatrix = m_worldProj;			//プロジェクション行列
+		ptr->objectColor = item.common.color;	//オブジェクトの色
+		ptr->uvRect = item.common.uvRect;		//UV矩形
+		XMFLOAT4 direction_intensity =
+		{
+			m_directionalLight.direction.x,
+			m_directionalLight.direction.y,
+			m_directionalLight.direction.z,
+			m_directionalLight.intensity
+		};
+		XMFLOAT4 color_amobient = XMFLOAT4(
+			m_directionalLight.color.x,
+			m_directionalLight.color.y,
+			m_directionalLight.color.z,
+			m_directionalLight.ambient
+		);
+		ptr->lightDir_Intensity = direction_intensity;
+		ptr->lightColor_Ambient = color_amobient;
+
+		//メッシュGPUデータの取得
+		auto meshGPU = item.common.pMeshGPU;
+
+		//セットアップ
+		auto vbv = meshGPU->GetVertexBuffer()->GetView();						//頂点バッファビューの取得
+		auto ibv = meshGPU->GetIndexBuffer()->GetView();						//インデックスバッファビューの取得
+		p_commandList->SetGraphicsRootConstantBufferView(0, cb->GetAddress());	//ルートパラメータ0に定数バッファをセット
+		p_commandList->IASetPrimitiveTopology(meshGPU->GetTopology());			//プリミティブトポロジの設定
+		p_commandList->IASetVertexBuffers(0, 1, &vbv);							//頂点バッファの設定
+		p_commandList->IASetIndexBuffer(&ibv);									//インデックスバッファの設定
+
+		//SRVの設定
+		auto heapHandle = m_pTextureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();	//SRVヒープのGPUハンドルを取得
+		uint32_t idx = item.common.srvIndex;
+
+		auto gpuHandle = heapHandle;
+		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
+		p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+
+		//描画コマンドの発行
+		p_commandList->DrawIndexedInstanced(	//描画コマンド
+			meshGPU->GetIndexCount(),	//インデックス数
+			1,							//インスタンス数
+			item.startIndex,			//スタートインデックス位置
+			item.baseVertex,			//ベース頂点位置
+			0							//スタートインスタンス位置
+		);
+	}
+}
+
+//ポストプロセス描画
+void Renderer::DrawPostProcess(ID3D12GraphicsCommandList* p_commandList)
+{
+	//パイプラインステートオブジェクトの設定
+	auto pso = GetPipelineStateObject(m_postProcessKey);		//ポストプロセス用のパイプラインステートを取得
+	if (pso == m_pDefaultPSO) {
+		OutputDebugStringA("[PostProcess] FALLBACK to DEFAULT PSO\n");
+	}
+	p_commandList->SetPipelineState(pso->GetPipelineState());	//ポストプロセス用のパイプラインステートをセット
+
+	//SRVの設定
+	auto gpuHandle = m_pTextureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();	//SRVヒープのGPUハンドルを取得
+	uint32_t idx = static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::POST_PROCESSING);
+	gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
+	p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+
+	//フルスクリーンポリゴンの描画
+	D3D12_VERTEX_BUFFER_VIEW nullVBV{};
+	p_commandList->IASetVertexBuffers(0, 1, &nullVBV);
+	p_commandList->IASetIndexBuffer(nullptr);
+	p_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	//プリミティブトポロジの設定
+	p_commandList->DrawInstanced(3, 1, 0, 0);	//描画コマンドの発行（フルスクリーン三角形）
+}
+
 //ビルボード計算
 XMMATRIX Renderer::CalcBillBoard(const WorldRenderInfo& info)
 {
@@ -496,14 +643,23 @@ PipelineState* Renderer::CreatePipelineStateObject(const PSOKey& key)
 
 	// Create a new pipeline state object
 	pso = new PipelineState(m_pDevice);
-	pso->SetInputLayout(Vertex::InputLayout);
+	if (key.vsEntry == VS_ID::PostEffect)
+	{
+		pso->SetInputLayout(nullptr, 0); // ポストエフェクト用のPSOは頂点入力レイアウトを使用しない
+	}
+	else
+	{
+		pso->SetInputLayout(Vertex::InputLayout);
+	}
 	pso->SetRootSignature(m_pRootSignature->GetRootSignature());
 	pso->SetVertexShader(vs.Get());
 	pso->SetPixelShader(ps.Get());
 	pso->SetBlendMode(key.blend);
 	pso->SetDepthMode(key.depth);
 	pso->SetCullMode(key.cull);
+	pso->SetFormat(key.rtvFormat);
 	pso->Create();
+
 
 	// Check if creation was successful
 	if (!pso->IsValid())
@@ -518,14 +674,14 @@ PipelineState* Renderer::CreatePipelineStateObject(const PSOKey& key)
 }
 
 //描画リストをPSO別にソート
-void Renderer::SortRenderListWorldByPSO()
+void Renderer::SortRenderListWorldByPSO(std::vector<WorldRenderInfo>& renderList)
 {
 	//一時描画リストをレンダリングキュー別に分割
 	std::vector<WorldRenderInfo> opaque;
 	std::vector<WorldRenderInfo> transparent;
 
 	//分割処理
-	for (const auto& renderInfo : m_tempWorldRenderList)
+	for (const auto& renderInfo : renderList)
 	{
 		switch (renderInfo.common.renderQueue)
 		{
@@ -554,14 +710,14 @@ void Renderer::SortRenderListWorldByPSO()
 			return TransparentLess(a, b);
 		});
 
-
 	//ソート済みリストを結合
-	m_tempWorldRenderList.clear();
-	m_tempWorldRenderList.insert(m_tempWorldRenderList.end(), opaque.begin(), opaque.end());
-	m_tempWorldRenderList.insert(m_tempWorldRenderList.end(), transparent.begin(), transparent.end());
+	renderList.clear();
+	renderList.insert(renderList.end(), opaque.begin(), opaque.end());
+	renderList.insert(renderList.end(), transparent.begin(), transparent.end());
 }
 
-void Renderer::SortRenderListScreenByPSO()
+//スクリーン座標用描画リストをPSO別にソート
+void Renderer::SortRenderListScreenByPSO(std::vector<WorldRenderInfo>& renderList)
 {
 }
 
@@ -584,4 +740,18 @@ void Renderer::NormalizeKeyForRenderQueueScreen(WorldRenderInfo& info)
 	{
 		info.common.psoKey.depth = DEPTH_MODE::DEPTH_DISABLE;
 	}
+}
+
+//Post-process用のPSOKeyの準備
+void Renderer::PreparePostProcessKey()
+{
+	PSOKey key{};
+	key.vsEntry = VS_ID::PostEffect;
+	key.psEntry = PS_ID::PostEffect;
+	key.blend = BLEND_MODE::BLEND_OPAQUE;
+	key.depth = DEPTH_MODE::DEPTH_DISABLE;
+	key.cull = CULL_MODE::CULL_NONE;
+	key.rtvFormat = RENDER_TARGET_FORMAT::RTV_FORMAT_LDR;
+
+	m_postProcessKey = key;
 }
