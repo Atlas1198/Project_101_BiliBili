@@ -294,6 +294,7 @@ void Player::ShakeController(float leftMotor, float rightMotor, int duration)
 
 void Player::StartDamageAnimation()
 {
+	if (damageAnimation) return;
 	damageAnimation = true;
 	damageAnimTimer.Mark();
 }
