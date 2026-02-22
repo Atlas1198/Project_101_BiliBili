@@ -68,13 +68,44 @@ FieldManager::~FieldManager()
 	m_pDrivers.clear();
 
 	//スプレーオブジェクトの解放
-	for (auto& driver : m_pDrivers)
+	for (auto& spray : m_pSprays_R)
 	{
-		delete driver;
-		driver = nullptr;
+		delete spray;
+		spray = nullptr;
 	}
-	m_pDrivers.clear();
+	m_pSprays_R.clear();
 
+	//スプレーオブジェクトの解放
+	for (auto& spray : m_pSprays_B)
+	{
+		delete spray;
+		spray = nullptr;
+	}
+	m_pSprays_B.clear();
+
+	//チップオブジェクトの解放
+	for (auto& chip : m_pChips)
+	{
+		delete chip;
+		chip = nullptr;
+	}
+	m_pChips.clear();
+
+	//バッテリーオブジェクトの解放
+	for (auto& battery : m_pBatterys)
+	{
+		delete battery;
+		battery = nullptr;
+	}
+	m_pBatterys.clear();
+
+	//スパナオブジェクトの解放
+	for (auto& spanner : m_pSpanners)
+	{
+		delete spanner;
+		spanner = nullptr;
+	}
+	m_pSpanners.clear();
 
 }
 
@@ -162,7 +193,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		m_pDrivers.push_back(d);
 	};
 
-	auto Sprays = [&](const XMFLOAT3& pos, const XMFLOAT3& rotate, const XMFLOAT3 scale)
+	auto Sprays_R = [&](const XMFLOAT3& pos, const XMFLOAT3& rotate, const XMFLOAT3 scale)
 	{
 		auto* s = new NoCollisionModel(
 			MESH_TYPE::CUBE,
@@ -173,7 +204,63 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 			true,
 			ColliderType::BOX
 		);
-		m_pSprays.push_back(s);
+		m_pSprays_R.push_back(s);
+	};
+
+	auto Sprays_B = [&](const XMFLOAT3& pos, const XMFLOAT3& rotate, const XMFLOAT3 scale)
+	{
+		auto* s = new NoCollisionModel(
+			MESH_TYPE::CUBE,
+			pos,
+			rotate,
+			scale,
+			XMFLOAT3(0, 0, 0),
+			true,
+			ColliderType::BOX
+		);
+		m_pSprays_B.push_back(s);
+	};
+
+	auto Chips = [&](const XMFLOAT3& pos, const XMFLOAT3& rotate, const XMFLOAT3 scale)
+	{
+		auto* s = new NoCollisionModel(
+			MESH_TYPE::CUBE,
+			pos,
+			rotate,
+			scale,
+			XMFLOAT3(0, 0, 0),
+			true,
+			ColliderType::BOX
+		);
+		m_pChips.push_back(s);
+	};
+
+	auto Batterys = [&](const XMFLOAT3& pos, const XMFLOAT3& rotate, const XMFLOAT3 scale)
+	{
+		auto* b = new NoCollisionModel(
+			MESH_TYPE::CUBE,
+			pos,
+			rotate,
+			scale,
+			XMFLOAT3(0, 0, 0),
+			true,
+			ColliderType::BOX
+		);
+		m_pBatterys.push_back(b);
+	};
+
+	auto Spanners = [&](const XMFLOAT3& pos, const XMFLOAT3& rotate, const XMFLOAT3 scale)
+	{
+		auto* b = new NoCollisionModel(
+			MESH_TYPE::CUBE,
+			pos,
+			rotate,
+			scale,
+			XMFLOAT3(0, 0, 0),
+			true,
+			ColliderType::BOX
+		);
+		m_pSpanners.push_back(b);
 	};
 
 	m_pWallPasses.push_back(
@@ -361,9 +448,11 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		//飾りのモデル
 		//-------------
 		
-		Drivers(XMFLOAT3(27.0f, -5.0f, 10.0f), XMFLOAT3(0.0f, -100.0f, 0.0f), XMFLOAT3(4.5f, 4.5f, 4.5f));
+		Drivers(XMFLOAT3(28.0f, -5.0f, 15.0f), XMFLOAT3(0.0f, -115.0f, 0.0f), XMFLOAT3(3.5f, 3.5f, 3.5f));
 
-		Sprays(XMFLOAT3(-30.0f, -5.0f, 18.0f), XMFLOAT3(0.0f, -45.0f, 0.0f), XMFLOAT3(4.5f, 4.5f, 4.5f));
+		Sprays_R(XMFLOAT3(-30.0f, -5.0f, 18.0f), XMFLOAT3(0.0f, -45.0f, 0.0f), XMFLOAT3(4.5f, 4.5f, 4.5f));
+
+		Chips(XMFLOAT3(15.0f, -5.0f, 30.5f), XMFLOAT3(0.0f, 30.0f, 0.0f), XMFLOAT3(2.5f, 2.5f, 2.5f));
 
 		break;
 	case STAGE_TYPE::STAGE_RED:	//赤基盤
@@ -435,6 +524,14 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 		WallPasses(XMFLOAT3(5.0f, -5.5f, 6.0f));
 		WallPasses(XMFLOAT3(5.0f, -5.5f, 8.5f));
 
+		//-------------
+		//飾りのモデル
+		//-------------
+		Chips(XMFLOAT3(-32.0f, -5.0f, 30.0f), XMFLOAT3(0.0f, 30.0f, 0.0f), XMFLOAT3(2.5f, 2.5f, 2.5f));
+
+		Sprays_B(XMFLOAT3(31.0f, -5.0f, 21.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(4.0f, 4.0f, 4.0f));
+
+		Spanners(XMFLOAT3(-30.5f, -5.0f, 12.0f), XMFLOAT3(0.0f, -70.0f, 0.0f), XMFLOAT3(2.8f, 2.8f, 2.8f));
 		break;
 	case STAGE_TYPE::STAGE_BLUE: //あお基盤
 		//-------------
@@ -549,6 +646,14 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 			XMFLOAT3(0.0f, -90.0f, 0.0f)
 		);
 
+		//-------------
+		//飾りのモデル
+		//-------------
+		Drivers(XMFLOAT3(18.0f, -5.0f, 22.5f), XMFLOAT3(0.0f, -175.0f, 0.0f), XMFLOAT3(3.5f, 3.5f, 3.5f));
+
+		Chips(XMFLOAT3(0.0f, -5.0f, 29.5f), XMFLOAT3(0.0f, 30.0f, 0.0f), XMFLOAT3(2.5f, 2.5f, 2.5f));
+
+		Batterys(XMFLOAT3(-29.0f, -5.0f, 21.0f), XMFLOAT3(0.0f, -45.0f, 0.0f), XMFLOAT3(2.8f, 2.8f, 2.8f));
 
 		break;
 	case static_cast<STAGE_TYPE>(4): //劉星案１
@@ -1168,24 +1273,6 @@ void FieldManager::UpdateOverride()
 			i->Update();
 		}
 	}
-
-	//ドライバー更新
-	for (auto& i : m_pDrivers)
-	{
-		if (i->IsActive())
-		{
-			i->Update();
-		}
-	}
-
-	//スプレー更新
-	for (auto& i : m_pSprays)
-	{
-		if (i->IsActive())
-		{
-			i->Update();
-		}
-	}
 }
 
 //描画要求をシーンに提出
@@ -1242,12 +1329,52 @@ void FieldManager::SubmitDrawsOverride(Renderer& renderer)
 	}
 
 	//スプレー描画情報をシーンに提出
-	for (auto& spray : m_pSprays)
+	for (auto& spray : m_pSprays_R)
 	{//描画要求をシーンに提出
 		SubmitRenderInfo(
 			renderer,		//シーンの参照
 			*spray,			//ゲームオブジェクト配列の参照
-			m_sprayInfo		//壁描画情報
+			m_spray_rInfo		//壁描画情報
+		);
+	}
+
+	//スプレー描画情報をシーンに提出
+	for (auto& spray : m_pSprays_B)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*spray,			//ゲームオブジェクト配列の参照
+			m_spray_bInfo		//壁描画情報
+		);
+	}
+
+	//チップ描画情報をシーンに提出
+	for (auto& chip : m_pChips)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*chip,			//ゲームオブジェクト配列の参照
+			m_chipInfo		//壁描画情報
+		);
+	}
+
+	//バッテリー描画情報をシーンに提出
+	for (auto& battery : m_pBatterys)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*battery,			//ゲームオブジェクト配列の参照
+			m_batteryInfo		//壁描画情報
+		);
+	}
+
+	//スパナ描画情報をシーンに提出
+	for (auto& spanner : m_pSpanners)
+	{//描画要求をシーンに提出
+		SubmitRenderInfo(
+			renderer,		//シーンの参照
+			*spanner,			//ゲームオブジェクト配列の参照
+			m_spannerInfo		//壁描画情報
 		);
 	}
 
@@ -1275,7 +1402,11 @@ void FieldManager::FinalizeOverride()
 	m_pWallCurves.clear();
 	m_pSprings.clear();
 	m_pDrivers.clear();
-	m_pSprays.clear();
+	m_pSprays_R.clear();
+	m_pSprays_B.clear();
+	m_pChips.clear();
+	m_pBatterys.clear();
+	m_pSpanners.clear();
 	m_pGrounds.clear();
 
 
@@ -1284,7 +1415,11 @@ void FieldManager::FinalizeOverride()
 	m_wallCurveInfo.clear();
 	m_springInfo.clear();
 	m_driverInfo.clear();
-	m_sprayInfo.clear();
+	m_spray_rInfo.clear();
+	m_spray_bInfo.clear();
+	m_chipInfo.clear();
+	m_batteryInfo.clear();
+	m_spannerInfo.clear();
 	m_groundInfo.clear();
 }
 
@@ -1347,10 +1482,62 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 	CreateRenderInfo(
 		textureManager,					//テクスチャマネージャへの参照
 		meshManager,					//メッシュマネージャへの参照
-		&m_sprayInfo,					//描画情報構造体配列へのポインタ
+		&m_spray_bInfo,					//描画情報構造体配列へのポインタ
+		MESH_TYPE::IMPORT,
+		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
+		L"asset/fbx/Spray/ST_spray_B.fbx",	//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_spray_rInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
 		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		L"asset/fbx/Spray/ST_spray_R.fbx",	//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_chipInfo,					//描画情報構造体配列へのポインタ
+		MESH_TYPE::IMPORT,
+		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
+		L"asset/fbx/Chip/ST_chip.fbx",	//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_batteryInfo,					//描画情報構造体配列へのポインタ
+		MESH_TYPE::IMPORT,
+		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
+		L"asset/fbx/Battery/ST_battery_Y.fbx",	//テクスチャのファイル名
+		true,
+		BILLBOARD_NONE,
+		false,
+		false
+	);
+
+	CreateRenderInfo(
+		textureManager,					//テクスチャマネージャへの参照
+		meshManager,					//メッシュマネージャへの参照
+		&m_spannerInfo,					//描画情報構造体配列へのポインタ
+		MESH_TYPE::IMPORT,
+		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
+		L"asset/fbx/Spanner/ST_spanner.fbx",	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
 		false,
@@ -1396,7 +1583,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		meshManager,					//メッシュマネージャへの参照
 		&m_groundInfo,					//描画情報構造体配列へのポインタ
 		MESH_TYPE::IMPORT,
-		PSO_KEY_MASKED,		//ブレンドモード
+		PSO_KEY_MASKED.WithLighting(),		//ブレンドモード
 		groundTexPath.c_str(),	//テクスチャのファイル名
 		true,
 		BILLBOARD_NONE,
