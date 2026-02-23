@@ -138,28 +138,15 @@ void Player::UpdateOverride()
 			}
 		}
 
-		Move();		//移動
-
-		/*
-		Vec3 spawnPoses[4] = {
-		{-13.0f, -4.0f, 18.0f},
-		{13.0f, -4.0f, 18.0f},
-		{-13.0f, -4.0f, -8.0f},
-		{13.0f, -4.0f, -8.0f}
-	};
-		*/
-
-		/*if (m_position.x < -22.5f) m_position.x = 22.1f;
-		if (m_position.x > 22.5f) m_position.x = -22.1f;
-		if (m_position.z < -8.5f) m_position.z = 18.1f;
-		if (m_position.z > 18.5f) m_position.z = -8.1f;*/
-
-		Shoot();
-		//Rotate();
-		//Scale();
-
 		m_pOutline->SetPosition(m_position);
 	}
+}
+
+void Player::InputRelatedUpdate()
+{
+	//入力関連の更新
+	Move();		//移動
+	Shoot();	//射撃
 }
 
 void Player::ResolveCollisionsOverride()
@@ -204,6 +191,7 @@ void Player::ResolveCollisionsOverride()
 			// ★ここ：着地時の滑り防止（バネジャンプ後なら水平速度も止める）
 			if (m_isSpringJump)
 			{
+				m_position.y += pushVector.y;
 				m_velocity.x = 0.0f;
 				m_velocity.z = 0.0f;
 			}

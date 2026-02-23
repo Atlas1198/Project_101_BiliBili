@@ -40,6 +40,8 @@ private:
 	bool teamBBActive[2] = { false, false };					//チームのBBアクティブフラグ
 	bool sentBBEnhanceEvent[2] = { false, false };			//チームのBB強化イベント送信フラグ
 
+	bool m_isInputAccepted = false;	//入力受け付けフラグ
+
 	std::vector<EventData> m_subscribedEvents;	//購読しているイベント配列
 
 public:
@@ -73,6 +75,8 @@ public:
 
 	//ゲッター
 	std::vector<Player*>& GetPlayers(); // プレイヤーオブジェクト配列を取得
+
+	void SetInputAccepted(bool accepted) { m_isInputAccepted = accepted; } // 入力受け付けフラグのセット
 
 private:	//非公開関数
 	void PrepareRenderInfo(	//プレイヤー描画情報生成

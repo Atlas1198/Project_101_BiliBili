@@ -81,7 +81,7 @@ void PlayerManager::InitializeOverride(
 		}
 	) });
 
-	
+	m_isInputAccepted = false;
 
 	//チームの体力を初期化
 	for(auto& hp : teamHP)
@@ -215,7 +215,26 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 		int winnerCharacter1ID = m_pPlayer[winningTeamID * 2]->GetCharacterID();
 		int winnerCharacter2ID = m_pPlayer[winningTeamID * 2 + 1]->GetCharacterID();
 
-		EventManager::GetInstance()->TriggerEvent<std::tuple<bool, int, int, int>>(EventType::GAME_OVER, std::make_tuple(true, winningTeamID, winnerCharacter1ID, winnerCharacter2ID));
+		//最後に被弾したプレイヤーを取得
+		int lastDamagedPlayerIndex = -1;
+		int p1Index = teamID * 2;
+		int p2Index = teamID * 2 + 1;
+		auto& loserP1 = m_pPlayer[p1Index];
+		auto& loserP2 = m_pPlayer[p2Index];
+		bool p1Damaged = loserP1->IsDamageAnimation();
+		bool p2Damaged = loserP2->IsDamageAnimation();
+		if(p1Damaged == p2Damaged)
+		{//両方とも同時に被弾している場合は先にダメージアニメーションに入った方を被弾プレイヤーとする
+			FrameTimer player1DamageTimer = loserP1->GetDamageAnimTimer();
+			FrameTimer player2DamageTimer = loserP2->GetDamageAnimTimer();
+			lastDamagedPlayerIndex = (player1DamageTimer.Peek() >= player2DamageTimer.Peek()) ? p1Index : p2Index;
+		}
+		else
+		{
+			lastDamagedPlayerIndex = p1Damaged ? p1Index : p2Index;
+		}
+		m_pPlayer[lastDamagedPlayerIndex]->GetDamageAnimTimer().Mark();
+		EventManager::GetInstance()->TriggerEvent<std::tuple<bool, int, int, int, int>>(EventType::GAME_OVER, std::make_tuple(true, winningTeamID, winnerCharacter1ID, winnerCharacter2ID, lastDamagedPlayerIndex));
 	}
 }
 
@@ -241,6 +260,9 @@ void PlayerManager::UpdateOverride()
 	for (auto player : m_pPlayer)
 	{
 		player->Update();
+		if(m_isInputAccepted) 		{
+			player->InputRelatedUpdate();
+		}
 	}
 
 	for (auto shadow : m_pPlayerShadow)

@@ -57,20 +57,28 @@ class ResultBehavior : public Behavior
 {
 	enum class SUB_STATE
 	{
+		CAMERA_MOVE,
 		FIRST_WAIT,
 		SHOW_RESULT,
 		THANK_YOU_SCREEN,
 	};
+
 public:
 	static constexpr int PRESS_DURATION = 90;
 	ResultBehavior(GameScene* gameScene) : m_pGameScene(gameScene) {}
 	void Update() override;
-private:
-	GameScene* m_pGameScene = nullptr;				// ゲームシーンへのポインタ
-	SUB_STATE m_subState = SUB_STATE::FIRST_WAIT;	// リザルトサブ状態
-	int m_pressTimer = 0;							// ボタンが押されている時間をカウントするタイマー
+	void SetCameraStartPosition(const DirectX::XMFLOAT3& startPosition) { m_cameraStartPosition = startPosition; }
+	void SetCameraDestination(const DirectX::XMFLOAT3& destination) { m_cameraDestination = destination; }
 
 private:
+	GameScene* m_pGameScene = nullptr;							// ゲームシーンへのポインタ
+	SUB_STATE m_subState = SUB_STATE::CAMERA_MOVE;				// リザルトサブ状態
+	int m_pressTimer = 0;										// ボタンが押されている時間をカウントするタイマー
+	DirectX::XMFLOAT3 m_cameraStartPosition{ 0.0f, 0.0f, 0.0f };// カメラの開始位置(ゲーム終了時に設定)
+	DirectX::XMFLOAT3 m_cameraDestination{ 0.0f, 0.0f, 0.0f };	// カメラの目的地(ゲーム終了時に設定)
+
+private:
+	void HandleCameraMove();		// カメラ移動状態の処理
 	void HandleFirstWait();			// 最初の待機状態の処理
 	void HandleShowResult();		// リザルト表示状態の処理
 	void HandleThankYouScreen();	// エンディング画面表示状態の処理
@@ -79,6 +87,10 @@ private:
 //ゲームシーンクラス
 class GameScene : public SceneBase
 {
+public:
+	static constexpr DirectX::XMFLOAT3 IN_GAME_CAMERA_POSITION = { 0.0f, 70.0f, -50.0f };	//ゲーム中のカメラ位置
+	static constexpr DirectX::XMFLOAT3 IN_GAME_CAMERA_TARGET = { 0.0f, 0.0f, 3.5f };	//ゲーム中のカメラターゲット
+	static constexpr float IN_GAME_CAMERA_FOV = 20.0f;	//ゲーム中のカメラ視野角
 public:	//公開関数
 	GameScene(float window_width, float window_height);	//コンストラクタ
 	~GameScene();										//デストラクタ
@@ -118,6 +130,7 @@ private:
 	int m_winner = -1;
 	int m_character1ID = -1;
 	int m_character2ID = -1;
+	DirectX::XMFLOAT3 m_lastDamagedPlayerPosition = { 0.0f, 0.0f, 0.0f }; // 最後にダメージを受けたプレイヤーの位置
 
 	Behavior* m_currentBehavior = nullptr; // 現在のビヘイビア
 	BegginningBehavior* m_begginningBehavior = nullptr;

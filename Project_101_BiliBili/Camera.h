@@ -10,8 +10,8 @@
 class Camera
 {
 public:	//公開定数
-	static constexpr  DirectX::XMFLOAT3 DEFAULT_POSITION = DirectX::XMFLOAT3(0.0f, 14.0f, -14.0f);		//デフォルトのカメラ位置
-	static constexpr  DirectX::XMFLOAT3 DEFAULT_TARGET = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//デフォルトの注視点
+	static constexpr  DirectX::XMFLOAT3 DEFAULT_POSITION = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//デフォルトのカメラ位置
+	static constexpr  DirectX::XMFLOAT3 DEFAULT_TARGET = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);		//デフォルトの注視点
 	static constexpr  DirectX::XMFLOAT3 DEFAULT_UP = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);			//デフォルトの上方向ベクトル
 
 	static constexpr float DEFAULT_FOV = DirectX::XM_PIDIV2 * 1.1f;	//デフォルトの垂直視野角(45度)
@@ -44,6 +44,7 @@ public:	//公開メンバ関数
 		float screenHeight					//画面高さ
 	);
 
+	void Reset();									//カメラをデフォルトの位置、注視点、上方向ベクトルにリセット
 	void CallShakeCamera(int time, float strength);	// Shake camera
 
 private:	//非公開メンバ変数
@@ -52,6 +53,9 @@ private:	//非公開メンバ変数
 	DirectX::XMFLOAT3 m_up{};		//カメラの上方向ベクトル
 	DirectX::XMFLOAT3 m_right{};	//カメラの右方向ベクトル
 	DirectX::XMFLOAT3 m_forward{};	//カメラの前方向ベクトル
+
+	float m_screenWidth = 0.0f;		//画面幅
+	float m_screenHeight = 0.0f;	//画面高さ
 
 	float m_fov = 0.0f;			//垂直視野角
 	float m_aspectRatio = 0.0f;	//アスペクト比
