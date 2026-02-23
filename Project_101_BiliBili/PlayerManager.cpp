@@ -301,11 +301,11 @@ void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 	{
 		int characterID = m_pPlayer[i]->GetCharacterID();
 
-		ObjectManagerBase::SubmitRenderInfo(
-			renderer,		//シーンの参照
-			*m_pPlayerOutline[i],		//ゲームオブジェクト配列の参照
-			m_outlineInfo[m_pPlayer[i]->GetTeamID()][characterID][teamBBActive[m_pPlayer[i]->GetTeamID()] ? 1 : 0]	//プレイヤー描画情報
-		);
+		//ObjectManagerBase::SubmitRenderInfo(
+		//	renderer,		//シーンの参照
+		//	*m_pPlayerOutline[i],		//ゲームオブジェクト配列の参照
+		//	m_outlineInfo[m_pPlayer[i]->GetTeamID()][characterID][teamBBActive[m_pPlayer[i]->GetTeamID()] ? 1 : 0]	//プレイヤー描画情報
+		//);
 
 		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
@@ -317,7 +317,9 @@ void PlayerManager::SubmitDrawsOverride(Renderer& renderer)
 		ObjectManagerBase::SubmitRenderInfo(
 			renderer,		//シーンの参照
 			*m_pPlayer[i],		//ゲームオブジェクト配列の参照
-			teamBBActive[m_pPlayer[i]->GetTeamID()] ? m_playerTransformInfo[characterID] : m_playerInfo[characterID]	//プレイヤー描画情報
+			teamBBActive[m_pPlayer[i]->GetTeamID()] ? 
+			m_playerTransformInfo[characterID][m_pPlayer[i]->GetTeamID()] : 
+			m_playerInfo[characterID][m_pPlayer[i]->GetTeamID()]	//プレイヤー描画情報
 		);
 	}
 }
@@ -345,32 +347,51 @@ void PlayerManager::PrepareRenderInfo(
 
 	wchar_t shadowTexture[] = L"asset/texture/player/shadow_CH.png";
 
+	PSOKey teamOutlineKeys[2];
+	
+	teamOutlineKeys[0] = PSO_KEY_TRANSPARENT.AddDefines({
+			SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL,
+			SHADER_DEFINE::PS_OUTLINE,
+			SHADER_DEFINE::OUTLINE_BLUE
+		});
+
+	teamOutlineKeys[0].blend = BLEND_PREMULTIPLY;
+
+	teamOutlineKeys[1] = PSO_KEY_TRANSPARENT.AddDefines({
+		SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL,
+		SHADER_DEFINE::PS_OUTLINE,
+		SHADER_DEFINE::OUTLINE_RED
+		});
+
+	teamOutlineKeys[1].blend = BLEND_PREMULTIPLY;
+
 	for (int i = 0; i < 4; i++)
 	{
 
-		auto key = PSO_KEY_TRANSPARENT.AddDefines({ SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL });
-		key.blend = BLEND_PREMULTIPLY;
-		CreateRenderInfo(
-			textureManager,					//テクスチャマネージャへの参照
-			meshManager,					//メッシュマネージャへの参照
-			&m_playerInfo[i],					//描画情報構造体配列へのポインタ
-			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-			key,
-			normalTextures[i],		//テクスチャのファイル名
-			false,							//ライト無効
-			BILLBOARD_TYPE::BILLBOARD_FIX_X
-		);
+		for (int teamID = 0; teamID < 2; teamID++)
+		{
+			CreateRenderInfo(
+				textureManager,					//テクスチャマネージャへの参照
+				meshManager,					//メッシュマネージャへの参照
+				&m_playerInfo[i][teamID],					//描画情報構造体配列へのポインタ
+				m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+				teamOutlineKeys[teamID],
+				normalTextures[i],		//テクスチャのファイル名
+				false,							//ライト無効
+				BILLBOARD_TYPE::BILLBOARD_FIX_X
+			);
 
-		CreateRenderInfo(
-			textureManager,					//テクスチャマネージャへの参照
-			meshManager,					//メッシュマネージャへの参照
-			&m_playerTransformInfo[i],			//描画情報構造体配列へのポインタ
-			m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
-			PSO_KEY_MASKED,		//ブレンドモード
-			bbTextures[i],		//テクスチャのファイル名
-			false,							//ライト無効
-			BILLBOARD_TYPE::BILLBOARD_FIX_X
-		);
+			CreateRenderInfo(
+				textureManager,					//テクスチャマネージャへの参照
+				meshManager,					//メッシュマネージャへの参照
+				&m_playerTransformInfo[i][teamID],			//描画情報構造体配列へのポインタ
+				m_pPlayer[0]->GetMeshType(),	//メッシュタイプ
+				teamOutlineKeys[teamID],		//ブレンドモード
+				bbTextures[i],		//テクスチャのファイル名
+				false,							//ライト無効
+				BILLBOARD_TYPE::BILLBOARD_FIX_X
+			);
+		}
 
 		CreateRenderInfo(
 			textureManager,					//テクスチャマネージャへの参照
@@ -383,21 +404,21 @@ void PlayerManager::PrepareRenderInfo(
 			BILLBOARD_TYPE::BILLBOARD_FIX_X
 		);
 
-		for (int teamID = 0; teamID < 2; teamID++)
-		{
-			for (int bbActive = 0; bbActive < 2; bbActive++)
-			{
-				CreateRenderInfo(
-					textureManager,					//テクスチャマネージャへの参照
-					meshManager,					//メッシュマネージャへの参照
-					&m_outlineInfo[teamID][i][bbActive],			//描画情報構造体配列へのポインタ
-					MESH_TYPE::QUAD,	//メッシュタイプ
-					teamID == 0 ? PSO_KEY_OUTLINE_BLUE : PSO_KEY_OUTLINE_RED,		//ブレンドモード
-					bbActive == 0 ? normalTextures[i] : bbTextures[i],		//テクスチャのファイル名
-					false,							//ライト無効
-					BILLBOARD_TYPE::BILLBOARD_FIX_X
-				);
-			}
-		}
+		//for (int teamID = 0; teamID < 2; teamID++)
+		//{
+		//	for (int bbActive = 0; bbActive < 2; bbActive++)
+		//	{
+		//		CreateRenderInfo(
+		//			textureManager,					//テクスチャマネージャへの参照
+		//			meshManager,					//メッシュマネージャへの参照
+		//			&m_outlineInfo[teamID][i][bbActive],			//描画情報構造体配列へのポインタ
+		//			MESH_TYPE::QUAD,	//メッシュタイプ
+		//			teamID == 0 ? PSO_KEY_OUTLINE_BLUE : PSO_KEY_OUTLINE_RED,		//ブレンドモード
+		//			bbActive == 0 ? normalTextures[i] : bbTextures[i],		//テクスチャのファイル名
+		//			false,							//ライト無効
+		//			BILLBOARD_TYPE::BILLBOARD_FIX_X
+		//		);
+		//	}
+		//}
 	}
 }

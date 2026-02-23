@@ -42,16 +42,58 @@ float4 BasicPS(
     float3 lit = color * (ambient + dotValue * intensity);
     base = float4(base.rgb * lit, base.a);
 #endif
+#ifdef PS_OUTLINE
+
+    float4 OutlineColor = float4(1.0, 0.0, 0.0, 1.0);
     
-#ifdef PS_OUTLINE_RED
-    clip(base.a - 0.1f);
-    
-    return float4(1.0f, 0.188f, 0.188f, 1.0f);
+#ifdef OUTLINE_RED
+    OutlineColor = float4(1.0f, 0.188f, 0.188f, 1.0f);
 #endif
-#ifdef PS_OUTLINE_BLUE
-    clip(base.a - 0.1f);
+#ifdef OUTLINE_BLUE
+    OutlineColor = float4(0.188f, 0.78f, 1.0f, 1.0f);
+#endif
     
-    return float4(0.188f, 0.78f, 1.0f, 1.0f);
+    float2 TexelSize = float2(1.0 / 1024.0, 1.0 / 1024.0);    // 1.0 / TextureWidth, 1.0 / TextureHeight
+    float OutlineWidth = 4.0;  // How many pixels thick the outline should be (usually 1.0)
+    
+    if (base.a > 0.1f)
+    {
+        return base;
+    }
+
+    // 3. We are in the transparent area. Check the neighbors!
+    float neighborAlpha = 0.0f;
+    
+    // Calculate our UV offsets based on texel size and desired width
+    float2 offsetX = float2(TexelSize.x * OutlineWidth, 0.0f);
+    float2 offsetY = float2(0.0f, TexelSize.y * OutlineWidth);
+    
+    float2 minUV = uvRect.xy;
+    float2 maxUV = uvRect.xy + uvRect.zw;
+    
+    // Calculate clamped UVs for the neighbors
+    // clamp(value, min, max) ensures we never sample outside this sprite's box
+    float2 rightUV = clamp(input.uv + offsetX, minUV, maxUV);
+    float2 leftUV  = clamp(input.uv - offsetX, minUV, maxUV);
+    float2 downUV  = clamp(input.uv + offsetY, minUV, maxUV);
+    float2 upUV    = clamp(input.uv - offsetY, minUV, maxUV);
+
+    // Sample using the clamped coordinates
+    neighborAlpha += gTexture.Sample(gSampler, rightUV).a;
+    neighborAlpha += gTexture.Sample(gSampler, leftUV).a;
+    neighborAlpha += gTexture.Sample(gSampler, downUV).a;
+    neighborAlpha += gTexture.Sample(gSampler, upUV).a;
+
+    // 4. If any of the neighbors were solid, 'neighborAlpha' will be > 0.
+    // That means this pixel is the outline.
+    if (neighborAlpha > 0.1f)
+    {
+        // Return the outline color. We keep it fully opaque (alpha = 1.0).
+        return OutlineColor;
+    }
+
+    // 5. If no neighbors are solid, remain completely transparent.
+    return float4(0.0f, 0.0f, 0.0f, 0.0f);
 #endif
     
     return base;
