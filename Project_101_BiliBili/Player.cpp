@@ -12,6 +12,8 @@
 using namespace DirectX;
 using namespace CollisionData;
 
+int Get8WayDirection(XMVECTOR direction);
+
 Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, uint32_t id, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
 	: ObjectBase(
 		meshType,
@@ -528,27 +530,9 @@ void Player::UpdateAnimation()
 
 		DirectX::XMVECTOR vDir = DirectX::XMVectorSubtract(vMate, vThis);
 
-		bool down = DirectX::XMVectorGetZ(vDir) < 0.0f;
-		bool left = DirectX::XMVectorGetX(vDir) < 0.0f;
+		DirectX::XMVECTOR normalized = DirectX::XMVector3Normalize(vDir);
 
-		int direction = 0;
-
-		if (down && left)
-			direction = 1;
-		else if (down && !left)
-			direction = 7;
-		else if (!down && !left)
-			direction = 5;
-		else if (!down && left)
-			direction = 3;
-		else if (!down)
-			direction = 4;
-		else if (down)
-			direction = 0;
-		else if (left)
-			direction = 2;
-		else if (!left)
-			this->direction = 6;
+		int direction = Get8WayDirection(normalized);
 
 		m_texSplitInfo.frameCount++;
 		m_texSplitInfo.index = direction * 3 + 2;
@@ -719,4 +703,33 @@ void Player::Reset()
 
 	runTimer.Mark();
 	gameTimer.Mark();
+}
+
+int Get8WayDirection(XMVECTOR direction) {
+	float x = XMVectorGetX(direction);
+	float z = XMVectorGetZ(direction);
+
+	if (x == 0.0f && z == 0.0f) {
+		return 0;
+	}
+
+	// Calculate the base angle, starting 0 at 'Down' and moving clockwise
+	float angle = std::atan2(-x, -z);
+
+	// Normalize angle to [0, 2 * PI]
+	constexpr float PI = 3.14159265358979323846f;
+	if (angle < 0.0f) {
+		angle += 2.0f * PI;
+	}
+
+	// Offset by half a slice, divide by slice size, and floor the result
+	constexpr float slice = PI / 4.0f;
+	constexpr float half_slice = PI / 8.0f;
+
+	float adjusted_angle = angle + half_slice;
+
+	// 5. Cast to int and modulo 8 to wrap the exact 360-degree boundary back to 0
+	int dir_index = static_cast<int>(std::floor(adjusted_angle / slice)) % 8;
+
+	return dir_index;
 }
