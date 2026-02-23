@@ -21,7 +21,7 @@ void CharacterUIManager::InitializeOverride(
 		{ 0.0f, 0.0f, 0.0f },	//回転
 		0,						//描画順序
 		L"asset/texture/character_scene/UI_CHARACTER_Back.png",
-		PSO_KEY_OPAQUE
+		PSO_KEY_OPAQUE.AddDefines({ SHADER_DEFINE::PS_WRAP_UV })
 	);
 	//ルートUIオブジェクトに追加
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pBackgroundImage));

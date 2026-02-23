@@ -50,6 +50,7 @@ enum class SHADER_DEFINE : uint64_t
 	PS_USE_LIGHTING = 1ull << 34,
 	PS_OUTLINE_RED = 1ull << 35,
 	PS_OUTLINE_BLUE = 1ull << 36,
+	PS_WRAP_UV = 1ull << 37,
 };
 static inline SHADER_DEFINE operator|(SHADER_DEFINE a, SHADER_DEFINE b)
 {

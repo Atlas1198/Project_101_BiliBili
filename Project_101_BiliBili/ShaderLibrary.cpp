@@ -127,6 +127,7 @@ std::vector<D3D_SHADER_MACRO> ShaderLibrary::BuildMacros(uint64_t defines)
 		{ static_cast<uint64_t>(SHADER_DEFINE::PS_USE_LIGHTING), "PS_USE_LIGHTING", "1" },
 		{ static_cast<uint64_t>(SHADER_DEFINE::PS_OUTLINE_RED), "PS_OUTLINE_RED", "1" },
 		{ static_cast<uint64_t>(SHADER_DEFINE::PS_OUTLINE_BLUE), "PS_OUTLINE_BLUE", "1" },
+		{ static_cast<uint64_t>(SHADER_DEFINE::PS_WRAP_UV), "PS_WRAP_UV", "1" },
 	};
 
 	std::vector<D3D_SHADER_MACRO> macros;
