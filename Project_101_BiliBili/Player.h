@@ -71,7 +71,9 @@ public:	//公開関数
 	//メイン処理関数
 	void Initialize(InputInfo* inputInfo, BulletManager* pBulletManager);	//初期化
 	void UpdateOverride() override;					//更新
+	void InputRelatedUpdate();						//入力関連の更新
 	void ResolveCollisionsOverride() override;		//衝突解決
+
 	void SetTeamID(int team) { teamID = team; } //チームIDセット
 	void BindTeammate(Player* teammate) { this->teammate = teammate; } //味方のセット
 	void BindOutline(PlayerOutline *outline) { m_pOutline = outline; m_pOutline->SetTexSplitInfo(m_texSplitInfo); } //輪郭オブジェクトのセット
@@ -88,6 +90,9 @@ public:	//公開関数
 	void SetBB(bool isActive); // BBセット
 	void ShakeController(float leftMotor = 1.0f, float rightMotor = 1.0f, int duration = 5); //コントローラー振動
 	void StartDamageAnimation();
+
+	bool IsDamageAnimation() const { return damageAnimation; } // ダメージアニメーション中かどうか
+	FrameTimer& GetDamageAnimTimer() { return damageAnimTimer; } // ダメージアニメーションタイマーの参照を取得
 
 private:	//非公開関数
 	void Move();	//移動

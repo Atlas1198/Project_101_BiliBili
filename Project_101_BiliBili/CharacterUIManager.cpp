@@ -261,7 +261,7 @@ void CharacterUIManager::InitializeOverride(
 		};
 
 		//次のシーンへ進むアイコンUIオブジェクト生成
-		m_pGoToNextSceneIcon = new UIImage(
+		m_pGoToNextSceneBack = new UIImage(
 			position,					//位置
 			{ 1917.0f, 186.0f, 1.0f },	//スケール
 			{ 0.0f, 0.0f, 0.0f },		//回転
@@ -270,7 +270,26 @@ void CharacterUIManager::InitializeOverride(
 			PSO_KEY_TRANSPARENT
 		);
 		//ルートUIオブジェクトに追加
-		m_roots.push_back(std::unique_ptr<UIBase>(m_pGoToNextSceneIcon));
+		m_roots.push_back(std::unique_ptr<UIBase>(m_pGoToNextSceneBack));
+
+		m_pGoToNextSceneText = new UIImage(
+			position,					//位置
+			{ 1105.0f, 144.0f, 1.0f },	//スケール
+			{ 0.0f, 0.0f, 0.0f },		//回転
+			6,							//描画順序
+			L"asset/texture/character_scene/ready_EF.png",
+			PSO_KEY_TRANSPARENT
+		);
+
+		m_roots.push_back(std::unique_ptr<UIBase>(m_pGoToNextSceneText));
+
+		TexSplitInfo splitInfo;
+		splitInfo.cols = 4;
+		splitInfo.rows = 8;
+		splitInfo.total = splitInfo.cols * splitInfo.rows - 2;
+		splitInfo.updateRate = 2;
+		splitInfo.index = 0;
+		m_pGoToNextSceneText->SetTexSplitInfo(splitInfo);
 	}
 
 	//イベント購読登録
@@ -351,19 +370,21 @@ void CharacterUIManager::UpdateOverride()
 
 	//次のシーンへ進むアイコンの座標移動
 	{
-		auto position = m_pGoToNextSceneIcon->GetLocalPosition();
+		auto position = m_pGoToNextSceneBack->GetLocalPosition();
 		const float moveSpeedCoefficient = 100.0f - position.x;	//移動速度係数計算
 		const float moveSpeed = moveSpeedCoefficient * 0.2f;	//移動速度計算
 
 		if(m_isGoToNextSceneIconVisible)
 		{//表示中はX座標を中心に移動
 			position.x = (std::min)(position.x + moveSpeed, 0.0f);
-			m_pGoToNextSceneIcon->SetLocalPosition(position);
+			m_pGoToNextSceneBack->SetLocalPosition(position);
+			m_pGoToNextSceneText->SetLocalPosition(position);
 		}
 		else
 		{//非表示中は画面外へ移動
 			position.x = (std::max)(position.x - moveSpeed, -m_screenWidth * 0.5f - 1917.0f * 0.5f);
-			m_pGoToNextSceneIcon->SetLocalPosition(position);
+			m_pGoToNextSceneBack->SetLocalPosition(position);
+			m_pGoToNextSceneText->SetLocalPosition(position);
 		}
 	}
 
@@ -374,17 +395,27 @@ void CharacterUIManager::UpdateOverride()
 		const float changeAmount = 1.07f;
 		if(m_goToNextSceneIconMoveCount <= 3)
 		{//拡大
-			auto scale = m_pGoToNextSceneIcon->GetLocalScale();
-			scale.x *= changeAmount;
-			scale.y *= changeAmount;
-			m_pGoToNextSceneIcon->SetLocalScale(scale);
+			auto scaleBack = m_pGoToNextSceneBack->GetLocalScale();
+			scaleBack.x *= changeAmount;
+			scaleBack.y *= changeAmount;
+			m_pGoToNextSceneBack->SetLocalScale(scaleBack);
+
+			auto scaleText = m_pGoToNextSceneText->GetLocalScale();
+			scaleText.x *= changeAmount;
+			scaleText.y *= changeAmount;
+			m_pGoToNextSceneText->SetLocalScale(scaleText);
 		}
 		else if(m_goToNextSceneIconMoveCount <= 6)
 		{//縮小
-			auto scale = m_pGoToNextSceneIcon->GetLocalScale();
-			scale.x /= changeAmount;
-			scale.y /= changeAmount;
-			m_pGoToNextSceneIcon->SetLocalScale(scale);
+			auto scaleBack = m_pGoToNextSceneBack->GetLocalScale();
+			scaleBack.x /= changeAmount;
+			scaleBack.y /= changeAmount;
+			m_pGoToNextSceneBack->SetLocalScale(scaleBack);
+
+			auto scaleText = m_pGoToNextSceneText->GetLocalScale();
+			scaleText.x /= changeAmount;
+			scaleText.y /= changeAmount;
+			m_pGoToNextSceneText->SetLocalScale(scaleText);
 		}
 	}
 

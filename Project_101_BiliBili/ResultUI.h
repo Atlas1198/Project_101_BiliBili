@@ -42,7 +42,8 @@ private:
 	UIImage* m_pCharacterImage[TEAM_NUM][MAX_CHARACTER_NUM] = { nullptr };	//キャラクター画像UIポインタ配列
 	UIImage* m_pItemImage = nullptr;										//アイテム画像UIポインタ
 	UIImage* m_pConfettiImage[100] = { nullptr };							//紙吹雪画像UIポインタ
-	UIImage* m_pThankyouForPlaying = nullptr;
+	UIImage* m_pThankyouForPlaying = nullptr;								//"Thank you for playing"画像UIポインタ
+	UIImage* m_pSparkleImage = nullptr;										//キラキラ画像UIポインタ
 
 	Random* m_pRandom = nullptr;
 
