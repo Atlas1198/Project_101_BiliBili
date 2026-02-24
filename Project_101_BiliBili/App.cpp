@@ -26,25 +26,27 @@ LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_CREATE:
-
+	{
 		InitializeDPIScale(hwnd);
 
-		RECT rect;
-		SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+		// Get the monitor that the window is currently mostly resting on
+		HMONITOR hMonitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTOPRIMARY);
+		MONITORINFO mi = { sizeof(mi) };
+		GetMonitorInfo(hMonitor, &mi);
 
-		/*SetWindowPos(hwnd, NULL, 0, 0, 
-			(rect.right - rect.left) * App::DPIScale,
-			(rect.bottom - rect.top) * App::DPIScale,
-			SWP_NOZORDER);*/
+		// Set borderless window style
+		SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 
-		SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_MINIMIZEBOX);
-
-		SetWindowPos(hwnd, NULL, 0, 0,
-			(rect.right - rect.left),
-			(rect.bottom - rect.top) + 100.0f,
-			SWP_NOZORDER);
+		// Resize and position the window to cover the entire monitor
+		SetWindowPos(hwnd, HWND_TOP,
+			mi.rcMonitor.left,
+			mi.rcMonitor.top,
+			mi.rcMonitor.right - mi.rcMonitor.left,
+			mi.rcMonitor.bottom - mi.rcMonitor.top,
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 
 		break;
+	}
 	case WM_ACTIVATEAPP:	//アクティブウィンドウが切り替わった
 	case WM_SYSKEYDOWN:		//システムキーが押された
 	case WM_KEYUP:			//キーが離された
