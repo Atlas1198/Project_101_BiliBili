@@ -152,6 +152,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 	m_roots.push_back(std::unique_ptr<UIImage>(m_pNameBack));
 
 	m_isSelectAnimationStarted = false;
+	m_currentStageType = STAGE_TYPE::STAGE_GREEN;
 }
 
 //更新
@@ -202,6 +203,37 @@ void StageUIManager::UpdateOverride()
 			m_pExplanation[i]->SetLocalPosition(explanationPos);
 		}
 	}
+
+	//矢印アニメーション
+	if(m_arrowDirection != DIRECTION::NONE)
+	{
+		const float MOVE_DURATION = 5.0f;
+		const float DIRECTION_SWITCH_TIME = MOVE_DURATION * 0.5f;
+		const int DIRECTION = (m_arrowDirection == DIRECTION::LEFT) ? -1 : 1;
+
+		if(m_arrowMoveTimer <= DIRECTION_SWITCH_TIME)
+		{
+			auto arrowPos = m_pArrow->GetLocalPosition();
+			arrowPos.x += DIRECTION * 5.0f;	//矢印を移動
+			m_pArrow->SetLocalPosition(arrowPos);
+		}
+		else if(m_arrowMoveTimer <= MOVE_DURATION)
+		{
+			auto arrowPos = m_pArrow->GetLocalPosition();
+			arrowPos.x -= DIRECTION * 5.0f;	//矢印を元の位置に戻す
+			m_pArrow->SetLocalPosition(arrowPos);
+		}
+
+		//移動終了後に方向をNONEにする
+		if(m_arrowMoveTimer > MOVE_DURATION)
+		{
+			m_pArrow->SetLocalPosition({ 450.0f, -300.0f, 0.0f });	//矢印の位置をリセット
+			m_arrowDirection = DIRECTION::NONE;
+		}
+
+		m_arrowMoveTimer++;	//矢印移動タイマー更新
+	}
+
 }
 
 //終了
@@ -210,7 +242,7 @@ void StageUIManager::FinalizeOverride()
 }
 
 //ステージUI変更関数
-void StageUIManager::ChangeStageUI(STAGE_TYPE stageType)
+void StageUIManager::ChangeStageUI(STAGE_TYPE nextStageType)
 {
 	for(int i = 0; i < STAGE_NUM; i++)
 	{
@@ -219,13 +251,29 @@ void StageUIManager::ChangeStageUI(STAGE_TYPE stageType)
 		m_pName[i]->SetActive(false);
 	}
 
-	int index = static_cast<int>(stageType);
+	int index = static_cast<int>(nextStageType);
 	m_pBackGround[index]->SetActive(true);
 	m_pExplanation[index]->SetActive(true);
 	m_pName[index]->SetActive(true);
 
 	//説明文の位置リセット
 	m_pExplanation[index]->SetLocalPosition(m_explanationOriginalPosition);
+
+	//矢印の移動方向を設定
+	int currentIndex = static_cast<int>(m_currentStageType);
+	int nextIndex = static_cast<int>(nextStageType);
+	int moveDir = (currentIndex - nextIndex + STAGE_NUM) % STAGE_NUM;
+	if(moveDir == 1)
+	{
+		m_arrowDirection = DIRECTION::LEFT;
+	}
+	else if(moveDir == STAGE_NUM - 1)
+	{
+		m_arrowDirection = DIRECTION::RIGHT;
+	}
+	m_pArrow->SetLocalPosition({ 450.0f, -300.0f, 0.0f });	//矢印の位置をリセット
+	m_arrowMoveTimer = 0;	//矢印移動タイマーリセット
+	m_currentStageType = nextStageType;
 }
 
 //ステージ選択アニメーション開始関数
