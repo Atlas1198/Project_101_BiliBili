@@ -361,7 +361,7 @@ void CountdownBehavior::Update()
 		AudioManager::GetInstance()->PlaySE("GAME_STRAT");//上とセット
 
 
-		AudioManager::GetInstance()->PlaySE("GAME_COUNT2");
+		AudioManager::GetInstance()->PlaySE("GAME_COUNT2",1.2f);
 	}
 
 	//スタートアナウンス表示終了後
@@ -428,7 +428,7 @@ void PlayBehavior::Update()
 
 		//BGM停止、ゲーム終了SE再生
 		AudioManager::GetInstance()->StopAll();
-		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT");
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT",1.5f);
 		AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 	}
 }
@@ -470,7 +470,7 @@ void ResultBehavior::HandleCameraMove()
 	//UI表示イベントのトリガー
 	if(m_pGameScene->m_timer == RESULT_UI_SHOW_TIME)
 	{//カメラ移動が最大割合に達したらリザルトUI表示イベントをトリガー
-		AudioManager::GetInstance()->PlaySE("GAME_FINISH");
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH",2.0f);
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_FINISH_UI);
 	}
 
@@ -508,7 +508,7 @@ void ResultBehavior::HandleFirstWait()
 			}
 		);
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
-    AudioManager::GetInstance()->PlaySE("RESULT");
+    AudioManager::GetInstance()->PlaySE("RESULT",1.2f);
 	}
 	else if (m_pGameScene->m_timer == RESULT_BGM_STRAT)
 	{
@@ -543,7 +543,7 @@ void ResultBehavior::HandleShowResult()
 	{
 		m_pressTimer++;
 		m_pGameScene->m_pGameUIManager->ShakeGoToTitleButton();
-		//AudioManager::GetInstance()->PlayBGM("ANNOUNCE");
+		AudioManager::GetInstance()->PlayBGM("RESULT_NEXT");
 		
 		if (m_pressTimer > PRESS_DURATION)
 		{
@@ -552,12 +552,14 @@ void ResultBehavior::HandleShowResult()
 			m_pressTimer = 0;
 			m_pGameScene->m_pGameUIManager->DropThankyouForPlaying(); // プレイしてくれてありがとうUIを表示
 			m_pGameScene->m_timer = 0; // タイマーリセット
-			AudioManager::GetInstance()->PlaySE("TITLE_NEXT");
+			AudioManager::GetInstance()->PlaySE("TITLE_NEXT",1.8f);
+			AudioManager::GetInstance()->StopBGM("RESULT_NEXT");
 		}
 	}
 	else
 	{
 		m_pressTimer = std::max(m_pressTimer - 2, 0); //タイマー減少
+		AudioManager::GetInstance()->StopBGM("RESULT_NEXT");
 	}
 
 	m_pGameScene->m_pGameUIManager->SetGoToTitleTimerProgress(	 // タイトルへ戻るUIのタイマーを更新

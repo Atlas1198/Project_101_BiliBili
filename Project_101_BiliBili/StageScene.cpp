@@ -65,7 +65,7 @@ void StageScene::UpdateOverride()
 			m_pUIManager->StartSelectAnimation();	//ステージ選択アニメーション開始
 
 			//↓↓↓選択時サウンド再生↓↓↓
-			AudioManager::GetInstance()->PlaySE("STAGE_SET");
+			AudioManager::GetInstance()->PlaySE("STAGE_SET",1.4f);
 		}
 	}
 }

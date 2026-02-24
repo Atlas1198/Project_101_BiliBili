@@ -190,7 +190,7 @@ void Engine::RenderEnd()
 	);
 
 	//バックバッファの入れ替え
-	m_pSwapChain->Present(1, 0);	//垂直同期ありで表示
+	m_pSwapChain->Present(0, 0);	//垂直同期ありで表示
 
 	//前のフレームの終了待ち
 	WaitRender();

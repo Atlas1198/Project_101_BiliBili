@@ -46,7 +46,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 				//コントローラー接続イベント発行
 				EventManager::GetInstance()->TriggerEvent<int>(
 					EventType::CONTROLLER_CONNECTED, i);
-				AudioManager::GetInstance()->PlaySE("CON_SET");
+				AudioManager::GetInstance()->PlaySE("CON_SET",1.5f);
 			}
 		}
 
@@ -61,7 +61,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 				//コントローラー接続イベント発行
 				EventManager::GetInstance()->TriggerEvent<int>(
 					EventType::CONTROLLER_CONNECTED, i);
-				AudioManager::GetInstance()->PlaySE("CON_SET");
+				AudioManager::GetInstance()->PlaySE("CON_SET",1.6f);
 				break;
 			}
 		}
@@ -86,7 +86,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 				info->SetAllControllerVibration(1.0f, 1.0f, 30);		//全コントローラー振動
 				EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
 					EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_STAGE);
-				AudioManager::GetInstance()->PlaySE("CON_NEXT");
+				AudioManager::GetInstance()->PlaySE("CON_NEXT",1.6f);
 				AudioManager::GetInstance()->StopBGM();
 			}
 			else 
@@ -114,7 +114,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 					//コントローラー接続イベント発行
 					EventManager::GetInstance()->TriggerEvent<int>(
 						EventType::CONTROLLER_CONNECTED, i);
-					AudioManager::GetInstance()->PlaySE("CON_SET");
+					AudioManager::GetInstance()->PlaySE("CON_SET",1.6f);
 				}
 			}
 			else
