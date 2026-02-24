@@ -1,4 +1,4 @@
-﻿#include "App.h"
+#include "App.h"
 #include <algorithm>
 #include <mmsystem.h>
 #include <tchar.h>
@@ -29,9 +29,19 @@ LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		InitializeDPIScale(hwnd);
 
-		SetWindowPos(hwnd, NULL, 0, 0, 
-			App::WINDOW_WIDTH * App::DPIScale, 
-			App::WINDOW_HEIGHT * App::DPIScale,
+		RECT rect;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+
+		/*SetWindowPos(hwnd, NULL, 0, 0, 
+			(rect.right - rect.left) * App::DPIScale,
+			(rect.bottom - rect.top) * App::DPIScale,
+			SWP_NOZORDER);*/
+
+		SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_MINIMIZEBOX);
+
+		SetWindowPos(hwnd, NULL, 0, 0,
+			(rect.right - rect.left),
+			(rect.bottom - rect.top) + 100.0f,
 			SWP_NOZORDER);
 
 		break;
@@ -111,45 +121,41 @@ void App::Run()
 
 	players.clear();
 
-	int msgboxID = MessageBox(
+	/*int msgboxID = MessageBox(
 		NULL,
 		"オンラインモードに入りますか？",
 		"モード選択",
 		MB_ICONQUESTION | MB_YESNO
-	);
+	);*/
 
-	if (msgboxID == IDYES)
+	/*if (msgboxID == IDYES)
 	{
 		LoadParametersJSON();
 		UpdateParameters();
 		isOnline = true;
 		if (!Login()) return;
-	}
-	else
-	{
-		isOnline = false;
+	}*/
+	isOnline = false;
 
-		m_pSceneManager->SpawnPlayers();
+	m_pSceneManager->SpawnPlayers();
 
-		int msgboxID = MessageBox(
-			NULL,
-			"ビリビリアプリ使いますか？",
-			"パラメーター調整",
-			MB_ICONQUESTION | MB_YESNO
-		);
+		//int msgboxID = MessageBox(
+		//	NULL,
+		//	"ビリビリアプリ使いますか？",
+		//	"パラメーター調整",
+		//	MB_ICONQUESTION | MB_YESNO
+		//);
 
-		if (msgboxID == IDYES)
-		{
-			// Start background streaming thread (will PostMessage to main window on updates)
-			curl_global_init(CURL_GLOBAL_DEFAULT);
-			dbManager->StartFirebaseStream();
-		}
-		else
-		{
-			LoadParametersJSON();
-			UpdateParameters();
-		}
-	}
+		//if (msgboxID == IDYES)
+		//{
+		//	// Start background streaming thread (will PostMessage to main window on updates)
+		//	curl_global_init(CURL_GLOBAL_DEFAULT);
+		//	dbManager->StartFirebaseStream();
+		//}
+		//else
+		//{
+	LoadParametersJSON();
+	UpdateParameters();
 
 	do 
 	{
@@ -234,21 +240,22 @@ void App::CreateMainWindow(HWND& hwnd, WNDCLASSEX& wc)
 	//ウィンドウクラスの登録
 	RegisterClassEx(&wc);
 
-	RECT wrc = { 0,0, WINDOW_WIDTH, WINDOW_HEIGHT };//ウィンドウサイズを決める
-
+	//RECT wrc = { 0,0, WINDOW_WIDTH, WINDOW_HEIGHT };//ウィンドウサイズを決める
+	RECT rect;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
 	//ウィンドウサイズを補正
-	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
+	//AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
 	//ウィンドウオブジェクトの生成
 	hwnd = CreateWindowEx(
 		0,						// 拡張スタイル
 		wc.lpszClassName,		//クラス名の指定
 		_T("DX12_Application"),	//タイトルバーの文字
-		WS_OVERLAPPEDWINDOW,	//ウィンドウスタイル
+		WS_POPUP | WS_VISIBLE,	//ウィンドウスタイル
 		CW_USEDEFAULT,			//表示X座標はOSにお任せします
 		CW_USEDEFAULT,			//表示Y座標はOSにお任せします
-		wrc.right - wrc.left,	//ウィンドウ横幅
-		wrc.bottom - wrc.top,	//ウィンドウ縦幅
+		rect.right - rect.left,	//ウィンドウ横幅
+		rect.bottom - rect.top,	//ウィンドウ縦幅
 		NULL,					//親ウィンドウハンドル
 		NULL,					//メニューハンドル
 		hInstance,				//インスタンスハンドル
