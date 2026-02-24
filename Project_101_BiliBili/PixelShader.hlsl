@@ -69,7 +69,7 @@ float4 BasicPS(
     float2 offsetY = float2(0.0f, TexelSize.y * OutlineWidth);
     
     float2 minUV = uvRect.xy;
-    float2 maxUV = uvRect.xy + uvRect.zw - TexelSize;
+    float2 maxUV = uvRect.xy + uvRect.zw - (TexelSize * 5.0);
     
     // Calculate clamped UVs for the neighbors
     // clamp(value, min, max) ensures we never sample outside this sprite's box
