@@ -53,7 +53,7 @@ float4 BasicPS(
     OutlineColor = float4(0.188f, 0.78f, 1.0f, 1.0f);
 #endif
     
-    float2 TexelSize = float2(1.0 / 1024.0, 1.0 / 1027.5);    // 1.0 / TextureWidth, 1.0 / TextureHeight
+    float2 TexelSize = float2(1.0 / 1024.0, 1.0 / 1024.0);    // 1.0 / TextureWidth, 1.0 / TextureHeight
     float OutlineWidth = 4.0;  // How many pixels thick the outline should be (usually 1.0)
     
     if (base.a > 0.1f)
