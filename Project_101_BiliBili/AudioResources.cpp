@@ -22,8 +22,11 @@ void LoadAllGameSounds(AudioManager& am) {
         { "CON_BGM", L"asset/sound/BGM/controllersetting_BGM.wav"},
 
         //// --- SEで使う用 ---
+        { "ANNOUNCE", L"asset/sound/SE/インゲーム_アナウンス.wav"},
+        { "ANNOUNCE_ALL", L"asset/sound/SE/インゲーム_アナウンス_合体.wav"},
         { "GAME_COUNT1", L"asset/sound/SE/インゲーム_カウントダウン_1_SE.wav" },
         { "GAME_COUNT2", L"asset/sound/SE/インゲーム_カウントダウン_2_SE.wav" },
+        { "GAME_STRAT", L"asset/sound/SE/インゲーム_開始2_SE.wav"},
         { "GAME_TF", L"asset/sound/SE/インゲーム_変身_SE.wav"},
         { "GAME_FINISH", L"asset/sound/SE/インゲーム_終了_SE.wav"},
         { "", L"asset/sound/SE/インゲーム_変身解除_SE.wav"},

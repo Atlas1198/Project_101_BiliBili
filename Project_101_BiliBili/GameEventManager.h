@@ -4,6 +4,7 @@
 #include <random>
 #include <vector>
 #include "EventManager.h"
+#include "AudioManager.h"
 
 template<typename T>
 T RandomElement(const std::vector<T> &collection)
@@ -70,6 +71,7 @@ private:
 
 		EventManager::GetInstance()->TriggerEvent(event);
 		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, event);
+		AudioManager::GetInstance()->PlaySE("ANNOUNCE_ALL");
 	}
 
 	void StopCurrentEvent()

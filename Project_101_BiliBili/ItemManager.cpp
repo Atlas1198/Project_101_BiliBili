@@ -6,6 +6,7 @@
 #include "SharedStruct.h"
 #include <random>
 #include "EventManager.h"
+#include "AudioManager.h"
 
 using namespace DirectX;
 
@@ -90,6 +91,7 @@ void ItemManager::UpdateOverride()
 		{
 			showedAnnouncement = true;
 			EventManager::GetInstance()->TriggerEvent<EventType>(EventType::SHOW_ANOUNCE_UI, EventType::EVENT_ITEM_SPAWN);
+			AudioManager::GetInstance()->PlaySE("ANNOUNCE_ALL");
 		}
 	}
 	if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))

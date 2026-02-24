@@ -23,8 +23,10 @@ public:
 
 
     // 再生
-    void PlayBGM(const std::string& label, bool loop = true);   //BGM
-    void PlaySE(const std::string& label);   //SE
+    void PlayBGM(const std::string& label,float volume = 1.0f, bool loop = true);   //BGM
+    void SinglePlaySE(const std::string& label,float volume = 1.0f, bool loop = false);//SE 同じラベルの音を再生できない
+    void PlaySE(const std::string& label,float volume = 1.0f);   //SE　同じラベルの音を再生可能
+
     void PlayLoopSE(const std::string& label);
 
  

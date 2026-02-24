@@ -292,6 +292,10 @@ void BegginningBehavior::Update()
 				eventManager->TriggerEvent<int>(
 					EventType::SET_PLAYER_POINTER_ACTIVE, playerIndex
 				);
+				if (m_pGameScene->m_timer < WAIT_DURATION - BEGIN_DURATION)
+				{
+					AudioManager::GetInstance()->PlaySE("ANNOUNCE");
+				}
 			}
 		}
 	}
@@ -354,6 +358,9 @@ void CountdownBehavior::Update()
 	{
 		m_pGameScene->m_pPlayerManager->SetInputAccepted(true);					// プレイヤーの入力を受け付けるようにする
 		EventManager::GetInstance()->TriggerEvent(EventType::SHOW_START_UI);
+		AudioManager::GetInstance()->PlaySE("GAME_STRAT");//上とセット
+
+
 		AudioManager::GetInstance()->PlaySE("GAME_COUNT2");
 	}
 
@@ -536,7 +543,8 @@ void ResultBehavior::HandleShowResult()
 	{
 		m_pressTimer++;
 		m_pGameScene->m_pGameUIManager->ShakeGoToTitleButton();
-
+		//AudioManager::GetInstance()->PlayBGM("ANNOUNCE");
+		
 		if (m_pressTimer > PRESS_DURATION)
 		{
 			m_pGameScene->m_pSceneContext->pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30);
@@ -544,6 +552,7 @@ void ResultBehavior::HandleShowResult()
 			m_pressTimer = 0;
 			m_pGameScene->m_pGameUIManager->DropThankyouForPlaying(); // プレイしてくれてありがとうUIを表示
 			m_pGameScene->m_timer = 0; // タイマーリセット
+			AudioManager::GetInstance()->PlaySE("TITLE_NEXT");
 		}
 	}
 	else

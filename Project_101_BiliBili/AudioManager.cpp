@@ -115,7 +115,7 @@ IXAudio2SourceVoice* AudioManager::CreateVoice(const std::string& label) {
 
 
 //BGM再生
-void AudioManager::PlayBGM(const std::string& label, bool loop)
+void AudioManager::PlayBGM(const std::string& label,float volume, bool loop)
 {
   
     if (BGMVoices.find(label) != BGMVoices.end())
@@ -140,13 +140,37 @@ void AudioManager::PlayBGM(const std::string& label, bool loop)
     buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
 
     pVoice->SubmitSourceBuffer(&buffer);
-    pVoice->SetVolume(bgmVolume);   //現在の設定値適応
+    pVoice->SetVolume(bgmVolume * volume);   //現在の設定値適応
     pVoice->Start();    //再生開始
     BGMVoices[label] = pVoice;  //BGMリストに登録
 }
 
+void AudioManager::SinglePlaySE(const std::string& label, float volume,bool preventDuplicate)
+{
+    // 二重再生防止が有効な場合、SEVoicesの中に同じラベルがあるかチェック
+    if (preventDuplicate) {
+        if (SEVoices.find(label) != SEVoices.end()) {
+            return; // すでに再生中なので何もしない
+        }
+    }
 
-void AudioManager::PlaySE(const std::string& label)
+    IXAudio2SourceVoice* pVoice = CreateVoice(label);
+    if (!pVoice) return;
+
+    XAUDIO2_BUFFER buffer = { 0 };
+    buffer.pAudioData = soundLibrary[label].buffer.data();
+    buffer.AudioBytes = (UINT32)soundLibrary[label].buffer.size();
+    buffer.Flags = XAUDIO2_END_OF_STREAM;
+
+    pVoice->SubmitSourceBuffer(&buffer);
+    pVoice->SetVolume(seVolume * volume);
+    pVoice->Start();
+
+    // SEは多重再生したいので multimap に追加（既存の音は消さない）
+    SEVoices.insert(std::make_pair(label, pVoice));
+}
+
+void AudioManager::PlaySE(const std::string& label,float volume)
 	{
     IXAudio2SourceVoice* pVoice = CreateVoice(label);
     if (!pVoice) return;
@@ -157,11 +181,12 @@ void AudioManager::PlaySE(const std::string& label)
     buffer.Flags = XAUDIO2_END_OF_STREAM;
 
     pVoice->SubmitSourceBuffer(&buffer);
+    pVoice->SetVolume(seVolume * volume);
     pVoice->Start();
 
     // SEは多重再生したいので multimap に追加（既存の音は消さない）
     SEVoices.insert(std::make_pair(label, pVoice));
-	}
+}
 
 void AudioManager::PlayLoopSE(const std::string& label) {
     // すでに再生中なら何もしない
