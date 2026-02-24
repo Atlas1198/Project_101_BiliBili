@@ -39,6 +39,12 @@ private:
 	int m_selectAnimationTimer = 0;
 	bool m_isSelectAnimationStarted = false;
 
+	//矢印アニメーション関連
+	int m_arrowMoveTimer = 0;						//矢印移動タイマー
+	DIRECTION m_arrowDirection = DIRECTION::NONE;	//矢印の方向
+
+	STAGE_TYPE m_currentStageType = STAGE_TYPE::STAGE_GREEN;	//現在のステージタイプ
+
 private:
 	//メイン処理関数
 	void InitializeOverride(							//初期化
