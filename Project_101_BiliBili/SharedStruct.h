@@ -50,6 +50,14 @@ struct alignas(256) PerObjectConstants
 	DirectX::XMFLOAT4 lightColor_Ambient;	//light color (xyz) and ambient intensity (w)
 };
 
+//時間関連定数構造体
+struct alignas(256) TimeConstants
+{
+	float time;				//経過時間
+	float bbTimer;			//BBタイマー
+	float bbRemainingTime;	//BBタイマー
+};
+
 //directional light structure
 struct DirectionalLight
 {

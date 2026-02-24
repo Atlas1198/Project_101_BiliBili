@@ -72,6 +72,8 @@ private:
 	std::vector<ConstantBuffer*> m_objectCBScreen[Engine::FRAME_BUFFER_COUNT];	// For screen space
 	UINT m_currBackIndex = 0;
 
+	ConstantBuffer* m_pTimeCB = nullptr;	// Time constant buffer (for post-processing)
+
 	// Camera matrices
 	DirectX::XMMATRIX m_worldView{};	// View matrix for world space
 	DirectX::XMMATRIX m_worldProj{};	// Projection matrix for world space

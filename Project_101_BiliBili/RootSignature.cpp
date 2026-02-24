@@ -11,13 +11,22 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 	flag |= D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS; // ハルシェーダーのルートシグネチャへんアクセスを拒否する
 	flag |= D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS; // ジオメトリシェーダーのルートシグネチャへんアクセスを拒否する
 
-	//b0の定数バッファを設定
 	CD3DX12_ROOT_PARAMETER rootParam[3] = {};	//ルートパラメータ
+
+	//b0の定数バッファを設定
 	rootParam[0].InitAsConstantBufferView(
 		0,							//シェーダーレジスタb0
 		0,							//レジスタスペース0
 		D3D12_SHADER_VISIBILITY_ALL	//全てのシェーダーステージから見える
 	);
+
+	//b1の定数バッファを設定
+	rootParam[1].InitAsConstantBufferView(
+		1,							//シェーダーレジスタb1
+		0,							//レジスタスペース0
+		D3D12_SHADER_VISIBILITY_ALL	//全てのシェーダーステージから見える
+	);
+
 
 	//t0のシェーダーリソースビューを設定
 	CD3DX12_DESCRIPTOR_RANGE tableRange[1] = {}; //ディスクリプタテーブル
@@ -30,16 +39,12 @@ RootSignature::RootSignature(ID3D12Device* pDevice)
 	);
 
 	//ルートパラメータにディスクリプタテーブルを設定
-	rootParam[1].InitAsDescriptorTable(
+	rootParam[2].InitAsDescriptorTable(
 		std::size(tableRange),		//ディスクリプタレンジの数
 		tableRange,					//ディスクリプタレンジ
 		D3D12_SHADER_VISIBILITY_ALL	//全てのシェーダーステージから見える
 	);
 
-	//b1の定数バッファを設定
-	rootParam[2].InitAsConstantBufferView(
-		1							//シェーダーレジスタb1
-	);
 
 	//スタティックサンプラーの設定
 	auto sampler = CD3DX12_STATIC_SAMPLER_DESC(

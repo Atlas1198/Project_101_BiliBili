@@ -130,6 +130,21 @@ void BBManager::OnItemPickup(int teamID)
 	m_frameTimer[teamID].Mark();
 }
 
+float BBManager::GetTimerProgress()
+{
+	return 0.0f;
+}
+
+float BBManager::GetBBTimer()
+{
+	return 0.0f;
+}
+
+float BBManager::GetBBRemainingTime()
+{
+	return 0.0f;
+}
+
 //譖ｴ譁ｰ
 void BBManager::UpdateOverride()
 {
