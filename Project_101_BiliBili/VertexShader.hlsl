@@ -1,57 +1,58 @@
 //==============================================================
-//’¸“_ƒVƒF[ƒ_[
-//Še’¸“_‚²‚Æ‚ÉŒÄ‚Î‚ê’¸“_‚ÌÀ•W‚ğˆø”‚Æ‚µ‚Äó‚¯æ‚éB
-//ƒ‰ƒXƒ^ƒ‰ƒCƒU[ ¨ ƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚Ì‡‚É‘—‚ç‚ê‚é
+//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
+//å„é ‚ç‚¹ã”ã¨ã«å‘¼ã°ã‚Œé ‚ç‚¹ã®åº§æ¨™ã‚’å¼•æ•°ã¨ã—ã¦å—ã‘å–ã‚‹ã€‚
+//ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ â†’ ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®é †ã«é€ã‚‰ã‚Œã‚‹
 //==============================================================
 #include "BasicShader.hlsli"
-//’è”ƒoƒbƒtƒ@‚O
+//å®šæ•°ãƒãƒƒãƒ•ã‚¡ï¼
 cbuffer PerObject : register(b0)
 {
-    float4x4 world; //ƒ[ƒ‹ƒhs—ñ
-    float4x4 worldInvTranspose; //ƒ[ƒ‹ƒhs—ñ‚Ì‹t“]’us—ñ
-    float4x4 view; //ƒrƒ…[s—ñ
-    float4x4 proj; //ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-    float4 objColor; //‘S‘Ì‚ÌF
-    float4 uvRect; //uv‹éŒ`î•ñ(x:¶, y:ã, z:‰E, w:‰º)
+    float4x4 world; //ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
+    float4x4 worldInvTranspose; //ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®é€†è»¢ç½®è¡Œåˆ—
+    float4x4 view; //ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+    float4x4 proj; //ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+    float4 objColor; //å…¨ä½“ã®è‰²
+    float4 uvRect; //uvçŸ©å½¢æƒ…å ±(x:å·¦, y:ä¸Š, z:å³, w:ä¸‹)
     
-    float4 lightDir_Intensity; //ƒ‰ƒCƒg‚Ì•ûŒü(x,y,z)A‹­“x(w)
-    float4 lightColor_Ambient; //ƒ‰ƒCƒg‚ÌF(x,y,z)AŠÂ‹«Œõ‹­“x(w)
+    float4 lightDir_Intensity; //ãƒ©ã‚¤ãƒˆã®æ–¹å‘(x,y,z)ã€å¼·åº¦(w)
+    float4 lightColor_Ambient; //ãƒ©ã‚¤ãƒˆã®è‰²(x,y,z)ã€ç’°å¢ƒå…‰å¼·åº¦(w)
 }
 
-//’¸“_ƒVƒF[ƒ_[“ü—Íƒf[ƒ^\‘¢‘Ì
+//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å…¥åŠ›ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 struct VSInput
 {
-    float3 position : POSITION; //’¸“_À•W
-    float3 normal : NORMAL; //–@üƒxƒNƒgƒ‹
-    float2 uv : TEXCOORD0; //ƒeƒNƒXƒ`ƒƒÀ•W
-    float3 tangent : TANGENT; //Ú‹óŠÔ
-    float4 color : COLOR; //’¸“_ƒJƒ‰[
+    float3 position : POSITION; //é ‚ç‚¹åº§æ¨™
+    float3 normal : NORMAL; //æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+    float2 uv : TEXCOORD0; //ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+    float3 tangent : TANGENT; //æ¥ç©ºé–“
+    float4 color : COLOR; //é ‚ç‚¹ã‚«ãƒ©ãƒ¼
 };
 
-//’¸“_ƒVƒF[ƒ_[‚ÌŠÖ”
+//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®é–¢æ•°
 VSOutPut BasicVS(
-    VSInput input //’¸“_ƒVƒF[ƒ_[“ü—Íƒf[ƒ^\‘¢‘Ì
+    VSInput input //é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å…¥åŠ›ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 )
 {
-    VSOutPut output = (VSOutPut) 0; //ƒAƒEƒgƒvƒbƒg\‘¢‘Ì‚ğ‚OƒNƒŠƒA
+    VSOutPut output = (VSOutPut) 0; //ã‚¢ã‚¦ãƒˆãƒ—ãƒƒãƒˆæ§‹é€ ä½“ã‚’ï¼ã‚¯ãƒªã‚¢
  
-    //ƒ[ƒ‹ƒhs—ñAƒrƒ…[s—ñAƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğæZ‚µ‚ÄÀ•W•ÏŠ·‚·‚é
-    float4 localPos = float4(input.position, 1.0f); // ’¸“_À•W
-    float4 worldPos = mul(world, localPos); // ƒ[ƒ‹ƒhÀ•W‚É•ÏŠ·
-    float4 viewPos = mul(view, worldPos); // ƒrƒ…[À•W‚É•ÏŠ·
-    float4 projPos = mul(proj, viewPos); // “Š‰e•ÏŠ·
+    //ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã€ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã€ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’ä¹—ç®—ã—ã¦åº§æ¨™å¤‰æ›ã™ã‚‹
+    float4 localPos = float4(input.position, 1.0f); // é ‚ç‚¹åº§æ¨™
+    float4 worldPos = mul(world, localPos); // ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã«å¤‰æ›
+    float4 viewPos = mul(view, worldPos); // ãƒ“ãƒ¥ãƒ¼åº§æ¨™ã«å¤‰æ›
+    float4 projPos = mul(proj, viewPos); // æŠ•å½±å¤‰æ›
     
-    //o—Íƒf[ƒ^‚Ìİ’è
-    output.svpos = projPos; //•ÏŠ·Œã‚Ì’¸“_À•W‚ğİ’è
-    output.color = input.color; //’¸“_ƒJƒ‰[‚ğİ’è
-    output.uv = uvRect.xy + input.uv * uvRect.zw; //uvÀ•W‚ğİ’è
-    output.normal = normalize(mul((float3x3) worldInvTranspose, input.normal)); //–@ü‚Ìİ’è
-
+    //å‡ºåŠ›ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
+    output.svpos = projPos; //å¤‰æ›å¾Œã®é ‚ç‚¹åº§æ¨™ã‚’è¨­å®š
+    output.color = input.color; //é ‚ç‚¹ã‚«ãƒ©ãƒ¼ã‚’è¨­å®š
+    output.uv = uvRect.xy + input.uv * uvRect.zw; //uvåº§æ¨™ã‚’è¨­å®š
+    output.normal = normalize(mul((float3x3) worldInvTranspose, input.normal)); //æ³•ç·šã®è¨­å®š
+    output.rawUV = input.uv; //å…ƒã®uvåº§æ¨™ã‚’è¨­å®š
+    
     return output;
 }
 
 VSOutPut PostEffectVS(
-    uint vertexID : SV_VertexID //’¸“_ID
+    uint vertexID : SV_VertexID //é ‚ç‚¹ID
 )
 {
     float2 pos[3] =
@@ -61,11 +62,11 @@ VSOutPut PostEffectVS(
         float2(3.0f, -1.0f),
     };
     
-    VSOutPut output = (VSOutPut) 0; //ƒAƒEƒgƒvƒbƒg\‘¢‘Ì‚ğ‚OƒNƒŠƒA
+    VSOutPut output = (VSOutPut) 0; //ã‚¢ã‚¦ãƒˆãƒ—ãƒƒãƒˆæ§‹é€ ä½“ã‚’ï¼ã‚¯ãƒªã‚¢
     output.svpos = float4(pos[vertexID], 0.0f, 1.0f);
     
-    output.uv = pos[vertexID] * 0.5f + 0.5f; // UVÀ•W‚ğİ’è
-    output.uv.y = 1.0f - output.uv.y; // UVÀ•W‚ÌY²‚ğ”½“]
+    output.uv = pos[vertexID] * 0.5f + 0.5f; // UVåº§æ¨™ã‚’è¨­å®š
+    output.uv.y = 1.0f - output.uv.y; // UVåº§æ¨™ã®Yè»¸ã‚’åè»¢
     
     return output;
 }
