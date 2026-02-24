@@ -48,28 +48,68 @@ void ItemManager::InitializeOverride(TextureManager& textureManager, MeshManager
 
 void ItemManager::SpawnItem()
 {
+	static std::mt19937 rng{ std::random_device{}() };  // 乱数エンジン（1回だけ生成して使い回す）
+	std::uniform_int_distribution<int> areaDist(0, 2);  // エリア番号を等確率で抽選（0～2）
+	const int area = areaDist(rng);                     // 抽選したエリア番号
+	
+	float xMin = 0.0f, xMax = 0.0f; // X範囲（後でswitchで決める）
+	float zMin = 0.0f, zMax = 0.0f; // Z範囲（後でswitchで決める）
 
-	// X: -15.0f ~ 15.0f, Z: -10.0f ~ 20.0f の範囲でランダムな位置にアイテムを生成
+	switch (m_pSceneContext->stageType)
+	{
+	case STAGE_TYPE::STAGE_GREEN:
+		switch (area)
+		{
+		case 0: xMin = -13.0f; xMax = -3.0f;  zMin = -8.0f;  zMax = 4.0f;  break;
+		case 1: xMin = -2.0f;  xMax = 6.0f;   zMin = 5.0f;   zMax = 18.0f; break;
+		case 2: xMin = 7.0f;   xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		default:xMin = -13.0f; xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		}
+		break;
+	case STAGE_TYPE::STAGE_BLUE:
+		switch (area)
+		{
+		case 0: xMin = -13.0f; xMax = -3.0f;  zMin = -8.0f;  zMax = 4.0f;  break;
+		case 1: xMin = -2.0f;  xMax = 6.0f;   zMin = 5.0f;   zMax = 18.0f; break;
+		case 2: xMin = 7.0f;   xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		default:xMin = -13.0f; xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		}
+		break;
+	case STAGE_TYPE::STAGE_RED:
+		switch (area)
+		{
+		case 0: xMin = -13.0f; xMax = -3.0f;  zMin = -8.0f;  zMax = 4.0f;  break;
+		case 1: xMin = -2.0f;  xMax = 6.0f;   zMin = 5.0f;   zMax = 18.0f; break;
+		case 2: xMin = 7.0f;   xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		default:xMin = -13.0f; xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		}
+		break;
+	}
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> xDist(-13.0f, 13.0f);
-	std::uniform_real_distribution<> zDist(-8.0f, 18.0f);
+	
 
-	m_pItems.push_back(
-		new Item(
-			MESH_TYPE::QUAD,
-			XMFLOAT3(xDist(gen), 4.0f, zDist(gen)),	//位置
-			XMFLOAT3(0.0f, 0.0f, 0.0f),	//回転
-			XMFLOAT3(3.5f, 3.5f, 3.5f),	//スケール
-			XMFLOAT3(0.0f, -1.0f, 0.0f),//移動速度
-			true						//アクティブフラグ
+
+	std::uniform_real_distribution<float> xDist(xMin, xMax);    // 決まったX範囲で乱数
+	std::uniform_real_distribution<float> zDist(zMin, zMax);    // 決まったZ範囲で乱数
+
+	const float x = xDist(rng);          // X座標を抽選
+	const float z = zDist(rng);          // Z座標を抽選
+
+	m_pItems.push_back(                  // アイテムを配列に追加
+		new Item(                        // アイテム生成
+			MESH_TYPE::QUAD,			 // メッシュ
+			XMFLOAT3(x, 4.0f, z),        // 位置（Yは固定）
+			XMFLOAT3(0.0f, 0.0f, 0.0f),  // 回転
+			XMFLOAT3(3.5f, 3.5f, 3.5f),  // スケール
+			XMFLOAT3(0.0f, -1.0f, 0.0f), // 速度
+			true                         // active
 		)
 	);
-	m_pItems.back()->SetColor(XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
 
-	m_pItems.back()->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
+	m_pItems.back()->SetColor(XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));				// 半透明
+	m_pItems.back()->GetColliderSet()->RegisterColliders(*m_pCollisionManager); // コライダー登録
 }
+
 
 //更新
 void ItemManager::UpdateOverride()

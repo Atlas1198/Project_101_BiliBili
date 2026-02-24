@@ -5,6 +5,7 @@
 #include "SharedStruct.h"
 #include "Item.h"
 #include "FrameTimer.h"
+#include "Context.h"
 
 //前方宣言
 class Renderer;
@@ -52,4 +53,5 @@ private:
 	int skips[2] = { 1, 4 };
 	bool applyNewSpawnRate = false;
 	bool showedAnnouncement = false;
+	SceneContext* m_pSceneContext = nullptr;	//シーンコンテキスト構造体
 };
