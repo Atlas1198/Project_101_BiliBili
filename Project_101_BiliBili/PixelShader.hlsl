@@ -13,6 +13,14 @@ cbuffer PerObject : register(b0)
     float4 lightColor_Ambient; //ライトの色(x,y,z)、環境光強度(w)
 }
 
+//定数バッファ１
+cbuffer Time : register(b1)
+{
+    float time;             //経過時間
+    float bbTimer;          //BBタイマー
+    float bbRemainingTime;  //BBタイマー
+}
+
 Texture2D gTexture : register(t0); //テクスチャオブジェクト
 SamplerState gSampler : register(s0); //サンプラーオブジェクト
 
@@ -100,7 +108,7 @@ float4 BasicPS(
     float2 uv = frac(input.uv);
     base = gTexture.Sample(gSampler, uv) * input.color * objColor;
 #endif
-    
+
     return base;
 }
 

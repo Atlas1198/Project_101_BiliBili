@@ -8,6 +8,7 @@
 #include "SharedStruct.h"
 #include "AssimpLoader.h"
 #include "ShaderLibrary.h"
+#include "BBManager.h"
 #include "Debug.h"
 
 using namespace DirectX;
@@ -79,6 +80,8 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo, TextureManag
 
 	//ポストエフェクト用PSOキーの設定
 	PreparePostProcessKey();
+
+	m_pTimeCB = new ConstantBuffer(m_pDevice, sizeof(TimeConstants));	//時間用定数バッファの生成
 }
 
 //更新
@@ -122,6 +125,13 @@ void Renderer::Draw(ID3D12GraphicsCommandList* p_commandList, RENDER_TARGET_TYPE
 
 	//ルートシグネチャの設定
 	p_commandList->SetGraphicsRootSignature(m_pRootSignature->GetRootSignature());
+
+	ConstantBuffer* cb = m_pTimeCB;
+	auto* ptr = cb->GetPtr<TimeConstants>();
+	ptr->time = BBManager::GetTimerProgress();
+	ptr->bbTimer = BBManager::GetBBTimer();
+	ptr->bbRemainingTime = BBManager::GetBBRemainingTime();
+	p_commandList->SetGraphicsRootConstantBufferView(1, cb->GetAddress());	//ルートパラメータ1に定数バッファをセット
 
 	if (targetType == RENDER_TARGET_TYPE::POST_PROCESS)
 	{
@@ -282,7 +292,7 @@ void Renderer::DrawTempRenderListWorld(ID3D12GraphicsCommandList* p_commandList)
 
 		auto gpuHandle = heapHandle;
 		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
-		p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+		p_commandList->SetGraphicsRootDescriptorTable(2, gpuHandle);
 
 		//描画コマンドの発行
 		p_commandList->DrawIndexedInstanced(	//描画コマンド
@@ -385,7 +395,7 @@ void Renderer::DrawTempRenderListScreen(ID3D12GraphicsCommandList* p_commandList
 		uint32_t idx = m_tempScreenRenderList[i].common.srvIndex;
 		auto gpuHandle = heapHandle;
 		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
-		p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+		p_commandList->SetGraphicsRootDescriptorTable(2, gpuHandle);
 
 		//描画コマンドの発行
 		p_commandList->DrawIndexedInstanced(	//描画コマンド
@@ -492,7 +502,7 @@ void Renderer::DrawTempWorldRenderListPostProcess(ID3D12GraphicsCommandList* p_c
 
 		auto gpuHandle = heapHandle;
 		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
-		p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+		p_commandList->SetGraphicsRootDescriptorTable(2, gpuHandle);
 
 		//描画コマンドの発行
 		p_commandList->DrawIndexedInstanced(	//描画コマンド
@@ -519,7 +529,7 @@ void Renderer::DrawPostProcess(ID3D12GraphicsCommandList* p_commandList)
 	auto gpuHandle = m_pTextureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();	//SRVヒープのGPUハンドルを取得
 	uint32_t idx = static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::POST_PROCESSING);
 	gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
-	p_commandList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+	p_commandList->SetGraphicsRootDescriptorTable(2, gpuHandle);
 
 	//フルスクリーンポリゴンの描画
 	D3D12_VERTEX_BUFFER_VIEW nullVBV{};

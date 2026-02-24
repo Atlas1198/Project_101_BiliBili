@@ -49,6 +49,10 @@ public:
 	void SetBB(int teamID, bool activate);						
 	void OnItemPickup(int teamID);
 
+	static float GetTimerProgress();
+	static float GetBBTimer();
+	static float GetBBRemainingTime();
+
 private:
 	BB* m_BB[BB_NUM] = { nullptr }; 
 	BilibiliArea *m_BBAreas[BB_AREA_NUM] = { nullptr };
