@@ -38,7 +38,8 @@ private:
 	UIImage* m_pPlayerBlurs[MAX_CHARACTER_NUM] = { nullptr };				//プレイヤーブラーUIオブジェクト配列
 	UIImage* m_pPlayerBackgroundsSelected[MAX_CHARACTER_NUM] = { nullptr };	//プレイヤー背景UIオブジェクト配列(選択済み)
 	UIImage* m_pPlayerBackgroundsNormal[MAX_CHARACTER_NUM] = { nullptr };	//プレイヤー背景UIオブジェクト配列(未選択)
-	UIImage* m_pGoToNextSceneIcon = nullptr;								//次のシーンへ進むアイコンUIオブジェクト
+	UIImage* m_pGoToNextSceneBack = nullptr;								//次のシーンへ進むアイコンUIオブジェクト(背景)
+	UIImage* m_pGoToNextSceneText = nullptr;								//次のシーンへ進むアイコンUIオブジェクト(テキスト)
 	UIImage* m_pOperation = nullptr;										//操作説明UIオブジェクト
 	LoadUI* m_pLoadUI = nullptr;											//ロードUIオブジェクト
 

@@ -96,6 +96,11 @@ float4 BasicPS(
     return float4(0.0f, 0.0f, 0.0f, 0.0f);
 #endif
     
+#ifdef PS_WRAP_UV
+    float2 uv = frac(input.uv);
+    base = gTexture.Sample(gSampler, uv) * input.color * objColor;
+#endif
+    
     return base;
 }
 

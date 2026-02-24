@@ -6,6 +6,7 @@
 using namespace DirectX;
 
 Camera::Camera(float window_width, float window_height)
+	: m_screenWidth(window_width), m_screenHeight(window_height)
 {
 	// デフォルトのカメラ設定
 	m_position = DEFAULT_POSITION;					//カメラ位置
@@ -177,6 +178,17 @@ bool Camera::WorldToScreen(
 	screenPos.y = y * (screenHeight * 0.5f); // 下を+にしたいなら -y、上を+にしたいなら y
 
 	return true;
+}
+
+void Camera::Reset()
+{
+	m_position = DEFAULT_POSITION;					//カメラ位置をデフォルトにリセット
+	m_target = DEFAULT_TARGET;						//注視点をデフォルトにリセット
+	m_up = DEFAULT_UP;								//上方向ベクトルをデフォルトにリセット
+	m_fov = DEFAULT_FOV;							//垂直視野角をデフォルトにリセット
+	m_aspectRatio = m_screenWidth / m_screenHeight;	//アスペクト比をデフォルトにリセット
+	m_nearZ = DEFAULT_NEAR_Z;						//ニアクリップ距離をデフォルトにリセット
+	m_farZ = DEFAULT_FAR_Z;							//ファークリップ距離をデフォルトにリセット
 }
 
 void Camera::CallShakeCamera(int time, float strength)

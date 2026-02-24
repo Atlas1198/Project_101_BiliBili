@@ -19,7 +19,7 @@ void TitleUIManager::InitializeOverride(
 		XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		0,
 		L"asset/texture/title_scene/UI_TITLE_Back.png",
-		PSO_KEY_OPAQUE
+		PSO_KEY_OPAQUE.AddDefines({ SHADER_DEFINE::PS_WRAP_UV })
 	);
 	m_roots.push_back(std::unique_ptr<UIBase>(m_pBackImage));
 
