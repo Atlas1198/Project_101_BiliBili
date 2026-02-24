@@ -46,7 +46,7 @@ void TitleScene::UpdateOverride()
 		{
 			//フェードアウト開始
 			m_pTitleUIManager->StartFadeOut(0.05f);
-			AudioManager::GetInstance()->PlaySE("TITLE_NEXT");
+			AudioManager::GetInstance()->PlaySE("TITLE_NEXT",1.4f);
 			AudioManager::GetInstance()->StopBGM();
 		}
 		//コントローラーの任意のボタン入力でコントローラー設定シーンへ遷移
@@ -57,7 +57,7 @@ void TitleScene::UpdateOverride()
 				controller.SetVibration(1.0f, 1.0f, 30); //振動セット
 				//フェードアウト開始
 				m_pTitleUIManager->StartFadeOut(0.05f);
-				AudioManager::GetInstance()->PlaySE("TITLE_NEXT");
+				AudioManager::GetInstance()->PlaySE("TITLE_NEXT",1.2f);
 				AudioManager::GetInstance()->StopBGM();
 			}
 		}

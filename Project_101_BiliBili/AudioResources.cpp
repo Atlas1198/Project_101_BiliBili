@@ -13,7 +13,7 @@ void LoadAllGameSounds(AudioManager& am) {
     // リスト
     static const std::vector<SoundResource> catalog = {
         // --- BGMで使う用 ---
-        //{ "", L""},{ "", L"asset/sound/SE/"},
+        //{ "", L""},{ "", L"asset/sound/SE/リザルト_決定長押し_SE.wav"},
         { "GAME_BGM",  L"asset/sound/BGM/インゲーム_メイン_BGM.wav" },
         { "GAME_TF_BGM", L"asset/sound/BGM/インゲーム_変身時_BGM.wav" },
         { "CHARA_BGM", L"asset/sound/BGM/キャラ選択_BGM.wav"},
@@ -29,15 +29,15 @@ void LoadAllGameSounds(AudioManager& am) {
         { "GAME_STRAT", L"asset/sound/SE/インゲーム_開始2_SE.wav"},
         { "GAME_TF", L"asset/sound/SE/インゲーム_変身_SE.wav"},
         { "GAME_FINISH", L"asset/sound/SE/インゲーム_終了_SE.wav"},
-        { "", L"asset/sound/SE/インゲーム_変身解除_SE.wav"},
+        //{ "a", L"asset/sound/SE/インゲーム_変身解除_SE.wav"},
         { "Shoot", L"asset/sound/SE/Shoot.wav" },
         { "TF_SHOOT", L"asset/sound/SE/インゲーム_ビリビリ.wav"},
         { "GAME_FINISH_SHOOT", L"asset/sound/SE/インゲーム_最終ダメージ_SE.wav"},
         { "HIT", L"asset/sound/SE/インゲーム_ダメージ_SE.wav"},
         { "BANE_JUMP", L"asset/sound/SE/インゲーム_ファン_SE.wav"},
-        { "MOVE", L"asset/sound/SE/歩く・金属・走る.wav"},
+        //{ "MOVE", L"asset/sound/SE/歩く・金属・走る.wav"},
         { "TITLE_NEXT", L"asset/sound/SE/タイトル_決定_SE.wav"},
-        { "", L"asset/sound/SE/キャラ選択_カーソル移動wav"},
+        //{ "", L"asset/sound/SE/キャラ選択_カーソル移動wav"},
         { "CHARA_RESET", L"asset/sound/SE/キャラ選択_キャンセル.wav"},
         { "CURSOR_MOVE", L"asset/sound/SE/キャラ選択_カーソル移動.wav"},
         { "CHARA_SET", L"asset/sound/SE/キャラ選択_レディ.wav"},

@@ -59,7 +59,7 @@ void Item::ResolveCollisionsOverride()
 				//アイテム取得エフェクトの発生
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(EventType::BB_CUT_IN, std::make_pair(player->GetTeamID(), player->GetCharacterID()));
 				//アイテム取得時再生
-				AudioManager::GetInstance()->PlaySE("GAME_TF");
+				AudioManager::GetInstance()->PlaySE("GAME_TF",1.5f);
 				//コントローラー振動
 				player->ShakeController(1.0f, 1.0f, 20);
 			}

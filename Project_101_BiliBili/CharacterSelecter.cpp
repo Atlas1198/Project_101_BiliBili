@@ -65,7 +65,7 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 						//選択済みアイコン表示イベント発行
 						EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 							EventType::SHOW_SELECTED_ICON, { i, state.characterIndex });
-						AudioManager::GetInstance()->PlaySE("CHARA_SET");
+						AudioManager::GetInstance()->PlaySE("CHARA_SET",1.6f);
 					}
 				}
 			}
@@ -90,7 +90,7 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 					sceneContext.pInputInfo->SetAllControllerVibration(1.0f, 1.0f, 30); //バイブレーション
 					m_countToNextScene = 0;
 					EventManager::GetInstance()->TriggerEvent(EventType::GO_TO_GAME_SCENE);
-					AudioManager::GetInstance()->PlaySE("CHARA_NEXT");
+					AudioManager::GetInstance()->PlaySE("CHARA_NEXT",1.5f);
 					AudioManager::GetInstance()->StopBGM();
 				}
 			}
@@ -103,7 +103,7 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 					//選択済みアイコン非表示イベント発行
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 						EventType::HIDE_SELECTED_ICON, { i, state.characterIndex });
-					AudioManager::GetInstance()->PlaySE("CHARA_RESET");
+					AudioManager::GetInstance()->PlaySE("CHARA_RESET",1.2f);
 				}
 			}
 			else if (!state.isSelected)
@@ -113,14 +113,14 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 					state.characterIndex = (std::max)(state.characterIndex - 1, 0);
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 						EventType::CHARACTER_ICON_MOVE, { i, state.characterIndex });
-					AudioManager::GetInstance()->PlaySE("CURSOR_MOVE");
+					AudioManager::GetInstance()->PlaySE("CURSOR_MOVE",1.2f);
 				}
 				else if (controller.RIGHT.trigger || (leftStick > deadZone && fabs(leftStickPast) < deadZone))
 				{//右入力
 					state.characterIndex = (std::min)(state.characterIndex + 1, 3);
 					EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 						EventType::CHARACTER_ICON_MOVE, { i, state.characterIndex });
-					AudioManager::GetInstance()->PlaySE("CURSOR_MOVE");
+					AudioManager::GetInstance()->PlaySE("CURSOR_MOVE",1.2f);
 				}
 				else if (controller.B.trigger)
 				{//決定入力
@@ -144,7 +144,7 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 						//選択済みアイコン表示イベント発行
 						EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 							EventType::SHOW_SELECTED_ICON, { i, state.characterIndex });
-						AudioManager::GetInstance()->PlaySE("CHARA_SET");
+						AudioManager::GetInstance()->PlaySE("CHARA_SET",1.2f);
 					}
 				}
 			}
