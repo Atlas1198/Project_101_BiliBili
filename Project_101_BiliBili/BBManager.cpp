@@ -1,4 +1,4 @@
-﻿#include "BBManager.h"
+#include "BBManager.h"
 #include "Player.h"
 #include "GameUIManager.h"
 #include "EventManager.h"
@@ -119,7 +119,7 @@ void BBManager::OnItemPickup(int teamID)
 		SetBB(teamID, true);
 
 
-		if (m_isBBEnhanced)
+		if (m_isBBEnhanced[teamID])
 		{
 			m_BBAreas[teamID * 2]->SetActive(true);
 			m_BBAreas[teamID * 2 + 1]->SetActive(true);
