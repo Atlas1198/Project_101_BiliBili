@@ -94,6 +94,9 @@ void PlayerManager::InitializeOverride(
 		bbActive = false;
 	}
 
+	sentBBEnhanceEvent[0] = false;
+	sentBBEnhanceEvent[1] = false;
+
 	//スポーン位置設定
 	for (int i = 0; i < 4; i++)
 	{
