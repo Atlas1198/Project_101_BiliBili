@@ -43,10 +43,37 @@ float4 BasicPS(
     base = float4(base.rgb * lit, base.a);
 #endif
     
+#ifdef PS_OUTLINE_RED
+    clip(base.a - 0.1f);
+    
+    return float4(1.0f, 0.188f, 0.188f, 1.0f);
+#endif
+#ifdef PS_OUTLINE_BLUE
+    clip(base.a - 0.1f);
+    
+    return float4(0.188f, 0.78f, 1.0f, 1.0f);
+#endif
+    
+#ifdef PS_WRAP_UV
+    float2 uv = frac(input.uv);
+    base = gTexture.Sample(gSampler, uv) * input.color * objColor;
+#endif
+    
     return base;
 }
 
+float4 PostEffectPS(
+    VSOutPut input //頂点シェーダーから送られてきたデータ構造体
+) : SV_TARGET //レンダーターゲットへ出力
+{
+    float4 base = gTexture.Sample(gSampler, input.uv);
+    
+    // Post-process用の処理を追加
+    base.rgb = pow(base.rgb, 1.0f / 2.2f); // ガンマ補正
+    base.rgb *= 1.5f; // 明るさを上げる
 
+    return base;
+}
 
 float Hash21(float2 p)
 {

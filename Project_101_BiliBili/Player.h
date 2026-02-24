@@ -5,6 +5,7 @@
 #include "SharedStruct.h"
 #include "FrameTimer.h"
 #include "InputInfo.h"
+#include "PlayerOutline.h"
 
 //プレイヤークラス
 class Player : public ObjectBase
@@ -23,6 +24,7 @@ private:	//非公開メンバ変数
 	InputInfo* m_pInputInfo{};	//入力情報構造体
 	PlayerInfo info{};			//プレイヤー情報構造体
 	Player* teammate = nullptr;
+	PlayerOutline *m_pOutline = nullptr; // プレイヤーの輪郭オブジェクトへのポインタ
 	int teamID = -1;
 	int characterID = -1;
 	int controllerID = -1;
@@ -36,7 +38,7 @@ private:	//非公開メンバ変数
 	int animUpdateRate = 10; // アニメーションの更新速度
 	bool isMoving = false; // 移動中フラグ
 	bool isShooting = false; // 射撃中フラグ
-	int shootAnimDuration = 5; // 射撃アニメーションの持続フレーム数
+	int shootAnimDuration = 10; // 射撃アニメーションの持続フレーム数
 	bool bbActive = false; // BBアクティブフラグ
 	bool canRun = false;
 	bool runTimerStarted = false;
@@ -69,9 +71,12 @@ public:	//公開関数
 	//メイン処理関数
 	void Initialize(InputInfo* inputInfo, BulletManager* pBulletManager);	//初期化
 	void UpdateOverride() override;					//更新
+	void InputRelatedUpdate();						//入力関連の更新
 	void ResolveCollisionsOverride() override;		//衝突解決
+
 	void SetTeamID(int team) { teamID = team; } //チームIDセット
 	void BindTeammate(Player* teammate) { this->teammate = teammate; } //味方のセット
+	void BindOutline(PlayerOutline *outline) { m_pOutline = outline; m_pOutline->SetTexSplitInfo(m_texSplitInfo); } //輪郭オブジェクトのセット
 	int GetTeamID() const { return teamID; } //チームID取得
 
 	void SetCharacterID(int character) { characterID = character; } //キャラクターIDセット
@@ -85,6 +90,9 @@ public:	//公開関数
 	void SetBB(bool isActive); // BBセット
 	void ShakeController(float leftMotor = 1.0f, float rightMotor = 1.0f, int duration = 5); //コントローラー振動
 	void StartDamageAnimation();
+
+	bool IsDamageAnimation() const { return damageAnimation; } // ダメージアニメーション中かどうか
+	FrameTimer& GetDamageAnimTimer() { return damageAnimTimer; } // ダメージアニメーションタイマーの参照を取得
 
 private:	//非公開関数
 	void Move();	//移動

@@ -16,7 +16,7 @@ PipelineState::PipelineState(ID3D12Device* pDevice)
 	m_desc.SampleMask = UINT_MAX;											//サンプルマスクの設定
 	m_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;	//プリミティブトポロジーの設定(三角形)
 	m_desc.NumRenderTargets = 1;											//レンダーターゲットの数
-	m_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;						//レンダーターゲットのフォーマット設定(sRGB)
+	m_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;						//レンダーターゲットのフォーマット設定(sRGB)
 	m_desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;								//デプスステンシルビューのフォーマット設定
 	m_desc.SampleDesc.Count = 1;											//マルチサンプリングしない
 	m_desc.SampleDesc.Quality = 0;											//クオリティレベル0
@@ -193,6 +193,29 @@ void PipelineState::SetCullMode(CULL_MODE mode)
 	default:
 		break;
 	}
+}
+
+//レンダーターゲットのフォーマットを設定
+void PipelineState::SetFormat(RENDER_TARGET_FORMAT format)
+{
+	switch (format)
+	{
+	case RTV_FORMAT_LDR:
+		m_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; //LDRフォーマット
+		break;
+	case RTV_FORMAT_HDR:
+		m_desc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; //HDRフォーマット
+		break;
+	default:
+		break;
+	}
+}
+
+//入力レイアウトを設定
+void PipelineState::SetInputLayout(const D3D12_INPUT_ELEMENT_DESC* elems, UINT count)
+{
+	m_desc.InputLayout.pInputElementDescs = elems;	//入力レイアウトの要素の配列を設定
+	m_desc.InputLayout.NumElements = count;			//入力レイアウトの要素の数を設定
 }
 
 //パイプラインステートオブジェクトを取得

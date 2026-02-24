@@ -128,6 +128,7 @@ void ObjectManagerBase::SubmitRenderInfo(
 			submitInfos[i].common.psoKey = info[i].common.psoKey;
 			submitInfos[i].common.uvRect = SplitSprite(object.GetTexSplitInfo());
 			submitInfos[i].billboardType = info[i].billboardType;
+			submitInfos[i].isPostEffect = info[i].isPostEffect;
 		}
 
 		//描画要求をシーンに提出

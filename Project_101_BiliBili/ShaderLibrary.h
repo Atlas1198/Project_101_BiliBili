@@ -36,12 +36,14 @@ struct ShaderDesc
 };
 
 static const ShaderDesc VS_TABLE[] = {
-    { L"VertexShader.hlsl", "BasicVS", "vs_5_0" }, // VS_ID::Basic = 0
+    { L"VertexShader.hlsl", "BasicVS", "vs_5_0" },      // VS_ID::Basic = 0
+	{ L"VertexShader.hlsl", "PostEffectVS", "vs_5_0" }, // VS_ID::PostEffect = 1
 };
 
 static const ShaderDesc PS_TABLE[] = {
-    { L"PixelShader.hlsl", "BasicPS", "ps_5_0" }, // PS_ID::Basic = 0
-    { L"PixelShader.hlsl", "BBScreenEffectPS", "ps_5_0" }, // PS_ID::Basic = 0
+    { L"PixelShader.hlsl", "BasicPS", "ps_5_0" },           // PS_ID::Basic = 0
+    { L"PixelShader.hlsl", "BBScreenEffectPS", "ps_5_0" },  // PS_ID::Basic = 0
+	{ L"PixelShader.hlsl", "PostEffectPS", "ps_5_0" },      // PS
 };
 
 // ShaderLibrary class

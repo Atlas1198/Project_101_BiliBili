@@ -204,6 +204,7 @@
     <ClInclude Include="LineBB.h" />
     <ClInclude Include="LoadUI.h" />
     <ClInclude Include="NoCollisionModel.h" />
+    <ClInclude Include="PlayerOutline.h" />
     <ClInclude Include="PlayerPointerUI.h" />
     <ClInclude Include="PlayerShadow.h" />
     <ClInclude Include="Random.h" />
@@ -310,6 +311,7 @@
     <ClCompile Include="PipelineState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="PlayerOutline.cpp" />
     <ClCompile Include="PlayerPointerUI.cpp" />
     <ClCompile Include="PlayerShadow.cpp" />
     <ClCompile Include="RenderData.cpp" />

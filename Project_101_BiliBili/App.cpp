@@ -277,7 +277,7 @@ void App::InitInstance()
 	m_pEventManager = EventManager::GetInstance();
 
 	//DirectX12エンジン初期化
-	m_pEngine->Initialize(
+	m_pEngine->InitCore(
 		hwnd,			//ウィンドウハンドル
 		WINDOW_WIDTH,	//フレームバッファの幅
 		WINDOW_HEIGHT	//フレームバッファの高さ
@@ -296,7 +296,7 @@ void App::InitInstance()
 	//テクスチャ管理クラス初期化
 	m_pTextureManager->Initialize(
 		pDevice,	//デバイス
-		512			//最大ディスクリプタ数
+		1024		//最大ディスクリプタ数
 	);
 
 	//メッシュ管理クラス初期化
@@ -304,10 +304,13 @@ void App::InitInstance()
 		pDevice	//デバイス
 	);
 
-	//レンダーを開始してコマンドリストをオープン
-	m_pEngine->RenderBegin();	
+	//バインディングの初期化
+	m_pEngine->InitBindings(m_pTextureManager);
 
-  m_pInputManager->Initialize();
+	//レンダーを開始してコマンドリストをオープン
+	m_pEngine->BeginFrame();	
+
+	m_pInputManager->Initialize();
   
 	//オーディオ管理クラス初期化
 	if (m_pAudioManager)
@@ -351,22 +354,27 @@ void App::Update()
 //描画
 void App::Draw()
 {
-	//描画開始
-	m_pEngine->RenderBegin();
+	// Start rendering
+	m_pEngine->BeginFrame();
 
-	//保留中のテクスチャをアップロード
+	// Upload pending textures
 	m_pTextureManager->UploadPendingTextures(m_pEngine->GetCommandList());
 
-	//ゲームシーンの描画要求をシーンに提出
+	// Submit draw requests for the game scene
 	m_pSceneManager->SubmitDraws(*m_pRenderer);
 
-	//シーンの描画
-	m_pRenderer->Draw(
-		m_pEngine->GetCurrentBufferIndex(),	//バッファインデックス
-		m_pEngine->GetCommandList()			//コマンドリスト
-	);
+	// Draw for post-processing
+	m_pEngine->BeginPass(RENDER_TARGET_TYPE::POST_PROCESS);
+	m_pRenderer->Draw(m_pEngine->GetCommandList(), RENDER_TARGET_TYPE::POST_PROCESS);
+	m_pEngine->EndPass(RENDER_TARGET_TYPE::POST_PROCESS);
 
-	//描画終了
+	// Draw for back buffer
+	auto backBufferType = static_cast<RENDER_TARGET_TYPE>(m_pEngine->GetCurrentBufferIndex());
+	m_pEngine->BeginPass(backBufferType);
+	m_pRenderer->Draw(m_pEngine->GetCommandList(), backBufferType);
+	m_pEngine->EndPass(backBufferType);
+
+	// End rendering
 	m_pEngine->RenderEnd();
 }
 

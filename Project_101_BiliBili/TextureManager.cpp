@@ -5,219 +5,255 @@
 
 using namespace DirectX;
 
-//ファイルの拡張子を取得
+// Get file extension from path
 std::wstring FileExtension(const std::wstring& path)
 {
-	std::filesystem::path fsPath(path);				//ファイルパスからfilesystemパスを作成
-	return fsPath.extension().wstring().substr(1); //拡張子の先頭のドットを除去して返す
+	std::filesystem::path fsPath(path);				// Create filesystem path from file path
+	return fsPath.extension().wstring().substr(1); // Remove leading dot from extension and return
 }
 
-//初期化
+// Initialization
 void TextureManager::Initialize(
-	ID3D12Device* pDevice,	//デバイス
-	uint32_t maxDescriptors	//最大ディスクリプタ数
+	ID3D12Device* pDevice,	// Device
+	uint32_t maxDescriptors	// Maximum descriptor count
 )
 {
-	m_pDevice = pDevice;	//デバイスを保存
+	m_pDevice = pDevice;	// Save device
 
-	//SRVディスクリプタヒープの設定
-	D3D12_DESCRIPTOR_HEAP_DESC desc = {};	//ディスクリプタヒープ記述子
-	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;		//SRVヒープ
-	desc.NumDescriptors = maxDescriptors;					//ディスクリプタ数
-	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; //シェーダーから見える
+	// SRV descriptor heap setup
+	D3D12_DESCRIPTOR_HEAP_DESC desc = {};	// Descriptor heap descriptor
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;		// SRV heap
+	desc.NumDescriptors = maxDescriptors;					// Descriptor count
+	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // Shader visible
 
-	//ディスクリプタヒープの生成
+	// Create descriptor heap
 	pDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_pSrvHeap));
 
-	//SRVディスクリプタのインクリメントサイズを取得
+	// Get SRV descriptor increment size
 	m_srvIncrementSize = pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	m_nextFreeIndex = 0;		//次の空きインデックスを初期化
-	m_loadedTextures.clear();	//読み込み済みテクスチャマップをクリア
+	m_nextFreeIndex = static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::RESERVED_COUNT);	// Initialize next free index
+	m_loadedTextures.clear();																// Clear loaded texture map
 
-	//デフォルトの白テクスチャを作成
-	m_defaultTextureIndex = LoadSrvFromFile(L"asset/texture/white.png");
+	// Load default white texture
+	CreateDefaultTexture();
 }
 
-//ファイルからSRVを読み込み
+// Load SRV from file
 uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 {
-	//すでに読み込まれている場合はそのインデックスを返す
+	// If already loaded, return the index
 	if (auto it = m_loadedTextures.find(path); it != m_loadedTextures.end())
 	{
 		return it->second;
 	}
 
-	//画像の読み込み
-	ScratchImage img = {};	//スクラッチイメージ
-	TexMetadata meta = {};		//メタデータ
+	// Load image
+	ScratchImage img = {};	// Scratch image
+	TexMetadata meta = {};		// Metadata
 
-	auto ext = FileExtension(path);	//拡張子取得
+	auto ext = FileExtension(path);	// Get file extension
 
-	HRESULT hr = S_FALSE;	//HRESULT
+	HRESULT hr = S_FALSE;	// HRESULT
 
-	//拡張子で読み込み方法を分岐
+	// Switch loading method based on extension
 	if (ext == L"tga")
-	{//TGAファイルから読み込み
+	{// Load from TGA file
 		hr = LoadFromTGAFile(path.c_str(), &meta, img);
 	}
 	else
-	{//WICファイルから読み込み
-		hr = LoadFromWICFile(		//WICファイルから読み込み
-			path.c_str(),	//ファイルパス
-			WIC_FLAGS_NONE,	//WICフラグ
-			&meta,			//メタデータ
-			img				//スクラッチイメージ
+	{// Load from WIC file
+		hr = LoadFromWICFile(		// Load from WIC file
+			path.c_str(),	// File path
+			WIC_FLAGS_NONE,	// WIC flags
+			&meta,			// Metadata
+			img				// Scratch image
 		);
 	}
 
-	//読み込み失敗の場合はエラーメッセージを出力して終了
+	// If loading failed, output error message and return
 	if (FAILED(hr))
 	{
 		OutputDebugStringW((L"[TextureManager] Failed to load: " + path + L"\n").c_str());
 		return UINT32_MAX; // or some fallback texture index
 	}
 
-	//イメージデータの取得
-	size_t imageCount = img.GetImageCount();	//イメージ数取得
+	// Get image data
+	size_t imageCount = img.GetImageCount();	// Get image count
 
-	//イメージデータが無い場合はエラーメッセージを出力して終了
+	// If no image data, output error message and return
 	if (imageCount == 0)
 	{
 		OutputDebugStringW((L"[TextureManager] No image data: " + path + L"\n").c_str());
 		return UINT32_MAX;
 	}
 
-	//画像フォーマットを固定
-	DXGI_FORMAT target = DXGI_FORMAT_R8G8B8A8_UNORM;
-	if (meta.format != target) {
-		ScratchImage conv;
-		HRESULT hr2 = Convert(
-			*img.GetImage(0, 0, 0),
-			target,
-			TEX_FILTER_DEFAULT,
-			TEX_THRESHOLD_DEFAULT,
-			conv
-		);
-		if (FAILED(hr2)) { /* error */ }
-
-		img = std::move(conv);
-		meta = img.GetMetadata(); // format がR8G8B8A8_UNORMに揃う
-	}
-
-	imageCount = img.GetImageCount();
-
-	//GPU用テクスチャリソースの生成
-	ComPtr<ID3D12Resource> pTexture;	//テクスチャリソース
-	CD3DX12_RESOURCE_DESC texDesc = CD3DX12_RESOURCE_DESC::Tex2D(	//テクスチャリソース記述子
-		DXGI_FORMAT_R8G8B8A8_TYPELESS,						//フォーマット
-		static_cast<UINT>(meta.width),		//幅
-		static_cast<UINT>(meta.height),		//高さ
-		1,									//配列サイズ
-		static_cast<UINT>(meta.mipLevels)	//ミップレベル数
+	// Create texture resource
+	ComPtr<ID3D12Resource> pTexture;	// Texture resource
+	CD3DX12_RESOURCE_DESC texDesc = CD3DX12_RESOURCE_DESC::Tex2D(	// Texture resource descriptor
+		meta.format,						// Format
+		static_cast<UINT>(meta.width),		// Width
+		static_cast<UINT>(meta.height),		// Height
+		1,									// Array size
+		static_cast<UINT>(meta.mipLevels)	// Mip levels
 	);
 
-	auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT); //ヒープ設定(デフォルト)
-	hr =  m_pDevice->CreateCommittedResource(	//リソース生成
-		&heapProps,						//ヒープ設定
-		D3D12_HEAP_FLAG_NONE,			//ヒープフラグ
-		&texDesc,						//リソース記述子
-		D3D12_RESOURCE_STATE_COPY_DEST,	//初期リソース状態
-		nullptr,						//最適化されたクリア値
-		IID_PPV_ARGS(&pTexture)			//生成するリソース
+	auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT); // Heap properties (default)
+	hr = m_pDevice->CreateCommittedResource(	// Create resource
+		&heapProps,						// Heap properties
+		D3D12_HEAP_FLAG_NONE,			// Heap flags
+		&texDesc,						// Resource descriptor
+		D3D12_RESOURCE_STATE_COPY_DEST,	// Initial resource state
+		nullptr,						// Optimized clear value
+		IID_PPV_ARGS(&pTexture)			// Resource to create
 	);
 
-	//アップロード用バッファの生成
-	ComPtr<ID3D12Resource> pUploadBuffer;	//アップロード用バッファ
-	const UINT numSubresources = static_cast<UINT>(imageCount); //サブリソース数取得
-	const UINT64 uploadBufferSize = GetRequiredIntermediateSize(	//アップロード用バッファサイズ取得
-		pTexture.Get(),	//テクスチャリソース
-		0,				//最初のサブリソース
-		numSubresources	//ミップレベル数
+	// Create upload buffer
+	ComPtr<ID3D12Resource> pUploadBuffer;	// Upload buffer
+	const UINT numSubresources = static_cast<UINT>(imageCount); // Get subresource count
+	const UINT64 uploadBufferSize = GetRequiredIntermediateSize(	// Get upload buffer size
+		pTexture.Get(),	// Texture resource
+		0,				// First subresource
+		numSubresources	// Mip levels
 	);
 
-	auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD); //ヒープ設定(アップロード用)
-	auto uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize); //バッファリソース記述子
+	auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD); // Heap properties (upload)
+	auto uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize); // Buffer resource descriptor
 
-	m_pDevice->CreateCommittedResource(	//リソース生成
-		&uploadHeapProps,					//ヒープ設定
-		D3D12_HEAP_FLAG_NONE,				//ヒープフラグ
-		&uploadBufferDesc,					//リソース記述子
-		D3D12_RESOURCE_STATE_GENERIC_READ,	//初期リソース状態
-		nullptr,							//最適化されたクリア値
-		IID_PPV_ARGS(&pUploadBuffer)		//生成するリソース
+	m_pDevice->CreateCommittedResource(	// Create resource
+		&uploadHeapProps,					// Heap properties
+		D3D12_HEAP_FLAG_NONE,				// Heap flags
+		&uploadBufferDesc,					// Resource descriptor
+		D3D12_RESOURCE_STATE_GENERIC_READ,	// Initial resource state
+		nullptr,							// Optimized clear value
+		IID_PPV_ARGS(&pUploadBuffer)		// Resource to create
 	);
 
-	//サブリソースデータの設定
-	const uint32_t textureIndex = m_nextFreeIndex;		//次のテクスチャインデックスを取得
-	std::vector<D3D12_SUBRESOURCE_DATA> subresources;	//サブリソース配列
-	subresources.reserve(img.GetImageCount());			//配列の予約
+	// Set subresource data
+	const uint32_t textureIndex = AllocateSrv();		// Get next texture index
+	std::vector<D3D12_SUBRESOURCE_DATA> subresources;	// Subresource array
+	subresources.reserve(img.GetImageCount());			// Reserve array size
 	for (size_t i = 0; i < img.GetImageCount(); ++i)
 	{
-		const Image* imgData = img.GetImages() + i; //イメージデータ取得
+		const Image* imgData = img.GetImages() + i; // Get image data
 
-		D3D12_SUBRESOURCE_DATA subresource = {};	//サブリソースデータ
-		subresource.pData = imgData->pixels;			//ピクセルデータ
-		subresource.RowPitch = imgData->rowPitch;		//1行のバイト数
-		subresource.SlicePitch = imgData->slicePitch;	//スライスのバイト数
-		subresources.push_back(subresource);			//配列に追加
+		D3D12_SUBRESOURCE_DATA subresource = {};	// Subresource data
+		subresource.pData = imgData->pixels;			// Pixel data
+		subresource.RowPitch = imgData->rowPitch;		// Row pitch
+		subresource.SlicePitch = imgData->slicePitch;	// Slice pitch
+		subresources.push_back(subresource);			// Add to array
 	}
 
-	//シェーダーリソースビューの作成
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};	//SRV記述子
-	srvDesc.Shader4ComponentMapping = 
-		D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;	//コンポーネントマッピング
-	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	// Create shader resource view
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};	// SRV descriptor
+	srvDesc.Shader4ComponentMapping =
+		D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;	// Component mapping
+	srvDesc.Format =
+		meta.format;								// Format
 	srvDesc.ViewDimension =
-		D3D12_SRV_DIMENSION_TEXTURE2D;				//ビューの次元(2Dテクスチャ)
-	srvDesc.Texture2D.MipLevels = 
-		(UINT)meta.mipLevels;						//ミップレベル数
+		D3D12_SRV_DIMENSION_TEXTURE2D;				// View dimension (2D texture)
+	srvDesc.Texture2D.MipLevels =
+		(UINT)meta.mipLevels;						// Mip levels
 
-	auto cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(	//CPUディスクリプタハンドル
-		m_pSrvHeap->GetCPUDescriptorHandleForHeapStart(),	//ヒープ先頭ハンドル
-		textureIndex,										//オフセット(読み込み済みテクスチャ数)
-		m_srvIncrementSize									//インクリメントサイズ
+	auto cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(	// CPU descriptor handle
+		m_pSrvHeap->GetCPUDescriptorHandleForHeapStart(),	// Heap start handle
+		textureIndex,										// Offset (number of loaded textures)
+		m_srvIncrementSize									// Increment size
 	);
 
-	m_pDevice->CreateShaderResourceView(	//SRV作成
-		pTexture.Get(),	//テクスチャリソース
-		&srvDesc,		//SRV記述子
-		cpuHandle		//SRVハンドル
+	m_pDevice->CreateShaderResourceView(	// Create SRV
+		pTexture.Get(),	// Texture resource
+		&srvDesc,		// SRV descriptor
+		cpuHandle		// SRV handle
 	);
 
-	//テクスチャ情報を登録
-	m_loadedTextures[path] = textureIndex;			//パスとインデックスを登録
-	m_nextFreeIndex++;								//次の空きインデックスを更新
+	// Register texture information
+	m_loadedTextures[path] = textureIndex;			// Register path and index
 
-	//リソースとアップロード用バッファをキープ
-	m_textures.push_back(pTexture);				//テクスチャリソースをキープ
-	m_uploadKeepAlive.push_back(pUploadBuffer); //アップロード用バッファをキープ
+	// Keep resources and upload buffer alive
+	m_textures.push_back(pTexture);				// Keep texture resource
+	m_uploadKeepAlive.push_back(pUploadBuffer); // Keep upload buffer
 
-	//ScratchImageをムーブして保持するためにコピー
+	// Copy to keep ScratchImage alive
+
 	auto scratch = std::make_unique<ScratchImage>(std::move(img));
 
-	//アップロード待ちテクスチャとして登録
-	PendingTextureUpload pending = {};	//アップロード待ちテクスチャ
-	pending.texture = pTexture;						//テクスチャリソース
-	pending.uploadBuffer = pUploadBuffer;			//アップロード用バッファ
-	pending.image = std::move(scratch);				//スクラッチイメージ
-	pending.srvIndex = textureIndex;				//SRVディスクリプタインデックス
-	m_pendingUploads.push_back(std::move(pending)); //配列に追加
+	// Register as pending texture upload
+	PendingTextureUpload pending = {};	// Pending texture upload
+	pending.texture = pTexture;						// Texture resource
+	pending.uploadBuffer = pUploadBuffer;			// Upload buffer
+	pending.image = std::move(scratch);				// Scratch image
+	pending.srvIndex = textureIndex;				// SRV descriptor index
+	m_pendingUploads.push_back(std::move(pending)); // Add to array
 
-	return textureIndex;	//テクスチャインデックスを返す
+	return textureIndex;	// Return texture index
 }
 
-//保留中のテクスチャをアップロード
+// Allocate SRV descriptor index (for manually created textures)
+uint32_t TextureManager::AllocateSrv()
+{
+	if (m_nextFreeIndex >= m_pSrvHeap->GetDesc().NumDescriptors)
+	{
+		OutputDebugStringA("[TextureManager] No more SRV descriptors available\n");
+		return UINT32_MAX; // or some fallback texture index
+	}
+
+	return m_nextFreeIndex++;
+}
+
+// Create SRV for a texture resource
+void TextureManager::CreateSrv(
+	ID3D12Resource* pResource,						// Texture resource
+	DXGI_FORMAT format,								// Texture format
+	uint32_t srvIndex								// SRV descriptor index
+)
+{
+	if (!pResource)
+	{
+		OutputDebugStringA("[TextureManager] Invalid resource for CreateSrv\n");
+		return;
+	}
+
+	if (srvIndex >= m_pSrvHeap->GetDesc().NumDescriptors)
+	{
+		OutputDebugStringA("[TextureManager] SRV index out of bounds for CreateSrv\n");
+		return;
+	}
+
+	auto cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(	// CPU descriptor handle
+		m_pSrvHeap->GetCPUDescriptorHandleForHeapStart(),	// Heap start handle
+		srvIndex,											// Offset (SRV index)
+		m_srvIncrementSize									// Increment size
+	);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};	// SRV descriptor
+	srvDesc.Shader4ComponentMapping =
+		D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;	// Component mapping
+	srvDesc.Format = format;						// Format
+	srvDesc.ViewDimension =
+		D3D12_SRV_DIMENSION_TEXTURE2D;				// View dimension (2D texture)
+	srvDesc.Texture2D.MipLevels = 1;				// Mip levels (1 for manually created textures)
+	srvDesc.Texture2D.MostDetailedMip = 0;			// Most detailed mip (0 for manually created textures)
+	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;	// Resource min LOD clamp
+
+	m_pDevice->CreateShaderResourceView(	// Create SRV
+		pResource,		// Texture resource
+		&srvDesc,		// SRV descriptor
+		cpuHandle		// SRV handle
+	);
+}
+
+// Upload pending textures
 void TextureManager::UploadPendingTextures(ID3D12GraphicsCommandList* cmdList)
 {
-	//コマンドリストが無効、またはアップロード待ちテクスチャが無い場合は何もしない
+	// If command list is invalid or no pending texture uploads, do nothing
 	if (!cmdList || m_pendingUploads.empty())
 	{
 		return;
 	}
 
-	//保留中の各テクスチャをアップロード
-	for(auto& pending : m_pendingUploads)
+	// Upload each pending texture
+	for (auto& pending : m_pendingUploads)
 	{
 		if (!pending.texture || !pending.uploadBuffer || !pending.image)
 		{
@@ -225,17 +261,17 @@ void TextureManager::UploadPendingTextures(ID3D12GraphicsCommandList* cmdList)
 			continue;
 		}
 
-		//スクラッチイメージからイメージデータを取得
-		const ScratchImage& img = *pending.image;	//スクラッチイメージ
-		const Image* images = img.GetImages();		//イメージデータ取得
-		size_t count = img.GetImageCount();			//イメージ数取得
+		// Get image data from ScratchImage
+		const ScratchImage& img = *pending.image;	// ScratchImage
+		const Image* images = img.GetImages();		// Get image data
+		size_t count = img.GetImageCount();			// Get image count
 
-		if(images == nullptr || count == 0)
+		if (images == nullptr || count == 0)
 		{
-			continue; //無効なイメージデータはスキップ
+			continue; // Skip invalid image data
 		}
 
-		//ここで一時的な配列を作る
+		// Create temporary array here
 		std::vector<D3D12_SUBRESOURCE_DATA> subresources(count);
 
 		for (size_t i = 0; i < count; ++i)
@@ -247,44 +283,100 @@ void TextureManager::UploadPendingTextures(ID3D12GraphicsCommandList* cmdList)
 			subresources[i] = s;
 		}
 
-		//アップロード用バッファにデータ転送
+		// Upload data to upload buffer
 		UpdateSubresources(
-			cmdList,					//コマンドリスト
-			pending.texture.Get(),		//転送先リソース
-			pending.uploadBuffer.Get(),	//転送元リソース
-			0,							//転送元オフセット
-			0,							//最初のサブリソース
-			static_cast<UINT>(count),	//サブリソース数
-			subresources.data()			//サブリソース配列
+			cmdList,					// Command list
+			pending.texture.Get(),		// Destination resource
+			pending.uploadBuffer.Get(),	// Source resource
+			0,							// Source offset
+			0,							// First subresource
+			static_cast<UINT>(count),	// Number of subresources
+			subresources.data()			// Subresource array
 		);
 
-		//テクスチャの状態をコピー先からピクセルシェーダーリソースへ変更
+		// Change texture state from copy destination to pixel shader resource
 		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			pending.texture.Get(),						//リソース
-			D3D12_RESOURCE_STATE_COPY_DEST,				//変化前の状態
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE	//変化後の状態
+			pending.texture.Get(),						// Resource
+			D3D12_RESOURCE_STATE_COPY_DEST,				// Before state
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE	// After state
 		);
-		cmdList->ResourceBarrier(1, &barrier);	//リソースバリア設定
+		cmdList->ResourceBarrier(1, &barrier);	// Set resource barrier
 	}
 
-	//アップロード待ちテクスチャ配列をクリア
+	// Clear pending texture upload array
 	m_pendingUploads.clear();
 }
 
-//SRVヒープを取得
+// Get SRV heap
 ID3D12DescriptorHeap* TextureManager::GetSrvHeap() const
 {
 	return m_pSrvHeap.Get();
 }
 
-//SRVディスクリプタのインクリメントサイズを取得
+// Get SRV descriptor increment size
 UINT TextureManager::GetSrvIncrementSize() const
 {
 	return m_srvIncrementSize;
 }
 
-//デフォルトの白テクスチャのSRVインデックスを取得
-uint32_t TextureManager::GetDefaultWhiteTextureIndex() const
+// Get post-processing texture index
+uint32_t TextureManager::GetPostProcessingTextureIndex() const
 {
-	return m_defaultTextureIndex;
+	return static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::POST_PROCESSING);
+}
+
+// Get default white texture index
+uint32_t TextureManager::GetDefaultTextureIndex() const
+{
+	return static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::DEFAULT_TEXTURE);
+}
+
+// Create default texture
+void TextureManager::CreateDefaultTexture()
+{
+	// Create a 1x1 white texture
+	const uint32_t defaultTextureIndex = static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::DEFAULT_TEXTURE); // Default white texture index
+	// Create texture resource
+	ComPtr<ID3D12Resource> pTexture;	// Texture resource
+	CD3DX12_RESOURCE_DESC texDesc = CD3DX12_RESOURCE_DESC::Tex2D(	// Texture resource descriptor
+		DXGI_FORMAT_R8G8B8A8_UNORM,			// Format (RGBA8)
+		1,									// Width
+		1,									// Height
+		1,									// Array size
+		1									// Mip levels
+	);
+	auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT); // Heap properties (default)
+	m_pDevice->CreateCommittedResource(	// Create resource
+		&heapProps,						// Heap properties
+		D3D12_HEAP_FLAG_NONE,			// Heap flags
+		&texDesc,						// Resource descriptor
+		D3D12_RESOURCE_STATE_COPY_DEST, // Initial resource state
+		nullptr,						// Optimized clear value
+		IID_PPV_ARGS(&pTexture)			// Resource to create
+	);
+	std::vector<uint32_t> defaultPixel = { 0xFFFF00FF }; // Pink pixel data (RGBA)
+	const UINT64 uploadBufferSize = GetRequiredIntermediateSize( // Get upload buffer size
+		pTexture.Get(),				 // Texture resource
+		0,							 // First subresource
+		1							 // Mip levels
+	);
+	auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD); // Heap properties (upload)
+	auto uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize); // Buffer resource descriptor
+	m_pDevice->CreateCommittedResource( // Create resource
+		&uploadHeapProps,				 // Heap properties
+		D3D12_HEAP_FLAG_NONE,			 // Heap flags
+		&uploadBufferDesc,				 // Resource descriptor
+		D3D12_RESOURCE_STATE_GENERIC_READ, // Initial resource state
+		nullptr,						 // Optimized clear value
+		IID_PPV_ARGS(&m_uploadKeepAlive.emplace_back()) // Resource to create and keep alive
+	);
+
+	// Create shader resource view
+	CreateSrv(
+		pTexture.Get(),						// Texture resource
+		DXGI_FORMAT_R8G8B8A8_UNORM,			// Format
+		defaultTextureIndex						// SRV descriptor index
+	);
+
+	m_textures.push_back(pTexture); // Keep texture resource alive
 }

@@ -12,6 +12,8 @@
 using namespace DirectX;
 using namespace CollisionData;
 
+int Get8WayDirection(XMVECTOR direction);
+
 Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale, DirectX::XMFLOAT3 velocity, uint32_t id, bool isActive, ColliderType colliderType, DirectX::XMFLOAT3 collisionBoxSize, bool collisionIsTrigger)
 	: ObjectBase(
 		meshType,
@@ -138,26 +140,15 @@ void Player::UpdateOverride()
 			}
 		}
 
-		Move();		//移動
-
-		/*
-		Vec3 spawnPoses[4] = {
-		{-13.0f, -4.0f, 18.0f},
-		{13.0f, -4.0f, 18.0f},
-		{-13.0f, -4.0f, -8.0f},
-		{13.0f, -4.0f, -8.0f}
-	};
-		*/
-
-		/*if (m_position.x < -22.5f) m_position.x = 22.1f;
-		if (m_position.x > 22.5f) m_position.x = -22.1f;
-		if (m_position.z < -8.5f) m_position.z = 18.1f;
-		if (m_position.z > 18.5f) m_position.z = -8.1f;*/
-
-		Shoot();
-		//Rotate();
-		//Scale();
+		m_pOutline->SetPosition(m_position);
 	}
+}
+
+void Player::InputRelatedUpdate()
+{
+	//入力関連の更新
+	Move();		//移動
+	Shoot();	//射撃
 }
 
 void Player::ResolveCollisionsOverride()
@@ -186,6 +177,8 @@ void Player::ResolveCollisionsOverride()
 	//m_position.y += pushVector.y;
 	m_position.z += pushVector.z;
 
+	m_pOutline->SetPosition(m_position);
+
 	m_isGrounded = false;
 
 	for (auto &info : infos)
@@ -200,6 +193,7 @@ void Player::ResolveCollisionsOverride()
 			// ★ここ：着地時の滑り防止（バネジャンプ後なら水平速度も止める）
 			if (m_isSpringJump)
 			{
+				m_position.y += pushVector.y;
 				m_velocity.x = 0.0f;
 				m_velocity.z = 0.0f;
 			}
@@ -294,6 +288,7 @@ void Player::ShakeController(float leftMotor, float rightMotor, int duration)
 
 void Player::StartDamageAnimation()
 {
+	if (damageAnimation) return;
 	damageAnimation = true;
 	damageAnimTimer.Mark();
 }
@@ -517,6 +512,16 @@ void Player::UpdateAnimation()
 {
 	if (!bbActive && isShooting)
 	{
+		DirectX::XMFLOAT3 matePos = teammate->GetPosition();
+		DirectX::XMVECTOR vThis = DirectX::XMLoadFloat3(&m_position);
+		DirectX::XMVECTOR vMate = DirectX::XMLoadFloat3(&matePos);
+
+		DirectX::XMVECTOR vDir = DirectX::XMVectorSubtract(vMate, vThis);
+
+		DirectX::XMVECTOR normalized = DirectX::XMVector3Normalize(vDir);
+
+		int direction = Get8WayDirection(normalized);
+
 		m_texSplitInfo.frameCount++;
 		m_texSplitInfo.index = direction * 3 + 2;
 
@@ -552,6 +557,8 @@ void Player::UpdateAnimation()
 			m_texSplitInfo.frameCount = 0;
 		}
 	}
+
+	m_pOutline->SetTexSplitInfo(m_texSplitInfo);
 }
 
 void Player::Shoot()
@@ -671,6 +678,46 @@ void Player::Reset()
 	canRun = false;
 	runTimerStarted = false;
 	bbSlowMoveSpeed = false;
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 3;
+	texInfo.rows = 8;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.frameCount = 0;
+	texInfo.updateRate = 0;
+
+	m_texSplitInfo = texInfo;
+
 	runTimer.Mark();
 	gameTimer.Mark();
+}
+
+int Get8WayDirection(XMVECTOR direction) {
+	float x = XMVectorGetX(direction);
+	float z = XMVectorGetZ(direction);
+
+	if (x == 0.0f && z == 0.0f) {
+		return 0;
+	}
+
+	// Calculate the base angle, starting 0 at 'Down' and moving clockwise
+	float angle = std::atan2(-x, -z);
+
+	// Normalize angle to [0, 2 * PI]
+	constexpr float PI = 3.14159265358979323846f;
+	if (angle < 0.0f) {
+		angle += 2.0f * PI;
+	}
+
+	// Offset by half a slice, divide by slice size, and floor the result
+	constexpr float slice = PI / 4.0f;
+	constexpr float half_slice = PI / 8.0f;
+
+	float adjusted_angle = angle + half_slice;
+
+	// 5. Cast to int and modulo 8 to wrap the exact 360-degree boundary back to 0
+	int dir_index = static_cast<int>(std::floor(adjusted_angle / slice)) % 8;
+
+	return dir_index;
 }

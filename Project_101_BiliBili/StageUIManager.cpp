@@ -129,7 +129,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		100,
 		L"asset/texture/stage_scene/UI_STAGE_Select.png",
-		PSO_KEY_MASKED
+		PSO_KEY_TRANSPARENT
 	);
 	const XMFLOAT2 NAME_BACK_POSITION_OFFSET = { 4.0f, -6.0f };
 	m_pNameBack = new UIImage(
@@ -142,7 +142,7 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		1,
 		L"asset/texture/stage_scene/UI_STAGE_Name_EF.png",
-		PSO_KEY_MASKED
+		PSO_KEY_TRANSPARENT
 	);
 	m_nameBackOriginalScale = m_pNameBack->GetLocalScale();
 
@@ -150,6 +150,8 @@ void StageUIManager::InitializeOverride(TextureManager& textureManager, MeshMana
 	m_roots.push_back(std::unique_ptr<UIImage>(m_pOperation));
 	m_roots.push_back(std::unique_ptr<UIImage>(m_pArrow));
 	m_roots.push_back(std::unique_ptr<UIImage>(m_pNameBack));
+
+	m_isSelectAnimationStarted = false;
 }
 
 //çXêV

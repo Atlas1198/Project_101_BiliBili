@@ -66,7 +66,7 @@ private:
     FrameTimer m_bulletRestoreTimer;
     FrameTimer m_bonusTimer;
     FrameTimer m_totalTimer;
-	float m_bulletRestoreElapsed;
+	float m_bulletRestoreElapsed = 0.0f;
 	float m_currentRestoreModifier = 1.0f;
 	float m_normalRestoreModifier = 1.0f;
     float m_speedModifier = 1.0f;
