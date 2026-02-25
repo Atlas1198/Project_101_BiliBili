@@ -4,9 +4,9 @@
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "SharedStruct.h"
-#include <random>
 #include "EventManager.h"
 #include "AudioManager.h"
+#include "StageSelector.h"
 
 using namespace DirectX;
 
@@ -44,56 +44,69 @@ void ItemManager::InitializeOverride(TextureManager& textureManager, MeshManager
 
 	applyNewSpawnRate = false;
 	nextItemIndex = 1;
+	m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
+	m_pRandom = new Random(1);
 }
 
 void ItemManager::SpawnItem()
 {
-	static std::mt19937 rng{ std::random_device{}() };  // 乱数エンジン（1回だけ生成して使い回す）
-	std::uniform_int_distribution<int> areaDist(0, 2);  // エリア番号を等確率で抽選（0～2）
-	const int area = areaDist(rng);                     // 抽選したエリア番号
-	
+	int g_area = m_pRandom->GetInt(0, 4);
+	int r_area = m_pRandom->GetInt(0, 6);
+	int b_area = m_pRandom->GetInt(0, 9);
+
 	float xMin = 0.0f, xMax = 0.0f; // X範囲（後でswitchで決める）
 	float zMin = 0.0f, zMax = 0.0f; // Z範囲（後でswitchで決める）
 
 	switch (m_pSceneContext->stageType)
 	{
 	case STAGE_TYPE::STAGE_GREEN:
-		switch (area)
+		switch (g_area)
 		{
-		case 0: xMin = -13.0f; xMax = -3.0f;  zMin = -8.0f;  zMax = 4.0f;  break;
-		case 1: xMin = -2.0f;  xMax = 6.0f;   zMin = 5.0f;   zMax = 18.0f; break;
-		case 2: xMin = 7.0f;   xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
-		default:xMin = -13.0f; xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
-		}
-		break;
-	case STAGE_TYPE::STAGE_BLUE:
-		switch (area)
-		{
-		case 0: xMin = -13.0f; xMax = -3.0f;  zMin = -8.0f;  zMax = 4.0f;  break;
-		case 1: xMin = -2.0f;  xMax = 6.0f;   zMin = 5.0f;   zMax = 18.0f; break;
-		case 2: xMin = 7.0f;   xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
-		default:xMin = -13.0f; xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		case 0: xMin = -4.5f; xMax = 4.5f;  zMin = 2.0f;  zMax = 10.0f;  break;
+		case 1: xMin = -8.0f;  xMax = -6.0f;   zMin = 8.0f;   zMax = 15.0f; break;
+		case 2: xMin = -17.0f;   xMax = -15.0f;  zMin = -3.0f;  zMax = 4.0f; break;
+		case 3: xMin = 9.5f;   xMax = 14.5f;  zMin = 10.0f;  zMax = 13.0f; break;
+		case 4: xMin = 12.0f;   xMax = 19.0f;  zMin = 0.0f;  zMax = 2.0f; break;
 		}
 		break;
 	case STAGE_TYPE::STAGE_RED:
-		switch (area)
+		switch (r_area)
 		{
-		case 0: xMin = -13.0f; xMax = -3.0f;  zMin = -8.0f;  zMax = 4.0f;  break;
-		case 1: xMin = -2.0f;  xMax = 6.0f;   zMin = 5.0f;   zMax = 18.0f; break;
-		case 2: xMin = 7.0f;   xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
-		default:xMin = -13.0f; xMax = 13.0f;  zMin = -8.0f;  zMax = 18.0f; break;
+		case 0: xMin = -15.0f; xMax = -14.0f;  zMin = 13.0f;  zMax = 16.0f;  break;
+		case 1: xMin = -16.0f; xMax = -15.0f;  zMin = 3.0f;  zMax = 6.0f;  break;
+		case 2: xMin = -10.0f; xMax = -9.0f;  zMin = -3.0f;  zMax = 0.0f;  break;
+		case 3: xMin = -1.5f; xMax = 1.5f;  zMin = 2.0f;  zMax = 8.0f;  break;
+		case 4: xMin = 10.0f; xMax = 11.0f;  zMin = 12.0f;  zMax = 15.0f;  break;
+		case 5: xMin = 15.0f; xMax = 16.0f;  zMin = 4.0f;  zMax = 7.0f;  break;
+		case 6: xMin = 13.0f; xMax = 15.0f;  zMin = -6.0f;  zMax = -2.0f;  break;
 		}
 		break;
+	case STAGE_TYPE::STAGE_BLUE:
+		switch (b_area)
+		{
+		case 0: xMin = -5.0f; xMax = -3.0f;  zMin = -3.0f;  zMax = 5.0f;  break;
+		case 1: xMin = 3.0f; xMax = 5.0f;  zMin = 5.0f;  zMax = 13.0f;  break;
+		case 2: xMin = -1.0f; xMax = 1.0f;  zMin = 13.0f;  zMax = 16.0f;  break;
+		case 3: xMin = -5.0f; xMax = -3.0f;  zMin = 10.0f;  zMax = 13.0f;  break;
+		case 4: xMin = 3.0f; xMax = 5.0f;  zMin = -3.0f;  zMax = 0.0f;  break;
+		case 5: xMin = -1.0f; xMax = 1.0f;  zMin = -6.0f;  zMax = -3.0f;  break;
+		case 6: xMin = -11.0f; xMax = -9.0f;  zMin = 10.0f;  zMax = 15.0f;  break;
+		case 7: xMin = 9.0f; xMax = 11.0f;  zMin = -3.0f;  zMax = 2.0f;  break;
+		case 8: xMin = -15.0f; xMax = -9.0f;  zMin = 6.0f;  zMax = 8.0f;  break;
+		case 9: xMin = 9.0f; xMax = 15.0f;  zMin = 4.0f;  zMax = 6.0f;  break;
+		}
+		break;
+	
 	}
 
 	
 
 
-	std::uniform_real_distribution<float> xDist(xMin, xMax);    // 決まったX範囲で乱数
-	std::uniform_real_distribution<float> zDist(zMin, zMax);    // 決まったZ範囲で乱数
+	float xDist = m_pRandom->GetFloat(xMin, xMax);    // 決まったX範囲で乱数
+	float zDist = m_pRandom->GetFloat(zMin, zMax);    // 決まったZ範囲で乱数
 
-	const float x = xDist(rng);          // X座標を抽選
-	const float z = zDist(rng);          // Z座標を抽選
+	const float x = xDist;          // X座標を抽選
+	const float z = zDist;          // Z座標を抽選
 
 	m_pItems.push_back(                  // アイテムを配列に追加
 		new Item(                        // アイテム生成
@@ -115,7 +128,8 @@ void ItemManager::SpawnItem()
 void ItemManager::UpdateOverride()
 {
 	if (!showedAnnouncement &&
-		m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
+		//m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
+		m_frameTimer.Peek() >= 0.1f)
 	{
 		bool skipped = false;
 		for (int i = 0; i < MAX_SKIPS; i++)
@@ -134,7 +148,8 @@ void ItemManager::UpdateOverride()
 			AudioManager::GetInstance()->PlaySE("ANNOUNCE_ALL");
 		}
 	}
-	if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
+	//if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
+	if (m_frameTimer.Peek() >= 0.1f)
 	{
 		bool skipped = false;
 

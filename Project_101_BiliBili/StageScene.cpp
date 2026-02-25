@@ -7,18 +7,13 @@
 StageScene::StageScene(float window_width, float window_height)
 	: SceneBase(window_width, window_height)
 {
-	m_pStageSelector = new StageSelector();
+	m_pStageSelector = &StageSelector::GetInstance();	// シングルトンを参照する
 	m_pUIManager = new StageUIManager(&m_pCamera->GetCameraInfo(), window_width, window_height);
 }
 
 //デストラクタ
 StageScene::~StageScene()
 {
-	if (m_pStageSelector)
-	{
-		delete m_pStageSelector;
-		m_pStageSelector = nullptr;
-	}
 }
 
 //シーン固有の初期化
