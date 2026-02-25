@@ -30,13 +30,13 @@ public:
 
     inline static float BULLET_RECOVERY = 2.0f;
     inline static float BULLET_DAMAGE = 0.1f;
-    inline static float BULLET_BONUS_SPEED_MUL = 2.0f;
-	inline static float BONUS_RECOVERY_MODIFIER = 1.5f;
-	inline static float EVENT_RECOVERY_MODIFIER = 2.0f;
-    inline static float DEFAULT_INCREASE_DELAY = 60.0f;
+    //inline static float BULLET_BONUS_SPEED_MUL = 2.0f;
+	//inline static float BONUS_RECOVERY_MODIFIER = 1.5f;
+	//inline static float EVENT_RECOVERY_MODIFIER = 2.0f;
+    //inline static float DEFAULT_INCREASE_DELAY = 60.0f;
 
-	float defaultSpeedModifier = 1.0f;
-	float defaultRecoveryModifier = 1.0f;
+	//float defaultSpeedModifier = 1.0f;
+	//float defaultRecoveryModifier = 1.0f;
 
 	static constexpr int MAX_BULLETS_PER_TEAM = 6;
 
@@ -67,10 +67,9 @@ private:
     FrameTimer m_bonusTimer;
     FrameTimer m_totalTimer;
 	float m_bulletRestoreElapsed = 0.0f;
-	float m_currentRestoreModifier = 1.0f;
-	float m_normalRestoreModifier = 1.0f;
+	float m_restoreModifier = 1.0f;
     float m_speedModifier = 1.0f;
-    float timeUntilBonusRestoreModifier = 75.0f;
+    //float timeUntilBonusRestoreModifier = 75.0f;
 
     int teamBulletCount[2] = { MAX_BULLETS_PER_TEAM, MAX_BULLETS_PER_TEAM };
 };

@@ -33,7 +33,7 @@ public:
 	{
 		if (!started) return;
 
-		if (currentEventIndex != -1)
+		/*if (currentEventIndex != -1)
 		{
 			if (timer.Peek() >= eventDuration)
 			{
@@ -42,7 +42,7 @@ public:
 			}
 		}
 		else
-		{
+		{*/
 			if (timer.Peek() >= eventInterval)
 			{
 				if (skipsLeft > 0)
@@ -55,7 +55,7 @@ public:
 				}
 				timer.Mark();
 			}
-		}
+		//}
 	}
 
 private:
@@ -74,18 +74,18 @@ private:
 		AudioManager::GetInstance()->PlaySE("ANNOUNCE_ALL");
 	}
 
-	void StopCurrentEvent()
+	/*void StopCurrentEvent()
 	{
 		if (currentEventIndex != -1)
 		{
 			EventManager::GetInstance()->TriggerEvent(eventList[currentEventIndex]);
 			currentEventIndex = -1;
 		}
-	}
+	}*/
 
 private:
-	float eventInterval = 20.0f; // ƒCƒxƒ“ƒg”­¶ŠÔŠui•b
-	float eventDuration = 5.0f; // ƒCƒxƒ“ƒg‘±ŠÔi•bj
+	float eventInterval = 20.0f; // ã‚¤ãƒ™ãƒ³ãƒˆç™ºç”Ÿé–“éš”ï¼ˆç§’
+	float eventDuration = 5.0f; // ã‚¤ãƒ™ãƒ³ãƒˆæŒç¶šæ™‚é–“ï¼ˆç§’ï¼‰
 	FrameTimer timer;
 	const std::vector<EventType> eventList = {
 		EVENT_BULLET_SPEED,
