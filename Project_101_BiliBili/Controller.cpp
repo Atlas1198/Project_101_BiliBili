@@ -1,6 +1,4 @@
 #include "App.h"
-#include "Controller.h"
-#include <cmath>	//デッドゾーン処理などで使用する
 #include <cassert>
 #include "InputManager.h"
 
@@ -49,6 +47,7 @@ void Controller::Update(ControllerInputInfo* inputInfo)
 				if(cs.vibrationDuration <= 0)
 				{
 					// バイブレーション停止
+					cs.vibrationDuration = 0;
 					StopVibration(i);
 				}
 			}
@@ -88,8 +87,6 @@ void Controller::CopyState()
 // Set Vibration for selected controller
 void Controller::SetVibration(int index, float leftMotor, float rightMotor, int duration)
 {
-	if (m_controllers[index].vibrationDuration > 0) return;
-
 	XINPUT_VIBRATION vibration = {};
 	vibration.wLeftMotorSpeed = static_cast<WORD>(leftMotor * 65535.0f);
 	vibration.wRightMotorSpeed = static_cast<WORD>(rightMotor * 65535.0f);

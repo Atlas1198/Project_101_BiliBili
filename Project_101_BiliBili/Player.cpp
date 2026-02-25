@@ -4,6 +4,7 @@
 #include "EventManager.h"
 #include "EffectData.h"
 #include "SharedStruct.h"
+#include "Random.h"
 #include <DirectXMath.h>
 #include <algorithm> // clamp
 #include <cmath>
@@ -31,14 +32,14 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 {
 	const XMFLOAT3 COLLIDER_SCALE =
 	{
-		m_scale.x * 0.7f,
-		m_scale.y * 0.7f,
-		m_scale.z * 0.7f
+		m_scale.x,
+		m_scale.y * 2.0f,
+		m_scale.z
 	};
 
 	m_pColliderSet->AddCollider(
-		ColliderType::SPHERE,
-		DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f),
+		ColliderType::CAPSULE,
+		DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f),
 		COLLIDER_SCALE,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
@@ -133,10 +134,16 @@ void Player::UpdateOverride()
 
 			m_color = { 1.0f, colors, colors, 1.0f };
 
+			XMFLOAT3 drawPosOffset{ 0.0f, 0.0f, 0.0f };
+			drawPosOffset.x = m_random->GetFloat(-0.1f, 0.1f);
+			drawPosOffset.z = m_random->GetFloat(-0.1f, 0.1f);
+			m_drawOffset = drawPosOffset;
+
 			if (damageAnimTimer.Peek() >= 1.0f)
 			{
 				damageAnimation = false;
 				m_color = { 1.0f, 1.0f, 1.0f, 1.0f };
+				m_drawOffset = { 0.0f, 0.0f, 0.0f };
 			}
 		}
 
@@ -253,7 +260,7 @@ void Player::ResolveCollisionsOverride()
 					// m_ignoreCollisionFrame = 5;
 
 					spring->SetIsBlowing(true);
-					m_pSceneContext->pInputInfo->controller[id].SetVibration(1.0f, 1.0f, 10);
+					m_pSceneContext->pInputInfo->controller[id].SetVibration(1.0f, 1.0f, 15);
 				}
 			}
 			AudioManager::GetInstance()->PlaySE("BANE_JUMP");
@@ -625,7 +632,6 @@ void Player::Shoot()
 		isShooting = true;
 		m_texSplitInfo.frameCount = 0;
 		UpdateAnimation();
-	
 	}
 }
 

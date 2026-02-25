@@ -6,6 +6,7 @@
 #include "FrameTimer.h"
 #include "InputInfo.h"
 #include "PlayerOutline.h"
+#include "Random.h"
 
 //プレイヤークラス
 class Player : public ObjectBase
@@ -47,6 +48,7 @@ private:	//非公開メンバ変数
 	FrameTimer runTimer; // 走行タイマー
 	FrameTimer gameTimer;
 	FrameTimer damageAnimTimer;
+	Random* m_random = new Random(1); // ランダムジェネレーター
 
 public:	//公開関数
 	Player(	//コンストラクタ
@@ -66,7 +68,7 @@ public:	//公開関数
 		bool collisionIsTrigger = false			//コライダーのトリガーフラグ
 	);
 
-	~Player() {}	//デストラクタ
+	~Player() { delete m_random; }	//デストラクタ
 
 	//メイン処理関数
 	void Initialize(InputInfo* inputInfo, BulletManager* pBulletManager);	//初期化
