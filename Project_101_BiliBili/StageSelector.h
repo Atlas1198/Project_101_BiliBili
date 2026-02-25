@@ -16,6 +16,18 @@ public:
 
 	bool IsSelected() { return m_isSelected; }
 
+	STAGE_TYPE GetStage()
+	{
+		return static_cast<STAGE_TYPE>(m_cursor);
+	}
+
+	//シングルトンインスタンス取得
+	static StageSelector& GetInstance()
+	{
+		static StageSelector instance;
+		return instance;
+	}
+
 private:
 
 	int m_timer = 0;

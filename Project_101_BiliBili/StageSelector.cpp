@@ -80,7 +80,7 @@ void StageSelector::Update(SceneContext& context)
 	if (select)
 	{
 		const int SELECT_REJECTION = 60;
-		if (m_timer > SELECT_REJECTION)
+ 		if (m_timer > SELECT_REJECTION)
 		{
 			context.stageType = static_cast<STAGE_TYPE>(m_cursor);
 			m_isSelected = true;
