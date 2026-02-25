@@ -382,7 +382,7 @@ void PlayerManager::PrepareRenderInfo(
 			SHADER_DEFINE::OUTLINE_BLUE
 		});
 
-	teamOutlineKeys[0].blend = BLEND_PREMULTIPLY;
+	teamOutlineKeys[0].depth = DEPTH_TEST_WRITE;   
 
 	teamOutlineKeys[1] = PSO_KEY_TRANSPARENT.AddDefines({
 		SHADER_DEFINE::PS_MULTIPLY_ALPHA_CONTROL,
@@ -390,7 +390,7 @@ void PlayerManager::PrepareRenderInfo(
 		SHADER_DEFINE::OUTLINE_RED
 		});
 
-	teamOutlineKeys[1].blend = BLEND_PREMULTIPLY;
+	teamOutlineKeys[1].depth = DEPTH_TEST_WRITE;
 
 	for (int i = 0; i < 4; i++)
 	{
