@@ -142,8 +142,8 @@ void Renderer::Draw(ID3D12GraphicsCommandList* p_commandList, RENDER_TARGET_TYPE
 	{
 		SortRenderListWorldByPSO(m_tempWorldRenderList);	//PSOキーでワールド座標用描画リストをソート
 		SortRenderListScreenByPSO(m_tempScreenRenderList);	//PSOキーでスクリーン座標用描画リストをソート
-		DrawPostProcess(p_commandList);
 		DrawTempRenderListWorld(p_commandList);
+		DrawPostProcess(p_commandList);
 		DrawTempRenderListScreen(p_commandList);
 	}
 }
@@ -758,7 +758,7 @@ void Renderer::PreparePostProcessKey()
 	PSOKey key{};
 	key.vsEntry = VS_ID::PostEffect;
 	key.psEntry = PS_ID::PostEffect;
-	key.blend = BLEND_MODE::BLEND_OPAQUE;
+	key.blend = BLEND_MODE::BLEND_ALPHA;
 	key.depth = DEPTH_MODE::DEPTH_DISABLE;
 	key.cull = CULL_MODE::CULL_NONE;
 	key.rtvFormat = RENDER_TARGET_FORMAT::RTV_FORMAT_LDR;
