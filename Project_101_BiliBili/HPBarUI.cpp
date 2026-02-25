@@ -33,7 +33,7 @@ void HPBarUI::InitializeOverride(TextureManager& textureManager, MeshManager& me
 	//バー画像UIの作成
 	m_pGageImage = AddChild<UIImage>(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-		DirectX::XMFLOAT3{ 488.0f, 76.0f, 1.0f },
+		DirectX::XMFLOAT3{ 400.0f, 76.0f, 1.0f },
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 		m_order + 1,
 		m_gageTexturePath
@@ -67,7 +67,7 @@ void HPBarUI::PrepareRenderInfoOverride(TextureManager& textureManager, MeshMana
 //ゲージ画像更新関数
 void HPBarUI::UpdateGageImage()
 {
-	const float gageScaleX = 488.0f;	//ゲージ画像スケールX基準値
+	const float gageScaleX = 468.0f;	//ゲージ画像スケールX基準値
 
 	//ローカル変換情報更新
 	auto scale = m_pGageImage->GetLocalScale();			//ローカルスケール取得
