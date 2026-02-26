@@ -5,6 +5,8 @@
 #include "SharedStruct.h"
 #include "Item.h"
 #include "FrameTimer.h"
+#include "Context.h"
+#include "Random.h"
 
 //前方宣言
 class Renderer;
@@ -43,8 +45,9 @@ private:	//非公開メンバ変数
 	) override;
 
 private:
-	std::vector<Item*> m_pItems;						//アイテムオブジェクト配列
+	std::vector<Item*> m_pItems;					//アイテムオブジェクト配列
 	std::vector<WorldRenderInfo> m_itemInfo;		//アイテム描画情報
+	Random* m_pRandom = nullptr;					//乱数生成クラスのポインタ
 	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
 	FrameTimer m_frameTimer;
 	FrameTimer m_totalTimer;
