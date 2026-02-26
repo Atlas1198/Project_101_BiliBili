@@ -1,7 +1,7 @@
 #include "TextureManager.h"
 #include "d3dx12.h"
-#include "DirectXTex.h"
 #include <filesystem>
+#include <DirectXTex.h>
 
 using namespace DirectX;
 

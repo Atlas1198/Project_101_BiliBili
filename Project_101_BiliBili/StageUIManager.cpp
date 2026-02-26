@@ -6,22 +6,6 @@ using namespace DirectX;
 //デストラクタ
 StageUIManager::~StageUIManager()
 {
-	for (int i = 0; i < STAGE_NUM; i++)
-	{
-		delete m_pBackGround[i];
-		delete m_pExplanation[i];
-		delete m_pName[i];
-		m_pBackGround[i] = nullptr;
-		m_pExplanation[i] = nullptr;
-		m_pName[i] = nullptr;
-	}
-
-	delete m_pHeader;
-	m_pHeader = nullptr;
-	delete m_pOperation;
-	m_pOperation = nullptr;
-	delete m_pArrow;
-	m_pArrow = nullptr;
 }
 
 //初期化

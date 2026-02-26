@@ -17,6 +17,13 @@ BB::BB(GameUIManager* pUIManager, CollisionManager* pCollisionManager)
 //デストラクタ
 BB::~BB()
 {
+	for (int i = 0; i < PLAYER_NUM; i++)
+	{
+		delete m_lineBB[i];
+		m_lineBB[i] = nullptr;
+		delete m_electricityBB[i];
+		m_electricityBB[i] = nullptr;
+	}
 }
 
 //初期化
@@ -141,13 +148,6 @@ void BB::ResolveCollisions()
 //終了
 void BB::Finalize()
 {
-	for(int i = 0; i < PLAYER_NUM; i++)
-	{
-		delete m_lineBB[i];
-		m_lineBB[i] = nullptr;
-		delete m_electricityBB[i];
-		m_electricityBB[i] = nullptr;
-	}
 }
 
 //終了

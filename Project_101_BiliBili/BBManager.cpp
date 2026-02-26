@@ -255,11 +255,6 @@ void BBManager::FinalizeOverride()
 		m_BB[i]->Finalize();
 	}
 
-	for(int i = 0; i < BB_AREA_NUM; i++)
-	{
-		delete m_BBAreas[i];
-	}
-
 	timerStarted = false;
 }
 
