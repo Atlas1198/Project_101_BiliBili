@@ -80,7 +80,7 @@ void LineBB::GetClosestWallCollisionPoints()
 {
 	for(auto & hitInfo : m_raycastSegment.hitInfos)
 	{
-		if (hitInfo.opponent->GetOwnerTag() == OBJECT_TAG::WALL)
+		if (hitInfo.opponent->GetOwnerTag() == OBJECT_TAG::WALL || hitInfo.opponent->GetOwnerTag() == OBJECT_TAG::WALLCURVE)
 		{
 			m_wallCollisionPoint = hitInfo.hitPoint;
 			return;	//近い順にソート済みなので最初の1個だけ取得して終了

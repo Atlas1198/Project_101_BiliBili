@@ -44,6 +44,8 @@ private:
 
 	std::vector<EventData> m_subscribedEvents;	//購読しているイベント配列
 
+	std::array<DirectX::XMFLOAT3, 4> m_stageSpawnPoses = {};
+
 public:
 	PlayerManager();			//コンストラクタ
 	~PlayerManager();	//デストラクタ
@@ -83,4 +85,5 @@ private:	//非公開関数
 		TextureManager& textureManager,
 		MeshManager& meshManager
 	) override;	
+	void ApplyStageSpawnPoses();                        //stageTypeからm_stageSpawnPosesをセット
 };
