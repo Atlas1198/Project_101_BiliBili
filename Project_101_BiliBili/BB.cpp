@@ -241,7 +241,7 @@ void BB::ControlElectricity()
 	bool wallCollision = false;
 	for(auto& info : lineCollisionInfos0)
 	{
-		if (info.opponent->GetOwnerTag() == OBJECT_TAG::WALL)
+		if (info.opponent->GetOwnerTag() == OBJECT_TAG::WALL || info.opponent->GetOwnerTag() == OBJECT_TAG::WALLCURVE)
 		{
 			wallCollision = true;
 			break;

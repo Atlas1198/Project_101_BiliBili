@@ -5,6 +5,7 @@
 #include "Collider.h"
 #include "App.h"
 #include "EventManager.h"
+#include "StageSelector.h"
 
 using namespace DirectX;
 
@@ -97,13 +98,17 @@ void PlayerManager::InitializeOverride(
 	sentBBEnhanceEvent[0] = false;
 	sentBBEnhanceEvent[1] = false;
 
+	ApplyStageSpawnPoses();	//ステージごとのスポーン位置をセット
+
 	//スポーン位置設定
 	for (int i = 0; i < 4; i++)
 	{
-		m_pPlayer[i]->SetPosition(spawnPoses[i]);
-		m_pPlayerOutline[i]->SetPosition(spawnPoses[i]);
+		m_pPlayer[i]->SetPosition(m_stageSpawnPoses[i]);
+		m_pPlayerOutline[i]->SetPosition(m_stageSpawnPoses[i]);
 		m_pPlayer[i]->BindOutline(m_pPlayerOutline[i]);
 	}
+
+	m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
 }
 
 Player* PlayerManager::AddPlayer(
@@ -447,5 +452,47 @@ void PlayerManager::PrepareRenderInfo(
 		//		);
 		//	}
 		//}
+	}
+}
+
+// PlayerManager.cpp
+
+void PlayerManager::ApplyStageSpawnPoses()
+{
+	// まずデフォルトを入れておく（未対応ステージの保険）
+	for (int i = 0; i < 4; ++i) m_stageSpawnPoses[i] = spawnPoses[i];
+
+	switch (m_pSceneContext->stageType)
+	{
+	case STAGE_TYPE::STAGE_GREEN:
+		m_stageSpawnPoses = {
+			XMFLOAT3{-17.5f, -4.0f,  15.0f},	
+			XMFLOAT3{ 17.5f, -4.0f,  15.0f},
+			XMFLOAT3{-17.5f, -4.0f,  -9.0f},
+			XMFLOAT3{ 17.5f, -4.0f,  -9.0f},
+		};
+		break;
+
+	case STAGE_TYPE::STAGE_RED:
+		m_stageSpawnPoses = {
+			XMFLOAT3{-17.5f, -4.0f,  18.0f},
+			XMFLOAT3{ 17.5f, -4.0f,  18.0f},
+			XMFLOAT3{-17.5f, -4.0f,  -5.0f},
+			XMFLOAT3{ 17.5f, -4.0f,  -5.0f},
+		};
+		break;
+
+	case STAGE_TYPE::STAGE_BLUE:
+		m_stageSpawnPoses = {
+			XMFLOAT3{-19.5f, -4.0f,  18.0f},
+			XMFLOAT3{ 19.5f, -4.0f,  18.0f},
+			XMFLOAT3{-19.5f, -4.0f, -9.0f},
+			XMFLOAT3{ 19.5f, -4.0f, -9.0f},
+		};
+		break;
+
+	default:
+		// デフォルトのまま
+		break;
 	}
 }
