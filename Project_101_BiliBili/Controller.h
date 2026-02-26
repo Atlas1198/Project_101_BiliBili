@@ -4,7 +4,7 @@
 #include <array>	// std::arrayを使用するため
 #include "InputInfo.h"
 
-// XInput.libをリンク	あるならいらない
+// XInput.libをリンク
 #pragma comment(lib, "xinput.lib")
 
 // コントローラーが接続できる最大数　

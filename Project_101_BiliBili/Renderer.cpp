@@ -142,8 +142,8 @@ void Renderer::Draw(ID3D12GraphicsCommandList* p_commandList, RENDER_TARGET_TYPE
 	{
 		SortRenderListWorldByPSO(m_tempWorldRenderList);	//PSOキーでワールド座標用描画リストをソート
 		SortRenderListScreenByPSO(m_tempScreenRenderList);	//PSOキーでスクリーン座標用描画リストをソート
-		DrawTempRenderListWorld(p_commandList);
 		DrawPostProcess(p_commandList);
+		DrawTempRenderListWorld(p_commandList);
 		DrawTempRenderListScreen(p_commandList);
 	}
 }
