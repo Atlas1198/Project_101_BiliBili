@@ -128,8 +128,7 @@ void ItemManager::SpawnItem()
 void ItemManager::UpdateOverride()
 {
 	if (!showedAnnouncement &&
-		//m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
-		m_frameTimer.Peek() >= 0.1f)
+		m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
 	{
 		bool skipped = false;
 		for (int i = 0; i < MAX_SKIPS; i++)
@@ -148,8 +147,7 @@ void ItemManager::UpdateOverride()
 			AudioManager::GetInstance()->PlaySE("ANNOUNCE_ALL");
 		}
 	}
-	//if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
-	if (m_frameTimer.Peek() >= 0.1f)
+	if (m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)))
 	{
 		bool skipped = false;
 
