@@ -86,7 +86,7 @@ void HPBarUI::PrepareRenderInfoOverride(TextureManager& textureManager, MeshMana
 void HPBarUI::UpdateGageImage()
 {
 	const float gageScaleX = 468.0f;	//ゲージ画像スケールX基準値
-	const int directionFactor = (m_gageDecrementDirection == DIRECTION::LEFT) ? -1 : 1;	//方向係数
+	const int directionFactor = (m_gageDecrementDirection == DIRECTION::LEFT) ? 1 : -1;	//方向係数
 
 	//ローカル変換情報更新
 	auto scale = m_pGageImage->GetLocalScale();			//ローカルスケール取得
@@ -98,15 +98,11 @@ void HPBarUI::UpdateGageImage()
 
 	//UV矩形更新
 	UVRect uvRect{};
-	uvRect.u = (m_gageDecrementDirection == DIRECTION::LEFT) ? 0.0f : 1.0f - m_hpRate;
+	uvRect.u = (m_gageDecrementDirection == DIRECTION::RIGHT) ? 0.0f : 1.0f - m_hpRate;
 	uvRect.v = 0.0f;
 	uvRect.su = m_hpRate;
 	uvRect.sv = 1.0f;
 	m_pGageImage->SetUVRect(uvRect);
-
-
-	auto parentRotation = m_parent->GetLocalRotation();	//親UIのワールド回転取得
-	OutputDebugStringA(("HPBarUI Parent Rotation: " + std::to_string(parentRotation.z) + "\n").c_str());
 }
 
 //HP設定関数
