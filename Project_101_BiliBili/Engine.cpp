@@ -1,5 +1,7 @@
 #include "Engine.h"
 #include "TextureManager.h"
+#include "StartupChecks.h"
+#include "ContentRoot.h"
 
 using namespace DirectX;
 using namespace std;
@@ -17,6 +19,15 @@ Engine::~Engine()
 //初期化
 bool Engine::InitCore(HWND hwnd, UINT m_FrameBufferWidth, UINT m_FrameBufferHeight)
 {
+	ContentRoot* content = ContentRoot::GetInstance();
+
+	if (!content->Initialize())
+		return false;
+
+	if (!CheckRequiredFiles(*content))
+		return false;
+
+
 	this->hwnd = hwnd;									//ウィンドウハンドルの保存
 	this->m_FrameBufferWidth = m_FrameBufferWidth;		//フレームバッファの幅の保存
 	this->m_FrameBufferHeight = m_FrameBufferHeight;	//フレームバッファの高さの保存

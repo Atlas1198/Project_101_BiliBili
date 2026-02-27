@@ -46,8 +46,7 @@ void LoadAllGameSounds(AudioManager& am) {
         { "CON_NEXT", L"asset/sound/SE/接続かくにん_進行_SE.wav"},
         { "CON_SET", L"asset/sound/SE/接続かくにん_接続_SE.wav"},
         { "RESULT", L"asset/sound/SE/リザルト_発表_SE.wav"},
-        { "RESULT_NEXT", L"asset/sound/SE/リザルト_決定長押し_SE.wav"},
-        { "DECIDE_SE",   L"Resources/Audio/SE/decide.wav" }
+        { "RESULT_NEXT", L"asset/sound/SE/リザルト_決定長押し_SE.wav"}
     };
 
     for (const auto& res : catalog) {

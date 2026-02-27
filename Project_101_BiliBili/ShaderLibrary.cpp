@@ -1,4 +1,5 @@
 #include "ShaderLibrary.h"
+#include "ContentRoot.h"
 #include <cassert>
 
 // Output compile error messages
@@ -90,8 +91,11 @@ Microsoft::WRL::ComPtr<ID3DBlob> ShaderLibrary::GetOrCompileShader(const ShaderD
 
 	auto macros = BuildMacros(defines);
 
+	auto content = ContentRoot::GetInstance();
+	auto fullpath = content->ResolveAsset(L"shader") / desc.filePath;
+
 	HRESULT hr = D3DCompileFromFile(
-		desc.filePath.c_str(),
+		fullpath.c_str(),
 		macros.data(),
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		desc.entryPoint.c_str(),
