@@ -430,7 +430,6 @@ void PlayBehavior::Update()
 		AudioManager::GetInstance()->StopAll();
 		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT",1.5f);
 		AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
-		EventManager::GetInstance()->TriggerEvent<bool>(EventType::SET_ACTIVE_ALL_IN_GAME_UI, false);
 	}
 }
 
