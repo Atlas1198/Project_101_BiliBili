@@ -84,7 +84,7 @@ void TeamUI::InitializeOverride(
 void TeamUI::UpdateOverride()
 {
 	UpdateHitEffect();
-	//ShakeUI();
+	ShakeUI();
 }
 
 //èIóπ
