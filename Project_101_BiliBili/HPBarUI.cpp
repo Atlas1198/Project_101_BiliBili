@@ -84,6 +84,10 @@ void HPBarUI::UpdateGageImage()
 	uvRect.su = m_hpRate;
 	uvRect.sv = 1.0f;
 	m_pGageImage->SetUVRect(uvRect);
+
+
+	auto parentRotation = m_parent->GetLocalRotation();	//eUI‚Ìƒ[ƒ‹ƒh‰ñ“]æ“¾
+	OutputDebugStringA(("HPBarUI Parent Rotation: " + std::to_string(parentRotation.z) + "\n").c_str());
 }
 
 //HPİ’èŠÖ”

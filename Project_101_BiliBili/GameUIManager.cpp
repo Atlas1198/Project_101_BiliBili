@@ -326,6 +326,17 @@ void GameUIManager::InitializeOverride(
 		}
 	);
 
+	EventManager::GetInstance()->Subscribe<boolArgs>(
+		EventType::SET_ACTIVE_ALL_IN_GAME_UI,
+		[this](std::shared_ptr<boolArgs> data)
+		{
+			for(auto& ui : m_roots)
+			{
+				ui->SetActive(*data);
+			}
+		}
+	);
+
 
 	//チームキャラクター設定
 	m_pTeamUI1->SetTeamCharacter(

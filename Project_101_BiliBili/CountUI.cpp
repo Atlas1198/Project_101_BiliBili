@@ -143,8 +143,8 @@ void CountUI::ShowStart()
 //フィニッシュ表示関数
 void CountUI::ShowFinish()
 {
-	m_mainTimer = 0; //メインタイマーリセット
-
+	m_mainTimer = 0;	//メインタイマーリセット
+	m_isActive = true;	//UI全体をアクティブに設定
 	//全て非アクティブに設定
 	m_pCountImage3->SetActive(false);
 	m_pCountImage2->SetActive(false);
