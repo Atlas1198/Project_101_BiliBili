@@ -16,7 +16,8 @@ public:
 		UINT order,
 		const wchar_t* frameTexturePath,
 		const wchar_t* gageTexturePath,
-		const wchar_t* baseTexturePath
+		const wchar_t* baseTexturePath,
+		DIRECTION gageDecrementDirection
 	);
 	~HPBarUI() {};
 	void InitializeOverride(
@@ -49,4 +50,5 @@ public:
 private:
 	float m_hpRate = 1.0f;		//HPŠ„‡(0.0~1.0)
 	float m_hpMax = 1.0f;	//Å‘åHP
+	DIRECTION m_gageDecrementDirection;	//ƒQ[ƒWŒ¸­•ûŒü
 };

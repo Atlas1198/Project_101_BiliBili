@@ -29,4 +29,7 @@ private:
 	bool m_isAllSelected = false;			//全キャラクター選択済みフラグ
 	bool m_isCalledGoToNextScene = false;	//次のシーンへ進む処理が呼ばれたかどうか
 	int m_countToNextScene = 0;				//次のシーンへ進むまでのカウント
+
+	int m_backSceneKeyInputTimer = 0;
+	int m_backSceneInputTimer[4] = { 0 };
 };

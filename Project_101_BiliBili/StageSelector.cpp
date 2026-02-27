@@ -11,6 +11,13 @@ void StageSelector::Initialize()
 	m_timer = 0;
 	m_cursor = 0;
 	m_isSelected = false;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		m_backSceneInputTimer[i] = 0;
+	}
+	m_backSceneKeyInputTimer = 0;
+
 }
 
 //更新
@@ -25,6 +32,7 @@ void StageSelector::Update(SceneContext& context)
 	bool select = false;	//決定フラグ
 
 	const float DEAD_ZONE = 0.2f;	//スティックデッドゾーン
+	const int BACK_SCENE_INPUT_DURATION = 90;
 
 	//コントローラー入力取得
 	for (int i = 0; i < CONTROLLERS_MAX; i++)
@@ -45,6 +53,15 @@ void StageSelector::Update(SceneContext& context)
 		if (fabs(leftStickX) < DEAD_ZONE || fabs(leftStickPastX) >= DEAD_ZONE) continue;	//トリガー入力なし
 		left = leftStickX < 0.0f;
 		right = leftStickX > 0.0f;
+
+		if(controller.A.down) m_backSceneInputTimer[i]++;
+		else m_backSceneInputTimer[i] = 0;
+
+		if (m_backSceneInputTimer[i] > BACK_SCENE_INPUT_DURATION) {
+			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
+				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CONTROLLER
+			);
+		}
 	}
 
 	//キーボード入力
@@ -55,6 +72,15 @@ void StageSelector::Update(SceneContext& context)
 
 	if (left) m_cursor--;
 	if (right) m_cursor++;
+
+	if (keyInput.enter.down) m_backSceneKeyInputTimer++;
+	else m_backSceneKeyInputTimer = 0;
+
+	if (m_backSceneKeyInputTimer > BACK_SCENE_INPUT_DURATION) {
+		EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
+			EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CONTROLLER
+		);
+	}
 
 	//カーソル位置をステージ種類内に限定
 	if(m_cursor < 0)

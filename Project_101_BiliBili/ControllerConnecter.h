@@ -27,5 +27,8 @@ public:
 private:
 	ConnectionStatus m_connectionStatuses[4]{};	//コントローラー接続状態配列
 
+	int m_backSceneKeyInputTimer = 0;
+	int m_backSceneInputTimer[4] = {0};	//前のシーンに戻るための長押し検知タイマー
+
 	bool m_isAllConnected = false;	//全コントローラー接続フラグ
 };

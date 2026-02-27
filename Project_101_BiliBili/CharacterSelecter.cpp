@@ -16,6 +16,12 @@ void CharacterSelecter::Initialize()
 	m_isAllSelected = false;
 	m_isCalledGoToNextScene = false;
 	m_countToNextScene = 0;
+	for (int i = 0; i < 4; ++i)
+	{
+		m_backSceneInputTimer[i] = 0;
+	}
+	m_backSceneKeyInputTimer = 0;
+
 }
 
 //更新
@@ -23,6 +29,8 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 {
 	auto inputInfo = sceneContext.pInputInfo;
 	auto controllers = inputInfo->controller;
+
+	const int BACK_SCENE_INPUT_DURATION = 90;
 
 	if (m_isCalledGoToNextScene)
 	{//次のシーンへ進む処理
@@ -42,6 +50,15 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 	{
 		//テスト用キーボード入力処理
 		auto keyboard = inputInfo->key;
+
+		if (keyboard.enter.down) m_backSceneKeyInputTimer++;
+		else m_backSceneKeyInputTimer = 0;
+		if (m_backSceneKeyInputTimer > BACK_SCENE_INPUT_DURATION) {
+			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
+				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_STAGE
+			);
+		}
+
 		if (keyboard.space.trigger)
 		{
 			if (m_isAllSelected)
@@ -147,6 +164,15 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 						AudioManager::GetInstance()->PlaySE("CHARA_SET",1.2f);
 					}
 				}
+			}
+
+			if (controller.A.down) m_backSceneInputTimer[i]++;
+			else m_backSceneInputTimer[i] = 0;
+
+			if (m_backSceneInputTimer[i] > BACK_SCENE_INPUT_DURATION) {
+				EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
+					EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CONTROLLER
+				);
 			}
 		}
 	}
