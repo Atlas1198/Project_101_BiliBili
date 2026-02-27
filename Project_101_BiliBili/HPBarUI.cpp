@@ -98,7 +98,7 @@ void HPBarUI::UpdateGageImage()
 
 	//UVãÈå`çXêV
 	UVRect uvRect{};
-	uvRect.u = 0.0f;
+	uvRect.u = (m_gageDecrementDirection == DIRECTION::LEFT) ? 0.0f : 1.0f - m_hpRate;
 	uvRect.v = 0.0f;
 	uvRect.su = m_hpRate;
 	uvRect.sv = 1.0f;

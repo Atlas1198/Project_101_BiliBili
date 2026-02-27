@@ -450,6 +450,15 @@ void ResultBehavior::Update()
 		HandleThankYouScreen();
 		break;
 	}
+
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+		EventType::SET_BULLET_UI_ACTIVE,
+		{ 0, false }
+	);
+	EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+		EventType::SET_BULLET_UI_ACTIVE,
+		{ 1, false }
+	);
 }
 
 void ResultBehavior::HandleCameraMove()
