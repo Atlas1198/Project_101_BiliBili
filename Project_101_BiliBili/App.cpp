@@ -185,7 +185,7 @@ void App::Run()
 				dwFrameCount++;					//フレームカウントアップ
 #ifdef _DEBUG
 				//ウィンドウキャプションへ現在のFPSを表示
-				wsprintf(debugStr, "DX21 プロジェクト ");	//ウィンドウタイトル文字列
+				wsprintf(debugStr, "Project101 ");	//ウィンドウタイトル文字列
 				wsprintf(
 					&debugStr[strlen(debugStr)],	//文字列連結
 					" FPS : %d", countFPS			//FPS
