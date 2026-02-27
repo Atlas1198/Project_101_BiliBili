@@ -15,7 +15,6 @@ PlayerShadow::PlayerShadow(MESH_TYPE meshType, DirectX::XMFLOAT3 position, Direc
 	)
 {
 	m_pPlayer = pPlayer;
-	m_color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.3f); // 半透明の黒色
 }
 
 void PlayerShadow::UpdateOverride()
