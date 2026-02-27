@@ -466,10 +466,10 @@ void PlayerManager::ApplyStageSpawnPoses()
 	{
 	case STAGE_TYPE::STAGE_GREEN:
 		m_stageSpawnPoses = {
-			XMFLOAT3{-17.5f, -4.0f,  15.0f},	
-			XMFLOAT3{ 17.5f, -4.0f,  15.0f},
-			XMFLOAT3{-17.5f, -4.0f,  -9.0f},
-			XMFLOAT3{ 17.5f, -4.0f,  -9.0f},
+			XMFLOAT3{-17.5f, -4.0f,  16.0f},	
+			XMFLOAT3{ 17.5f, -4.0f,  16.0f},
+			XMFLOAT3{-17.5f, -4.0f, -9.0f},
+			XMFLOAT3{ 17.5f, -4.0f, -9.0f},
 		};
 		break;
 

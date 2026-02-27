@@ -9,7 +9,6 @@
 #include <algorithm> // clamp
 #include <cmath>
 
-
 using namespace DirectX;
 using namespace CollisionData;
 
