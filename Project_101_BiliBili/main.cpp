@@ -3,6 +3,8 @@
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
+	OutputDebugStringA("BOOT-0\n");
+
 	//アプリケーションクラスのインスタンスを取得
 	App* app = App::GetInstance();
 
