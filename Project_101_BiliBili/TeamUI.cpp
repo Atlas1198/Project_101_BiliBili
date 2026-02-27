@@ -54,7 +54,8 @@ TeamUI::TeamUI(
 		0, //•`‰æ‡˜
 		frameTexturePath,
 		gageTexturePath,
-		baseTexturePath
+		baseTexturePath,
+		offsetDirection
 	);
 
 	m_pIconUI = AddChild<IconUI>(
@@ -83,7 +84,7 @@ void TeamUI::InitializeOverride(
 void TeamUI::UpdateOverride()
 {
 	UpdateHitEffect();
-	ShakeUI();
+	//ShakeUI();
 }
 
 //I—¹

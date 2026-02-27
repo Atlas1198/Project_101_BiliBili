@@ -11,8 +11,9 @@ void ControllerConnecter::Initialize()
 	{
 		m_connectionStatuses[i].isConnected = false;
 		m_connectionStatuses[i].controllerIndex = -1;
+		m_backSceneInputTimer[i] = 0;
 	}
-
+	m_backSceneKeyInputTimer = 0;
 	m_isAllConnected = false;
 }
 
@@ -21,6 +22,8 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 {
 	//入力情報取得
 	auto info = sceneContext.pInputInfo;
+
+	const int BACK_SCENE_INPUT_DURATION = 90;
 
 	//テスト用キーボード入力
 	if (m_isAllConnected)
@@ -33,6 +36,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 			AudioManager::GetInstance()->PlaySE("CON_NEXT");
 			AudioManager::GetInstance()->StopBGM();
 		}
+
 	}
 	else
 	{
@@ -64,6 +68,15 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 				AudioManager::GetInstance()->PlaySE("CON_SET",1.6f);
 				break;
 			}
+		}
+
+		if (info->key.enter.down) m_backSceneKeyInputTimer++;
+		else m_backSceneKeyInputTimer = 0;
+
+		if (m_backSceneKeyInputTimer > BACK_SCENE_INPUT_DURATION) {
+			EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
+				EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE
+			);
 		}
 	}
 
@@ -126,6 +139,15 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 				//UIの入力リアクションを呼び出し
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, InputInfo&>>(
 					EventType::CONTROLLER_ICON_REACTION, { i,*info });
+
+				if (controller.A.down) m_backSceneInputTimer[i]++;
+				else m_backSceneInputTimer[i] = 0;
+
+				if (m_backSceneInputTimer[i] > BACK_SCENE_INPUT_DURATION){
+					EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
+						EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TITLE
+					);
+				}
 			}
 		}
 	}

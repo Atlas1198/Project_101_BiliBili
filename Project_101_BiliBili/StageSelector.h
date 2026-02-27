@@ -34,4 +34,7 @@ private:
 	int m_cursor = 0;
 	int m_previousCursor = -1;
 	bool m_isSelected = false;
+
+	int m_backSceneKeyInputTimer = 0;
+	int m_backSceneInputTimer[4] = { 0 };
 };
