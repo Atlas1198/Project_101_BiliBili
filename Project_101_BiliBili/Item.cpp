@@ -45,10 +45,14 @@ void Item::ResolveCollisionsOverride()
 {
 	auto& infos = m_pColliderSet->GetCollisionInfos();
 
+	bool m_isPlayerCollision = false; //同フレーム内で複数のプレイヤーと衝突した場合、最初の1人にのみ効果を適用するためのフラグ
+
 	for (auto& info : infos)
 	{
 		if (info.opponent && info.opponent->GetTag() == OBJECT_TAG::PLAYER)
 		{
+			if (m_isPlayerCollision) continue; //複数のプレイヤーと同時に衝突した場合、最初の1人にのみ効果を適用
+
 			SetActive(false);
 			m_pColliderSet->SetDeleteFlag(true);
 
@@ -62,6 +66,8 @@ void Item::ResolveCollisionsOverride()
 				AudioManager::GetInstance()->PlaySE("GAME_TF",1.5f);
 				//コントローラー振動
 				player->ShakeController(1.0f, 1.0f, 20);
+
+				m_isPlayerCollision = true;
 			}
 		}
 

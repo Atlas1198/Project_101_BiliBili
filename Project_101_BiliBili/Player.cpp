@@ -43,12 +43,6 @@ Player::Player(MESH_TYPE meshType, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3
 		COLLIDER_SCALE,
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
 	);
-	m_pColliderSet->AddCollider(
-		ColliderType::SPHERE,
-		DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f),
-		COLLIDER_SCALE,
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f)
-	);
 
 	TexSplitInfo texInfo{};
 	texInfo.cols = 3;
