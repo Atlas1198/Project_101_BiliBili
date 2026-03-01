@@ -45,14 +45,13 @@ void ItemManager::InitializeOverride(TextureManager& textureManager, MeshManager
 	applyNewSpawnRate = false;
 	nextItemIndex = 1;
 	m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
-	m_pRandom = new Random(1);
 }
 
 void ItemManager::SpawnItem()
 {
-	int g_area = m_pRandom->GetInt(0, 4);
-	int r_area = m_pRandom->GetInt(0, 6);
-	int b_area = m_pRandom->GetInt(0, 9);
+	int g_area = m_Random.GetInt(0, 4);
+	int r_area = m_Random.GetInt(0, 6);
+	int b_area = m_Random.GetInt(0, 9);
 
 	float xMin = 0.0f, xMax = 0.0f; // X範囲（後でswitchで決める）
 	float zMin = 0.0f, zMax = 0.0f; // Z範囲（後でswitchで決める）
@@ -96,14 +95,14 @@ void ItemManager::SpawnItem()
 		case 9: xMin = 9.0f; xMax = 15.0f;  zMin = 4.0f;  zMax = 6.0f;  break;
 		}
 		break;
-	
+
 	}
 
-	
 
 
-	float xDist = m_pRandom->GetFloat(xMin, xMax);    // 決まったX範囲で乱数
-	float zDist = m_pRandom->GetFloat(zMin, zMax);    // 決まったZ範囲で乱数
+
+	float xDist = m_Random.GetFloat(xMin, xMax);    // 決まったX範囲で乱数
+	float zDist = m_Random.GetFloat(zMin, zMax);    // 決まったZ範囲で乱数
 
 	const float x = xDist;          // X座標を抽選
 	const float z = zDist;          // Z座標を抽選
@@ -176,7 +175,7 @@ void ItemManager::UpdateOverride()
 		applyNewSpawnRate = true;
 	}
 
-	for(auto& i : m_pItems)
+	for (auto& i : m_pItems)
 	{
 		if (i->IsActive())
 		{
