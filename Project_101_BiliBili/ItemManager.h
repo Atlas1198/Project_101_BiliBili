@@ -47,8 +47,8 @@ private:	//非公開メンバ変数
 private:
 	std::vector<Item*> m_pItems;					//アイテムオブジェクト配列
 	std::vector<WorldRenderInfo> m_itemInfo;		//アイテム描画情報
-	Random* m_pRandom = nullptr;					//乱数生成クラスのポインタ
-	CollisionManager *m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
+	Random m_Random;					//乱数生成クラス
+	CollisionManager* m_pCollisionManager = nullptr; //衝突管理クラスのポインタ
 	FrameTimer m_frameTimer;
 	FrameTimer m_totalTimer;
 	int nextItemIndex = 1;
