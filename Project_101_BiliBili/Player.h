@@ -19,6 +19,7 @@ public:	//公開定数
 	static constexpr float RUN_DELAY = 0.5f;
 	static constexpr float RUN_MODIFIER = 0.2f;
 	static constexpr float BB_SLOW_MOVE_MODIFIER = 0.5f;
+	static constexpr float BB_AREA_SLOW_MOVE_MODIFIER = 0.4f;
 	uint32_t id;								//ID
 
 private:	//非公開メンバ変数
@@ -41,6 +42,7 @@ private:	//非公開メンバ変数
 	bool isShooting = false; // 射撃中フラグ
 	int shootAnimDuration = 10; // 射撃アニメーションの持続フレーム数
 	bool bbActive = false; // BBアクティブフラグ
+	bool bbAreaActive = false; // BBエリア内フラグ
 	bool canRun = false;
 	bool runTimerStarted = false;
 	bool bbSlowMoveSpeed = false;
@@ -90,6 +92,7 @@ public:	//公開関数
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得
 	void SetBB(bool isActive); // BBセット
+	void ActivateBBArea() { bbAreaActive = true; } // BBエリアアクティブ化
 	void ShakeController(float leftMotor = 1.0f, float rightMotor = 1.0f, int duration = 5); //コントローラー振動
 	void StartDamageAnimation();
 
