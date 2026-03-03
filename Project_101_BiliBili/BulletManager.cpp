@@ -31,7 +31,7 @@ void BulletManager::FireBullet(
 		bullet->GetColliderSet()->RegisterColliders(*m_pCollisionManager);
     }
     m_bullets.push_back(std::move(bullet));
-    AudioManager::GetInstance()->PlaySE("Shoot",0.9f);
+    AudioManager::GetInstance()->PlaySE("Shoot",0.5f);
 }
 
 
