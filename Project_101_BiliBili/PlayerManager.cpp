@@ -213,6 +213,8 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 	{
 		sentBBEnhanceEvent[teamID] = true;
 		EventManager::GetInstance()->TriggerEvent<int>(EventType::ENHANCE_BB, teamID);
+		m_pPlayer[teamID * 2]->ActivateBBArea();
+		m_pPlayer[teamID * 2 + 1]->ActivateBBArea();
 	}
 
 	EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(EventType::UPDATE_HP_UI, std::make_pair(teamID, teamHP[teamID]));
