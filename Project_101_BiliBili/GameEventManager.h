@@ -29,6 +29,11 @@ public:
 		started = true;
 	}
 
+	void Stop()
+	{
+		started = false;
+	}
+
 	void Update()
 	{
 		if (!started) return;
