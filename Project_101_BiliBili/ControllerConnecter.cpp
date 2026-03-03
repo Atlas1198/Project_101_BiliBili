@@ -107,7 +107,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 				//ボタン入力がなければスルー
 				if (!controller.anyButton.trigger || !controller.anyButton.down) continue;
 
-				controller.SetVibration(1.0f, 1.0f, 7); //入力検知時に振動させる
+				controller.SetVibration(1.0f, 1.0f, 30); //入力検知時に振動させる
 				//UIの入力リアクションを呼び出し
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, InputInfo&>>(
 					EventType::CONTROLLER_ICON_REACTION, { i, *info });
@@ -123,7 +123,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 					m_connectionStatuses[i].isConnected = true;
 					m_connectionStatuses[i].controllerIndex = i;
 
-					controller.SetVibration(1.0f, 1.0f, 10); //入力検知時に振動させる
+					controller.SetVibration(1.0f, 1.0f, 30); //入力検知時に振動させる
 					//コントローラー接続イベント発行
 					EventManager::GetInstance()->TriggerEvent<int>(
 						EventType::CONTROLLER_CONNECTED, i);
@@ -135,7 +135,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 				//ボタン入力がなければスルー
 				if (!controller.anyButton.trigger || !controller.anyButton.down) continue;
 
-				controller.SetVibration(1.0f, 1.0f,7); //入力検知時に振動させる
+				controller.SetVibration(1.0f, 1.0f,30); //入力検知時に振動させる
 				//UIの入力リアクションを呼び出し
 				EventManager::GetInstance()->TriggerEvent<std::pair<int, InputInfo&>>(
 					EventType::CONTROLLER_ICON_REACTION, { i,*info });

@@ -1,5 +1,5 @@
 {
-  "move-speed": 0.15,
+  "move-speed": 0.18,
   "bullet-speed": 0.33,
   "bullet-recovery": 1.5,
   "bullet-damage": 0.03,

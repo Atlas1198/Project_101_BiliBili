@@ -41,7 +41,7 @@ void StageSelector::Update(SceneContext& context)
 
 		//決定(B)
 		select |= controller.B.trigger;
-		if (select) controller.SetVibration(1.0f, 1.0f, 10); //バイブレーション
+		if (select) controller.SetVibration(1.0f, 1.0f, 30); //バイブレーション
 
 		//カーソル操作
 		//十字キー

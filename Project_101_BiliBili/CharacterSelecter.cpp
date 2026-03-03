@@ -157,7 +157,7 @@ void CharacterSelecter::Update(SceneContext& sceneContext)
 					if (!selectedByOther)
 					{
 						state.isSelected = true;
-						controller.SetVibration(1.0f, 1.0f, 10); //バイブレーション
+						controller.SetVibration(1.0f, 1.0f, 20); //バイブレーション
 						//選択済みアイコン表示イベント発行
 						EventManager::GetInstance()->TriggerEvent<std::pair<int, int>>(
 							EventType::SHOW_SELECTED_ICON, { i, state.characterIndex });

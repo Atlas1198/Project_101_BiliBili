@@ -134,8 +134,8 @@ void Player::UpdateOverride()
 			m_color = { 1.0f, colors, colors, 1.0f };
 
 			XMFLOAT3 drawPosOffset{ 0.0f, 0.0f, 0.0f };
-			drawPosOffset.x = m_random->GetFloat(-0.1f, 0.1f);
-			drawPosOffset.z = m_random->GetFloat(-0.1f, 0.1f);
+			drawPosOffset.x = m_random->GetFloat(-0.2f, 0.2f);
+			drawPosOffset.z = m_random->GetFloat(-0.2f, 0.2f);
 			m_drawOffset = drawPosOffset;
 
 			if (damageAnimTimer.Peek() >= 1.0f)

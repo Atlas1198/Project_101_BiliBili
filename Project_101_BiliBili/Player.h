@@ -18,7 +18,7 @@ public:	//公開定数
 	static constexpr float GRAVITY = 0.02f;		//重力
 	static constexpr float RUN_DELAY = 0.5f;
 	static constexpr float RUN_MODIFIER = 0.2f;
-	static constexpr float BB_SLOW_MOVE_MODIFIER = 0.7f;
+	static constexpr float BB_SLOW_MOVE_MODIFIER = 0.5f;
 	uint32_t id;								//ID
 
 private:	//非公開メンバ変数

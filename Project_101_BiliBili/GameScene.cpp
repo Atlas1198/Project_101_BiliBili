@@ -428,7 +428,7 @@ void PlayBehavior::Update()
 
 		//BGM停止、ゲーム終了SE再生
 		AudioManager::GetInstance()->StopAll();
-		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT",1.5f);
+		AudioManager::GetInstance()->PlaySE("GAME_FINISH_SHOOT",2.0f);
 		AudioManager::GetInstance()->StopLoopSE("TF_SHOOT");
 	}
 }
