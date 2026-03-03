@@ -320,6 +320,7 @@ void PlayerManager::ResolveCollisionsOverride()
 //終了
 void PlayerManager::FinalizeOverride()
 {
+	m_shadowInfo.clear();
 }
 
 //プレイヤーオブジェクトを取得
