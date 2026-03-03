@@ -108,7 +108,7 @@ void Player::UpdateOverride()
 			--m_ignoreCollisionFrame;
 		}
 
-		if (!bbSlowMoveSpeed && (gameTimer.Peek() > 120.0f))
+		/*if (!bbSlowMoveSpeed && (gameTimer.Peek() > 120.0f))
 		{
 			bbSlowMoveSpeed = true;
 		}
@@ -116,7 +116,7 @@ void Player::UpdateOverride()
 		if (bbSlowMoveSpeed && (gameTimer.Peek() > 180.0f))
 		{
 			bbSlowMoveSpeed = false;
-		}
+		}*/
 
 		if (runTimerStarted)
 		{
@@ -682,7 +682,7 @@ void Player::Reset()
 	bbActive = false;
 	canRun = false;
 	runTimerStarted = false;
-	bbSlowMoveSpeed = false;
+	bbSlowMoveSpeed = true;
 
 	TexSplitInfo texInfo{};
 	texInfo.cols = 3;

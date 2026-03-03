@@ -518,6 +518,7 @@ void ResultBehavior::HandleFirstWait()
 		);
 		EventManager::GetInstance()->TriggerEvent(EventType::HIDE_COUNT_UI);
     AudioManager::GetInstance()->PlaySE("RESULT",1.2f);
+	m_pGameScene->m_pGameEventManager->Stop();
 	}
 	else if (m_pGameScene->m_timer == RESULT_BGM_STRAT)
 	{
