@@ -1,4 +1,6 @@
 #include "IconUI.h"
+#include "EventManager.h"
+#include "EventType.h"
 
 using namespace DirectX;
 
@@ -8,7 +10,8 @@ IconUI::IconUI(
 	XMFLOAT3 scale, 
 	XMFLOAT3 rotation, 
 	UINT order,
-	const wchar_t* texturePath
+	const wchar_t* texturePath,
+	const wchar_t* bilibiliTexturepath
 )
 	: UIBase(position, scale, rotation, order), m_texturePath(texturePath)
 {
@@ -38,12 +41,30 @@ IconUI::IconUI(
 			XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 			XMFLOAT3{ 256.0f * scaleFactor, 256.0f * scaleFactor, 1.0f },
 			XMFLOAT3{ 0.0f, 0.0f, 0.0f },
-			m_order + 1,
+			m_order + 2,
 			characterTexturePaths[i],
 			PSO_KEY_TRANSPARENT
 		);
 		m_pCharacterImages[i]->SetActive(false);
 	}
+
+	m_pBBImage = AddChild<UIImage>(
+		XMFLOAT3{ 0.0f, -20.0f, 0.0f },
+		XMFLOAT3{ 300.0f, 300.0f, 1.0f },
+		XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+		m_order,
+		bilibiliTexturepath,
+		PSO_KEY_TRANSPARENT
+	);
+	m_pBBImage->SetColor({ 0.1f, 0.1f, 0.1f, 0.5f });
+
+	TexSplitInfo texInfo{};
+	texInfo.cols = 6;
+	texInfo.rows = 5;
+	texInfo.total = texInfo.cols * texInfo.rows;
+	texInfo.index = 0;
+	texInfo.updateRate = 5;
+	m_pBBImage->SetTexSplitInfo(texInfo);
 }
 
 //‰Šú‰»
@@ -54,6 +75,25 @@ void IconUI::InitializeOverride(TextureManager& textureManager, MeshManager& mes
 //XV
 void IconUI::UpdateOverride()
 {
+	if (m_is_turning_on_bb_ui)
+	{
+		if (m_is_bb_activated)
+		{
+			m_pBBImage->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		}
+		else 
+		{
+			auto color = m_pBBImage->GetColor();
+			color.w = sinf(static_cast<float>(m_bbUITimer / 15.0f)) * 0.3f + 0.3f;
+			m_pBBImage->SetColor(color);
+			m_bbUITimer++;
+		}
+
+		auto scale = m_pBBImage->GetLocalScale();
+		scale.x = std::max(scale.x - 5.0f, 300.0f);
+		scale.y = std::max(scale.y - 5.0f, 300.0f);
+		m_pBBImage->SetLocalScale(scale);
+	}
 }
 
 //I—¹
@@ -94,6 +134,20 @@ void IconUI::SetTeamCharacter(int p1, int p2)
 		m_pCharacterImages[p2]->SetActive(true);
 		m_pCharacterImages[p2]->SetOrder(m_order + 1);
 		m_pCharacterImages[p2]->SetLocalPosition(p2Position);
+	}
+}
+
+void IconUI::TurnOnBiliBiliUI()
+{
+	m_pBBImage->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	m_is_turning_on_bb_ui = true;
+}
+
+void IconUI::SetIsBBActivated(bool isActivated)
+{
+	m_is_bb_activated = isActivated;
+	if (m_is_turning_on_bb_ui && isActivated) {
+		m_pBBImage->SetLocalScale({ 400.0f, 400.0f, 1.0f });
 	}
 }
 

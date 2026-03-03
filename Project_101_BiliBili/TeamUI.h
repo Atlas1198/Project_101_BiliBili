@@ -36,6 +36,8 @@ public:
 	void GetDamage(float health);	//ダメージ取得関数
 
 	void SetTeamCharacter(int p1, int p2);
+	void TurnOnBBUI();
+	void SetIsBBActivated(bool isActivated) { m_pIconUI->SetIsBBActivated(isActivated); }
 
 private:
 	HPBarUI* m_pHPBarUI;	//HPバーUIポインタ

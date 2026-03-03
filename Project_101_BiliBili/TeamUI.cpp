@@ -25,14 +25,18 @@ TeamUI::TeamUI(
 	const XMFLOAT2 iconOffsetValue = { 255.0f, 5.0f };		//アイコンのオフセット値
 	int directionFactor = 0;								//方向係数
 
+	std::wstring bbTexPath = {};
+
 	//方向による係数設定
 	switch (offsetDirection)
 	{
 	case DIRECTION::LEFT:
 		directionFactor = -1;
+		bbTexPath = L"asset/texture/effect/circle_B_EF.png";
 		break;
 	case DIRECTION::RIGHT:
 		directionFactor = 1;
+		bbTexPath = L"asset/texture/effect/circle_R_EF.png";
 		break;
 	default:
 		break;
@@ -63,7 +67,8 @@ TeamUI::TeamUI(
 		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, //スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f }, //回転
 		0, //描画順序
-		iconTexturePath
+		iconTexturePath,
+		bbTexPath.c_str()
 	);
 }
 
@@ -119,6 +124,11 @@ void TeamUI::SetTeamCharacter(int p1, int p2)
 	{
 		m_pIconUI->SetTeamCharacter(p1, p2);
 	}
+}
+
+void TeamUI::TurnOnBBUI()
+{
+	m_pIconUI->TurnOnBiliBiliUI();
 }
 
 //被弾エフェクト更新関数

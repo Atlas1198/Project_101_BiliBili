@@ -49,6 +49,8 @@ enum EventType
 	SET_BB_SCENE_EFFECT,
 	SET_PLAYER_POINTER_ACTIVE,
 	SET_ACTIVE_ALL_IN_GAME_UI, // bool isActive
+	TURN_ON_BB_UI,
+	ACTIVATE_BB_RELATED_UI, // int teamID
 
 	//ゲーム内イベント(UI表示と併用)
 	EVENT_BULLET_SPEED,		// void

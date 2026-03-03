@@ -337,6 +337,24 @@ void GameUIManager::InitializeOverride(
 		}
 	);
 
+	EventManager::GetInstance()->Subscribe<int>(
+		EventType::TURN_ON_BB_UI,
+		[this](std::shared_ptr<int> data)
+		{
+			if (*data == 0) m_pTeamUI1->TurnOnBBUI();
+			else m_pTeamUI2->TurnOnBBUI();
+		}
+	);
+
+	EventManager::GetInstance()->Subscribe<std::pair<int, bool>>(
+		EventType::ACTIVATE_BB_RELATED_UI,
+		[this](std::shared_ptr<std::pair<int, bool>> data)
+		{
+			if (data->first == 0) m_pTeamUI1->SetIsBBActivated(data->second);
+			else m_pTeamUI2->SetIsBBActivated(data->second);
+		}
+	);
+
 
 	//チームキャラクター設定
 	m_pTeamUI1->SetTeamCharacter(
