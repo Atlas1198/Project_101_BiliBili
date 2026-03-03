@@ -393,9 +393,9 @@ void Player::Move()
 		}
 	}
 
-	if (bbSlowMoveSpeed && bbActive)
+	if (bbActive)
 	{
-		modifier *= BB_SLOW_MOVE_MODIFIER;
+		modifier *= bbAreaActive ? BB_AREA_SLOW_MOVE_MODIFIER : BB_SLOW_MOVE_MODIFIER;
 	}
 
 	if (!m_isSpringJump)
@@ -680,6 +680,7 @@ void Player::Reset()
 	isMoving = false;
 	isShooting = false;
 	bbActive = false;
+	bbAreaActive = false;
 	canRun = false;
 	runTimerStarted = false;
 	bbSlowMoveSpeed = true;
