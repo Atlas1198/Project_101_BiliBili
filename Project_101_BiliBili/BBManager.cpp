@@ -125,6 +125,10 @@ void BBManager::OnItemPickup(int teamID)
 			m_BBAreas[teamID * 2 + 1]->SetActive(true);
 		}
 
+		EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+			EventType::ACTIVATE_BB_RELATED_UI, 
+			std::make_pair(teamID, true)
+		);
 	}
 	m_BBTimer[teamID] = 10.0f;
 	m_frameTimer[teamID].Mark();
@@ -179,6 +183,11 @@ void BBManager::UpdateOverride()
 				m_BBAreas[i * 2]->SetActive(false);
 				m_BBAreas[i * 2 + 1]->SetActive(false);
 
+				EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+					EventType::ACTIVATE_BB_RELATED_UI,
+					std::make_pair(i, false)
+				);
+
 				bool anyTeamActive = false;
 				for (int j = 0; j < BB_NUM; j++)
 				{
@@ -203,6 +212,13 @@ void BBManager::UpdateOverride()
 		m_BB[i]->Update();
 		m_BBAreas[i * 2]->Update();
 		m_BBAreas[i * 2 + 1]->Update();
+
+		float time = m_BBTimer[i];
+
+		EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(
+			EventType::SET_BB_GAGE_RATE,
+			std::make_pair(i, time / 10.0f)
+		);
 	}
 }
 
