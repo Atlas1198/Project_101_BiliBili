@@ -1,10 +1,10 @@
 #pragma once
-#include <d3d12.h>
-#include "d3dx12.h"
 #include "UIBase.h"
-#include "UIImage.h"
+#include "UIimage.h"
 
-//アイコンUIクラス
+class TextureManager;
+class MeshManager;
+
 class IconUI : public UIBase
 {
 public:

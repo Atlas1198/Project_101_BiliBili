@@ -1,5 +1,6 @@
 #pragma once
 #include "HPBarUI.h"
+#include "BBGageUI.h"
 #include "IconUI.h"
 #include "SharedStruct.h"
 
@@ -34,6 +35,7 @@ public:
 	) override;
 
 	void GetDamage(float health);	//ダメージ取得関数
+	void SetBBGage(float ratio);	//BBゲージ設定関数
 
 	void SetTeamCharacter(int p1, int p2);
 	void TurnOnBBUI();
@@ -41,6 +43,7 @@ public:
 
 private:
 	HPBarUI* m_pHPBarUI;	//HPバーUIポインタ
+	BBGageUI* m_pBBGageUI;	//BBゲージUIポインタ
 	IconUI* m_pIconUI;		//アイコンUIポインタ
 	UIImage* m_pAlertImage;	//アラート画像UIポインタ
 

@@ -1,5 +1,6 @@
 #include "UIBase.h"
-
+#include "TextureManager.h"
+#include "MeshManager.h"
 
 using namespace DirectX;
 

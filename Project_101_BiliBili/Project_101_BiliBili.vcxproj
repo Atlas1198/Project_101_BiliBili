@@ -158,6 +158,7 @@
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="AudioResources.h" />
     <ClInclude Include="BB.h" />
+    <ClInclude Include="BBGageUI.h" />
     <ClInclude Include="BBManager.h" />
     <ClInclude Include="BBSceneEffectUI.h" />
     <ClInclude Include="Behavior.h" />
@@ -265,6 +266,7 @@
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="AudioResources.cpp" />
     <ClCompile Include="BB.cpp" />
+    <ClCompile Include="BBGageUI.cpp" />
     <ClCompile Include="BBManager.cpp" />
     <ClCompile Include="BBSceneEffectUI.cpp" />
     <ClCompile Include="BilibiliArea.cpp" />

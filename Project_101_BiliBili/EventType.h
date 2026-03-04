@@ -51,6 +51,7 @@ enum EventType
 	SET_ACTIVE_ALL_IN_GAME_UI, // bool isActive
 	TURN_ON_BB_UI,
 	ACTIVATE_BB_RELATED_UI, // int teamID
+	SET_BB_GAGE_RATE, // int teamID, float ratio
 
 	//ゲーム内イベント(UI表示と併用)
 	EVENT_BULLET_SPEED,		// void

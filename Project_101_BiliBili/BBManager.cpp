@@ -212,6 +212,13 @@ void BBManager::UpdateOverride()
 		m_BB[i]->Update();
 		m_BBAreas[i * 2]->Update();
 		m_BBAreas[i * 2 + 1]->Update();
+
+		float time = m_BBTimer[i];
+
+		EventManager::GetInstance()->TriggerEvent<std::pair<int, float>>(
+			EventType::SET_BB_GAGE_RATE,
+			std::make_pair(i, time / 10.0f)
+		);
 	}
 }
 

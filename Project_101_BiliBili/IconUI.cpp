@@ -1,6 +1,8 @@
 #include "IconUI.h"
 #include "EventManager.h"
 #include "EventType.h"
+#include "TextureManager.h"
+#include "MeshManager.h"
 
 using namespace DirectX;
 

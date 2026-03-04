@@ -16,7 +16,7 @@ void GameUIManager::InitializeOverride(
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//位置
 		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f },	//スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },	//回転
-		-1										//描画順序
+		-100									//描画順序
 	);
 	m_pBBEffect->SetActive(false);
 
@@ -355,6 +355,14 @@ void GameUIManager::InitializeOverride(
 		}
 	);
 
+	EventManager::GetInstance()->Subscribe<std::pair<int, float>>(
+		EventType::SET_BB_GAGE_RATE,
+		[this](std::shared_ptr<std::pair<int, float>> data)
+		{
+			if (data->first == 0) m_pTeamUI1->SetBBGage(data->second);
+			else m_pTeamUI2->SetBBGage(data->second);
+		}
+	);
 
 	//チームキャラクター設定
 	m_pTeamUI1->SetTeamCharacter(

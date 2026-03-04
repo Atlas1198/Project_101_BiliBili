@@ -438,8 +438,8 @@ void CharacterUIManager::UpdateOverride()
 				}
 				blur->SetColor(color);
 
-				float scaleX = Lerpf(468.0f * 1.1f, 468.0f, decraseAmount);
-				float scaleY = Lerpf(707.0f * 1.1f, 707.0f, decraseAmount);
+				float scaleX = Lerpf(468.0f * 1.2f, 468.0f, decraseAmount);
+				float scaleY = Lerpf(707.0f * 1.2f, 707.0f, decraseAmount);
 
 				auto scale = blur->GetLocalScale();
 				scale.x = scaleX;

@@ -25,18 +25,21 @@ TeamUI::TeamUI(
 	const XMFLOAT2 iconOffsetValue = { 255.0f, 5.0f };		//アイコンのオフセット値
 	int directionFactor = 0;								//方向係数
 
-	std::wstring bbTexPath = {};
+	std::wstring bbGageTexPath = {};
+	std::wstring bbAreaTexPath = {};
 
 	//方向による係数設定
 	switch (offsetDirection)
 	{
 	case DIRECTION::LEFT:
 		directionFactor = -1;
-		bbTexPath = L"asset/texture/effect/circle_B_EF.png";
+		bbGageTexPath = L"asset/texture/effect/line_B_EF.png";
+		bbAreaTexPath = L"asset/texture/effect/circle_B_EF.png";
 		break;
 	case DIRECTION::RIGHT:
 		directionFactor = 1;
-		bbTexPath = L"asset/texture/effect/circle_R_EF.png";
+		bbGageTexPath = L"asset/texture/effect/line_R_EF.png";
+		bbAreaTexPath = L"asset/texture/effect/circle_R_EF.png";
 		break;
 	default:
 		break;
@@ -62,13 +65,22 @@ TeamUI::TeamUI(
 		offsetDirection
 	);
 
+	m_pBBGageUI = AddChild<BBGageUI>(
+		DirectX::XMFLOAT3{ hpBarOffsetValue.x * -directionFactor, hpBarOffsetValue.y - 40.0f, 0.0f }, //位置
+		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, //スケール
+		DirectX::XMFLOAT3{ 0.0f, 0.0f, directionFactor * 87.0f }, //回転
+		1, //描画順序
+		offsetDirection,
+		bbGageTexPath.c_str()
+	);
+
 	m_pIconUI = AddChild<IconUI>(
 		DirectX::XMFLOAT3{ iconOffsetValue.x * directionFactor, iconOffsetValue.y, 0.0f }, //位置
 		DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, //スケール
 		DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f }, //回転
 		0, //描画順序
 		iconTexturePath,
-		bbTexPath.c_str()
+		bbAreaTexPath.c_str()
 	);
 }
 
@@ -100,9 +112,6 @@ void TeamUI::FinalizeOverride()
 //オブジェクトの描画情報生成
 void TeamUI::PrepareRenderInfoOverride(TextureManager& textureManager, MeshManager& meshManager)
 {
-	m_pHPBarUI->PrepareRenderInfo(textureManager, meshManager);
-	m_pIconUI->PrepareRenderInfo(textureManager, meshManager);
-	m_pAlertImage->PrepareRenderInfo(textureManager, meshManager);
 }
 
 //HP設定関数
@@ -115,6 +124,15 @@ void TeamUI::GetDamage(float health)
 
 	m_hitEffectTimer = 0;
 	m_isHitEffect = true;
+}
+
+//BBゲージ設定関数
+void TeamUI::SetBBGage(float ratio)
+{
+	//if (m_pBBGageUI)
+	//{
+	//	m_pBBGageUI->SetGage(ratio);
+	//}
 }
 
 //チームキャラクター設定関数
