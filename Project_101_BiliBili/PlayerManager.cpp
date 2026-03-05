@@ -109,6 +109,8 @@ void PlayerManager::InitializeOverride(
 	}
 
 	m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
+
+	m_islastDamagePlayerCalled = false;
 }
 
 Player* PlayerManager::AddPlayer(
@@ -222,6 +224,8 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 
 	if (teamHP[teamID] <= 0.0f)
 	{
+		if (m_islastDamagePlayerCalled) return;
+
 		int winningTeamID = (teamID == 0) ? 1 : 0;
 		int winnerCharacter1ID = m_pPlayer[winningTeamID * 2]->GetCharacterID();
 		int winnerCharacter2ID = m_pPlayer[winningTeamID * 2 + 1]->GetCharacterID();
@@ -239,15 +243,16 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 			FrameTimer player1DamageTimer = loserP1->GetDamageAnimTimer();
 			FrameTimer player2DamageTimer = loserP2->GetDamageAnimTimer();
 			lastDamagedPlayerIndex = (player1DamageTimer.Peek() <= player2DamageTimer.Peek()) ? p1Index : p2Index;
-			//OutputDebugStringA("Both players are damaged\n");
+			OutputDebugStringA("Both players are damaged\n");
 		}
 		else
 		{
 			lastDamagedPlayerIndex = p1Damaged ? p1Index : p2Index;
 		}
-		//OutputDebugStringA(("Team " + std::to_string(teamID) + " is defeated! Last damaged player index: " + std::to_string(lastDamagedPlayerIndex) + "\n").c_str());
+		OutputDebugStringA(("Team " + std::to_string(teamID) + " is defeated! Last damaged player index: " + std::to_string(lastDamagedPlayerIndex) + "\n").c_str());
 		m_pPlayer[lastDamagedPlayerIndex]->GetDamageAnimTimer().Mark();
 		EventManager::GetInstance()->TriggerEvent<std::tuple<bool, int, int, int, int>>(EventType::GAME_OVER, std::make_tuple(true, winningTeamID, winnerCharacter1ID, winnerCharacter2ID, lastDamagedPlayerIndex));
+		m_islastDamagePlayerCalled = true;
 	}
 }
 
