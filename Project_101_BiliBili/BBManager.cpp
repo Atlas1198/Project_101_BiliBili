@@ -272,6 +272,10 @@ void BBManager::FinalizeOverride()
 	}
 
 	timerStarted = false;
+	m_ElectricityBBBlueInfo.clear();
+	m_ElectricityBBRedInfo.clear();
+	m_BBAreaBlueInfo.clear();
+	m_BBAreaRedInfo.clear();
 }
 
 void BBManager::SetPlayerData(std::vector<Player*>& players)
