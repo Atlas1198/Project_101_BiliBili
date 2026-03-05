@@ -42,6 +42,8 @@ private:
 
 	bool m_isInputAccepted = false;	//入力受け付けフラグ
 
+	bool m_islastDamagePlayerCalled = false;
+
 	std::vector<EventData> m_subscribedEvents;	//購読しているイベント配列
 
 	std::array<DirectX::XMFLOAT3, 4> m_stageSpawnPoses = {};
