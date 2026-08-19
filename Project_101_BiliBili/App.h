@@ -9,7 +9,6 @@
 #include "MeshManager.h"
 #include "netcommon.h"
 #include "ToolbarControl.h"
-#include "DatabaseManager.h"
 #include "EventManager.h"
 #include "AudioManager.h"
 

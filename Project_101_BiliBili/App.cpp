@@ -1,4 +1,4 @@
-#include "App.h"
+﻿#include "App.h"
 #include <algorithm>
 #include <mmsystem.h>
 #include <tchar.h>
@@ -17,8 +17,6 @@ using json = nlohmann::json;
 
 void InitializeDPIScale(HWND hwnd);
 void LoadParametersJSON();
-
-DatabaseManager* dbManager = DatabaseManager::GetInstance();
 
 //ウィンドウプロシージャ
 LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -64,10 +62,6 @@ LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		//キーボードメッセージ処理
 		Keyboard_ProcessMessage(msg, wParam, lParam);
-		break;
-
-	case DatabaseManager::WM_FIREBASE_UPDATE:
-		dbManager->ApplyFirebaseStreamData();
 		break;
 
 	case WM_DESTROY:		//ウィンドウ破壊時
@@ -141,21 +135,6 @@ void App::Run()
 
 	m_pSceneManager->SpawnPlayers();
 
-		//int msgboxID = MessageBox(
-		//	NULL,
-		//	"ビリビリアプリ使いますか？",
-		//	"パラメーター調整",
-		//	MB_ICONQUESTION | MB_YESNO
-		//);
-
-		//if (msgboxID == IDYES)
-		//{
-		//	// Start background streaming thread (will PostMessage to main window on updates)
-		//	curl_global_init(CURL_GLOBAL_DEFAULT);
-		//	dbManager->StartFirebaseStream();
-		//}
-		//else
-		//{
 	LoadParametersJSON();
 	UpdateParameters();
 
@@ -212,9 +191,6 @@ void App::Run()
 //終了
 void App::Terminate()
 {
-	// Stop the Firebase streaming thread before tearing down other systems
-	dbManager->StopFirebaseStream();
-
 	m_pEngine->Terminate(); //DirectX12エンジンの終了
 
 	//delete m_pCamera;		//カメラの解放

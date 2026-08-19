@@ -186,7 +186,6 @@
     <ClInclude Include="CountUI.h" />
     <ClInclude Include="CutInUI.h" />
     <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="EffectBase.h" />
     <ClInclude Include="EffectData.h" />
@@ -288,7 +287,6 @@
     <ClCompile Include="ControllerUIManager.cpp" />
     <ClCompile Include="CountUI.cpp" />
     <ClCompile Include="CutInUI.cpp" />
-    <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="EffectBase.cpp" />
     <ClCompile Include="EffectData.cpp" />
     <ClCompile Include="EffectManager.cpp" />
@@ -380,13 +378,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\AssimpCpp.5.0.1.6\build\native\AssimpCpp.targets" Condition="Exists('..\packages\AssimpCpp.5.0.1.6\build\native\AssimpCpp.targets')" />
-    <Import Project="..\packages\curl-static.1.0.6\build\native\curl-static.targets" Condition="Exists('..\packages\curl-static.1.0.6\build\native\curl-static.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\AssimpCpp.5.0.1.6\build\native\AssimpCpp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpCpp.5.0.1.6\build\native\AssimpCpp.targets'))" />
-    <Error Condition="!Exists('..\packages\curl-static.1.0.6\build\native\curl-static.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\curl-static.1.0.6\build\native\curl-static.targets'))" />
   </Target>
 </Project>
