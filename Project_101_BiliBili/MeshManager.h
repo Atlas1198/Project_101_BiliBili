@@ -13,7 +13,7 @@ public:
 	MeshManager() {};
 	~MeshManager();
 
-	void Initialize(ID3D12Device* pDevice);	//初期化
+	bool Initialize(ID3D12Device* pDevice);	//初期化
 
 	MeshGPU* CreateMesh(Mesh& src);	//メッシュを作成してリストに追加、メッシュへのポインタを返す
 

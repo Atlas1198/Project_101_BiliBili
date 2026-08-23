@@ -65,6 +65,14 @@ void SceneManager::Update()
 //終了
 void SceneManager::Finalize()
 {
+	if (m_pCurrentScene)
+	{
+		m_pCurrentScene->Finalize();
+		m_pCurrentScene = nullptr;
+		m_currentScene = SCENE_TYPE::SCENE_NONE;
+		m_sceneChangeReserved = false;
+		m_reservedScene = SCENE_TYPE::SCENE_NONE;
+	}
 }
 
 //シーン変更予約

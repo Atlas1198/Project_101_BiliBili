@@ -19,6 +19,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//‰Šú‰»
 	if (!app->Initialize())
 	{
+		CoUninitialize();
 		return -1;
 	}
 

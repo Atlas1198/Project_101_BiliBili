@@ -122,8 +122,10 @@ CollisionData::LayerMask CollisionData::GetLayerMask(COLLISION_LAYER layer)
 		return 0;
 		break;
 	default:
-		break;
+		return 0;
 	}
+
+	return 0;
 }
 
 //複数のコリジョンレイヤーからレイヤーマスクを作成する関数

@@ -33,7 +33,7 @@ public:
 	}
 
 	// Main processing functions
-	void Initialize(											// Initialization
+	bool Initialize(											// Initialization
 		ID3D12Device* pDevice,
 		CameraInfo* pInfo,
 		TextureManager* textureManager

@@ -37,6 +37,7 @@ private:
 	MeshManager* m_pMeshManager = nullptr;			//メッシュ管理クラスのポインタ
 	EventManager *m_pEventManager = nullptr;			//イベント管理クラスのポインタ
 	AudioManager* m_pAudioManager = nullptr;		//オーディオ管理クラスのポインタ
+	bool m_initialized = false;
 
 public:
 	App() {};	//コンストラクタ
@@ -53,7 +54,7 @@ private:
 	void CreateMainWindow(HWND& hwnd, WNDCLASSEX& wc);	//メインウィンドウの生成
 	void PrepareInstance();								//インスタンス準備
 
-	void InitInstance();	//インスタンス初期化
+	bool InitInstance();	//インスタンス初期化
 	void ReadMessages();
 	void WriteMessages();
 	void UpdateParameters();

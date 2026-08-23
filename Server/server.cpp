@@ -83,6 +83,11 @@ protected:
 		{
 			PlayerDescription desc;
 			msg >> desc;
+			if (!msg.is_valid())
+			{
+				std::cerr << "[Network] Invalid Client_RegisterWithServer message was ignored\n";
+				break;
+			}
 			desc.uniqueID = client->GetID();
 			m_mapPlayerRoster.insert_or_assign(desc.uniqueID, desc);
 

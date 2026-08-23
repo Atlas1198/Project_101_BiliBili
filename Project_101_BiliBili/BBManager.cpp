@@ -30,6 +30,7 @@ void BBManager::InitializeOverride(
 {
 	for (int i = 0; i < BB_NUM; i++)
 	{
+		delete m_BB[i];
 		m_BB[i] = new BB(m_pUIManager, m_pCollisionManager);
 	}
 
@@ -63,6 +64,11 @@ void BBManager::InitializeOverride(
 			EventType::ITEM_PICKUP,
 			[this](std::shared_ptr<int> teamID)
 			{
+				if (!teamID || *teamID < 0 || *teamID >= BB_NUM)
+				{
+					return;
+				}
+
 				for(auto& index : m_activationCalledBBIndex)
 				{
 					if(index == *teamID)
@@ -77,6 +83,7 @@ void BBManager::InitializeOverride(
 
 	for (int i = 0; i < BB_AREA_NUM; i++)
 	{
+		delete m_BBAreas[i];
 		m_BBAreas[i] = new BilibiliArea(
 			XMFLOAT3(0.0f, 0.0f, 0.0f),
 			i < 2 ? 0 : 1,
@@ -268,7 +275,17 @@ void BBManager::FinalizeOverride()
 {
 	for(int i = 0; i < BB_NUM; i++)
 	{
-		m_BB[i]->Finalize();
+		if (m_BB[i])
+		{
+			m_BB[i]->Finalize();
+			delete m_BB[i];
+			m_BB[i] = nullptr;
+		}
+	}
+	for (int i = 0; i < BB_AREA_NUM; i++)
+	{
+		delete m_BBAreas[i];
+		m_BBAreas[i] = nullptr;
 	}
 
 	timerStarted = false;

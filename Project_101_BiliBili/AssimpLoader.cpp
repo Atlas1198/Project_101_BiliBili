@@ -156,21 +156,31 @@ void AssimpLoader::LoadMesh(
 	//頂点数の設定
 	dst.vertexCount = src->mNumVertices;
 
-	//インデックスデータ配列のリサイズ
-	dst.indices.resize(src->mNumFaces * 3);
+	//不正なFaceを除外できるよう、有効なインデックスだけを追加する
+	dst.indices.clear();
+	dst.indices.reserve(static_cast<size_t>(src->mNumFaces) * 3u);
 
 	//インデックスデータの格納
 	for (auto i = 0u; i < src->mNumFaces; ++i)
 	{
 		const auto& face = src->mFaces[i];
 
-		dst.indices[i * 3 + 0] = face.mIndices[0];
-		dst.indices[i * 3 + 1] = face.mIndices[1];
-		dst.indices[i * 3 + 2] = face.mIndices[2];
+		if (face.mNumIndices != 3 || face.mIndices == nullptr ||
+			face.mIndices[0] >= src->mNumVertices ||
+			face.mIndices[1] >= src->mNumVertices ||
+			face.mIndices[2] >= src->mNumVertices)
+		{
+			OutputDebugStringA("[AssimpLoader] Invalid face was skipped\n");
+			continue;
+		}
+
+		dst.indices.push_back(face.mIndices[0]);
+		dst.indices.push_back(face.mIndices[1]);
+		dst.indices.push_back(face.mIndices[2]);
 	}
 
 	//インデックス数の設定
-	dst.indexCount = src->mNumFaces * 3;
+	dst.indexCount = static_cast<UINT>(dst.indices.size());
 }
 
 //テクスチャ読み込み関数

@@ -31,6 +31,15 @@ ColliderSet::ColliderSet(
 //デストラクタ
 ColliderSet::~ColliderSet()
 {
+	if (m_collisionManager)
+	{
+		for (auto* collider : m_colliders)
+		{
+			m_collisionManager->UnregisterCollider(collider);
+		}
+		m_collisionManager = nullptr;
+	}
+
 	for (auto& collider : m_colliders)
 	{
 		delete collider;
@@ -94,9 +103,27 @@ void ColliderSet::Update()
 void ColliderSet::RegisterColliders(CollisionManager& collisionManager)
 {
 	if (!m_isActive) return;
+
+	if (m_collisionManager && m_collisionManager != &collisionManager)
+	{
+		for (auto* collider : m_colliders)
+		{
+			m_collisionManager->UnregisterCollider(collider);
+		}
+	}
+
+	m_collisionManager = &collisionManager;
 	for (auto& collider : m_colliders)
 	{
 		collisionManager.RegisterCollider(collider);
+	}
+}
+
+void ColliderSet::DetachCollisionManager(const CollisionManager* collisionManager)
+{
+	if (m_collisionManager == collisionManager)
+	{
+		m_collisionManager = nullptr;
 	}
 }
 

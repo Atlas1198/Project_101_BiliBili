@@ -10,13 +10,30 @@
 #include <fstream>
 #include "EventManager.h"
 #include "AudioResources.h"
+#include "ContentRoot.h"
+#include "Debug.h"
  
 using json = nlohmann::json;
 
 #pragma comment(lib, "winmm.lib")
 
 void InitializeDPIScale(HWND hwnd);
-void LoadParametersJSON();
+bool LoadParametersJSON();
+
+namespace
+{
+void ReportStartupError(HWND owner, const wchar_t* message, const char* debugMessage)
+{
+	OutputDebugStringA(debugMessage);
+	MessageBoxW(owner, message, L"BiliBili - Startup Error", MB_OK | MB_ICONERROR);
+}
+
+void ReportAudioWarning(HWND owner)
+{
+	MessageBoxW(owner, L"Audio could not be initialized. The game will continue without sound.",
+		L"BiliBili - Audio Warning", MB_OK | MB_ICONWARNING);
+}
+}
 
 //ウィンドウプロシージャ
 LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -81,12 +98,27 @@ App* App::GetInstance()
 //初期化
 bool App::Initialize()
 {
+	if (!ContentRoot::GetInstance()->Initialize())
+	{
+		ReportStartupError(nullptr, L"The asset folder could not be found.", "[App] Asset folder not found\n");
+		return false;
+	}
+
 	CreateMainWindow(hwnd, wc);	//メインウィンドウの生成
+	if (!hwnd)
+	{
+		ReportStartupError(nullptr, L"Failed to create the main window.", "[App] Failed to create the main window\n");
+		return false;
+	}
 
 	PrepareInstance(); // インスタンス準備
 
-	InitInstance(); // インスタンス初期化
-
+	if (!InitInstance())
+	{
+		ReportStartupError(hwnd, L"The game engine could not be initialized.", "[App] Engine initialization failed\n");
+		Terminate();
+		return false;
+	}
 	return true;
 }
 
@@ -191,11 +223,40 @@ void App::Run()
 //終了
 void App::Terminate()
 {
-	m_pEngine->Terminate(); //DirectX12エンジンの終了
+	m_pEventManager = nullptr;
+	if (m_pAudioManager)
+	{
+		m_pAudioManager->StopAll();
+		m_pAudioManager = nullptr;
+	}
 
-	//delete m_pCamera;		//カメラの解放
-	delete m_pRenderer;		//レンダラーの解放
-	delete m_pSceneManager;	//シーン管理の解放
+	if (m_pSceneManager)
+	{
+		m_pSceneManager->Finalize();
+		delete m_pSceneManager;
+		m_pSceneManager = nullptr;
+	}
+	delete m_pRenderer;
+	m_pRenderer = nullptr;
+	delete m_pMeshManager;
+	m_pMeshManager = nullptr;
+	delete m_pTextureManager;
+	m_pTextureManager = nullptr;
+	delete m_pInputManager;
+	m_pInputManager = nullptr;
+
+	if (m_pEngine)
+	{
+		m_pEngine->Terminate();
+		delete m_pEngine;
+		m_pEngine = nullptr;
+	}
+
+	if (hwnd && IsWindow(hwnd))
+	{
+		DestroyWindow(hwnd);
+	}
+	hwnd = nullptr;
 
 	UnregisterClass(wc.lpszClassName, wc.hInstance);	//ウィンドウクラスの登録解除
 }
@@ -257,40 +318,40 @@ void App::PrepareInstance()
 }
 
 //インスタンス初期化
-void App::InitInstance()
+bool App::InitInstance()
 {
 	m_pEventManager = EventManager::GetInstance();
 
 	//DirectX12エンジン初期化
-	m_pEngine->InitCore(
+	if (!m_pEngine->InitCore(
 		hwnd,			//ウィンドウハンドル
 		WINDOW_WIDTH,	//フレームバッファの幅
 		WINDOW_HEIGHT	//フレームバッファの高さ
-	);
+	)) return false;
 
 	//デバイスの取得
 	auto pDevice = m_pEngine->GetDevice();
 
 	//レンダラー初期化
-	m_pRenderer->Initialize(
-		pDevice,							//デバイス
-		m_pSceneManager->GetCameraInfo(),	//カメラ情報構造体
-		m_pTextureManager					//テクスチャ管理クラス
-	);
-
 	//テクスチャ管理クラス初期化
-	m_pTextureManager->Initialize(
+	if (!m_pTextureManager->Initialize(
 		pDevice,	//デバイス
 		1024		//最大ディスクリプタ数
-	);
+	)) return false;
 
 	//メッシュ管理クラス初期化
-	m_pMeshManager->Initialize(
+	if (!m_pMeshManager->Initialize(
 		pDevice	//デバイス
-	);
+	)) return false;
+
+	if (!m_pRenderer->Initialize(
+		pDevice,
+		m_pSceneManager->GetCameraInfo(),
+		m_pTextureManager
+	)) return false;
 
 	//バインディングの初期化
-	m_pEngine->InitBindings(m_pTextureManager);
+	if (!m_pEngine->InitBindings(m_pTextureManager)) return false;
 
 	//レンダーを開始してコマンドリストをオープン
 	m_pEngine->BeginFrame();	
@@ -300,8 +361,14 @@ void App::InitInstance()
 	//オーディオ管理クラス初期化
 	if (m_pAudioManager)
 	{
-		m_pAudioManager->Initialize();
-		LoadAllGameSounds(*m_pAudioManager);	//カタログ関数を呼ぶ
+		if (m_pAudioManager->Initialize())
+		{
+			LoadAllGameSounds(*m_pAudioManager);	//カタログ関数を呼ぶ
+		}
+		else
+		{
+			ReportAudioWarning(hwnd);
+		}
 	}
 
 	//シーン管理クラス初期化
@@ -312,7 +379,8 @@ void App::InitInstance()
 	);
 
 	//レンダーを終了してコマンドリストをクローズ
-	m_pEngine->RenderEnd();
+	if (!m_pEngine->RenderEnd()) return false;
+	return true;
 }
 
 //更新
@@ -391,6 +459,11 @@ void App::ReadMessages()
 
 					int gameID = 0;
 					msg >> gameID;
+					if (!msg.is_valid())
+					{
+						DebugLogA("[Network] Invalid Client_Accepted message was ignored\n");
+						break;
+					}
 
 					olc::net::message<GameMsg> msg;
 					msg.header.id = GameMsg::Client_RegisterWithServer;
@@ -408,6 +481,11 @@ void App::ReadMessages()
 				{
 					// Server is assigning us OUR id
 					msg >> descPlayer.uniqueID;
+					if (!msg.is_valid())
+					{
+						DebugLogA("[Network] Invalid Client_AssignID message was ignored\n");
+						break;
+					}
 					std::cout << "Assigned Client ID = " << descPlayer.uniqueID << "\n";
 					break;
 				}
@@ -417,6 +495,11 @@ void App::ReadMessages()
 					PlayerDescription newDesc;
 
 					msg >> newDesc >> playerCount;
+					if (!msg.is_valid())
+					{
+						DebugLogA("[Network] Invalid Game_AddPlayer message was ignored\n");
+						break;
+					}
 
 					players.insert_or_assign(newDesc.uniqueID, newDesc);
 
@@ -437,6 +520,11 @@ void App::ReadMessages()
 				{
 					uint32_t nRemovalID = 0;
 					msg >> nRemovalID >> playerCount;
+					if (!msg.is_valid())
+					{
+						DebugLogA("[Network] Invalid Game_RemovePlayer message was ignored\n");
+						break;
+					}
 					players.erase(nRemovalID);
 					m_pSceneManager->RemovePlayer(nRemovalID);
 					break;
@@ -446,6 +534,11 @@ void App::ReadMessages()
 				{
 					PlayerDescription desc;
 					msg >> desc;
+					if (!msg.is_valid())
+					{
+						DebugLogA("[Network] Invalid Game_UpdatePlayer message was ignored\n");
+						break;
+					}
 					players.insert_or_assign(desc.uniqueID, desc);
 					break;
 				}
@@ -469,6 +562,18 @@ void App::WriteMessages()
 
 void App::UpdateParameters()
 {
+	constexpr size_t requiredParameterCount = 7;
+	if (toolbar.parameters.size() < requiredParameterCount)
+	{
+		static bool warningLogged = false;
+		if (!warningLogged)
+		{
+			OutputDebugStringA("[Parameters] Insufficient toolbar parameters; current values will be kept\n");
+			warningLogged = true;
+		}
+		return;
+	}
+
 	Player::MOVE_SPEED = toolbar.parameters[0].GetValue();
 	Player::BULLET_SPEED = toolbar.parameters[1].GetValue();
 	BulletManager::BULLET_RECOVERY = toolbar.parameters[2].GetValue();
@@ -484,10 +589,22 @@ void InitializeDPIScale(HWND hwnd)
 	App::DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
 }
 
-void LoadParametersJSON()
+bool LoadParametersJSON()
 {
-	std::ifstream f("asset/defaults.json");
-	json data = json::parse(f);
+	const auto path = ContentRoot::GetInstance()->ResolveAsset(L"defaults.json");
+	std::ifstream f(path);
+	if (!f)
+	{
+		DebugLogA("[Parameters] defaults.json not found: %ws\n", path.c_str());
+		return false;
+	}
+
+	json data = json::parse(f, nullptr, false);
+	if (data.is_discarded() || !data.is_object())
+	{
+		DebugLogA("[Parameters] defaults.json is invalid: %ws\n", path.c_str());
+		return false;
+	}
 
 	auto &toolbar = App::GetInstance()->toolbar;
 
@@ -495,7 +612,12 @@ void LoadParametersJSON()
 	{
 		if (data.contains(param.name))
 		{
-			param.SetValue(data[param.name].get<float>());
+			const auto& value = data[param.name];
+			if (value.is_number())
+			{
+				param.SetValue(value.get<float>());
+			}
 		}
 	}
+	return true;
 }

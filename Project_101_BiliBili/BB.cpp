@@ -275,7 +275,6 @@ void BB::ControlElectricity()
 		m_electricityBB[0]->SetEndPos(m_lineBB[0]->GetWallCollisionPoint());	//終了地点
 		m_electricityBB[0]->SetRotation(m_rotation);							//回転
 
-		auto lineWallCollisionPoints = m_lineBB[1]->GetRaycastSegment().hitInfos[0];
 		m_electricityBB[1]->SetStartPos(m_playerPos[1]);						//開始地点
 		m_electricityBB[1]->SetEndPos(m_lineBB[1]->GetWallCollisionPoint());	//終了地点
 		m_electricityBB[1]->SetRotation(m_rotation);							//回転

@@ -95,3 +95,13 @@ CameraInfo* SceneBase::GetCameraInfo() const
 {
 	return &m_pCamera->GetCameraInfo();
 }
+
+SceneBase::~SceneBase()
+{
+	delete m_pCamera;
+	delete m_pCollisionManager;
+	delete m_pEffectManager;
+	m_pCamera = nullptr;
+	m_pCollisionManager = nullptr;
+	m_pEffectManager = nullptr;
+}

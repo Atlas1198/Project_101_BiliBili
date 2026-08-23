@@ -45,15 +45,15 @@ public:	//公開関数
 		UINT m_FrameBufferWidth,	//フレームバッファの幅
 		UINT m_FrameBufferHeight	//フレームバッファの高さ
 	);
-	void InitBindings(TextureManager* pTextureManager);	// Initialize bindings (root signature, descriptor heaps, etc.)
+	bool InitBindings(TextureManager* pTextureManager);	// Initialize bindings (root signature, descriptor heaps, etc.)
 	void Terminate();			//終了
 
 	// Rendering related functions
 	void BeginPass(RENDER_TARGET_TYPE type);	// Set up render target
 	void EndPass(RENDER_TARGET_TYPE type);		// End render pass
 	void BeginFrame();							// Start rendering
-	void WaitRender();							// Wait for the previous frame to finish
-	void RenderEnd();							// End rendering
+	bool WaitRender();							// Wait for the previous frame to finish
+	bool RenderEnd();							// End rendering
 
 	//各種ゲッター
 	ID3D12Device* GetDevice() { return m_pDevice.Get(); }							//デバイスの取得
@@ -100,16 +100,16 @@ private:	//結果コード
 
 private:	//内部関数
 	//各種生成関数
-	void CreateDevice();					// Device creation
-	void CreateCommandObjects();			// Command object creation
-	void CreateSwapChain();					// Swap chain creation
-	void CreateFence();						// Fence creation
+	bool CreateDevice();					// Device creation
+	bool CreateCommandObjects();			// Command object creation
+	bool CreateSwapChain();					// Swap chain creation
+	bool CreateFence();						// Fence creation
 	void CreateViewport();					// Viewport creation
 	void CreateScissorRect();				// Scissor rectangle creation
-	void CreateRTVHeap();					// RTV descriptor heap creation
-	void CreateRenderTarget();				// Render target creation
-	void CreatePostProcessRenderTarget();	// Post-processing render target creation
-	void CreateDepthStencil();				// Depth stencil creation
+	bool CreateRTVHeap();					// RTV descriptor heap creation
+	bool CreateRenderTarget();				// Render target creation
+	bool CreatePostProcessRenderTarget();	// Post-processing render target creation
+	bool CreateDepthStencil();				// Depth stencil creation
 
 	RenderTargetSlot& GetRenderTargetSlot(RENDER_TARGET_TYPE type);
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHandle(uint32_t idx);

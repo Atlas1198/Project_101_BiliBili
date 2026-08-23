@@ -13,9 +13,50 @@
 
 using namespace DirectX;
 
+namespace
+{
+	bool IsValidRenderItem(const WorldRenderInfo& item)
+	{
+		return item.common.pMeshGPU && item.common.pMeshGPU->IsValid();
+	}
+
+	void LogSkippedRenderItem(const char* stage)
+	{
+		OutputDebugStringA("[Renderer] Skipped invalid render item: ");
+		OutputDebugStringA(stage);
+		OutputDebugStringA("\n");
+	}
+
+	uint32_t GetSafeSrvIndex(TextureManager* textureManager, uint32_t requestedIndex)
+	{
+		if (!textureManager || !textureManager->GetSrvHeap())
+		{
+			return UINT32_MAX;
+		}
+
+		const uint32_t descriptorCount = textureManager->GetSrvHeap()->GetDesc().NumDescriptors;
+		if (requestedIndex == UINT32_MAX || requestedIndex >= descriptorCount)
+		{
+			if (requestedIndex != UINT32_MAX)
+			{
+				OutputDebugStringA("[Renderer] Invalid SRV index; using default texture\n");
+			}
+			return textureManager->GetDefaultTextureIndex();
+		}
+		return requestedIndex;
+	}
+}
+
 //デストラクタ
 Renderer::~Renderer()
 {
+	for (auto& pCB : m_objectCBWorldPostProcess)
+	{
+		delete pCB;
+		pCB = nullptr;
+	}
+	m_objectCBWorldPostProcess.clear();
+
 	//オブジェクト用定数バッファの解放
 	for (int i = 0; i < Engine::FRAME_BUFFER_COUNT; i++)
 	{
@@ -57,11 +98,27 @@ Renderer::~Renderer()
 		delete m_pRootSignature;
 		m_pRootSignature = nullptr;
 	}
+
+	delete m_pTimeCB;
+	m_pTimeCB = nullptr;
+
+	delete m_pShaderLibrary;
+	m_pShaderLibrary = nullptr;
+	m_pDefaultPSO = nullptr;
+	m_pDevice = nullptr;
+	m_cameraInfo = nullptr;
+	m_pTextureManager = nullptr;
 }
 
 //初期化
-void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo, TextureManager* textureManager)
+bool Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo, TextureManager* textureManager)
 {
+	if (!pDevice || !pInfo || !textureManager)
+	{
+		OutputDebugStringA("[Renderer] Invalid initialization parameters\n");
+		return false;
+	}
+
 	m_pDevice = pDevice;					//デバイスの保存
 	m_cameraInfo = pInfo;					//カメラ情報構造体の保存
 	m_pTextureManager = textureManager;		//テクスチャ管理クラスの保存
@@ -70,6 +127,11 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo, TextureManag
 
 	//ルートシグネチャの生成
 	m_pRootSignature = new RootSignature(m_pDevice);
+	if (!m_pRootSignature->GetRootSignature())
+	{
+		OutputDebugStringA("[Renderer] Root signature creation failed\n");
+		return false;
+	}
 
 	//シェーダーライブラリの生成
 	m_pShaderLibrary = new ShaderLibrary();
@@ -77,11 +139,23 @@ void Renderer::Initialize(ID3D12Device* pDevice, CameraInfo* pInfo, TextureManag
 	//ベーシックPSOの生成
 	PSOKey defaultKey{};
 	m_pDefaultPSO = CreatePipelineStateObject(defaultKey);
+	if (!m_pDefaultPSO)
+	{
+		OutputDebugStringA("[Renderer] Default pipeline state creation failed\n");
+		return false;
+	}
 
 	//ポストエフェクト用PSOキーの設定
 	PreparePostProcessKey();
 
 	m_pTimeCB = new ConstantBuffer(m_pDevice, sizeof(TimeConstants));	//時間用定数バッファの生成
+	if (!m_pTimeCB->GetIsValid())
+	{
+		OutputDebugStringA("[Renderer] Time constant buffer creation failed\n");
+		return false;
+	}
+
+	return true;
 }
 
 //更新
@@ -119,6 +193,14 @@ void Renderer::Update(UINT currentBackBufferIndex, CameraInfo& info)
 //描画
 void Renderer::Draw(ID3D12GraphicsCommandList* p_commandList, RENDER_TARGET_TYPE targetType)
 {
+	if (!p_commandList || !m_pTextureManager || !m_pTextureManager->GetSrvHeap() ||
+		!m_pRootSignature || !m_pRootSignature->GetRootSignature() ||
+		!m_pTimeCB || !m_pTimeCB->GetIsValid())
+	{
+		OutputDebugStringA("[Renderer] Draw skipped because renderer state is invalid\n");
+		return;
+	}
+
 	//デスクリプタヒープの設定
 	ID3D12DescriptorHeap* heaps[] = { m_pTextureManager->GetSrvHeap() };	//SRVヒープの取得
 	p_commandList->SetDescriptorHeaps(_countof(heaps), heaps);			//デスクリプタヒープの設定
@@ -151,6 +233,11 @@ void Renderer::Draw(ID3D12GraphicsCommandList* p_commandList, RENDER_TARGET_TYPE
 //フレーム開始
 void Renderer::BeginFrame(UINT backIndex)
 {
+	if (backIndex >= Engine::FRAME_BUFFER_COUNT)
+	{
+		OutputDebugStringA("[Renderer] Invalid back buffer index; using index 0\n");
+		backIndex = 0;
+	}
 	m_currBackIndex = backIndex;	//現在のバックバッファインデックスを保存
 
 	//一時描画リストのクリア
@@ -164,16 +251,19 @@ void Renderer::SubmitToWorldList(const WorldRenderModel& info)
 {
 	for (const auto& item : info)
 	{
+		if (!IsValidRenderItem(item))
+		{
+			LogSkippedRenderItem("world submission");
+			continue;
+		}
+
 		auto& list = item.isPostEffect ? m_tempWorldRenderListPostProcess : m_tempWorldRenderList;
 
 		WorldRenderInfo itemRef = item;
 		if (item.isPostEffect) itemRef.common.psoKey.rtvFormat = RENDER_TARGET_FORMAT::RTV_FORMAT_HDR;	//ポストエフェクト用のPSOキーはHDRレンダーターゲットフォーマットを使用
 		NormalizeKeyForRenderQueueWorld(itemRef);						//レンダリングキューに応じたパイプラインステートオブジェクトキーの正規化
 		itemRef.common.sortDepth = CalcSortDepth(item.position);	//ソート用深度の計算と設定
-		if (itemRef.common.srvIndex == UINT32_MAX)
-		{
-			itemRef.common.srvIndex = m_pTextureManager->GetDefaultTextureIndex(); //白テクスチャのインデックスを使用
-		}
+		itemRef.common.srvIndex = GetSafeSrvIndex(m_pTextureManager, itemRef.common.srvIndex);
 		list.push_back(itemRef);	//一時描画リストに追加
 	}
 }
@@ -183,13 +273,16 @@ void Renderer::SubmitToScreenList(const WorldRenderModel& info)
 {
 	for (const auto& item : info)
 	{
+		if (!IsValidRenderItem(item))
+		{
+			LogSkippedRenderItem("screen submission");
+			continue;
+		}
+
 		WorldRenderInfo itemRef = item;
 		NormalizeKeyForRenderQueueScreen(itemRef);
 		itemRef.common.sortDepth = CalcSortDepth(item.position); //ソート用深度の計算と設定
-		if (itemRef.common.srvIndex == UINT32_MAX)
-		{
-			itemRef.common.srvIndex = m_pTextureManager->GetDefaultTextureIndex(); //白テクスチャのインデックスを使用
-		}
+		itemRef.common.srvIndex = GetSafeSrvIndex(m_pTextureManager, itemRef.common.srvIndex);
 		m_tempScreenRenderList.push_back(itemRef);	//一時描画リストに追加
 	}
 }
@@ -204,26 +297,45 @@ void Renderer::SubmitDirectionalLight(const DirectionalLight& light)
 void Renderer::DrawTempRenderListWorld(ID3D12GraphicsCommandList* p_commandList)
 {
 	PSOKey compare{};
+	bool pipelineBound = false;
+	size_t drawSlot = 0;
 
 	for (size_t i = 0; i < m_tempWorldRenderList.size(); i++)
 	{
+		if (!IsValidRenderItem(m_tempWorldRenderList[i]))
+		{
+			LogSkippedRenderItem("world draw");
+			continue;
+		}
+
 		//パイプラインステートオブジェクトの設定
-		if (i == 0)
+		if (!pipelineBound)
 		{
 			auto pso = GetPipelineStateObject(m_tempWorldRenderList[i].common.psoKey);	//パイプラインステートを取得
+			if (!pso || !pso->IsValid())
+			{
+				LogSkippedRenderItem("world PSO creation");
+				continue;
+			}
 			p_commandList->SetPipelineState(pso->GetPipelineState());					//パイプラインステートをセット
 			compare = m_tempWorldRenderList[i].common.psoKey;
+			pipelineBound = true;
 		}
 		else if (compare != m_tempWorldRenderList[i].common.psoKey)
 		{
 			auto pso = GetPipelineStateObject(m_tempWorldRenderList[i].common.psoKey);	//パイプラインステートを取得
+			if (!pso || !pso->IsValid())
+			{
+				LogSkippedRenderItem("world PSO creation");
+				continue;
+			}
 			p_commandList->SetPipelineState(pso->GetPipelineState());					//パイプラインステートをセット
 		}
 
 		compare = m_tempWorldRenderList[i].common.psoKey;
 
 		// フレームごとのCBVプールを必要数まで確保
-		if (i >= m_objectCBWorld[m_currBackIndex].size())
+		if (drawSlot >= m_objectCBWorld[m_currBackIndex].size())
 		{
 			//新しい定数バッファを作成
 			auto* newCb = new ConstantBuffer(m_pDevice, sizeof(PerObjectConstants));
@@ -240,7 +352,7 @@ void Renderer::DrawTempRenderListWorld(ID3D12GraphicsCommandList* p_commandList)
 		}
 
 		//オブジェクト用定数バッファの取得
-		ConstantBuffer* cb = m_objectCBWorld[m_currBackIndex][i];
+		ConstantBuffer* cb = m_objectCBWorld[m_currBackIndex][drawSlot];
 		auto* ptr = cb->GetPtr<PerObjectConstants>();
 
 		//定数バッファに transform を書く（各オブジェクト専用のメモリ）
@@ -288,7 +400,7 @@ void Renderer::DrawTempRenderListWorld(ID3D12GraphicsCommandList* p_commandList)
 
 		//SRVの設定
 		auto heapHandle = m_pTextureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
-		uint32_t idx = m_tempWorldRenderList[i].common.srvIndex;
+		uint32_t idx = GetSafeSrvIndex(m_pTextureManager, m_tempWorldRenderList[i].common.srvIndex);
 
 		auto gpuHandle = heapHandle;
 		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
@@ -302,32 +414,52 @@ void Renderer::DrawTempRenderListWorld(ID3D12GraphicsCommandList* p_commandList)
 			m_tempWorldRenderList[i].baseVertex,	//ベース頂点位置
 			0										//スタートインスタンス位置
 		);
+		++drawSlot;
 	}
 }
 
 void Renderer::DrawTempRenderListScreen(ID3D12GraphicsCommandList* p_commandList)
 {
 	PSOKey compare{};
+	bool pipelineBound = false;
+	size_t drawSlot = 0;
 
 	for (size_t i = 0; i < m_tempScreenRenderList.size(); i++)
 	{
+		if (!IsValidRenderItem(m_tempScreenRenderList[i]))
+		{
+			LogSkippedRenderItem("screen draw");
+			continue;
+		}
+
 		//パイプラインステートオブジェクトの設定
-		if (i == 0)
+		if (!pipelineBound)
 		{
 			auto pso = GetPipelineStateObject(m_tempScreenRenderList[i].common.psoKey);	//パイプラインステートを取得
+			if (!pso || !pso->IsValid())
+			{
+				LogSkippedRenderItem("screen PSO creation");
+				continue;
+			}
 			p_commandList->SetPipelineState(pso->GetPipelineState());					//パイプラインステートをセット
 			compare = m_tempScreenRenderList[i].common.psoKey;
+			pipelineBound = true;
 		}
 		else if (compare != m_tempScreenRenderList[i].common.psoKey)
 		{
 			auto pso = GetPipelineStateObject(m_tempScreenRenderList[i].common.psoKey);	//パイプラインステートを取得
+			if (!pso || !pso->IsValid())
+			{
+				LogSkippedRenderItem("screen PSO creation");
+				continue;
+			}
 			p_commandList->SetPipelineState(pso->GetPipelineState());					//パイプラインステートをセット
 		}
 
 		compare = m_tempScreenRenderList[i].common.psoKey;
 
 		// フレームごとのCBVプールを必要数まで確保
-		if (i >= m_objectCBScreen[m_currBackIndex].size())
+		if (drawSlot >= m_objectCBScreen[m_currBackIndex].size())
 		{
 			//新しい定数バッファを作成
 			auto* newCb = new ConstantBuffer(m_pDevice, sizeof(PerObjectConstants));
@@ -344,7 +476,7 @@ void Renderer::DrawTempRenderListScreen(ID3D12GraphicsCommandList* p_commandList
 		}
 
 		//オブジェクト用定数バッファの取得
-		ConstantBuffer* cb = m_objectCBScreen[m_currBackIndex][i];
+		ConstantBuffer* cb = m_objectCBScreen[m_currBackIndex][drawSlot];
 		auto* ptr = cb->GetPtr<PerObjectConstants>();
 
 		//定数バッファに transform を書く（各オブジェクト専用のメモリ）
@@ -392,7 +524,7 @@ void Renderer::DrawTempRenderListScreen(ID3D12GraphicsCommandList* p_commandList
 
 		//SRVの設定
 		auto heapHandle = m_pTextureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();						//SRVヒープのGPUハンドルを取得
-		uint32_t idx = m_tempScreenRenderList[i].common.srvIndex;
+		uint32_t idx = GetSafeSrvIndex(m_pTextureManager, m_tempScreenRenderList[i].common.srvIndex);
 		auto gpuHandle = heapHandle;
 		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
 		p_commandList->SetGraphicsRootDescriptorTable(2, gpuHandle);
@@ -405,6 +537,7 @@ void Renderer::DrawTempRenderListScreen(ID3D12GraphicsCommandList* p_commandList
 			m_tempScreenRenderList[i].baseVertex,	//ベース頂点位置
 			0										//スタートインスタンス位置
 		);
+		++drawSlot;
 	}
 }
 
@@ -412,28 +545,46 @@ void Renderer::DrawTempRenderListScreen(ID3D12GraphicsCommandList* p_commandList
 void Renderer::DrawTempWorldRenderListPostProcess(ID3D12GraphicsCommandList* p_commandList)
 {
 	PSOKey compare{};
+	bool pipelineBound = false;
+	size_t drawSlot = 0;
 
 	for (size_t i = 0; i < m_tempWorldRenderListPostProcess.size(); i++)
 	{
 		auto& item = m_tempWorldRenderListPostProcess[i];
+		if (!IsValidRenderItem(item))
+		{
+			LogSkippedRenderItem("post-process world draw");
+			continue;
+		}
 
 		//パイプラインステートオブジェクトの設定
-		if (i == 0)
+		if (!pipelineBound)
 		{
 			auto pso = GetPipelineStateObject(item.common.psoKey);		//パイプラインステートを取得
+			if (!pso || !pso->IsValid())
+			{
+				LogSkippedRenderItem("post-process world PSO creation");
+				continue;
+			}
 			p_commandList->SetPipelineState(pso->GetPipelineState());	//パイプラインステートをセット
 			compare = item.common.psoKey;
+			pipelineBound = true;
 		}
 		else if (compare != item.common.psoKey)
 		{
 			auto pso = GetPipelineStateObject(item.common.psoKey);		//パイプラインステートを取得
+			if (!pso || !pso->IsValid())
+			{
+				LogSkippedRenderItem("post-process world PSO creation");
+				continue;
+			}
 			p_commandList->SetPipelineState(pso->GetPipelineState());	//パイプラインステートをセット
 		}
 
 		compare = item.common.psoKey;
 
 		// フレームごとのCBVプールを必要数まで確保
-		if (i >= m_objectCBWorldPostProcess.size())
+		if (drawSlot >= m_objectCBWorldPostProcess.size())
 		{
 			//新しい定数バッファを作成
 			auto* newCb = new ConstantBuffer(m_pDevice, sizeof(PerObjectConstants));
@@ -450,7 +601,7 @@ void Renderer::DrawTempWorldRenderListPostProcess(ID3D12GraphicsCommandList* p_c
 		}
 
 		//オブジェクト用定数バッファの取得
-		ConstantBuffer* cb = m_objectCBWorldPostProcess[i];
+		ConstantBuffer* cb = m_objectCBWorldPostProcess[drawSlot];
 		auto* ptr = cb->GetPtr<PerObjectConstants>();
 
 		//定数バッファに transform を書く（各オブジェクト専用のメモリ）
@@ -498,7 +649,7 @@ void Renderer::DrawTempWorldRenderListPostProcess(ID3D12GraphicsCommandList* p_c
 
 		//SRVの設定
 		auto heapHandle = m_pTextureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();	//SRVヒープのGPUハンドルを取得
-		uint32_t idx = item.common.srvIndex;
+		uint32_t idx = GetSafeSrvIndex(m_pTextureManager, item.common.srvIndex);
 
 		auto gpuHandle = heapHandle;
 		gpuHandle.ptr += static_cast<UINT64>(idx) * m_pTextureManager->GetSrvIncrementSize();
@@ -512,6 +663,7 @@ void Renderer::DrawTempWorldRenderListPostProcess(ID3D12GraphicsCommandList* p_c
 			item.baseVertex,			//ベース頂点位置
 			0							//スタートインスタンス位置
 		);
+		++drawSlot;
 	}
 }
 
@@ -520,6 +672,11 @@ void Renderer::DrawPostProcess(ID3D12GraphicsCommandList* p_commandList)
 {
 	//パイプラインステートオブジェクトの設定
 	auto pso = GetPipelineStateObject(m_postProcessKey);		//ポストプロセス用のパイプラインステートを取得
+	if (!pso || !pso->IsValid())
+	{
+		OutputDebugStringA("[PostProcess] Draw skipped because PSO is invalid\n");
+		return;
+	}
 	if (pso == m_pDefaultPSO) {
 		OutputDebugStringA("[PostProcess] FALLBACK to DEFAULT PSO\n");
 	}

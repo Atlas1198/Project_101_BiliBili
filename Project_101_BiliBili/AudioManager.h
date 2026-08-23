@@ -7,7 +7,7 @@
 
 // 音声データを保持する構造体
 struct SoundData {
-    WAVEFORMATEX wfx;
+	std::vector<BYTE> format;
 	std::vector<BYTE> buffer;
 };
 
@@ -55,6 +55,8 @@ public:
 private:
     Microsoft::WRL::ComPtr<IXAudio2> pXAudio2;      //Xaudio2エンジン本体
     IXAudio2MasteringVoice* pMasterVoice = nullptr; //スピーカー
+	bool m_comInitialized = false;
+	bool m_available = false;
 
     //音量調整
     float bgmVolume = 1.0f; // 0.0 ~ 1.0

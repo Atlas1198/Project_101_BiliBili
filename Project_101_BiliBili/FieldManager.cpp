@@ -1397,18 +1397,27 @@ void FieldManager::ResolveCollisionsOverride()
 //終了
 void FieldManager::FinalizeOverride()
 {
-	m_pWalls.clear();
-	m_pWallPasses.clear();
-	m_pWallCurves.clear();
-	m_pSprings.clear();
-	m_pDrivers.clear();
-	m_pSprays_R.clear();
-	m_pSprays_B.clear();
-	m_pChips.clear();
-	m_pBatterys.clear();
-	m_pSpanners.clear();
-	m_pGrounds.clear();
+	auto deleteAll = [](auto& objects)
+	{
+		for (auto*& object : objects)
+		{
+			delete object;
+			object = nullptr;
+		}
+		objects.clear();
+	};
 
+	deleteAll(m_pWalls);
+	deleteAll(m_pWallPasses);
+	deleteAll(m_pWallCurves);
+	deleteAll(m_pSprings);
+	deleteAll(m_pDrivers);
+	deleteAll(m_pSprays_R);
+	deleteAll(m_pSprays_B);
+	deleteAll(m_pChips);
+	deleteAll(m_pBatterys);
+	deleteAll(m_pSpanners);
+	deleteAll(m_pGrounds);
 
 	m_wallInfo.clear();
 	m_wallPassInfo.clear();

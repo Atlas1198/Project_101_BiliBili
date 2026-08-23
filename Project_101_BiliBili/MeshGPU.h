@@ -22,6 +22,12 @@ public:
 	UINT GetIndexCount() const { return m_IndexCount; }					//インデックス数を返す
 	D3D12_PRIMITIVE_TOPOLOGY GetTopology() const { return m_Topology; }	//プリミティブトポロジを返す
 	float GetSortRadius() const { return m_sortRadius; }				//ソート用の半径を返す
+	bool IsValid() const
+	{
+		return m_pVertexBuffer && m_pVertexBuffer->GetIsValid() &&
+			m_pIndexBuffer && m_pIndexBuffer->GetIsValid() &&
+			m_IndexCount > 0;
+	}
 
 private:
 	VertexBuffer* m_pVertexBuffer = nullptr;	//頂点バッファ

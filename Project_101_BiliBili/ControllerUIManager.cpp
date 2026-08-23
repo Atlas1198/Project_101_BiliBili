@@ -106,7 +106,7 @@ void ControllerUIManager::InitializeOverride(
 		}
 	);
 
-	using args2 = std::pair<int, InputInfo&>;
+	using args2 = std::pair<int, InputInfo>;
 	EventManager::GetInstance()->Subscribe<args2>(
 		EventType::CONTROLLER_ICON_REACTION,
 		[this](std::shared_ptr<args2> data)

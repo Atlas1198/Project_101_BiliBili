@@ -109,7 +109,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 
 				controller.SetVibration(1.0f, 1.0f, 30); //入力検知時に振動させる
 				//UIの入力リアクションを呼び出し
-				EventManager::GetInstance()->TriggerEvent<std::pair<int, InputInfo&>>(
+				EventManager::GetInstance()->TriggerEvent<std::pair<int, InputInfo>>(
 					EventType::CONTROLLER_ICON_REACTION, { i, *info });
 			}
 		}
@@ -137,7 +137,7 @@ void ControllerConnecter::Update(SceneContext& sceneContext)
 
 				controller.SetVibration(1.0f, 1.0f,30); //入力検知時に振動させる
 				//UIの入力リアクションを呼び出し
-				EventManager::GetInstance()->TriggerEvent<std::pair<int, InputInfo&>>(
+				EventManager::GetInstance()->TriggerEvent<std::pair<int, InputInfo>>(
 					EventType::CONTROLLER_ICON_REACTION, { i,*info });
 
 				if (controller.A.down) m_backSceneInputTimer[i]++;

@@ -87,6 +87,16 @@ void Controller::CopyState()
 // Set Vibration for selected controller
 void Controller::SetVibration(int index, float leftMotor, float rightMotor, int duration)
 {
+	if (index < 0 || index >= CONTROLLERS_MAX)
+	{
+		OutputDebugStringA("[Controller] SetVibration ignored an invalid controller index\n");
+		return;
+	}
+
+	leftMotor = (std::max)(0.0f, (std::min)(leftMotor, 1.0f));
+	rightMotor = (std::max)(0.0f, (std::min)(rightMotor, 1.0f));
+	duration = (std::max)(duration, 0);
+
 	XINPUT_VIBRATION vibration = {};
 	vibration.wLeftMotorSpeed = static_cast<WORD>(leftMotor * 65535.0f);
 	vibration.wRightMotorSpeed = static_cast<WORD>(rightMotor * 65535.0f);
@@ -106,6 +116,12 @@ void Controller::SetAllVibrations(float leftMotor, float rightMotor, int duratio
 // Stop Vibration for selected controller
 void Controller::StopVibration(int index)
 {
+	if (index < 0 || index >= CONTROLLERS_MAX)
+	{
+		OutputDebugStringA("[Controller] StopVibration ignored an invalid controller index\n");
+		return;
+	}
+
 	XINPUT_VIBRATION vibration = {};
 	vibration.wLeftMotorSpeed = 0;
 	vibration.wRightMotorSpeed = 0;
@@ -125,9 +141,13 @@ void Controller::StopAllVibrations()
 // 指定したインデックスのコントローラー状態を取得
 const ControllerState& Controller::GetState(int index) const
 {
-	// 範囲チェックは省略するが、通常はここでアサートなどを行うべき（だそうです）
-	// indexで指定されたこんとろーらー状態を返す
-	assert(index >= 0 && index < CONTROLLERS_MAX);
+	if (index < 0 || index >= CONTROLLERS_MAX)
+	{
+		static const ControllerState disconnectedState{};
+		OutputDebugStringA("[Controller] GetState received an invalid controller index\n");
+		return disconnectedState;
+	}
+
 	return m_controllers[index];	
 }
 

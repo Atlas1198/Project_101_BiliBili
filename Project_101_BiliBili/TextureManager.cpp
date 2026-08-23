@@ -2,8 +2,14 @@
 #include "d3dx12.h"
 #include <filesystem>
 #include <DirectXTex.h>
+#include <cstring>
 
 using namespace DirectX;
+
+namespace
+{
+	constexpr size_t kMaxRuntimeTextureDimension = 4096;
+}
 
 // Get file extension from path
 std::wstring FileExtension(const std::wstring& path)
@@ -13,12 +19,22 @@ std::wstring FileExtension(const std::wstring& path)
 }
 
 // Initialization
-void TextureManager::Initialize(
+bool TextureManager::Initialize(
 	ID3D12Device* pDevice,	// Device
 	uint32_t maxDescriptors	// Maximum descriptor count
 )
 {
+	if (!pDevice || maxDescriptors <= static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::RESERVED_COUNT))
+	{
+		OutputDebugStringA("[TextureManager] Invalid initialization parameters\n");
+		return false;
+	}
+
 	m_pDevice = pDevice;	// Save device
+	m_pSrvHeap.Reset();
+	m_textures.clear();
+	m_uploadKeepAlive.clear();
+	m_pendingUploads.clear();
 
 	// SRV descriptor heap setup
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};	// Descriptor heap descriptor
@@ -27,7 +43,12 @@ void TextureManager::Initialize(
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // Shader visible
 
 	// Create descriptor heap
-	pDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_pSrvHeap));
+	const HRESULT heapResult = pDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_pSrvHeap));
+	if (FAILED(heapResult))
+	{
+		OutputDebugStringA("[TextureManager] Failed to create SRV descriptor heap\n");
+		return false;
+	}
 
 	// Get SRV descriptor increment size
 	m_srvIncrementSize = pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -36,12 +57,19 @@ void TextureManager::Initialize(
 	m_loadedTextures.clear();																// Clear loaded texture map
 
 	// Load default white texture
-	CreateDefaultTexture();
+	return CreateDefaultTexture();
 }
 
 // Load SRV from file
 uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 {
+	const uint32_t fallbackIndex = GetDefaultTextureIndex();
+	if (!m_pDevice || !m_pSrvHeap)
+	{
+		OutputDebugStringA("[TextureManager] Load requested before initialization\n");
+		return fallbackIndex;
+	}
+
 	// If already loaded, return the index
 	if (auto it = m_loadedTextures.find(path); it != m_loadedTextures.end())
 	{
@@ -75,18 +103,53 @@ uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 	if (FAILED(hr))
 	{
 		OutputDebugStringW((L"[TextureManager] Failed to load: " + path + L"\n").c_str());
-		return UINT32_MAX; // or some fallback texture index
+		return fallbackIndex;
 	}
-
-	// Get image data
-	size_t imageCount = img.GetImageCount();	// Get image count
 
 	// If no image data, output error message and return
-	if (imageCount == 0)
+	if (img.GetImageCount() == 0)
 	{
 		OutputDebugStringW((L"[TextureManager] No image data: " + path + L"\n").c_str());
-		return UINT32_MAX;
+		return fallbackIndex;
 	}
+
+	if (meta.width == 0 || meta.height == 0)
+	{
+		OutputDebugStringW((L"[TextureManager] Unsupported texture dimensions: " + path + L"\n").c_str());
+		return fallbackIndex;
+	}
+
+	// Keep unexpectedly large source assets from consuming hundreds of MiB of VRAM.
+	// The source file is left untouched; production assets should still be resized offline.
+	if (meta.width > kMaxRuntimeTextureDimension || meta.height > kMaxRuntimeTextureDimension)
+	{
+		const double scale = std::min(
+			static_cast<double>(kMaxRuntimeTextureDimension) / static_cast<double>(meta.width),
+			static_cast<double>(kMaxRuntimeTextureDimension) / static_cast<double>(meta.height));
+		const size_t resizedWidth = std::max<size_t>(1, static_cast<size_t>(meta.width * scale));
+		const size_t resizedHeight = std::max<size_t>(1, static_cast<size_t>(meta.height * scale));
+
+		ScratchImage resizedImage;
+		hr = Resize(
+			img.GetImages(),
+			img.GetImageCount(),
+			meta,
+			resizedWidth,
+			resizedHeight,
+			TEX_FILTER_DEFAULT,
+			resizedImage);
+		if (FAILED(hr))
+		{
+			OutputDebugStringW((L"[TextureManager] Failed to resize oversized texture: " + path + L"\n").c_str());
+			return fallbackIndex;
+		}
+
+		img = std::move(resizedImage);
+		meta = img.GetMetadata();
+		OutputDebugStringW((L"[TextureManager] Resized oversized texture for runtime use: " + path + L"\n").c_str());
+	}
+
+	const size_t imageCount = img.GetImageCount();
 
 	// Create texture resource
 	ComPtr<ID3D12Resource> pTexture;	// Texture resource
@@ -107,6 +170,11 @@ uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 		nullptr,						// Optimized clear value
 		IID_PPV_ARGS(&pTexture)			// Resource to create
 	);
+	if (FAILED(hr) || !pTexture)
+	{
+		OutputDebugStringW((L"[TextureManager] Failed to create texture resource: " + path + L"\n").c_str());
+		return fallbackIndex;
+	}
 
 	// Create upload buffer
 	ComPtr<ID3D12Resource> pUploadBuffer;	// Upload buffer
@@ -120,7 +188,7 @@ uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 	auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD); // Heap properties (upload)
 	auto uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize); // Buffer resource descriptor
 
-	m_pDevice->CreateCommittedResource(	// Create resource
+	hr = m_pDevice->CreateCommittedResource(	// Create resource
 		&uploadHeapProps,					// Heap properties
 		D3D12_HEAP_FLAG_NONE,				// Heap flags
 		&uploadBufferDesc,					// Resource descriptor
@@ -128,9 +196,18 @@ uint32_t TextureManager::LoadSrvFromFile(const std::wstring& path)
 		nullptr,							// Optimized clear value
 		IID_PPV_ARGS(&pUploadBuffer)		// Resource to create
 	);
+	if (FAILED(hr) || !pUploadBuffer)
+	{
+		OutputDebugStringW((L"[TextureManager] Failed to create upload buffer: " + path + L"\n").c_str());
+		return fallbackIndex;
+	}
 
 	// Set subresource data
 	const uint32_t textureIndex = AllocateSrv();		// Get next texture index
+	if (textureIndex == UINT32_MAX)
+	{
+		return fallbackIndex;
+	}
 	std::vector<D3D12_SUBRESOURCE_DATA> subresources;	// Subresource array
 	subresources.reserve(img.GetImageCount());			// Reserve array size
 	for (size_t i = 0; i < img.GetImageCount(); ++i)
@@ -307,6 +384,13 @@ void TextureManager::UploadPendingTextures(ID3D12GraphicsCommandList* cmdList)
 	m_pendingUploads.clear();
 }
 
+void TextureManager::ReleaseCompletedUploads()
+{
+	// Upload resources must stay alive until the command queue has completed the copy.
+	// App calls this only after Engine::RenderEnd has successfully waited on its fence.
+	m_uploadKeepAlive.clear();
+}
+
 // Get SRV heap
 ID3D12DescriptorHeap* TextureManager::GetSrvHeap() const
 {
@@ -332,7 +416,7 @@ uint32_t TextureManager::GetDefaultTextureIndex() const
 }
 
 // Create default texture
-void TextureManager::CreateDefaultTexture()
+bool TextureManager::CreateDefaultTexture()
 {
 	// Create a 1x1 white texture
 	const uint32_t defaultTextureIndex = static_cast<uint32_t>(TEXTURE_SRV_INDEX_RESERVED::DEFAULT_TEXTURE); // Default white texture index
@@ -346,7 +430,7 @@ void TextureManager::CreateDefaultTexture()
 		1									// Mip levels
 	);
 	auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT); // Heap properties (default)
-	m_pDevice->CreateCommittedResource(	// Create resource
+	HRESULT hr = m_pDevice->CreateCommittedResource(	// Create resource
 		&heapProps,						// Heap properties
 		D3D12_HEAP_FLAG_NONE,			// Heap flags
 		&texDesc,						// Resource descriptor
@@ -354,7 +438,21 @@ void TextureManager::CreateDefaultTexture()
 		nullptr,						// Optimized clear value
 		IID_PPV_ARGS(&pTexture)			// Resource to create
 	);
-	std::vector<uint32_t> defaultPixel = { 0xFFFF00FF }; // Pink pixel data (RGBA)
+	if (FAILED(hr) || !pTexture)
+	{
+		OutputDebugStringA("[TextureManager] Failed to create default texture\n");
+		return false;
+	}
+
+	ScratchImage defaultImage;
+	hr = defaultImage.Initialize2D(DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, 1, 1);
+	if (FAILED(hr) || !defaultImage.GetPixels())
+	{
+		OutputDebugStringA("[TextureManager] Failed to initialize default texture pixels\n");
+		return false;
+	}
+	const uint32_t defaultPixel = 0xFFFF00FF;
+	std::memcpy(defaultImage.GetPixels(), &defaultPixel, sizeof(defaultPixel));
 	const UINT64 uploadBufferSize = GetRequiredIntermediateSize( // Get upload buffer size
 		pTexture.Get(),				 // Texture resource
 		0,							 // First subresource
@@ -362,14 +460,20 @@ void TextureManager::CreateDefaultTexture()
 	);
 	auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD); // Heap properties (upload)
 	auto uploadBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize); // Buffer resource descriptor
-	m_pDevice->CreateCommittedResource( // Create resource
+	ComPtr<ID3D12Resource> uploadBuffer;
+	hr = m_pDevice->CreateCommittedResource( // Create resource
 		&uploadHeapProps,				 // Heap properties
 		D3D12_HEAP_FLAG_NONE,			 // Heap flags
 		&uploadBufferDesc,				 // Resource descriptor
 		D3D12_RESOURCE_STATE_GENERIC_READ, // Initial resource state
 		nullptr,						 // Optimized clear value
-		IID_PPV_ARGS(&m_uploadKeepAlive.emplace_back()) // Resource to create and keep alive
+		IID_PPV_ARGS(&uploadBuffer) // Resource to create and keep alive
 	);
+	if (FAILED(hr) || !uploadBuffer)
+	{
+		OutputDebugStringA("[TextureManager] Failed to create default texture upload buffer\n");
+		return false;
+	}
 
 	// Create shader resource view
 	CreateSrv(
@@ -379,4 +483,14 @@ void TextureManager::CreateDefaultTexture()
 	);
 
 	m_textures.push_back(pTexture); // Keep texture resource alive
+	m_uploadKeepAlive.push_back(uploadBuffer);
+
+	PendingTextureUpload pending = {};
+	pending.texture = pTexture;
+	pending.uploadBuffer = uploadBuffer;
+	pending.image = std::make_unique<ScratchImage>(std::move(defaultImage));
+	pending.srvIndex = defaultTextureIndex;
+	m_pendingUploads.push_back(std::move(pending));
+
+	return true;
 }

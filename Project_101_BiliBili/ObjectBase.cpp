@@ -43,16 +43,18 @@ ObjectBase::ObjectBase(
 		colliderSetOffsetRotation
 	);
 
-	m_nodeAnimatorSet.pNodeAnimator = new NodeAnimator();
 }
 
 //デストラクタ
 ObjectBase::~ObjectBase()
 {
+	delete m_nodeAnimatorSet.pNodeAnimator;
+	m_nodeAnimatorSet.pNodeAnimator = nullptr;
+
 	//コライダーの破棄
 	if (m_pColliderSet)
 	{
-		m_pColliderSet->SetDeleteFlag(true);
+		delete m_pColliderSet;
 		m_pColliderSet = nullptr;
 	}
 }

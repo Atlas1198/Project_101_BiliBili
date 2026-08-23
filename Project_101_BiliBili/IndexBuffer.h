@@ -19,5 +19,6 @@ public:
 	~IndexBuffer() {};	//デストラクタ
 
 	//ゲッター
+	bool GetIsValid() const { return m_IsValid; }
 	D3D12_INDEX_BUFFER_VIEW GetView() const;		//インデックスバッファビューを返す
 };

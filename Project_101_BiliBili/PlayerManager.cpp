@@ -205,6 +205,11 @@ void PlayerManager::RemovePlayer(uint32_t id)
 
 void PlayerManager::OnTakeDamage(int teamID, float damage)
 {
+	if (teamID < 0 || teamID >= 2)
+	{
+		return;
+	}
+
 	teamHP[teamID] -= damage;
 	if (teamHP[teamID] < 0.0f)
 	{
@@ -258,6 +263,11 @@ void PlayerManager::OnTakeDamage(int teamID, float damage)
 
 void PlayerManager::OnSetBB(int teamID, bool isActive)
 {
+	if (teamID < 0 || teamID >= 2)
+	{
+		return;
+	}
+
 	teamBBActive[teamID] = isActive;
 	for (auto& player : m_pPlayer)
 	{

@@ -83,6 +83,7 @@ public:
 
 	//コライダー配列の操作
 	void RegisterCollider(Collider* collider);	//コライダー登録
+	void UnregisterCollider(Collider* collider);	//コライダー登録解除
 	void ClearColliders();						//コライダークリア
 
 	void CreateColliderRenderInfo(	//コライダー描画情報作成

@@ -19,6 +19,7 @@ CollisionManager::CollisionManager()
 //デストラクタ
 CollisionManager::~CollisionManager()
 {
+	ClearColliders();
 }
 
 //初期化
@@ -463,13 +464,64 @@ void CollisionManager::UpdateCollisionState()
 //コライダーの登録
 void CollisionManager::RegisterCollider(Collider* collider)
 {
-	m_pCollidersList.push_back(collider);
+	if (!collider)
+	{
+		return;
+	}
+
+	if (std::find(m_pCollidersList.begin(), m_pCollidersList.end(), collider) == m_pCollidersList.end())
+	{
+		m_pCollidersList.push_back(collider);
+	}
+}
+
+void CollisionManager::UnregisterCollider(Collider* collider)
+{
+	if (!collider)
+	{
+		return;
+	}
+
+	m_pCollidersList.erase(
+		std::remove(m_pCollidersList.begin(), m_pCollidersList.end(), collider),
+		m_pCollidersList.end()
+	);
+
+	auto removePairsContaining = [collider](std::vector<CollisionPair>& pairs)
+	{
+		pairs.erase(
+			std::remove_if(
+				pairs.begin(),
+				pairs.end(),
+				[collider](const CollisionPair& pair)
+				{
+					return pair.colliderA == collider || pair.colliderB == collider;
+				}
+			),
+			pairs.end()
+		);
+	};
+
+	removePairsContaining(m_pNarrowPhaseColliders);
+	removePairsContaining(m_currentCollisionPairs);
+	removePairsContaining(m_previousCollisionPairs);
 }
 
 //コライダーのクリア
 void CollisionManager::ClearColliders()
 {
+	for (auto* collider : m_pCollidersList)
+	{
+		if (collider && collider->GetParentSet())
+		{
+			collider->GetParentSet()->DetachCollisionManager(this);
+		}
+	}
+
 	m_pCollidersList.clear();
+	m_pNarrowPhaseColliders.clear();
+	m_currentCollisionPairs.clear();
+	m_previousCollisionPairs.clear();
 }
 
 //コライダー描画情報作成

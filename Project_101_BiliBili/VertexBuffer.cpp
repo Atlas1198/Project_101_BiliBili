@@ -37,15 +37,15 @@ VertexBuffer::VertexBuffer(ID3D12Device* pDevice, size_t size, size_t stride, co
 		//バッファをマッピング
 		result = m_Buffer->Map(0, nullptr, &pMappedData);
 
-		//マッピングに成功した場合
-		if (SUCCEEDED(result))
+		if (FAILED(result))
 		{
-			//初期データをコピー
-			memcpy(pMappedData, pInitData, size);
-			//アンマッピング
-			m_Buffer->Unmap(0, nullptr);
-			m_IsValid = true; // バッファの生成に成功
+			return;
 		}
+
+		//初期データをコピー
+		memcpy(pMappedData, pInitData, size);
+		//アンマッピング
+		m_Buffer->Unmap(0, nullptr);
 	}
 
 	//バッファの生成に成功

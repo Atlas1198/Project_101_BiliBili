@@ -6,17 +6,6 @@
 #include "EventManager.h"
 #include "AudioManager.h"
 
-template<typename T>
-T RandomElement(const std::vector<T> &collection)
-{
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dist(0, collection.size() - 1);
-	return collection[dist(gen)];
-}
-
-
-
 class GameEventManager
 {
 public:
@@ -66,13 +55,20 @@ public:
 private:
 	void TriggerRandomEvent()
 	{
+		if (eventList.empty())
+		{
+			OutputDebugStringA("[GameEventManager] Event trigger skipped because the event list is empty\n");
+			currentEventIndex = -1;
+			return;
+		}
+
 		std::random_device rd;
 		std::mt19937 gen(rd());
-		std::uniform_int_distribution<> dist(0, eventList.size() - 1);
-		int index = dist(gen);
+		std::uniform_int_distribution<size_t> dist(0, eventList.size() - 1);
+		const size_t index = dist(gen);
 
 		EventType event = eventList[index];
-		currentEventIndex = index;
+		currentEventIndex = static_cast<int>(index);
 
 		EventManager::GetInstance()->TriggerEvent(event);
 		EventManager::GetInstance()->TriggerEvent<EventType>(SHOW_ANOUNCE_UI, event);

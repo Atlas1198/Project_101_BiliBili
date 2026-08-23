@@ -60,6 +60,8 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
+#include <cstring>
+#include <type_traits>
 
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
@@ -77,6 +79,8 @@ namespace olc
 {
 	namespace net
 	{
+		inline constexpr size_t MAX_MESSAGE_BODY_SIZE = 1024u * 1024u;
+
 		// Message
 
 		// Message Header is sent at start of all messages. The template allows us
@@ -97,6 +101,12 @@ namespace olc
 			// Header & Body vector
 			message_header<T> header{};
 			std::vector<uint8_t> body;
+			bool valid = true;
+
+			bool is_valid() const
+			{
+				return valid && body.size() == header.size && body.size() <= MAX_MESSAGE_BODY_SIZE;
+			}
 
 			// returns size of entire message packet in bytes
 			size_t size() const
@@ -122,7 +132,15 @@ namespace olc
 			friend message<T> &operator << (message<T> &msg, const DataType &data)
 			{
 				// Check that the type of the data being pushed is trivially copyable
-				static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pushed into vector");
+				static_assert(std::is_trivially_copyable<DataType>::value, "Data is too complex to be pushed into vector");
+
+				if (!msg.valid || sizeof(DataType) > MAX_MESSAGE_BODY_SIZE ||
+					msg.body.size() > MAX_MESSAGE_BODY_SIZE - sizeof(DataType))
+				{
+					std::cerr << "[Network] Message body exceeded the maximum size\n";
+					msg.valid = false;
+					return msg;
+				}
 
 				// Cache current size of vector, as this will be the point we insert the data
 				size_t i = msg.body.size();
@@ -134,7 +152,7 @@ namespace olc
 				std::memcpy(msg.body.data() + i, &data, sizeof(DataType));
 
 				// Recalculate the message size
-				msg.header.size = msg.size();
+				msg.header.size = static_cast<uint32_t>(msg.body.size());
 
 				// Return the target message so it can be "chained"
 				return msg;
@@ -145,7 +163,17 @@ namespace olc
 			friend message<T> &operator >> (message<T> &msg, DataType &data)
 			{
 				// Check that the type of the data being pushed is trivially copyable
-				static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pulled from vector");
+				static_assert(std::is_trivially_copyable<DataType>::value, "Data is too complex to be pulled from vector");
+
+				if (!msg.valid || msg.body.size() < sizeof(DataType))
+				{
+					std::cerr << "[Network] Message body was too short for deserialization\n";
+					std::memset(&data, 0, sizeof(DataType));
+					msg.body.clear();
+					msg.header.size = 0;
+					msg.valid = false;
+					return msg;
+				}
 
 				// Cache the location towards the end of the vector where the pulled data starts
 				size_t i = msg.body.size() - sizeof(DataType);
@@ -157,7 +185,7 @@ namespace olc
 				msg.body.resize(i);
 
 				// Recalculate the message size
-				msg.header.size = msg.size();
+				msg.header.size = static_cast<uint32_t>(msg.body.size());
 
 				// Return the target message so it can be "chained"
 				return msg;
@@ -408,6 +436,12 @@ namespace olc
 			// the target, for a client, the target is the server and vice versa
 			void Send(const message<T> &msg)
 			{
+				if (!msg.is_valid())
+				{
+					std::cerr << "[Network] Invalid outgoing message was dropped\n";
+					return;
+				}
+
 				asio::post(m_asioContext,
 					[this, msg]()
 					{
@@ -508,6 +542,10 @@ namespace olc
 			// ASYNC - Prime context ready to read a message header
 			void ReadHeader()
 			{
+				m_msgTemporaryIn.body.clear();
+				m_msgTemporaryIn.header = {};
+				m_msgTemporaryIn.valid = true;
+
 				// If this function is called, we are expecting asio to wait until it receives
 				// enough bytes to form a header of a message. We know the headers are a fixed
 				// size, so allocate a transmission buffer large enough to store it. In fact, 
@@ -516,15 +554,33 @@ namespace olc
 				asio::async_read(m_socket, asio::buffer(&m_msgTemporaryIn.header, sizeof(message_header<T>)),
 					[this](std::error_code ec, std::size_t length)
 					{
-						if (!ec)
+						if (!ec && length == sizeof(message_header<T>))
 						{
+							if (m_msgTemporaryIn.header.size > MAX_MESSAGE_BODY_SIZE)
+							{
+								std::cerr << "[Network] Incoming message exceeded the maximum size\n";
+								m_msgTemporaryIn.valid = false;
+								m_socket.close();
+								return;
+							}
+
 							// A complete message header has been read, check if this message
 							// has a body to follow...
 							if (m_msgTemporaryIn.header.size > 0)
 							{
 								// ...it does, so allocate enough space in the messages' body
 								// vector, and issue asio with the task to read the body.
-								m_msgTemporaryIn.body.resize(m_msgTemporaryIn.header.size);
+								try
+								{
+									m_msgTemporaryIn.body.resize(m_msgTemporaryIn.header.size);
+								}
+								catch (const std::bad_alloc&)
+								{
+									std::cerr << "[Network] Failed to allocate incoming message body\n";
+									m_msgTemporaryIn.valid = false;
+									m_socket.close();
+									return;
+								}
 								ReadBody();
 							}
 							else
@@ -553,7 +609,7 @@ namespace olc
 				asio::async_read(m_socket, asio::buffer(m_msgTemporaryIn.body.data(), m_msgTemporaryIn.body.size()),
 					[this](std::error_code ec, std::size_t length)
 					{
-						if (!ec)
+						if (!ec && length == m_msgTemporaryIn.body.size() && m_msgTemporaryIn.is_valid())
 						{
 							// ...and they have! The message is now complete, so add
 							// the whole message to incoming queue

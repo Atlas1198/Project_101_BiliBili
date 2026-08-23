@@ -13,6 +13,68 @@
 
 using namespace DirectX;
 
+namespace
+{
+	void LogFallbackMesh(const wchar_t* path, const char* reason)
+	{
+		OutputDebugStringA("[RenderData] Using fallback cube: ");
+		OutputDebugStringA(reason);
+		OutputDebugStringA("\n");
+		if (path && path[0] != L'\0')
+		{
+			OutputDebugStringW(L"[RenderData] Source asset: ");
+			OutputDebugStringW(path);
+			OutputDebugStringW(L"\n");
+		}
+	}
+
+	bool AppendFallbackMesh(
+		TextureManager& textureManager,
+		MeshManager& meshManager,
+		std::vector<WorldRenderInfo>* pInfo,
+		PSOKey psoKey,
+		bool lightingEnabled,
+		bool isPostEffect,
+		BILLBOARD_TYPE billboardType,
+		const wchar_t* sourcePath,
+		const char* reason)
+	{
+		LogFallbackMesh(sourcePath, reason);
+		if (!pInfo)
+		{
+			return false;
+		}
+
+		Model fallbackModel = GetModel(MESH_TYPE::CUBE);
+		if (fallbackModel.meshes.empty())
+		{
+			OutputDebugStringA("[RenderData] Built-in fallback cube is unavailable\n");
+			return false;
+		}
+
+		Mesh& fallbackMesh = fallbackModel.meshes.front();
+		fallbackMesh.texPath.clear();
+		fallbackMesh.materialColor = { 1.0f, 0.0f, 1.0f, 1.0f };
+		CommonRenderDesc desc = CreateRenderInfoFromMeshData(
+			textureManager, meshManager, fallbackMesh, psoKey, billboardType);
+		if (!desc.pMeshGPU)
+		{
+			OutputDebugStringA("[RenderData] Fallback cube GPU creation failed; object will be skipped\n");
+			return false;
+		}
+
+		WorldRenderInfo info{};
+		info.common = desc;
+		info.lightingEnabled = lightingEnabled;
+		info.isPostEffect = isPostEffect;
+		info.billboardType = billboardType;
+		info.baseVertex = 0;
+		info.startIndex = 0;
+		pInfo->push_back(info);
+		return true;
+	}
+}
+
 //描画情報構造体を作成する関数
 void CreateRenderInfo(
 	TextureManager& textureManager,			//テクスチャマネージャへの参照
@@ -28,6 +90,12 @@ void CreateRenderInfo(
 	bool inverseV							//Vを反転するかどうか(モデルデータの場合のみ有効
 )
 {
+	if (!pInfo)
+	{
+		OutputDebugStringA("[RenderData] Render info destination is null\n");
+		return;
+	}
+
 	//メッシュタイプに応じて描画情報構造体を作成
 	if (mType == IMPORT)
 	{//インポートモデルの場合
@@ -74,6 +142,12 @@ void CreateRenderInfoFromFBX(
 	bool inverseV							//Vを反転するかどうか
 )
 {
+	if (!pInfo)
+	{
+		OutputDebugStringA("[RenderData] FBX render info destination is null\n");
+		return;
+	}
+
 	std::vector<Mesh> meshes;	//メッシュデータ配列
 
 	//モデルインポート設定構造体の生成
@@ -89,6 +163,14 @@ void CreateRenderInfoFromFBX(
 	AssimpLoader loader;	//Assimpローダー生成
 	if (!loader.Load(importSetting))
 	{
+		AppendFallbackMesh(textureManager, meshManager, pInfo, psoKey,
+			lightEneble, isPostEffect, bType, path, "model import failed");
+		return;
+	}
+	if (meshes.empty())
+	{
+		AppendFallbackMesh(textureManager, meshManager, pInfo, psoKey,
+			lightEneble, isPostEffect, bType, path, "imported model contains no meshes");
 		return;
 	}
 
@@ -102,6 +184,12 @@ void CreateRenderInfoFromFBX(
 			psoKey,			//ブレンドモード
 			bType			//ビルボードタイプ
 		);
+		if (!desc.pMeshGPU)
+		{
+			AppendFallbackMesh(textureManager, meshManager, pInfo, psoKey,
+				lightEneble, isPostEffect, bType, path, "imported mesh data is invalid");
+			continue;
+		}
 
 		WorldRenderInfo info;												//描画情報構造体
 		info.common = desc;													//共通描画記述構造体の設定
@@ -129,6 +217,12 @@ void CreateRenderInfoFromDefaultMesh(
 	BILLBOARD_TYPE bType					//ビルボードタイプ
 )
 {
+	if (!pInfo)
+	{
+		OutputDebugStringA("[RenderData] Default mesh render info destination is null\n");
+		return;
+	}
+
 	Model model;	//モデルデータ構造体
 	model = GetModel(type);	//メッシュタイプに応じたメッシュデータを取得
 
@@ -143,6 +237,11 @@ void CreateRenderInfoFromDefaultMesh(
 			psoKey,				//ブレンドモード
 			bType				//ビルボードタイプ
 		);
+		if (!desc.pMeshGPU)
+		{
+			OutputDebugStringA("[RenderData] Built-in mesh creation failed; render item was skipped\n");
+			continue;
+		}
 
 		WorldRenderInfo info;				//描画情報構造体
 		info.common = desc;					//共通描画記述構造体の設定
@@ -168,7 +267,11 @@ CommonRenderDesc CreateRenderInfoFromMeshData(
 	CommonRenderDesc desc{};	//描画情報構造体
 
 	//メッシュデータが空の場合は処理を抜ける
-	if (mesh.vertices.empty() || mesh.indices.empty()) return desc;
+	if (mesh.vertices.empty() || mesh.indices.empty() ||
+		mesh.vertexCount != mesh.vertices.size() || mesh.indexCount != mesh.indices.size())
+	{
+		return desc;
+	}
 
 	//メッシュGPUデータの作成と描画情報構造体への設定
 	desc.pMeshGPU = meshManager.CreateMesh(mesh);	//メッシュGPUデータの作成とポインタの取得
@@ -207,6 +310,12 @@ WorldRenderModel BuildRenderInfoForSubmit(
 
 	if (meshType == MESH_TYPE::CAPSULE)
 	{//カプセルメッシュの場合(複数メッシュに分かれているため個別に処理)
+		if (in.size() < 3)
+		{
+			OutputDebugStringA("[RenderData] Capsule render data is incomplete; submission was skipped\n");
+			return {};
+		}
+
 		CapsuleVisualDesc desc{};	//カプセルメッシュの記述データ
 		//カプセルメッシュの記述データ設定
 		AppendCapsuleRenderInfos(
@@ -246,8 +355,14 @@ WorldRenderModel BuildRenderInfoForSubmit(
 		}
 	}
 
+	if (out.size() != in.size())
+	{
+		OutputDebugStringA("[RenderData] Render data count mismatch; excess entries were removed\n");
+		out.resize((std::min)(out.size(), in.size()));
+	}
+
 	//共通要素の設定
-	for (int i = 0; i < out.size(); i++)
+	for (size_t i = 0; i < out.size(); i++)
 	{
 		out[i].position = position;
 		out[i].scale = scale;
@@ -408,6 +523,8 @@ Model MakeSphereModel(int slices, int stacks)
 {
 	Mesh mesh;		//メッシュデータ構造体
 	Model model;	//モデルデータ構造体
+	if (slices < 3) slices = 3;
+	if (stacks < 2) stacks = 2;
 
 	//頂点データの作成
 	for (int stack = 0; stack <= stacks; stack++)
@@ -618,9 +735,9 @@ Model MakeCapsuleModel(int slices, int stacks)
 
 	//インデックスデータの作成
 	//シリンダ部分のインデックスデータ作成
-	for (uint32_t stack = 0; stack < cylinderStacks; stack++)
+	for (uint32_t stack = 0; stack < static_cast<uint32_t>(cylinderStacks); stack++)
 	{
-		for (uint32_t slice = 0; slice < slices; slice++)
+		for (uint32_t slice = 0; slice < static_cast<uint32_t>(slices); slice++)
 		{
 			uint32_t i0 = stack * ringStride + slice;
 			uint32_t i1 = i0 + 1;
@@ -638,9 +755,9 @@ Model MakeCapsuleModel(int slices, int stacks)
 
 	//上半球部分のインデックスデータ作成
 	const int ringCountTop = hemiStacks + 1;
-	for (uint32_t stack = 0; stack < ringCountTop - 1; stack++)
+	for (uint32_t stack = 0; stack < static_cast<uint32_t>(ringCountTop - 1); stack++)
 	{
-		for (uint32_t slice = 0; slice < slices; slice++)
+		for (uint32_t slice = 0; slice < static_cast<uint32_t>(slices); slice++)
 		{
 			uint32_t i0 = stack * ringStride + slice;
 			uint32_t i1 = i0 + 1;
@@ -657,9 +774,9 @@ Model MakeCapsuleModel(int slices, int stacks)
 
 	//下半球部分のインデックスデータ作成
 	const int ringCountBottom = hemiStacks + 1;
-	for (uint32_t stack = 0; stack < ringCountBottom - 1; stack++)
+	for (uint32_t stack = 0; stack < static_cast<uint32_t>(ringCountBottom - 1); stack++)
 	{
-		for (uint32_t slice = 0; slice < slices; slice++)
+		for (uint32_t slice = 0; slice < static_cast<uint32_t>(slices); slice++)
 		{
 			uint32_t i0 = stack * ringStride + slice;
 			uint32_t i1 = i0 + 1;
@@ -695,6 +812,8 @@ Model MakeCylinderModel(int slices, int stacks)
 {
 	Mesh mesh;	//シリンダー部分のメッシュデータ構造体
 	Model model;	//モデルデータ構造体
+	if (slices < 3) slices = 3;
+	if (stacks < 2) stacks = 2;
 
 	const float radius = 0.5f;		//半径
 	const float halfHeight = 0.5f;	//半分の高さ
@@ -743,9 +862,9 @@ Model MakeCylinderModel(int slices, int stacks)
 	}
 
 	//インデックスデータの作成
-	for (uint32_t stack = 0; stack < cylinderStacks; stack++)
+	for (uint32_t stack = 0; stack < static_cast<uint32_t>(cylinderStacks); stack++)
 	{
-		for (uint32_t slice = 0; slice < slices; slice++)
+		for (uint32_t slice = 0; slice < static_cast<uint32_t>(slices); slice++)
 		{
 			uint32_t i0 = stack * ringStride + slice;
 			uint32_t i1 = i0 + 1;

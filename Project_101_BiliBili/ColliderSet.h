@@ -25,6 +25,7 @@ public:
 
 	void Update();
 	void RegisterColliders(CollisionManager& collisionManager); //コライダーをコリジョンマネージャーに提出
+	void DetachCollisionManager(const CollisionManager* collisionManager);
 	void BuildObjectCollisionInfos();		//衝突情報を収集
 
 	void AddCollider(	//コライダー追加
@@ -58,6 +59,7 @@ private:
 	CollisionData::COLLISION_LAYER m_layer;
 	bool m_isActive = true;
 	bool m_isTrigger = false;
+	CollisionManager* m_collisionManager = nullptr;
 
 	DirectX::XMFLOAT3 m_basePosition{};	//基準位置
 	DirectX::XMFLOAT3 m_baseScale{};	//基準スケール

@@ -39,12 +39,12 @@ public:
 	TextureManager(TextureManager&&) noexcept = default;
 	TextureManager& operator=(TextureManager&&) noexcept = default;
 
-	void Initialize(	//初期化
+	bool Initialize(	//初期化
 		ID3D12Device* pDevice,	//デバイス
 		uint32_t maxDescriptors	//最大ディスクリプタ数
 	);
 
-	uint32_t LoadSrvFromFile(	//ファイルからSRVを読み込み	
+	uint32_t LoadSrvFromFile(	//ファイルからSRVを読み込み
 		const std::wstring& path	//ファイルパス
 	);
 
@@ -56,6 +56,7 @@ public:
 	);
 
 	void UploadPendingTextures(ID3D12GraphicsCommandList* cmdList);	//アップロード待ちテクスチャをアップロード
+	void ReleaseCompletedUploads();	// GPU copy completion must be guaranteed by the caller.
 
 	ID3D12DescriptorHeap* GetSrvHeap() const;	//SRVヒープを取得(ここにSRVが格納されている)
 	UINT GetSrvIncrementSize() const;			//SRVディスクリプタのインクリメントサイズを取得
@@ -76,5 +77,5 @@ private:
 	ID3D12Device* m_pDevice = nullptr;	//デバイス
 
 private:
-	void CreateDefaultTexture();	// Create default texture
+	bool CreateDefaultTexture();	// Create default texture
 };

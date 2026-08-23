@@ -29,6 +29,16 @@ GameScene::GameScene(float window_width, float window_height)
 //デストラクタ
 GameScene::~GameScene()
 {
+	delete m_begginningBehavior;
+	delete m_countdownBehavior;
+	delete m_playBehavior;
+	delete m_resultBehavior;
+	m_begginningBehavior = nullptr;
+	m_countdownBehavior = nullptr;
+	m_playBehavior = nullptr;
+	m_resultBehavior = nullptr;
+	m_currentBehavior = nullptr;
+
 	if (m_pPlayerManager)
 	{
 		delete m_pPlayerManager;	//プレイヤー管理クラスの削除
@@ -239,6 +249,16 @@ void GameScene::FinalizeOverride()
 	m_pBulletManager->Finalize();	//弾管理クラス終了
 	m_pItemManager->Finalize();		//アイテム管理クラス終了
 	m_pBBManager->Finalize();		//BB管理クラス終了
+
+	delete m_begginningBehavior;
+	delete m_countdownBehavior;
+	delete m_playBehavior;
+	delete m_resultBehavior;
+	m_begginningBehavior = nullptr;
+	m_countdownBehavior = nullptr;
+	m_playBehavior = nullptr;
+	m_resultBehavior = nullptr;
+	m_currentBehavior = nullptr;
 }
 
 void GameScene::ChangeBehavior(GAME_STATE newState)

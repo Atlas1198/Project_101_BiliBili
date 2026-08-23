@@ -1,21 +1,34 @@
 #include "AudioManager.h"
 #include <fstream>
 #include <algorithm>
+#include <cstring>
 
 AudioManager::AudioManager() {}	//コンストラクタ
 
 AudioManager::~AudioManager()	//デストラクタ
 {
+	m_available = false;
     StopAll();
-    if (pMasterVoice) pMasterVoice->DestroyVoice();
-    CoUninitialize();
+    if (pMasterVoice)
+	{
+		pMasterVoice->DestroyVoice();
+		pMasterVoice = nullptr;
+	}
+	if (m_comInitialized)
+	{
+		CoUninitialize();
+		m_comInitialized = false;
+	}
 }
 
 //初期化処理
 bool AudioManager::Initialize() {
+	m_available = false;
+
     // COMの初期化
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     if (FAILED(hr)) return false;
+	m_comInitialized = true;
 		
     // XAudio2エンジンのインスタンス作成
     hr = XAudio2Create(&pXAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
@@ -25,10 +38,13 @@ bool AudioManager::Initialize() {
     hr = pXAudio2->CreateMasteringVoice(&pMasterVoice);
     if (FAILED(hr)) return false;
 
+	m_available = true;
     return true;
 	}
 
 void AudioManager::Update() {
+	if (!m_available) return;
+
     // SEリストの巡回と自動削除
     for (auto it = SEVoices.begin(); it != SEVoices.end(); ) {
         XAUDIO2_VOICE_STATE state;
@@ -66,43 +82,87 @@ bool AudioManager::LoadWav(const std::string& label, const wchar_t* filename)
     std::ifstream file(filename, std::ios::binary);
     if (!file) return false;
 
-    // RIFFヘッダーの読み込み（簡易チェック）
-    char chunkId[4];
-    file.read(chunkId, 4); // "RIFF"
-    file.seekg(4, std::ios::cur); // ファイルサイズ飛ばし
-    file.read(chunkId, 4); // "WAVE"
+	file.seekg(0, std::ios::end);
+	const std::streamoff fileSize = file.tellg();
+	file.seekg(0, std::ios::beg);
+	if (fileSize < 12) return false;
 
-    SoundData data;
+	char riffId[4];
+	char waveId[4];
+	uint32_t riffSize = 0;
+	if (!file.read(riffId, sizeof(riffId)) ||
+		!file.read(reinterpret_cast<char*>(&riffSize), sizeof(riffSize)) ||
+		!file.read(waveId, sizeof(waveId)) ||
+		std::memcmp(riffId, "RIFF", sizeof(riffId)) != 0 ||
+		std::memcmp(waveId, "WAVE", sizeof(waveId)) != 0)
+	{
+		return false;
+	}
+	if (riffSize < 4 || static_cast<uint64_t>(riffSize) + 8u > static_cast<uint64_t>(fileSize)) return false;
+
+	SoundData data{};
+	char chunkId[4];
+	bool foundFormat = false;
+	bool foundData = false;
     while (file.read(chunkId, 4))
 	{
-        unsigned int chunkSize;
-        file.read((char*)&chunkSize, 4);
+		uint32_t chunkSize = 0;
+		if (!file.read(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize))) return false;
+
+		const std::streamoff chunkStart = file.tellg();
+		if (chunkStart < 0 || static_cast<uint64_t>(chunkSize) > static_cast<uint64_t>(fileSize - chunkStart))
+		{
+			return false;
+		}
 
         if (strncmp(chunkId, "fmt ", 4) == 0)
         {//フォーマットの読み込み
-            file.read((char*)&data.wfx, chunkSize);
+			if (chunkSize < 16) return false;
+			data.format.resize(chunkSize);
+			if (!file.read(reinterpret_cast<char*>(data.format.data()), chunkSize)) return false;
+			foundFormat = true;
 	}
         else if (strncmp(chunkId, "data", 4) == 0)
         {//音声波形データ本体のも見込み
+			if (chunkSize == 0) return false;
             data.buffer.resize(chunkSize);
-            file.read((char*)data.buffer.data(), chunkSize);
+			if (!file.read(reinterpret_cast<char*>(data.buffer.data()), chunkSize)) return false;
+			foundData = true;
         }
         else
         {//不要なチャンクは読み飛ばす
             file.seekg(chunkSize, std::ios::cur);
         }
+
+		// RIFF chunks are padded to an even byte boundary.
+		if ((chunkSize & 1u) != 0 && file.tellg() < fileSize)
+		{
+			file.seekg(1, std::ios::cur);
+		}
     }
 
-    soundLibrary[label] = data; //ライブラリに登録
+	if (!foundFormat || !foundData) return false;
+	const auto* format = reinterpret_cast<const WAVEFORMATEX*>(data.format.data());
+	if (format->nChannels == 0 || format->nSamplesPerSec == 0 || format->nBlockAlign == 0)
+	{
+		return false;
+	}
+
+	soundLibrary[label] = std::move(data); //ライブラリに登録
     return true;
 }
 
 // 共通のボイス作成処理
 IXAudio2SourceVoice* AudioManager::CreateVoice(const std::string& label) {
-    if (soundLibrary.find(label) == soundLibrary.end()) return nullptr;
+	auto sound = soundLibrary.find(label);
+	if (!m_available || !pXAudio2 || sound == soundLibrary.end() || sound->second.format.size() < 16 || sound->second.buffer.empty())
+	{
+		return nullptr;
+	}
 
     IXAudio2SourceVoice* pVoice = nullptr;
-    HRESULT hr = pXAudio2->CreateSourceVoice(&pVoice, &soundLibrary[label].wfx);
+	const auto* format = reinterpret_cast<const WAVEFORMATEX*>(sound->second.format.data());
+	HRESULT hr = pXAudio2->CreateSourceVoice(&pVoice, format);
     if (FAILED(hr)) return nullptr;
 
     XAUDIO2_BUFFER buffer = { 0 };
@@ -233,6 +293,12 @@ void AudioManager::StopAll()
 {
     StopBGM();
     StopAllSE();
+	for (auto& pair : LoopSEVoices)
+	{
+		pair.second->Stop();
+		pair.second->DestroyVoice();
+	}
+	LoopSEVoices.clear();
 }
 
 

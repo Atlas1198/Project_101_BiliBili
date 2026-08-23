@@ -20,7 +20,7 @@ class SceneBase
 {
 public:	//公開関数
 	SceneBase(float window_width, float window_height);	//コンストラクタ
-	~SceneBase() {};									//デストラクタ
+	virtual ~SceneBase();							//デストラクタ
 
 	//メイン処理関数	
 	void Initialize(	//初期化

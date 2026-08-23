@@ -471,6 +471,12 @@ void CharacterUIManager::FinalizeOverride()
 //キャラクターアイコン移動
 void CharacterUIManager::MoveCharacterIcon(int playerIndex, int characterIndex)
 {
+	if (playerIndex < 0 || playerIndex >= MAX_CHARACTER_NUM ||
+		characterIndex < 0 || characterIndex >= MAX_CHARACTER_NUM)
+	{
+		return;
+	}
+
 	//移動量計算
 	const float backGroundIconWidth = m_pPlayerBackgroundsNormal[0]->GetLocalScale().x;								//背景アイコンの幅
 	const float basePositionX = -m_pCharacterIconBase->GetLocalScale().x * 0.5f + m_pPlayerBackgroundsSelected[0]->GetLocalScale().x * 0.5f;	//ベース位置X
@@ -489,6 +495,11 @@ void CharacterUIManager::MoveCharacterIcon(int playerIndex, int characterIndex)
 //選択済みプレイヤー背景を有効化
 void CharacterUIManager::ActivateSelectedPlayerBackground(int playerIndex, int characterIndex)
 {
+	if (characterIndex < 0 || characterIndex >= MAX_CHARACTER_NUM)
+	{
+		return;
+	}
+
 	//指定インデックスの選択済み背景を有効化
 	if (playerIndex >= 0 && playerIndex < MAX_CHARACTER_NUM)
 	{
@@ -513,6 +524,11 @@ void CharacterUIManager::ActivateSelectedPlayerBackground(int playerIndex, int c
 //選択済みプレイヤー背景を無効化
 void CharacterUIManager::DeactivateSelectedPlayerBackground(int playerIndex, int characterIndex)
 {
+	if (characterIndex < 0 || characterIndex >= MAX_CHARACTER_NUM)
+	{
+		return;
+	}
+
 	//指定インデックスの選択済み背景を無効化
 	if (playerIndex >= 0 && playerIndex < 4)
 	{
