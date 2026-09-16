@@ -585,8 +585,8 @@ void App::UpdateParameters()
 
 void InitializeDPIScale(HWND hwnd)
 {
-	float dpi = GetDpiForWindow(hwnd);
-	App::DPIScale = dpi / USER_DEFAULT_SCREEN_DPI;
+	const UINT dpi = GetDpiForWindow(hwnd);
+	App::DPIScale = static_cast<float>(dpi) / USER_DEFAULT_SCREEN_DPI;
 }
 
 bool LoadParametersJSON()
