@@ -6,6 +6,7 @@
 #include "PlayerManager.h"
 #include "BBManager.h"
 #include "Enemy.h"
+#include "GameUIManager.h"
 #include <memory>
 
 class Renderer;
@@ -32,5 +33,6 @@ private:
 	BulletManager m_bulletManager;
 	PlayerManager m_playerManager;
 	BBManager m_bbManager;
+	std::unique_ptr<GameUIManager> m_gameUIManager;
 	std::unique_ptr<Enemy> m_enemy;
 };

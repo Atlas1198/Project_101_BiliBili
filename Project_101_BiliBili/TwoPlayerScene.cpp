@@ -6,6 +6,8 @@
 TwoPlayerScene::TwoPlayerScene(float windowWidth, float windowHeight)
 	: SceneBase(windowWidth, windowHeight)
 {
+    m_gameUIManager = std::make_unique<GameUIManager>(
+        &m_pCamera->GetCameraInfo(), windowWidth, windowHeight);
 }
 
 void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshManager& pMeshManager)
@@ -32,6 +34,8 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
         players[i]->SetControllerID(static_cast<int>(i / 2));
         players[i]->BindTeammate(players[i ^ 1]);
         players[i]->SetCharacterInput(m_inputSystem.GetCharacterInput(i));
+        m_pSceneContext->playersInfo[i].controllerID = static_cast<int>(i / 2);
+        m_pSceneContext->playersInfo[i].characterID = static_cast<int>(i);
     }
     m_playerManager.Initialize(
         m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
@@ -39,11 +43,21 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
     m_fieldManager.Initialize(
         m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
 
+    m_gameUIManager->Initialize(
+        pTextureManager, pMeshManager, *m_pSceneContext);
+    m_bulletManager.SetGameUIManager(m_gameUIManager.get());
+
+    EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+        EventType::SET_BULLET_UI_ACTIVE, { 0, true });
+    EventManager::GetInstance()->TriggerEvent<std::pair<int, bool>>(
+        EventType::SET_BULLET_UI_ACTIVE, { 1, true });
+
     // Place a stationary enemy at the center of the two-player stage.
     m_enemy = std::make_unique<Enemy>(DirectX::XMFLOAT3(0.0f, -4.0f, 3.5f));
     m_enemy->Initialize(pTextureManager, pMeshManager, *m_pCollisionManager);
 
     // Supply all players to the lines connecting each teammate pair.
+    m_bbManager.SetGameUIManager(m_gameUIManager.get());
     m_bbManager.SetCollisionManager(m_pCollisionManager);
     m_bbManager.Initialize(
         m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
@@ -59,6 +73,7 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
     m_pCamera->SetTarget({ 0.0f, 0.0f, 3.5f });
     m_pCamera->SetFov(DirectX::XMConvertToRadians(20.0f));
     m_pCamera->Update();
+    m_gameUIManager->StartFadeIn(0.01f);
 }
 
 void TwoPlayerScene::UpdateOverride()
@@ -75,6 +90,7 @@ void TwoPlayerScene::UpdateOverride()
     // Refresh line endpoints after player movement.
     m_bbManager.SetPlayerData(m_playerManager.GetPlayers());
     m_bbManager.Update();
+    m_gameUIManager->Update();
 
     if (!m_pSceneContext || !m_pSceneContext->pInputInfo)
     {
@@ -98,6 +114,7 @@ void TwoPlayerScene::DrawOverride(Renderer& pRenderer)
 {
     m_fieldManager.SubmitDraws(pRenderer);
     m_playerManager.SubmitDraws(pRenderer);
+    m_gameUIManager->SubmitDraws(pRenderer);
     m_bulletManager.SubmitDraws(pRenderer);
     if (m_enemy)
     {
@@ -111,6 +128,7 @@ void TwoPlayerScene::FinalizeOverride()
     m_fieldManager.Finalize();
     m_playerManager.SetInputAccepted(false);
     m_playerManager.Finalize();
+    m_gameUIManager->Finalize();
     m_bulletManager.Finalize();
     m_bbManager.Finalize();
     m_enemy.reset();
