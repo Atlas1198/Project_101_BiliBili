@@ -254,6 +254,7 @@
     <ClInclude Include="TransformItem.h" />
     <ClInclude Include="TransformItemManager.h" />
     <ClInclude Include="TransformSystem.h" />
+    <ClInclude Include="TwoPlayerScene.h" />
     <ClInclude Include="UIBase.h" />
     <ClInclude Include="UIimage.h" />
     <ClInclude Include="UIManagerBase.h" />
@@ -347,6 +348,7 @@
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TitleUI.cpp" />
     <ClCompile Include="TitleUIManager.cpp" />
+    <ClCompile Include="TwoPlayerScene.cpp" />
     <ClCompile Include="UIBase.cpp" />
     <ClCompile Include="TransformItem.cpp" />
     <ClCompile Include="TransformItemManager.cpp" />

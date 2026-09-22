@@ -14,6 +14,7 @@ SceneManager::SceneManager(float windowWidth, float windowHeight)
 	m_pStageScene = new StageScene(windowWidth, windowHeight);				//ステージ選択シーンクラスの生成
 	m_pCharacterScene = new CharacterScene(windowWidth, windowHeight);		//キャラクターシーンクラスの生成
 	m_pGameScene = new GameScene(windowWidth, windowHeight);				//ゲームシーンクラスの生成
+	m_pTwoPlayerScene = new TwoPlayerScene(windowWidth, windowHeight);		//2Pプレイシーンクラスの生成
 
 	m_currentScene = SCENE_TYPE::SCENE_TITLE;	//最初のシーンをタイトルシーンに設定
 	m_pCurrentScene = m_pTitleScene;	//最初のシーンをタイトルシーンに設定
@@ -27,6 +28,7 @@ SceneManager::~SceneManager()
 	delete m_pStageScene;
 	delete m_pCharacterScene;
 	delete m_pGameScene;
+	delete m_pTwoPlayerScene;
 }
 
 //初期化
@@ -117,6 +119,10 @@ void SceneManager::ChangeScene(SCENE_TYPE next)
 
 	case SCENE_TYPE::SCENE_RESULT:
 		//m_pCurrentScene = m_pResultScene;
+		break;
+
+	case SCENE_TYPE::SCENE_TWO_PLAYER:
+		m_pCurrentScene = m_pTwoPlayerScene;
 		break;
 	}
 

@@ -142,6 +142,7 @@ enum class SCENE_TYPE
 	SCENE_CHARACTER,	//キャラクター選択シーン
 	SCENE_GAME,			//ゲームシーン
 	SCENE_RESULT,		//リザルトシーン
+	SCENE_TWO_PLAYER,	//2Pプレイシーン
 };
 
 //方向列挙体

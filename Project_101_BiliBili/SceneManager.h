@@ -2,6 +2,7 @@
 #include "SceneBase.h"
 #include "GameScene.h"
 #include "TitleScene.h"
+#include "TwoPlayerScene.h"
 #include "ControllerScene.h"
 #include "StageScene.h"
 #include "CharacterScene.h"
@@ -50,6 +51,7 @@ private:	//メンバ変数
 	StageScene* m_pStageScene = nullptr;			//ステージ選択シーン
 	CharacterScene* m_pCharacterScene = nullptr;	//キャラクターシーンクラスのポインタ
 	GameScene* m_pGameScene = nullptr;				//ゲームシーンクラスのポインタ
+	TwoPlayerScene* m_pTwoPlayerScene = nullptr;	//2Pプレイシーンクラスのポインタ
 
 	InputManager* m_pInputManager = nullptr;		//入力管理クラスのポインタ
 	TextureManager* m_pTextureManager = nullptr;	//テクスチャ管理クラスのポインタ
