@@ -39,6 +39,10 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
     m_fieldManager.Initialize(
         m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
 
+    // Place a stationary enemy at the center of the two-player stage.
+    m_enemy = std::make_unique<Enemy>(DirectX::XMFLOAT3(0.0f, -4.0f, 3.5f));
+    m_enemy->Initialize(pTextureManager, pMeshManager, *m_pCollisionManager);
+
     // Supply all players to the lines connecting each teammate pair.
     m_bbManager.SetCollisionManager(m_pCollisionManager);
     m_bbManager.Initialize(
@@ -64,6 +68,10 @@ void TwoPlayerScene::UpdateOverride()
     m_playerManager.Update();
     m_fieldManager.Update();
     m_bulletManager.Update();
+    if (m_enemy)
+    {
+        m_enemy->Update();
+    }
     // Refresh line endpoints after player movement.
     m_bbManager.SetPlayerData(m_playerManager.GetPlayers());
     m_bbManager.Update();
@@ -91,6 +99,10 @@ void TwoPlayerScene::DrawOverride(Renderer& pRenderer)
     m_fieldManager.SubmitDraws(pRenderer);
     m_playerManager.SubmitDraws(pRenderer);
     m_bulletManager.SubmitDraws(pRenderer);
+    if (m_enemy)
+    {
+        m_enemy->SubmitDraw(pRenderer);
+    }
     m_bbManager.SubmitDraws(pRenderer);
 }
 
@@ -101,6 +113,7 @@ void TwoPlayerScene::FinalizeOverride()
     m_playerManager.Finalize();
     m_bulletManager.Finalize();
     m_bbManager.Finalize();
+    m_enemy.reset();
     // Prevent input state from carrying over when re-entering the scene.
     m_inputSystem.Update(nullptr);
 }
@@ -110,5 +123,9 @@ void TwoPlayerScene::ResolveCollisions()
     m_fieldManager.ResolveCollisions();
     m_playerManager.ResolveCollisions();
     m_bulletManager.ResolveCollisions();
+    if (m_enemy)
+    {
+        m_enemy->ResolveCollisions();
+    }
     m_bbManager.ResolveCollisions();
 }

@@ -1,5 +1,6 @@
 #include "Bullet.h"
 #include <cmath>
+#include "Enemy.h"
 #include "Player.h"
 #include "EventManager.h"
 #include "EffectData.h"
@@ -106,7 +107,21 @@ void Bullet::ResolveCollisionsOverride()
             continue;
         }
 
-        if (Player *otherPlayer = dynamic_cast<Player *>(otherOwner))
+        if (Enemy* enemy = dynamic_cast<Enemy*>(otherOwner))
+		{
+			enemy->TakeDamage();
+
+			EventManager::GetInstance()->TriggerEvent<EffectCommand>(
+				EventType::ADD_EFFECT,
+				EffectCommand{
+					EFFECT_TYPE::EXPLOSION,
+					m_position,
+					XMFLOAT3{ 2.5f,2.5f,1.0f },
+				}
+			);
+			AudioManager::GetInstance()->PlaySE("HIT", 5.0f);
+		}
+        else if (Player *otherPlayer = dynamic_cast<Player *>(otherOwner))
 		{//プレイヤーに当たった場合
             if (otherPlayer->id == m_ownerID)
 			{//自チームには当たらない

@@ -5,6 +5,8 @@
 #include "TwoPlayerInputSystem.h"
 #include "PlayerManager.h"
 #include "BBManager.h"
+#include "Enemy.h"
+#include <memory>
 
 class Renderer;
 class TextureManager;
@@ -30,4 +32,5 @@ private:
 	BulletManager m_bulletManager;
 	PlayerManager m_playerManager;
 	BBManager m_bbManager;
+	std::unique_ptr<Enemy> m_enemy;
 };
