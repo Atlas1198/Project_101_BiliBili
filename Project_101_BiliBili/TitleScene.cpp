@@ -69,7 +69,7 @@ void TitleScene::UpdateOverride()
 	{
 		//シーン変更イベント発行
 		EventManager::GetInstance()->TriggerEvent<SCENE_TYPE>(
-			EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_CONTROLLER);
+			EventType::CHANGE_SCENE, SCENE_TYPE::SCENE_TWO_PLAYER);
 	}
 }
 

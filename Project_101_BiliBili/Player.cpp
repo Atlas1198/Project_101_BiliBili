@@ -322,7 +322,20 @@ void Player::Move()
 
 	XMFLOAT2 dir = { 0.0f, 0.0f };
 
-	if (!App::GetInstance()->isOnline)
+	if (m_pCharacterInput)
+	{
+		up = down = left = right = false;
+		const auto& move = m_pCharacterInput->move;
+		dir.x = fabs(move.x) > 0.2f ? move.x : 0.0f;
+		dir.y = fabs(move.y) > 0.2f ? move.y : 0.0f;
+		const float length = sqrtf(dir.x * dir.x + dir.y * dir.y);
+		if (length > 1.0f)
+		{
+			dir.x /= length;
+			dir.y /= length;
+		}
+	}
+	else if (!App::GetInstance()->isOnline)
 	{
 		auto myController = m_pInputInfo->controller[id];
 
@@ -574,7 +587,11 @@ void Player::Shoot()
 
 	bool shoot = false;
 
-	if (!App::GetInstance()->isOnline)
+	if (m_pCharacterInput)
+	{
+		shoot = m_pCharacterInput->shoot.trigger;
+	}
+	else if (!App::GetInstance()->isOnline)
 	{
 		switch (id)
 		{

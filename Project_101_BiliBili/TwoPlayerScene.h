@@ -1,6 +1,10 @@
 #pragma once
 
 #include "SceneBase.h"
+#include "FieldManager.h"
+#include "TwoPlayerInputSystem.h"
+#include "PlayerManager.h"
+#include "BBManager.h"
 
 class Renderer;
 class TextureManager;
@@ -18,4 +22,11 @@ public:
 	void DrawOverride(Renderer& pRenderer) override;
 	void FinalizeOverride() override;
 	void ResolveCollisions() override;
+
+private:
+	TwoPlayerInputSystem m_inputSystem;
+	FieldManager m_fieldManager;
+	BulletManager m_bulletManager;
+	PlayerManager m_playerManager;
+	BBManager m_bbManager;
 };

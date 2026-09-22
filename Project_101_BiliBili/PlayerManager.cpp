@@ -55,7 +55,8 @@ void PlayerManager::InitializeOverride(
 		m_pPlayer[i]->Update();
 		m_pPlayer[i]->GetColliderSet()->RegisterColliders(collisionManager);
 		m_pPlayer[i]->SetSceneContext(m_pSceneContext);
-		m_pPlayer[i]->SetCharacterID(m_pSceneContext->playersInfo[i].characterID);
+		m_pPlayer[i]->SetCharacterID(m_pSceneContext->stageType == STAGE_TYPE::STAGE_TWO
+			? i : m_pSceneContext->playersInfo[i].characterID);
 	}
 
 	m_subscribedEvents.push_back(
@@ -108,7 +109,10 @@ void PlayerManager::InitializeOverride(
 		m_pPlayer[i]->BindOutline(m_pPlayerOutline[i]);
 	}
 
-	m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
+	if (m_pSceneContext->stageType != STAGE_TYPE::STAGE_TWO)
+	{
+		m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
+	}
 
 	m_islastDamagePlayerCalled = false;
 }
@@ -119,6 +123,12 @@ Player* PlayerManager::AddPlayer(
 	CollisionManager &collisionManager,	//衝突管理クラスの参照
 	BulletManager *pBulletManager	//弾丸管理クラスの参照
 )
+{
+	return AddPlayer(id, pInputManager->GetInputInfo(), collisionManager, pBulletManager);
+}
+
+Player* PlayerManager::AddPlayer(uint32_t id, InputInfo* inputInfo,
+	CollisionManager& collisionManager, BulletManager* pBulletManager)
 {
 	XMFLOAT3 spawnPos = spawnPoses[m_pPlayer.size()];
 
@@ -149,13 +159,13 @@ Player* PlayerManager::AddPlayer(
 		//プレイヤーオブジェクトの初期化
 		if (id == selfID)
 		{
-			m_pPlayer.back()->Initialize(pInputManager->GetInputInfo(), pBulletManager); //入力情報構造体の取得
+			m_pPlayer.back()->Initialize(inputInfo, pBulletManager); //入力情報構造体の取得
 		}
 	}
 	else
 	{
 		//プレイヤーオブジェクトの初期化
-		m_pPlayer.back()->Initialize(pInputManager->GetInputInfo(), pBulletManager); //入力情報構造体の取得
+		m_pPlayer.back()->Initialize(inputInfo, pBulletManager); //入力情報構造体の取得
 	}
 
 	PlayerShadow* newShadow = new PlayerShadow(
@@ -483,6 +493,7 @@ void PlayerManager::ApplyStageSpawnPoses()
 
 	switch (m_pSceneContext->stageType)
 	{
+	case STAGE_TYPE::STAGE_TWO:
 	case STAGE_TYPE::STAGE_GREEN:
 		m_stageSpawnPoses = {
 			XMFLOAT3{-17.5f, -4.0f,  16.0f},	

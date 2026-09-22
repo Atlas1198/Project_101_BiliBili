@@ -66,6 +66,8 @@ public:
 		BulletManager *pBulletManager	//弾丸管理クラスの参照
 	);
 	void RemovePlayer(uint32_t id);
+	Player* AddPlayer(uint32_t id, InputInfo* inputInfo,
+		CollisionManager& collisionManager, BulletManager* pBulletManager);
 
 	void OnTakeDamage(int teamID, float damage); // ダメージを受けたときの処理
 	void OnSetBB(int teamID, bool isActive); // BBをセットしたときの処理

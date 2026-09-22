@@ -186,6 +186,9 @@
     <ClInclude Include="Controller.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="TwoPlayerInputSystem.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="WinInclude.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -492,6 +495,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="TwoPlayerInputSystem.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="TitleUI.cpp">

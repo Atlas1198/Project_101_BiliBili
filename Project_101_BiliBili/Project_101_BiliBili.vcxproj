@@ -183,6 +183,7 @@
     <ClInclude Include="ContentRoot.h" />
     <ClInclude Include="Context.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="TwoPlayerInputSystem.h" />
     <ClInclude Include="ControllerConnecter.h" />
     <ClInclude Include="ControllerIconUI.h" />
     <ClInclude Include="ControllerScene.h" />
@@ -286,6 +287,7 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="TwoPlayerInputSystem.cpp" />
     <ClCompile Include="ControllerConnecter.cpp" />
     <ClCompile Include="ControllerIconUI.cpp" />
     <ClCompile Include="ControllerScene.cpp" />

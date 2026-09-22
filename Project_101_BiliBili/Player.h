@@ -7,6 +7,7 @@
 #include "InputInfo.h"
 #include "PlayerOutline.h"
 #include "Random.h"
+#include "TwoPlayerInputSystem.h"
 
 //プレイヤークラス
 class Player : public ObjectBase
@@ -26,6 +27,7 @@ private:	//非公開メンバ変数
 	InputInfo* m_pInputInfo{};	//入力情報構造体
 	PlayerInfo info{};			//プレイヤー情報構造体
 	Player* teammate = nullptr;
+	const CharacterControlInput* m_pCharacterInput = nullptr;
 	PlayerOutline *m_pOutline = nullptr; // プレイヤーの輪郭オブジェクトへのポインタ
 	int teamID = -1;
 	int characterID = -1;
@@ -88,6 +90,7 @@ public:	//公開関数
 	void SetPlayerInfo(const PlayerInfo& info) { this->info = info; }	//プレイヤー情報構造体セット
 
 	void Reset();
+	void SetCharacterInput(const CharacterControlInput* input) { m_pCharacterInput = input; }
 
 	int GetCharacterID() const { return characterID; } //キャラクターID取得
 	PlayerInfo GetPlayerInfo() const { return info; }					//プレイヤー情報構造体取得

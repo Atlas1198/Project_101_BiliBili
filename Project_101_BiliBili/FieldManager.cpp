@@ -1027,6 +1027,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 	std::wstring groundTexPath = L"";
 	switch (m_pSceneContext->stageType)
 	{
+	case STAGE_TYPE::STAGE_TWO:
 	case STAGE_TYPE::STAGE_GREEN:
 		groundTexPath = L"asset/fbx/stageG/ST_stage_G.fbx";
 		break;
@@ -1036,6 +1037,11 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 	case STAGE_TYPE::STAGE_RED:
 		groundTexPath = L"asset/fbx/stageR/ST_stage_R.fbx";
 		break;
+	}
+
+	if (groundTexPath.empty())
+	{
+		return;
 	}
 
 	CreateRenderInfo(
