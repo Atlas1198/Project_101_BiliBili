@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ObjectBase.h"
+#include "PlayerShadow.h"
 #include "RenderData.h"
+#include <memory>
 
 class CollisionManager;
 class MeshManager;
@@ -35,5 +37,7 @@ private:
 	int m_damageFlashFrames = 0;
 	int m_respawnFrames = 0;
 	float m_bilibiliDamageAccumulator = 0.0f;
+	std::unique_ptr<PlayerShadow> m_shadow;
+	std::vector<WorldRenderInfo> m_shadowInfo;
 	std::vector<WorldRenderInfo> m_renderInfo;
 };

@@ -2,7 +2,6 @@
 
 #include "ObjectBase.h"
 
-class Player;	//前方宣言
 //プレイヤーの影クラス
 class PlayerShadow : public ObjectBase
 {
@@ -15,12 +14,13 @@ class PlayerShadow : public ObjectBase
 		DirectX::XMFLOAT3 velocity,						//移動速度
 		ColliderType colliderType, //コライダータイプ
 		DirectX::XMFLOAT3 collisionBoxSize,
-		Player *pPlayer,						//プレイヤーオブジェクトへのポインタ
+		ObjectBase *pTarget,					//影を追従させるオブジェクトへのポインタ
 		bool collisionIsTrigger = true					//衝突トリガーフラグ
 	);
 
 private:
-	Player* m_pPlayer;	//プレイヤーオブジェクトへのポインタ
+	ObjectBase* m_pTarget;	//影を追従させるオブジェクトへのポインタ
+	DirectX::XMFLOAT3 m_baseShadowScale{};
 	void UpdateOverride() override;	//シーン固有の更新
 	void ResolveCollisionsOverride() override {}	//衝突解決のオーバーライド（影は衝突解決しないため空実装
 };

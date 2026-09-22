@@ -46,6 +46,28 @@ Enemy::Enemy(const XMFLOAT3& position)
 void Enemy::Initialize(TextureManager& textureManager, MeshManager& meshManager,
 	CollisionManager& collisionManager)
 {
+	m_shadow = std::make_unique<PlayerShadow>(
+		MESH_TYPE::QUAD,
+		XMFLOAT3(m_position.x, m_position.y - 0.2f, m_position.z),
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(9.2f, 5.5f, 9.2f),
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		ColliderType::BOX,
+		XMFLOAT3(0.5f, 0.5f, 0.5f),
+		this,
+		false);
+	m_shadow->SetColor(XMFLOAT4(0.0f, 0.0f, 0.0f, 0.55f));
+
+	CreateRenderInfo(
+		textureManager,
+		meshManager,
+		&m_shadowInfo,
+		MESH_TYPE::QUAD,
+		PSO_KEY_TRANSPARENT,
+		L"asset/texture/player/shadow_CH.png",
+		false,
+		BILLBOARD_TYPE::BILLBOARD_FIX_X);
+
 	CreateRenderInfo(
 		textureManager,
 		meshManager,
@@ -89,6 +111,11 @@ void Enemy::UpdateOverride()
 	else
 	{
 		m_color = XMFLOAT4(1.0f, 0.25f, 0.25f, 1.0f);
+	}
+
+	if (m_shadow)
+	{
+		m_shadow->Update();
 	}
 }
 
@@ -134,6 +161,23 @@ void Enemy::SubmitDraw(Renderer& renderer) const
 	if (!IsActive() || !IsDrawn())
 	{
 		return;
+	}
+
+	if (m_shadow)
+	{
+		auto shadowInfo = m_shadowInfo;
+		for (auto& info : shadowInfo)
+		{
+			info.world = m_shadow->GetWorldMatrix();
+			info.position = m_shadow->GetPosition();
+			info.scale = m_shadow->GetScale();
+			info.common.color.x *= m_shadow->GetColor().x;
+			info.common.color.y *= m_shadow->GetColor().y;
+			info.common.color.z *= m_shadow->GetColor().z;
+			info.common.color.w *= m_shadow->GetColor().w;
+			info.common.uvRect = SplitSprite(m_shadow->GetTexSplitInfo());
+		}
+		renderer.SubmitToWorldList(shadowInfo);
 	}
 
 	auto submitInfo = m_renderInfo;
