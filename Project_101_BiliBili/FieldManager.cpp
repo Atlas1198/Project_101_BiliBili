@@ -657,6 +657,7 @@ void FieldManager::InitializeOverride(TextureManager& textureManager, MeshManage
 
 		break;
 
+	// The dedicated two-player stage has no extra obstacle layout.
 	case STAGE_TYPE::STAGE_TWO:
 		break;
 
@@ -1027,6 +1028,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 	std::wstring groundTexPath = L"";
 	switch (m_pSceneContext->stageType)
 	{
+	// Two-player mode reuses the green stage floor model.
 	case STAGE_TYPE::STAGE_TWO:
 	case STAGE_TYPE::STAGE_GREEN:
 		groundTexPath = L"asset/fbx/stageG/ST_stage_G.fbx";
@@ -1039,6 +1041,7 @@ void FieldManager::PrepareRenderInfo(TextureManager& textureManager, MeshManager
 		break;
 	}
 
+	// Do not try to load an empty path for stages without a floor model.
 	if (groundTexPath.empty())
 	{
 		return;

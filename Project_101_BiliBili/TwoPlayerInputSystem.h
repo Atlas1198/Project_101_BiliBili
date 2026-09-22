@@ -11,12 +11,14 @@ enum class CONTROLLER_HALF
 	RIGHT
 };
 
+// Movement and shooting input split for one character.
 struct CharacterControlInput
 {
 	DirectX::XMFLOAT2 move{};
 	InputState shoot{};
 };
 
+// Splits two controllers into left/right input for four characters.
 class TwoPlayerInputSystem
 {
 public:
@@ -33,5 +35,6 @@ public:
 	) const;
 
 private:
+	// Order: controller 0 left/right, then controller 1 left/right.
 	std::array<CharacterControlInput, CHARACTER_COUNT> m_characterInputs{};
 };

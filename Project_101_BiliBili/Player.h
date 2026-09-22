@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ObjectBase.h"
 #include "InputManager.h"
 #include "BulletManager.h"
@@ -26,6 +26,7 @@ public:	//公開定数
 private:	//非公開メンバ変数
 	InputInfo* m_pInputInfo{};	//入力情報構造体
 	PlayerInfo info{};			//プレイヤー情報構造体
+	// Teammate link and split input used by two-player mode.
 	Player* teammate = nullptr;
 	const CharacterControlInput* m_pCharacterInput = nullptr;
 	PlayerOutline *m_pOutline = nullptr; // プレイヤーの輪郭オブジェクトへのポインタ
@@ -90,6 +91,7 @@ public:	//公開関数
 	void SetPlayerInfo(const PlayerInfo& info) { this->info = info; }	//プレイヤー情報構造体セット
 
 	void Reset();
+	// Split input takes priority over the normal controller input path.
 	void SetCharacterInput(const CharacterControlInput* input) { m_pCharacterInput = input; }
 
 	int GetCharacterID() const { return characterID; } //キャラクターID取得

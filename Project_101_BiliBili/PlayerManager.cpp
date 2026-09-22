@@ -55,6 +55,7 @@ void PlayerManager::InitializeOverride(
 		m_pPlayer[i]->Update();
 		m_pPlayer[i]->GetColliderSet()->RegisterColliders(collisionManager);
 		m_pPlayer[i]->SetSceneContext(m_pSceneContext);
+		// Preserve creation-order IDs so all four characters remain distinct.
 		m_pPlayer[i]->SetCharacterID(m_pSceneContext->stageType == STAGE_TYPE::STAGE_TWO
 			? i : m_pSceneContext->playersInfo[i].characterID);
 	}
@@ -109,6 +110,7 @@ void PlayerManager::InitializeOverride(
 		m_pPlayer[i]->BindOutline(m_pPlayerOutline[i]);
 	}
 
+	// Keep the dedicated stage instead of applying the normal stage selection.
 	if (m_pSceneContext->stageType != STAGE_TYPE::STAGE_TWO)
 	{
 		m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
@@ -130,6 +132,7 @@ Player* PlayerManager::AddPlayer(
 Player* PlayerManager::AddPlayer(uint32_t id, InputInfo* inputInfo,
 	CollisionManager& collisionManager, BulletManager* pBulletManager)
 {
+	// Allow the dedicated scene to reuse creation without an InputManager.
 	XMFLOAT3 spawnPos = spawnPoses[m_pPlayer.size()];
 
 	Player *newPlayer = new Player
@@ -493,6 +496,7 @@ void PlayerManager::ApplyStageSpawnPoses()
 
 	switch (m_pSceneContext->stageType)
 	{
+	// Two-player mode reuses the green stage's four corner spawn positions.
 	case STAGE_TYPE::STAGE_TWO:
 	case STAGE_TYPE::STAGE_GREEN:
 		m_stageSpawnPoses = {

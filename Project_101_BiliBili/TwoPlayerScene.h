@@ -10,6 +10,7 @@ class Renderer;
 class TextureManager;
 class MeshManager;
 
+// Two-player scene where each controller operates two characters.
 class TwoPlayerScene final : public SceneBase
 {
 public:

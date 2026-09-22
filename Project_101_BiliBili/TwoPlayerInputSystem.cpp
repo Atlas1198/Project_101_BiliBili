@@ -2,6 +2,7 @@
 
 void TwoPlayerInputSystem::Update(const InputInfo* pInputInfo)
 {
+	// Clear stale values when controller input is unavailable.
 	m_characterInputs = {};
 	if (!pInputInfo)
 	{
@@ -14,6 +15,7 @@ void TwoPlayerInputSystem::Update(const InputInfo* pInputInfo)
 		auto& leftCharacter = m_characterInputs[playerIndex * CHARACTERS_PER_PLAYER];
 		auto& rightCharacter = m_characterInputs[playerIndex * CHARACTERS_PER_PLAYER + 1];
 
+		// Left uses left stick/L1; right uses right stick/R1.
 		leftCharacter.move = controller.leftStick;
 		leftCharacter.shoot = controller.LSHOULDER;
 
@@ -31,6 +33,7 @@ const CharacterControlInput* TwoPlayerInputSystem::GetCharacterInput(
 		return nullptr;
 	}
 
+	// The array is updated in place, so Player can retain this element address.
 	return &m_characterInputs[characterIndex];
 }
 

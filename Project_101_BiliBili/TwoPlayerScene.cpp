@@ -10,6 +10,7 @@ TwoPlayerScene::TwoPlayerScene(float windowWidth, float windowHeight)
 
 void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshManager& pMeshManager)
 {
+    // Set the dedicated stage before PlayerManager applies stage settings.
     m_pSceneContext->stageType = STAGE_TYPE::STAGE_TWO;
     m_inputSystem.Update(nullptr);
     m_bulletManager.Initialize(
@@ -17,12 +18,14 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
     auto& players = m_playerManager.GetPlayers();
     if (players.empty())
     {
+        // Create one character per controller half, four in total.
         for (uint32_t i = 0; i < TwoPlayerInputSystem::CHARACTER_COUNT; ++i)
         {
             m_playerManager.AddPlayer(i, m_pSceneContext->pInputInfo,
                 *m_pCollisionManager, &m_bulletManager);
         }
     }
+    // Pair adjacent characters as teammates and assign their split input.
     for (std::size_t i = 0; i < players.size(); ++i)
     {
         players[i]->SetTeamID(static_cast<int>(i / 2));
@@ -36,6 +39,7 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
     m_fieldManager.Initialize(
         m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
 
+    // Supply all players to the lines connecting each teammate pair.
     m_bbManager.SetCollisionManager(m_pCollisionManager);
     m_bbManager.Initialize(
         m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
@@ -55,10 +59,12 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
 
 void TwoPlayerScene::UpdateOverride()
 {
+    // Split current controller input before updating the players.
     m_inputSystem.Update(m_pSceneContext ? m_pSceneContext->pInputInfo : nullptr);
     m_playerManager.Update();
     m_fieldManager.Update();
     m_bulletManager.Update();
+    // Refresh line endpoints after player movement.
     m_bbManager.SetPlayerData(m_playerManager.GetPlayers());
     m_bbManager.Update();
 
@@ -95,6 +101,7 @@ void TwoPlayerScene::FinalizeOverride()
     m_playerManager.Finalize();
     m_bulletManager.Finalize();
     m_bbManager.Finalize();
+    // Prevent input state from carrying over when re-entering the scene.
     m_inputSystem.Update(nullptr);
 }
 

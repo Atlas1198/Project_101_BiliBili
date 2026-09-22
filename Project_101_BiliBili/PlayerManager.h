@@ -66,6 +66,7 @@ public:
 		BulletManager *pBulletManager	//弾丸管理クラスの参照
 	);
 	void RemovePlayer(uint32_t id);
+	// Adds a player from scene-owned input data for two-player mode.
 	Player* AddPlayer(uint32_t id, InputInfo* inputInfo,
 		CollisionManager& collisionManager, BulletManager* pBulletManager);
 

@@ -322,6 +322,7 @@ void Player::Move()
 
 	XMFLOAT2 dir = { 0.0f, 0.0f };
 
+	// Two-player mode uses movement already split by controller half.
 	if (m_pCharacterInput)
 	{
 		up = down = left = right = false;
@@ -587,6 +588,7 @@ void Player::Shoot()
 
 	bool shoot = false;
 
+	// Two-player mode uses the L1/R1 action assigned to this character.
 	if (m_pCharacterInput)
 	{
 		shoot = m_pCharacterInput->shoot.trigger;
