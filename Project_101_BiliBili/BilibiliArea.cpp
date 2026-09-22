@@ -1,5 +1,6 @@
 ﻿#include "BilibiliArea.h"
 #include <cmath>
+#include "Enemy.h"
 #include "EventManager.h"
 #include "EffectData.h"
 #include "Player.h"
@@ -122,6 +123,10 @@ void BilibiliArea::ResolveCollisionsOverride()
 
 				otherPlayer->StartDamageAnimation();
             }
+        }
+        else if (Enemy* enemy = dynamic_cast<Enemy*>(otherOwner))
+        {
+            enemy->TakeBilibiliDamage(m_damage);
         }
     }
 

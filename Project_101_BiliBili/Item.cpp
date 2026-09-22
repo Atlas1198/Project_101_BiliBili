@@ -53,11 +53,10 @@ void Item::ResolveCollisionsOverride()
 		{
 			if (m_isPlayerCollision) continue; //複数のプレイヤーと同時に衝突した場合、最初の1人にのみ効果を適用
 
-			SetActive(false);
-			m_pColliderSet->SetDeleteFlag(true);
-
 			if (Player *player = dynamic_cast<Player *>(info.opponent))
 			{
+				SetActive(false);
+				m_pColliderSet->SetDeleteFlag(true);
 				//EventManager::GetInstance()->itemPickup[player->GetTeamID()] = true;
 				EventManager::GetInstance()->TriggerEvent<int>(EventType::ITEM_PICKUP, player->GetTeamID());
 				//アイテム取得エフェクトの発生

@@ -23,6 +23,7 @@ public:
 	~ItemManager();	//デストラクタ
 	void SpawnItem();
 	inline static float ITEM_RESPAWN = 15.0f;
+	static constexpr float TWO_PLAYER_RESPAWN = 5.0f;
 	static constexpr float EVENT_SPAWN_RATE = 0.5f;
 	const int MAX_SKIPS = 2;
 

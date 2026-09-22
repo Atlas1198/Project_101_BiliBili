@@ -44,7 +44,15 @@ void ItemManager::InitializeOverride(TextureManager& textureManager, MeshManager
 
 	applyNewSpawnRate = false;
 	nextItemIndex = 1;
-	m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
+	if (m_pSceneContext->stageType == STAGE_TYPE::STAGE_TWO)
+	{
+		SpawnItem();
+		m_frameTimer.Mark();
+	}
+	else
+	{
+		m_pSceneContext->stageType = StageSelector::GetInstance().GetStage();
+	}
 }
 
 void ItemManager::SpawnItem()
@@ -58,6 +66,10 @@ void ItemManager::SpawnItem()
 
 	switch (m_pSceneContext->stageType)
 	{
+	case STAGE_TYPE::STAGE_TWO:
+		xMin = xMax = -7.5f;
+		zMin = zMax = 3.5f;
+		break;
 	case STAGE_TYPE::STAGE_GREEN:
 		switch (g_area)
 		{
@@ -126,6 +138,38 @@ void ItemManager::SpawnItem()
 //更新
 void ItemManager::UpdateOverride()
 {
+	if (m_pSceneContext->stageType == STAGE_TYPE::STAGE_TWO)
+	{
+		bool hasActiveItem = false;
+		for (auto* item : m_pItems)
+		{
+			if (item->IsActive())
+			{
+				hasActiveItem = true;
+				item->Update();
+			}
+		}
+
+		if (hasActiveItem)
+		{
+			// The five-second countdown starts on the frame the item is picked up.
+			m_frameTimer.Mark();
+		}
+		else if (m_frameTimer.Peek() >= TWO_PLAYER_RESPAWN)
+		{
+			for (auto*& item : m_pItems)
+			{
+				delete item;
+				item = nullptr;
+			}
+			m_pItems.clear();
+			SpawnItem();
+			m_frameTimer.Mark();
+		}
+
+		return;
+	}
+
 	if (!showedAnnouncement &&
 		m_frameTimer.Peek() >= (ITEM_RESPAWN * (applyNewSpawnRate ? EVENT_SPAWN_RATE : 1.0f)) - 1.0f)
 	{

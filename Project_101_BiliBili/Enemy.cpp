@@ -1,5 +1,6 @@
 #include "Enemy.h"
 
+#include "BulletManager.h"
 #include "CollisionManager.h"
 #include "MeshManager.h"
 #include "Renderer.h"
@@ -70,6 +71,7 @@ void Enemy::UpdateOverride()
 		if (m_respawnFrames == 0)
 		{
 			m_hp = MAX_HP;
+			m_bilibiliDamageAccumulator = 0.0f;
 			m_damageFlashFrames = 0;
 			m_color = XMFLOAT4(1.0f, 0.25f, 0.25f, 1.0f);
 			SetActive(true);
@@ -109,6 +111,21 @@ void Enemy::TakeDamage()
 		m_respawnFrames = RESPAWN_FRAMES;
 		SetActive(false);
 		m_pColliderSet->SetActive(false);
+	}
+}
+
+void Enemy::TakeBilibiliDamage(float damage)
+{
+	if (!IsActive() || damage <= 0.0f)
+	{
+		return;
+	}
+
+	m_bilibiliDamageAccumulator += damage;
+	while (m_bilibiliDamageAccumulator >= BulletManager::BULLET_DAMAGE && IsActive())
+	{
+		m_bilibiliDamageAccumulator -= BulletManager::BULLET_DAMAGE;
+		TakeDamage();
 	}
 }
 

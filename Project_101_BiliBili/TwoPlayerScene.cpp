@@ -42,6 +42,8 @@ void TwoPlayerScene::InitializeOverride(TextureManager& pTextureManager, MeshMan
     m_playerManager.SetInputAccepted(true);
     m_fieldManager.Initialize(
         m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
+    m_itemManager.Initialize(
+        m_pSceneContext, pTextureManager, pMeshManager, *m_pCollisionManager);
 
     m_gameUIManager->Initialize(
         pTextureManager, pMeshManager, *m_pSceneContext);
@@ -83,6 +85,7 @@ void TwoPlayerScene::UpdateOverride()
     m_playerManager.Update();
     m_fieldManager.Update();
     m_bulletManager.Update();
+    m_itemManager.Update();
     if (m_enemy)
     {
         m_enemy->Update();
@@ -116,6 +119,7 @@ void TwoPlayerScene::DrawOverride(Renderer& pRenderer)
     m_playerManager.SubmitDraws(pRenderer);
     m_gameUIManager->SubmitDraws(pRenderer);
     m_bulletManager.SubmitDraws(pRenderer);
+    m_itemManager.SubmitDraws(pRenderer);
     if (m_enemy)
     {
         m_enemy->SubmitDraw(pRenderer);
@@ -130,6 +134,7 @@ void TwoPlayerScene::FinalizeOverride()
     m_playerManager.Finalize();
     m_gameUIManager->Finalize();
     m_bulletManager.Finalize();
+    m_itemManager.Finalize();
     m_bbManager.Finalize();
     m_enemy.reset();
     // Prevent input state from carrying over when re-entering the scene.
@@ -141,6 +146,7 @@ void TwoPlayerScene::ResolveCollisions()
     m_fieldManager.ResolveCollisions();
     m_playerManager.ResolveCollisions();
     m_bulletManager.ResolveCollisions();
+    m_itemManager.ResolveCollisions();
     if (m_enemy)
     {
         m_enemy->ResolveCollisions();

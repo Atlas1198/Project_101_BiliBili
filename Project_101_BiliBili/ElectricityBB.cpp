@@ -1,4 +1,6 @@
-#include "ElectricityBB.h"
+﻿#include "ElectricityBB.h"
+#include "Enemy.h"
+#include "BB.h"
 #include "SharedStruct.h"
 #include "Player.h"
 
@@ -17,21 +19,34 @@ void ElectricityBB::ResolveCollisionsOverride()
 	for(auto& info : m_pColliderSet->GetCollisionInfos())
 	{
 		auto opponentOwner = info.opponent;			//衝突相手のオブジェクト取得
+		if (!opponentOwner)
+		{
+			continue;
+		}
+
 		OBJECT_TAG tag = opponentOwner->GetTag();	//衝突相手のタグ取得
 
 		//衝突相手がプレイヤーの場合
 		if(tag == OBJECT_TAG::PLAYER)
 		{
 			auto player = dynamic_cast<Player*>(opponentOwner);	//プレイヤーにキャスト
-			if (player->GetTeamID() != m_teamId)
+			if (player)
 			{
-				if (player->GetTeamID() != m_teamId && info.state == COLLISION_STATE::COLLISION_STAY)
-				{//チームIDが違うか、衝突開始の場合
-					m_hasHitPlayer = true;	//プレイヤーに当たったフラグを立てる
-					m_hitNum++;				//当たった回数をカウント
+				if (player->GetTeamID() != m_teamId)
+				{
+					if (info.state == COLLISION_STATE::COLLISION_STAY)
+					{//チームIDが違うか、衝突開始の場合
+						m_hasHitPlayer = true;	//プレイヤーに当たったフラグを立てる
+						m_hitNum++;				//当たった回数をカウント
+					}
+					player->ShakeController(1.0f, 1.0f, 20);
+					player->StartDamageAnimation();
 				}
-				player->ShakeController(1.0f, 1.0f, 20);
-				player->StartDamageAnimation();
+			}
+			else if (auto enemy = dynamic_cast<Enemy*>(opponentOwner);
+				 enemy && info.state == COLLISION_STATE::COLLISION_STAY)
+			{
+				enemy->TakeBilibiliDamage(BB::DAMAGE);
 			}
 		}
 	}
